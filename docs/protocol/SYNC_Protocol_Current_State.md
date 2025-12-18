@@ -44,6 +44,10 @@ Protocol V1 complete and in use. Dogfooding on itself + Blood Ledger.
 **Recent changes (2025-12-18):**
 - Added IMPLEMENTATION_Protocol_Code_Architecture.md to complete the documentation chain
 - Documents file structure, data flows, and how agents traverse the protocol system
+- Fixed broken implementation links in IMPLEMENTATION_Protocol_Code_Architecture.md:
+  - Updated tree diagrams to use full project-relative paths in tables
+  - Converted bare filename references to resolvable paths (e.g., `templates/context-protocol/PROTOCOL.md`)
+  - Removed backticked paths that started with `.` (caused issues with validator path resolution)
 
 ---
 

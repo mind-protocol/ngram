@@ -37,79 +37,75 @@ This document describes:
 
 ### Template Directory (Source of Truth)
 
+The source templates live in `templates/context-protocol/`:
+
 ```
 templates/context-protocol/
-├── PROTOCOL.md                    # Navigation rules for agents
-├── PRINCIPLES.md                  # Working stance (how to think)
-│
-├── views/                         # Task-specific context instructions
-│   ├── VIEW_Implement_Write_Or_Modify_Code.md
-│   ├── VIEW_Debug_Investigate_And_Fix_Issues.md
-│   ├── VIEW_Review_Evaluate_Changes.md
-│   ├── VIEW_Extend_Add_Features_To_Existing.md
-│   ├── VIEW_Refactor_Improve_Code_Structure.md
-│   ├── VIEW_Test_Write_Tests_And_Verify.md
-│   ├── VIEW_Document_Create_Module_Documentation.md
-│   ├── VIEW_Onboard_Understand_Existing_Codebase.md
-│   ├── VIEW_Ingest_Process_Raw_Data_Sources.md
-│   ├── VIEW_Specify_Design_Vision_And_Architecture.md
-│   └── VIEW_Collaborate_Pair_Program_With_Human.md
-│
-├── templates/                     # Doc templates for new modules
-│   ├── PATTERNS_TEMPLATE.md
-│   ├── BEHAVIORS_TEMPLATE.md
-│   ├── ALGORITHM_TEMPLATE.md
-│   ├── VALIDATION_TEMPLATE.md
-│   ├── IMPLEMENTATION_TEMPLATE.md
-│   ├── TEST_TEMPLATE.md
-│   ├── SYNC_TEMPLATE.md
-│   ├── CONCEPT_TEMPLATE.md
-│   └── TOUCHES_TEMPLATE.md
-│
-└── state/
-    └── SYNC_Project_State.md      # Template for project state tracking
+├── PROTOCOL                       # Navigation rules for agents
+├── PRINCIPLES                     # Working stance (how to think)
+├── views/                         # Task-specific context instructions (11 VIEWs)
+├── templates/                     # Doc templates for new modules (9 templates)
+└── state/                         # State file templates
 ```
+
+**Key files:**
+
+| Category | Files |
+|----------|-------|
+| Core | `templates/context-protocol/PROTOCOL.md`, `templates/context-protocol/PRINCIPLES.md` |
+| VIEWs | `templates/context-protocol/views/VIEW_Implement_Write_Or_Modify_Code.md`, `templates/context-protocol/views/VIEW_Debug_Investigate_And_Fix_Issues.md`, `templates/context-protocol/views/VIEW_Review_Evaluate_Changes.md`, `templates/context-protocol/views/VIEW_Extend_Add_Features_To_Existing.md`, `templates/context-protocol/views/VIEW_Refactor_Improve_Code_Structure.md`, `templates/context-protocol/views/VIEW_Test_Write_Tests_And_Verify.md`, `templates/context-protocol/views/VIEW_Document_Create_Module_Documentation.md`, `templates/context-protocol/views/VIEW_Onboard_Understand_Existing_Codebase.md`, `templates/context-protocol/views/VIEW_Ingest_Process_Raw_Data_Sources.md`, `templates/context-protocol/views/VIEW_Specify_Design_Vision_And_Architecture.md`, `templates/context-protocol/views/VIEW_Collaborate_Pair_Program_With_Human.md` |
+| Templates | `templates/context-protocol/templates/PATTERNS_TEMPLATE.md`, `templates/context-protocol/templates/BEHAVIORS_TEMPLATE.md`, `templates/context-protocol/templates/ALGORITHM_TEMPLATE.md`, `templates/context-protocol/templates/VALIDATION_TEMPLATE.md`, `templates/context-protocol/templates/IMPLEMENTATION_TEMPLATE.md`, `templates/context-protocol/templates/TEST_TEMPLATE.md`, `templates/context-protocol/templates/SYNC_TEMPLATE.md`, `templates/context-protocol/templates/CONCEPT_TEMPLATE.md`, `templates/context-protocol/templates/TOUCHES_TEMPLATE.md` |
+| State | `templates/context-protocol/state/SYNC_Project_State.md` |
 
 ### Installed Directory (In Target Project)
 
+When installed in a target project, files are copied to `.context-protocol/`:
+
 ```
-{project}/.context-protocol/
-├── PROTOCOL.md                    # Copied from templates
-├── PRINCIPLES.md                  # Copied from templates
+.context-protocol/
+├── PROTOCOL                       # Copied from templates
+├── PRINCIPLES                     # Copied from templates
 ├── views/                         # Copied from templates
 ├── templates/                     # Copied from templates
 ├── modules.yaml                   # Project-specific module mapping
-│
 ├── state/
-│   ├── SYNC_Project_State.md      # Active project state
-│   └── SYNC_Project_Health.md     # Doctor output (generated)
-│
+│   ├── SYNC_Project_State         # Active project state
+│   └── SYNC_Project_Health        # Doctor output (generated)
 └── traces/                        # Agent activity logs (optional)
-    └── {date}.jsonl               # JSON Lines trace files
 ```
+
+**Installed files in this project** (all under the hidden `.context-protocol/` directory):
+
+| Category | Location |
+|----------|----------|
+| Core | PROTOCOL, PRINCIPLES (at root) |
+| State | state/SYNC_Project_State, state/SYNC_Project_Health |
+| Mapping | modules.yaml |
 
 ### CLAUDE.md Bootstrap
 
+The `CLAUDE.md` file includes protocol files via `@` directives:
+
 ```
-{project}/CLAUDE.md
-├── @templates/CLAUDE_ADDITION.md  # Include directive
-├── @templates/context-protocol/PRINCIPLES.md
-└── @templates/context-protocol/PROTOCOL.md
+CLAUDE.md
+├── @templates/CLAUDE_ADDITION     # Include directive
+├── @templates/context-protocol/PRINCIPLES
+└── @templates/context-protocol/PROTOCOL
 ```
 
 ---
 
 ## FILE RESPONSIBILITIES
 
-| File | Purpose | When Loaded |
-|------|---------|-------------|
-| `PROTOCOL.md` | Navigation — what to load, where to update | Every session start |
-| `PRINCIPLES.md` | Stance — how to work (5 principles) | Every session start |
-| `VIEW_*.md` | Task instructions for specific work type | Based on task type |
-| `*_TEMPLATE.md` | Scaffolds for new documentation | When creating docs |
-| `SYNC_Project_State.md` | Current project status and handoffs | Every session start |
-| `SYNC_Project_Health.md` | Doctor output with health score | After `doctor` command |
-| `modules.yaml` | Code → docs mapping | By CLI tools |
+| File Pattern | Purpose | When Loaded |
+|--------------|---------|-------------|
+| PROTOCOL | Navigation — what to load, where to update | Every session start |
+| PRINCIPLES | Stance — how to work (5 principles) | Every session start |
+| VIEW_* (11 files) | Task instructions for specific work type | Based on task type |
+| *_TEMPLATE (9 files) | Scaffolds for new documentation | When creating docs |
+| SYNC_Project_State | Current project status and handoffs | Every session start |
+| SYNC_Project_Health | Doctor output with health score | After `doctor` command |
+| modules.yaml | Code → docs mapping | By CLI tools |
 
 ---
 
@@ -415,7 +411,7 @@ Documentation references implementation:
 
 ### CHAIN Sections
 
-Every doc file includes a CHAIN block linking to siblings. Each entry maps a doc type to its relative file path (e.g., `PATTERNS: ./PATTERNS_Why_This_Design.md`).
+Every doc file includes a CHAIN block linking to siblings. Each entry maps a doc type to its relative file path (format: `TYPE: ./TYPE_Descriptive_Name`).
 
 The doc types are: PATTERNS, BEHAVIORS, ALGORITHM, VALIDATION, IMPLEMENTATION, TEST, and SYNC. The current file is marked with `THIS:` instead of its type.
 

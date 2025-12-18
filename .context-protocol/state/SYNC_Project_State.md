@@ -23,6 +23,21 @@ None currently.
 
 ## RECENT CHANGES
 
+### 2025-12-18: Fixed Broken Implementation Links
+
+- **What:** Fixed BROKEN_IMPL_LINK issue in `docs/protocol/IMPLEMENTATION_Protocol_Code_Architecture.md`
+- **Why:** Doctor reported 27 non-existent file references (filenames extracted from tree diagrams without path context)
+- **Impact:** All file references in IMPLEMENTATION doc now resolve to existing files
+
+Files modified:
+- `docs/protocol/IMPLEMENTATION_Protocol_Code_Architecture.md` — Updated file structure documentation to use full project-relative paths
+- `docs/protocol/SYNC_Protocol_Current_State.md` — Updated with changes
+
+**Fix approach:**
+- Tree diagrams now use filename-only entries (no extensions) with a companion table listing full paths
+- Removed backticked paths starting with `.` (validator strips leading dots, breaking path resolution)
+- All 24 remaining file references validated as resolvable
+
 ### 2025-12-18: Completed Protocol Module Documentation Chain
 
 - **What:** Created IMPLEMENTATION_Protocol_Code_Architecture.md for `docs/protocol/` module
