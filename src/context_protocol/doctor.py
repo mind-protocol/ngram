@@ -14,7 +14,7 @@ import json
 import re
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Set
 
 from .utils import IGNORED_EXTENSIONS, HAS_YAML, find_module_directories
 from .sync import archive_all_syncs
@@ -1286,6 +1286,161 @@ def doctor_check_suggestions(target_dir: Path, config: DoctorConfig) -> List[Doc
     return issues
 
 
+def doctor_check_doc_duplication(target_dir: Path, config: DoctorConfig) -> List[DoctorIssue]:
+    """Check for duplicated documentation content.
+
+    Detects:
+    - Same file referenced in multiple IMPLEMENTATION docs
+    - Similar content across different docs (potential copy-paste)
+    - Multiple docs for the same module/topic
+    """
+    if "doc_duplication" in config.disabled_checks:
+        return []
+
+    issues = []
+    docs_dir = target_dir / "docs"
+
+    if not docs_dir.exists():
+        return issues
+
+    # Track file references across IMPLEMENTATION docs
+    # Use Set to avoid flagging the same doc that mentions a file multiple times
+    file_references: Dict[str, Set[str]] = {}  # file -> set of docs that reference it
+
+    # Track doc content fingerprints for similarity detection
+    doc_fingerprints: Dict[str, tuple] = {}  # doc path -> (word_set, heading_set)
+
+    # Track docs by module/topic
+    docs_by_topic: Dict[str, List[str]] = {}  # topic -> list of doc paths
+
+    for doc_file in docs_dir.rglob("*.md"):
+        if should_ignore_path(doc_file, config.ignore, target_dir):
+            continue
+
+        try:
+            content = doc_file.read_text(errors="ignore")
+            rel_path = str(doc_file.relative_to(target_dir))
+
+            # Check 1: Track file references in IMPLEMENTATION docs
+            if "IMPLEMENTATION" in doc_file.name:
+                # Extract file paths referenced (look for src/, lib/, etc.)
+                # NOTE: The capture group must include the full path, not just optional parts,
+                # because re.findall() only returns captured group contents when groups exist
+                file_patterns = re.findall(
+                    r'[`\s](/?(?:src|lib|app|components|hooks|pages|utils)/[\w/.-]+\.\w+)',
+                    content
+                )
+                for file_ref in file_patterns:
+                    file_ref = file_ref.strip('`').lstrip('/')
+                    if file_ref not in file_references:
+                        file_references[file_ref] = set()
+                    file_references[file_ref].add(rel_path)
+
+            # Check 2: Build content fingerprint for similarity detection
+            # Extract significant words (skip common words)
+            words = set(re.findall(r'\b[a-zA-Z]{4,}\b', content.lower()))
+            common_words = {'this', 'that', 'with', 'from', 'have', 'will', 'been',
+                          'should', 'would', 'could', 'what', 'when', 'where', 'which',
+                          'their', 'there', 'these', 'those', 'about', 'into', 'more',
+                          'some', 'such', 'than', 'then', 'them', 'only', 'over'}
+            words = words - common_words
+
+            # Extract headings
+            headings = set(re.findall(r'^#{1,3}\s+(.+)$', content, re.MULTILINE))
+
+            doc_fingerprints[rel_path] = (words, headings)
+
+            # Check 3: Track by doc type and parent folder (topic)
+            doc_type = None
+            for dtype in ['PATTERNS', 'BEHAVIORS', 'ALGORITHM', 'IMPLEMENTATION', 'VALIDATION', 'SYNC']:
+                if dtype in doc_file.name:
+                    doc_type = dtype
+                    break
+
+            if doc_type:
+                # Use parent folder as topic identifier
+                topic = f"{doc_file.parent.name}:{doc_type}"
+                if topic not in docs_by_topic:
+                    docs_by_topic[topic] = []
+                docs_by_topic[topic].append(rel_path)
+
+        except Exception:
+            pass
+
+    # Report: Files referenced in multiple IMPLEMENTATION docs
+    for file_ref, docs_set in file_references.items():
+        if len(docs_set) > 1:
+            docs_list = sorted(docs_set)  # Convert set to sorted list for consistent output
+            issues.append(DoctorIssue(
+                issue_type="DOC_DUPLICATION",
+                severity="warning",
+                path=docs_list[0],  # First doc that references it
+                message=f"`{file_ref}` documented in {len(docs_list)} places",
+                details={
+                    "duplicated_file": file_ref,
+                    "docs": docs_list,
+                },
+                suggestion=f"Consolidate into one IMPLEMENTATION doc, remove from others"
+            ))
+
+    # Report: Multiple docs of same type in same folder
+    for topic, docs in docs_by_topic.items():
+        if len(docs) > 1:
+            folder, doc_type = topic.split(':')
+            issues.append(DoctorIssue(
+                issue_type="DOC_DUPLICATION",
+                severity="warning",
+                path=docs[0],
+                message=f"Multiple {doc_type} docs in `{folder}/`",
+                details={
+                    "doc_type": doc_type,
+                    "folder": folder,
+                    "docs": docs,
+                },
+                suggestion=f"Merge into single {doc_type} doc or split into subfolder"
+            ))
+
+    # Report: Similar content across docs (compare fingerprints)
+    doc_paths = list(doc_fingerprints.keys())
+    for i, path1 in enumerate(doc_paths):
+        words1, headings1 = doc_fingerprints[path1]
+        if len(words1) < 50:  # Skip very short docs
+            continue
+
+        for path2 in doc_paths[i+1:]:
+            words2, headings2 = doc_fingerprints[path2]
+            if len(words2) < 50:
+                continue
+
+            # Calculate Jaccard similarity
+            word_intersection = len(words1 & words2)
+            word_union = len(words1 | words2)
+            if word_union == 0:
+                continue
+
+            similarity = word_intersection / word_union
+
+            # Also check heading similarity
+            heading_match = len(headings1 & headings2)
+
+            # Flag if >60% similar content or >3 matching headings
+            if similarity > 0.6 or (heading_match >= 3 and similarity > 0.4):
+                issues.append(DoctorIssue(
+                    issue_type="DOC_DUPLICATION",
+                    severity="info",
+                    path=path1,
+                    message=f"{int(similarity*100)}% similar to `{path2}`",
+                    details={
+                        "similar_to": path2,
+                        "similarity": round(similarity, 2),
+                        "matching_headings": heading_match,
+                    },
+                    suggestion="Review for duplicate content, consolidate if redundant"
+                ))
+
+    return issues
+
+
 def doctor_check_stale_impl(target_dir: Path, config: DoctorConfig) -> List[DoctorIssue]:
     """Check for IMPLEMENTATION docs that don't match actual files."""
     issues = []
@@ -1380,6 +1535,7 @@ def run_doctor(target_dir: Path, config: DoctorConfig) -> Dict[str, Any]:
     all_issues.extend(doctor_check_doc_gaps(target_dir, config))
     all_issues.extend(doctor_check_conflicts(target_dir, config))
     all_issues.extend(doctor_check_suggestions(target_dir, config))
+    all_issues.extend(doctor_check_doc_duplication(target_dir, config))
 
     # Group by severity
     grouped = {

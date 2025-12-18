@@ -2,7 +2,7 @@
 
 ```
 LAST_UPDATED: 2025-12-18
-UPDATED_BY: repair-agent (repair.py monolith refactor)
+UPDATED_BY: repair-agent (DOC_DUPLICATION false positive fix)
 ```
 
 ---
@@ -14,6 +14,11 @@ The Context Protocol project is functional and in active use. The CLI provides c
 Documentation coverage is complete. The `src/` directory containing the CLI implementation has proper module documentation mapped in `modules.yaml`.
 
 ### Recent Changes
+
+**2025-12-18:** Fixed DOC_DUPLICATION false positive bug in `doctor.py`:
+- Fixed regex capture group bug in `doctor_check_documentation_duplication()` that was returning empty strings instead of file paths
+- Changed file reference tracking from `List[str]` to `Set[str]` to avoid flagging the same doc that mentions a file multiple times
+- The original issue was detecting "`\`\`` documented in 15 places" due to regex `(/?)` returning only the capture group contents
 
 **2025-12-18:** Refactored `repair.py` to reduce monolith size:
 - Created `repair_instructions.py` module with issue instruction dictionary (~885 lines)
