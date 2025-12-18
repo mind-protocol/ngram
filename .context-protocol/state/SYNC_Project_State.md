@@ -23,6 +23,23 @@ None currently.
 
 ## RECENT CHANGES
 
+### 2025-12-18: Completed CLI Documentation Chain
+
+- **What:** Created 5 missing doc types for `docs/cli/` module
+- **Why:** Doctor reported INCOMPLETE_CHAIN — module had only PATTERNS + SYNC
+- **Impact:** CLI module now has full 7-doc chain (PATTERNS, BEHAVIORS, ALGORITHM, VALIDATION, IMPLEMENTATION, TEST, SYNC)
+
+Files created:
+- `docs/cli/BEHAVIORS_CLI_Command_Effects.md` — Observable command behaviors
+- `docs/cli/ALGORITHM_CLI_Logic.md` — Command processing logic
+- `docs/cli/VALIDATION_CLI_Invariants.md` — Invariants and checks
+- `docs/cli/IMPLEMENTATION_CLI_Code_Architecture.md` — Code structure
+- `docs/cli/TEST_CLI_Coverage.md` — Test coverage (currently 0%)
+
+Files updated:
+- `docs/cli/PATTERNS_Why_CLI_Over_Copy.md` — Updated CHAIN section
+- `docs/cli/SYNC_CLI_State.md` — Added CHAIN section, updated to CANONICAL
+
 ### 2025-12-18: Fixed modules.yaml indentation
 
 - **What:** Fixed YAML indentation so `context-protocol-cli` module is properly nested under `modules:` key
@@ -91,11 +108,12 @@ The src/ directory is now documented. Created module mapping and minimum viable 
 ### High Priority
 
 - [x] Document src/ module (UNDOCUMENTED issue)
+- [x] Complete CLI documentation chain (INCOMPLETE_CHAIN issue)
 
 ### Backlog
 
-- [ ] Create IMPLEMENTATION doc for CLI with file structure details
-- [ ] Consider adding BEHAVIORS doc for command specifications
+- [ ] Add automated tests for CLI (currently 0% coverage)
+- [ ] Set up CI/CD test pipeline
 - IDEA: Add watch mode for continuous health monitoring
 
 ---
@@ -115,7 +133,7 @@ Check `modules.yaml` for full manifest.
 **Mapped modules:**
 | Module | Code | Docs | Maturity |
 |--------|------|------|----------|
-| context-protocol-cli | `src/context_protocol/**` | `docs/cli/` | DESIGNING |
+| context-protocol-cli | `src/context_protocol/**` | `docs/cli/` | CANONICAL |
 
 **Unmapped code:** None after this repair
 
