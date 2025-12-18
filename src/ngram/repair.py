@@ -10,6 +10,7 @@ import json
 import subprocess
 import sys
 import time
+import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from threading import Lock
@@ -19,57 +20,28 @@ from .doctor import run_doctor, load_doctor_config, DoctorIssue
 from .repair_instructions import get_issue_instructions
 from .repair_report import generate_llm_report, generate_final_report
 from .repair_core import (
-    ISSUE_SYMBOLS,
-    ISSUE_DESCRIPTIONS,
     ISSUE_PRIORITY,
     AGENT_SYMBOLS,
-    DEPTH_LINKS,
-    DEPTH_DOCS,
-    DEPTH_FULL,
     AGENT_SYSTEM_PROMPT,
     RepairResult,
     ArbitrageDecision,
     get_learnings_content,
     get_issue_symbol,
     get_issue_action_parts,
-    get_issue_action,
     get_depth_types,
     build_agent_prompt,
     parse_decisions_from_output,
 )
-
-
-# ANSI color codes (CLI-specific)
-class Colors:
-    RESET = "\033[0m"
-    BOLD = "\033[1m"
-    DIM = "\033[2m"
-    ITALIC = "\033[3m"
-    GRAY = "\033[38;5;245m"
-
-    # Agent colors (cycle through for parallel agents)
-    AGENT_COLORS = [
-        "\033[38;5;39m",   # Blue
-        "\033[38;5;208m",  # Orange
-        "\033[38;5;42m",   # Green
-        "\033[38;5;201m",  # Pink
-        "\033[38;5;226m",  # Yellow
-        "\033[38;5;51m",   # Cyan
-        "\033[38;5;196m",  # Red
-        "\033[38;5;141m",  # Purple
-    ]
-
-    # Status colors
-    SUCCESS = "\033[38;5;42m"   # Green
-    FAILURE = "\033[38;5;196m"  # Red
-    WARNING = "\033[38;5;208m"  # Orange
-    INFO = "\033[38;5;39m"      # Blue
-
-    # Special colors
-    VIOLET = "\033[38;5;183m"   # Light violet for user messages
-    HEALTH = "\033[38;5;87m"    # Cyan for health score
-    CRITICAL = "\033[38;5;196m" # Red for critical count
-    WARN_COUNT = "\033[38;5;214m"  # Orange-yellow for warning count
+from .repair_interactive import (
+    Colors,
+    color,
+    print_progress_bar,
+    input_listener_thread,
+    check_for_manager_input,
+    resolve_arbitrage_interactive,
+    reset_manager_state,
+    stop_manager_listener,
+)
 
 
 # CLI-specific helper functions (using imported constants from repair_core)
@@ -94,11 +66,6 @@ def get_agent_color(agent_id: int) -> str:
 def get_agent_symbol(agent_id: int) -> str:
     """Get visual symbol for an agent by cycling through available symbols."""
     return AGENT_SYMBOLS[agent_id % len(AGENT_SYMBOLS)]
-
-
-def color(text: str, color_code: str) -> str:
-    """Wrap text in ANSI color codes with automatic reset."""
-    return f"{color_code}{text}{Colors.RESET}"
 
 
 def load_github_issue_mapping(target_dir: Path) -> Dict[str, int]:
@@ -197,10 +164,11 @@ def spawn_repair_agent(
     text_output = []  # Human-readable text only
 
     try:
-        # Run claude with streaming output
+        # Run claude from .ngram/ directory where CLAUDE.md lives
+        ngram_dir = target_dir / ".ngram"
         process = subprocess.Popen(
             cmd,
-            cwd=target_dir,
+            cwd=ngram_dir,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
@@ -303,275 +271,8 @@ def spawn_repair_agent(
         )
 
 
-def print_progress_bar(current: int, total: int, width: int = 40, status: str = "") -> None:
-    """Print a progress bar."""
-    percent = current / total if total > 0 else 0
-    filled = int(width * percent)
-    bar = "█" * filled + "░" * (width - filled)
-    sys.stdout.write(f"\r  [{bar}] {current}/{total} {status}")
-    sys.stdout.flush()
-
-
-# get_depth_types and ArbitrageDecision imported from repair_core.py
-
-# Global state for manager input
-manager_input_queue = []
-manager_input_lock = Lock()
-stop_input_listener = False
-
-
-def input_listener_thread():
-    """Background thread that listens for user input during repairs."""
-    global stop_input_listener
-    import select
-    import sys
-
-    while not stop_input_listener:
-        try:
-            # Check if input is available (non-blocking on Unix)
-            if sys.platform != 'win32':
-                readable, _, _ = select.select([sys.stdin], [], [], 0.5)
-                if readable:
-                    line = sys.stdin.readline().strip()
-                    if line:
-                        with manager_input_lock:
-                            manager_input_queue.append(line)
-            else:
-                # Windows fallback - just sleep
-                time.sleep(0.5)
-        except Exception:
-            break
-
-
-def spawn_manager_agent(
-    user_input: str,
-    recent_logs: List[str],
-    target_dir: Path,
-) -> Optional[str]:
-    """Spawn the manager agent with user input and recent logs."""
-
-    manager_dir = target_dir / ".ngram" / "agents" / "manager"
-    if not manager_dir.exists():
-        print(f"  {Colors.DIM}(Manager agent not found at {manager_dir}){Colors.RESET}")
-        return None
-
-    # Build context with recent logs
-    logs_context = "\n".join(recent_logs[-50:]) if recent_logs else "(No recent logs)"
-
-    prompt = f"""## Human Input During Repair
-
-The human has provided input during an active repair session:
-
-**Human says:** {user_input}
-
-## Recent Repair Logs
-
-```
-{logs_context}
-```
-
-## Your Task
-
-Respond to the human's input. If they're:
-- Asking a question → Answer it
-- Providing context → Acknowledge and explain how it helps
-- Making a decision → Record it as a DECISION
-- Redirecting → Acknowledge the new direction
-
-Keep your response concise - repairs are in progress.
-"""
-
-    try:
-        cmd = [
-            "claude",
-            "--continue",
-            "-p", prompt,
-            "--output-format", "text",
-        ]
-
-        print()
-        print(f"{Colors.BOLD}🎛️  Manager Agent{Colors.RESET}")
-        print(f"{'─'*40}")
-
-        # Stream output instead of capturing (faster feedback)
-        process = subprocess.Popen(
-            cmd,
-            cwd=manager_dir,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-        )
-
-        response_lines = []
-        try:
-            # Read output line by line with timeout
-            import select
-            while True:
-                # Check if process finished
-                if process.poll() is not None:
-                    break
-
-                # Check for output with short timeout
-                readable, _, _ = select.select([process.stdout], [], [], 0.1)
-                if readable:
-                    line = process.stdout.readline()
-                    if line:
-                        print(line, end='', flush=True)
-                        response_lines.append(line)
-
-            # Get any remaining output
-            remaining = process.stdout.read()
-            if remaining:
-                print(remaining, end='', flush=True)
-                response_lines.append(remaining)
-
-            process.wait(timeout=30)  # Wait for process to finish
-
-        except subprocess.TimeoutExpired:
-            process.kill()
-            print(f"  {Colors.DIM}(Manager timed out){Colors.RESET}")
-
-        print(f"{'─'*40}")
-        return ''.join(response_lines).strip() if response_lines else None
-
-    except Exception as e:
-        print(f"  {Colors.DIM}(Manager error: {e}){Colors.RESET}")
-
-    return None
-
-
-def check_for_manager_input(recent_logs: List[str], target_dir: Path) -> Optional[str]:
-    """Check if user has provided input, spawn manager if so."""
-    global manager_input_queue
-
-    with manager_input_lock:
-        if manager_input_queue:
-            user_input = manager_input_queue.pop(0)
-            # Echo user input in violet
-            print(f"\n{Colors.VIOLET}💬 You: {user_input}{Colors.RESET}")
-            return spawn_manager_agent(user_input, recent_logs, target_dir)
-
-    return None
-
-
-def resolve_arbitrage_interactive(issue: DoctorIssue) -> List[ArbitrageDecision]:
-    """Interactively resolve ARBITRAGE conflicts with user input."""
-    decisions = []
-    items = issue.details.get("items", [])
-
-    print()
-    print(f"{Colors.BOLD}⚖️  ARBITRAGE: Conflicts need your decision{Colors.RESET}")
-    print(f"   File: {issue.path}")
-    print(f"{'─'*60}")
-
-    for i, item in enumerate(items, 1):
-        title = item.get("title", "Unknown conflict")
-        details = item.get("details", [])
-
-        print()
-        print(f"{Colors.BOLD}Conflict {i}/{len(items)}: {title}{Colors.RESET}")
-        print()
-
-        # Parse details into context, options, pros/cons, recommendation, and context-needed fields
-        options = []
-        recommendation = None
-        context_lines = []
-        trying_to = None
-        need_to_know = None
-        context_needed = None
-        would_help = None
-
-        for detail in details:
-            stripped = detail.strip()
-            if stripped.startswith("(") and ")" in stripped[:4]:
-                # Option: (A) text or (1) text
-                options.append(stripped)
-            elif stripped.lower().startswith("pro:"):
-                # Pro for previous option
-                if options:
-                    options[-1] += f"\n      {Colors.SUCCESS}✓ {stripped[4:].strip()}{Colors.RESET}"
-            elif stripped.lower().startswith("con:"):
-                # Con for previous option
-                if options:
-                    options[-1] += f"\n      {Colors.FAILURE}✗ {stripped[4:].strip()}{Colors.RESET}"
-            elif "**recommendation" in stripped.lower() or stripped.lower().startswith("recommendation:"):
-                # Agent's recommendation
-                recommendation = stripped.replace("**Recommendation:**", "").replace("**recommendation:**", "").strip()
-            elif stripped.lower().startswith("trying to:"):
-                trying_to = stripped.split(":", 1)[1].strip()
-            elif stripped.lower().startswith("need to know:"):
-                need_to_know = stripped.split(":", 1)[1].strip()
-            elif stripped.lower().startswith("context needed:"):
-                context_needed = stripped.split(":", 1)[1].strip()
-            elif stripped.lower().startswith("this would help"):
-                would_help = stripped.split(":", 1)[1].strip() if ":" in stripped else stripped
-            else:
-                context_lines.append(stripped)
-
-        # Determine if this is a "context needed" type ARBITRAGE
-        is_context_type = trying_to or need_to_know or context_needed
-
-        if is_context_type:
-            # Show context-needed format
-            if trying_to:
-                print(f"  {Colors.BOLD}🎯 Trying to:{Colors.RESET} {trying_to}")
-            if need_to_know:
-                print(f"  {Colors.BOLD}❓ Need to know:{Colors.RESET} {need_to_know}")
-            if context_needed:
-                print(f"  {Colors.DIM}   {context_needed}{Colors.RESET}")
-            if would_help:
-                print(f"  {Colors.BOLD}💡 This would help:{Colors.RESET} {would_help}")
-            # Show any additional context
-            for line in context_lines:
-                print(f"  {Colors.DIM}{line}{Colors.RESET}")
-        else:
-            # Show choice-type format - context first
-            for line in context_lines:
-                print(f"  {Colors.DIM}{line}{Colors.RESET}")
-
-        # Show options with pros/cons
-        if options:
-            print()
-            print(f"  {Colors.BOLD}Options:{Colors.RESET}")
-            for opt in options:
-                for line in opt.split('\n'):
-                    print(f"    {line}")
-
-        # Show recommendation
-        if recommendation:
-            print()
-            print(f"  {Colors.BOLD}💡 Agent recommends:{Colors.RESET} {recommendation}")
-
-        print()
-        print(f"  Enter your decision (or 'pass' to skip):")
-        print(f"  > ", end="")
-
-        try:
-            user_input = input().strip()
-        except (EOFError, KeyboardInterrupt):
-            user_input = "pass"
-
-        if user_input.lower() == "pass" or not user_input:
-            decisions.append(ArbitrageDecision(
-                conflict_title=title,
-                decision="",
-                passed=True
-            ))
-            print(f"  {Colors.DIM}Skipped{Colors.RESET}")
-        else:
-            decisions.append(ArbitrageDecision(
-                conflict_title=title,
-                decision=user_input,
-                passed=False
-            ))
-            print(f"  {Colors.SUCCESS}Decision recorded{Colors.RESET}")
-
-    print(f"{'─'*60}")
-    resolved = len([d for d in decisions if not d.passed])
-    print(f"  {resolved}/{len(decisions)} conflicts decided")
-    print()
-
-    return decisions
+# print_progress_bar, input_listener_thread, spawn_manager_agent,
+# check_for_manager_input, resolve_arbitrage_interactive imported from repair_interactive.py
 
 
 def repair_command(
@@ -708,12 +409,9 @@ def repair_command(
     print()
 
     # Start input listener for manager agent
-    global stop_input_listener, manager_input_queue
-    stop_input_listener = False
-    manager_input_queue = []
+    reset_manager_state()
     recent_logs: List[str] = []
 
-    import threading
     listener = threading.Thread(target=input_listener_thread, daemon=True)
     listener.start()
 
@@ -941,7 +639,7 @@ def repair_command(
         print_progress_bar(len(issues_to_fix), len(issues_to_fix), status="Done!")
 
     # Stop the input listener
-    stop_input_listener = True
+    stop_manager_listener()
 
     # Final check for manager input
     manager_response = check_for_manager_input(recent_logs, target_dir)

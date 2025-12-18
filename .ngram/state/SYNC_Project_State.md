@@ -2,107 +2,35 @@
 
 ```
 LAST_UPDATED: 2025-12-18
-UPDATED_BY: repair-agent (NO_DOCS_REF fix for validate.py)
+UPDATED_BY: repair-agent
 ```
 
 ---
 
 ## CURRENT STATE
 
-{Narrative of the project's current state. Not a feature list — the story of where things are.}
+ngram CLI project with doctor/repair functionality for maintaining project health.
 
 ---
 
 ## ACTIVE WORK
 
-### {Work Stream}
+### Monolith Refactoring
 
-- **Area:** `{area}/`
-- **Status:** {in progress / blocked}
-- **Owner:** {agent/human}
-- **Context:** {what's happening, why it matters}
+- **Area:** `src/ngram/`
+- **Status:** completed
+- **Owner:** repair-agent
+- **Context:** Reducing file sizes to meet 800-line threshold
 
 ---
 
 ## RECENT CHANGES
 
-### 2025-12-18: Added DOCS reference to validate.py
+### 2025-12-18: Remove duplicate code from repair.py
 
-- **What:** Added `# DOCS: docs/cli/PATTERNS_Why_CLI_Over_Copy.md` to `src/ngram/validate.py`
-- **Why:** NO_DOCS_REF issue - file lacked bidirectional link to documentation
-- **Impact:** Enables `ngram context` to find doc chain for validate.py
-
-### 2025-12-18: Added DOCS reference to sync.py
-
-- **What:** Added `# DOCS: docs/cli/PATTERNS_Why_CLI_Over_Copy.md` to `src/ngram/sync.py`; added sync.py to modules.yaml internal list
-- **Why:** NO_DOCS_REF issue - file lacked bidirectional link to documentation
-- **Impact:** Enables `ngram context` to find doc chain for sync.py
-
-### 2025-12-18: Added DOCS reference to utils.py
-
-- **What:** Added `DOCS: docs/cli/PATTERNS_Why_CLI_Over_Copy.md` to docstring of `src/ngram/utils.py`
-- **Why:** NO_DOCS_REF issue - file lacked bidirectional link to documentation
-- **Impact:** Enables `ngram context` to find doc chain for utils.py
-
-### 2025-12-18: Added DOCS reference to repair_report.py
-
-- **What:** Added `DOCS: docs/cli/PATTERNS_Why_CLI_Over_Copy.md` to docstring of `src/ngram/repair_report.py`
-- **Why:** NO_DOCS_REF issue - file lacked bidirectional link to documentation
-- **Impact:** Enables `ngram context` to find doc chain for repair_report.py
-
-### 2025-12-18: Added DOCS reference to repair_instructions.py
-
-- **What:** Added `# DOCS: docs/cli/PATTERNS_Why_CLI_Over_Copy.md` to `src/ngram/repair_instructions.py`
-- **Why:** NO_DOCS_REF issue - file lacked bidirectional link to documentation
-- **Impact:** Enables `ngram context` to find doc chain for repair_instructions.py
-
-### 2025-12-18: Added DOCS reference to repair.py
-
-- **What:** Added `# DOCS: docs/cli/PATTERNS_Why_CLI_Over_Copy.md` to `src/ngram/repair.py`
-- **Why:** NO_DOCS_REF issue - file lacked bidirectional link to documentation
-- **Impact:** Enables `ngram context` to find doc chain for repair.py
-
-### 2025-12-18: Added DOCS reference to repair_core.py
-
-- **What:** Added `DOCS: docs/cli/PATTERNS_Why_CLI_Over_Copy.md` to docstring of `src/ngram/repair_core.py`
-- **Why:** NO_DOCS_REF issue - file lacked bidirectional link to documentation
-- **Impact:** Enables `ngram context` to find doc chain for repair_core.py
-
-### 2025-12-18: Added DOCS reference to init_cmd.py
-
-- **What:** Added `# DOCS: docs/cli/PATTERNS_Why_CLI_Over_Copy.md` to `src/ngram/init_cmd.py`
-- **Why:** NO_DOCS_REF issue - file lacked bidirectional link to documentation
-- **Impact:** Enables `ngram context` to find doc chain for init_cmd.py
-
-### 2025-12-18: Added DOCS reference to prompt.py
-
-- **What:** Added `# DOCS: docs/cli/PATTERNS_Why_CLI_Over_Copy.md` to `src/ngram/prompt.py`
-- **Why:** NO_DOCS_REF issue - file lacked bidirectional link to documentation
-- **Impact:** Enables `ngram context` to find doc chain for prompt.py
-
-### 2025-12-18: Added DOCS reference to project_map.py
-
-- **What:** Added `# DOCS: docs/cli/PATTERNS_Why_CLI_Over_Copy.md` to `src/ngram/project_map.py`
-- **Why:** NO_DOCS_REF issue - file lacked bidirectional link to documentation
-- **Impact:** Enables `ngram context` to find doc chain for project_map.py
-
-### 2025-12-18: Fixed BROKEN_IMPL_LINK in CLI docs
-
-- **What:** Updated `docs/cli/IMPLEMENTATION_CLI_Code_Architecture.md` line 181 reference from `ALGORITHM_CLI_Logic.md` to `docs/cli/ALGORITHM_CLI_Logic.md`
-- **Why:** Doctor check extracts backtick refs and searches from project root, not relative to doc file
-- **Impact:** CLI module no longer has BROKEN_IMPL_LINK issue
-
-### 2025-12-18: Added DOCS reference to doctor_files.py
-
-- **What:** Added `# DOCS: docs/cli/PATTERNS_Why_CLI_Over_Copy.md` to `src/ngram/doctor_files.py`
-- **Why:** NO_DOCS_REF issue - file lacked bidirectional link to documentation
-- **Impact:** Enables `ngram context` to find doc chain for this file
-
-### 2025-12-18: Added DOCS reference to github.py
-
-- **What:** Added `# DOCS: docs/cli/PATTERNS_Why_CLI_Over_Copy.md` to `src/ngram/github.py`; added github.py to modules.yaml internal list
-- **Why:** NO_DOCS_REF issue - file lacked bidirectional link to documentation
-- **Impact:** Enables `ngram context` to find doc chain for github.py
+- **What:** Removed ~270 lines of duplicate code from repair.py that was already defined in repair_interactive.py. Functions removed: print_progress_bar, input_listener_thread, spawn_manager_agent, check_for_manager_input, resolve_arbitrage_interactive, and associated global state variables.
+- **Why:** MONOLITH issue - file was 983 lines (threshold: 800)
+- **Impact:** repair.py reduced from 983 lines to 712 lines. Code now properly uses imports from repair_interactive.py instead of shadowing them with local duplicates.
 
 ---
 
