@@ -63,6 +63,31 @@ ISSUE_SYMBOLS = {
 # Agent symbols for parallel execution (memorable characters!)
 AGENT_SYMBOLS = ["🥷", "🧚", "🤖", "🦊", "🐙", "🦄", "🧙", "🐲", "🦅", "🐺"]
 
+# Issue priority (lower = fix first) - ordered by impact
+ISSUE_PRIORITY = {
+    # Foundation issues - fix these first
+    "YAML_DRIFT": 1,          # Broken manifest breaks everything
+    "BROKEN_IMPL_LINK": 2,    # Broken links mislead agents
+
+    # Documentation gaps - high value fixes
+    "UNDOCUMENTED": 3,        # No docs = agents guess
+    "INCOMPLETE_CHAIN": 4,    # Partial docs confuse
+    "PLACEHOLDER": 5,         # Template content useless
+
+    # Staleness - moderate priority
+    "STALE_SYNC": 6,          # Outdated state misleads
+    "UNDOC_IMPL": 7,          # Missing impl docs
+
+    # Code quality - lower priority (more complex)
+    "MONOLITH": 8,            # Large files harder to fix
+    "STUB_IMPL": 9,           # Needs real implementation
+    "INCOMPLETE_IMPL": 10,    # Needs code completion
+
+    # Size issues - lowest priority
+    "LARGE_DOC_MODULE": 11,   # Docs too big
+    "NO_DOCS_REF": 12,        # Missing DOCS: comment (minor)
+}
+
 
 def get_issue_symbol(issue_type: str) -> tuple:
     """Get emoji and symbol for an issue type."""
@@ -917,6 +942,9 @@ def repair_command(
     # Filter by explicit type if specified
     if issue_types:
         all_issues = [i for i in all_issues if i.issue_type in issue_types]
+
+    # Sort by priority (foundation issues first, then by impact)
+    all_issues.sort(key=lambda i: ISSUE_PRIORITY.get(i.issue_type, 99))
 
     if not all_issues:
         print(f"✅ No issues to repair at depth '{depth}'!")
