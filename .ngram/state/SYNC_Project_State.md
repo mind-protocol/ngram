@@ -1,8 +1,8 @@
 # Project — Sync: Current State
 
 ```
-LAST_UPDATED: {DATE}
-UPDATED_BY: {AGENT/HUMAN}
+LAST_UPDATED: 2025-12-18
+UPDATED_BY: repair-agent (NO_DOCS_REF fix for repair.py)
 ```
 
 ---
@@ -25,6 +25,24 @@ UPDATED_BY: {AGENT/HUMAN}
 ---
 
 ## RECENT CHANGES
+
+### 2025-12-18: Added DOCS reference to repair.py
+
+- **What:** Added `# DOCS: docs/cli/PATTERNS_Why_CLI_Over_Copy.md` to `src/ngram/repair.py`
+- **Why:** NO_DOCS_REF issue - file lacked bidirectional link to documentation
+- **Impact:** Enables `ngram context` to find doc chain for repair.py
+
+### 2025-12-18: Added DOCS reference to repair_core.py
+
+- **What:** Added `DOCS: docs/cli/PATTERNS_Why_CLI_Over_Copy.md` to docstring of `src/ngram/repair_core.py`
+- **Why:** NO_DOCS_REF issue - file lacked bidirectional link to documentation
+- **Impact:** Enables `ngram context` to find doc chain for repair_core.py
+
+### 2025-12-18: Added DOCS reference to init_cmd.py
+
+- **What:** Added `# DOCS: docs/cli/PATTERNS_Why_CLI_Over_Copy.md` to `src/ngram/init_cmd.py`
+- **Why:** NO_DOCS_REF issue - file lacked bidirectional link to documentation
+- **Impact:** Enables `ngram context` to find doc chain for init_cmd.py
 
 ### 2025-12-18: Added DOCS reference to prompt.py
 
