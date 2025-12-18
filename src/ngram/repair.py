@@ -4,6 +4,7 @@ Repair command for ngram CLI.
 Automatically fixes project health issues by spawning Claude Code agents.
 Each agent follows the protocol: read docs, fix issue, update SYNC.
 """
+# DOCS: docs/cli/PATTERNS_Why_CLI_Over_Copy.md
 
 import json
 import subprocess
