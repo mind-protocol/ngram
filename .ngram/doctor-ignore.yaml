@@ -4,3 +4,11 @@ ignores:
   reason: Intentionally large - contains all repair prompts
   added_by: human
   added_date: '2025-12-18'
+- issue_type: INCOMPLETE_IMPL
+  path: src/ngram/repair.py
+  reason: >-
+    False positive - get_agent_color, get_agent_symbol, color are intentionally
+    simple one-line utility functions. They provide semantic meaning to common
+    operations (color lookup, symbol cycling, ANSI wrapping). Short body != incomplete.
+  added_by: repair-agent
+  added_date: '2025-12-18'

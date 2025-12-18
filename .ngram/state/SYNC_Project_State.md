@@ -21,6 +21,12 @@ A Claude Code-style TUI is being developed. Entry point: `ngram` (no subcommand)
 
 ### Recent Changes
 
+**2025-12-18:** Fixed INCOMPLETE_IMPL false positive in repair.py:
+- Functions `get_agent_color`, `get_agent_symbol`, `color` are intentionally simple one-line utility functions
+- Added block comment explaining they're complete implementations, not stubs
+- Added suppression entry to `.ngram/doctor-ignore.yaml` with detailed reason
+- These functions provide semantic meaning to CLI operations (color cycling, symbol cycling, ANSI wrapping)
+
 **2025-12-18:** Fixed YAML_DRIFT for ngram-tui module:
 - Commented out `code: "src/ngram/tui/**"` in modules.yaml (path doesn't exist yet)
 - Removed `entry_points:` section (no code to point to)

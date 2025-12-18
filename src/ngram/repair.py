@@ -10,17 +10,35 @@ import subprocess
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from dataclasses import dataclass
-from datetime import datetime
 from pathlib import Path
 from threading import Lock
 from typing import List, Dict, Any, Optional
 
 from .doctor import run_doctor, load_doctor_config, DoctorIssue
 from .repair_instructions import get_issue_instructions
+from .repair_report import generate_llm_report, generate_final_report
+from .repair_core import (
+    ISSUE_SYMBOLS,
+    ISSUE_DESCRIPTIONS,
+    ISSUE_PRIORITY,
+    AGENT_SYMBOLS,
+    DEPTH_LINKS,
+    DEPTH_DOCS,
+    DEPTH_FULL,
+    AGENT_SYSTEM_PROMPT,
+    RepairResult,
+    ArbitrageDecision,
+    get_learnings_content,
+    get_issue_symbol,
+    get_issue_action_parts,
+    get_issue_action,
+    get_depth_types,
+    build_agent_prompt,
+    parse_decisions_from_output,
+)
 
 
-# ANSI color codes
+# ANSI color codes (CLI-specific)
 class Colors:
     RESET = "\033[0m"
     BOLD = "\033[1m"
@@ -53,104 +71,10 @@ class Colors:
     WARN_COUNT = "\033[38;5;214m"  # Orange-yellow for warning count
 
 
-# Symbols and emojis per issue type
-ISSUE_SYMBOLS = {
-    "MONOLITH": ("🏔️", "▓"),
-    "UNDOCUMENTED": ("📝", "□"),
-    "STALE_SYNC": ("⏰", "◷"),
-    "PLACEHOLDER": ("🔲", "▢"),
-    "INCOMPLETE_CHAIN": ("🔗", "⛓"),
-    "NO_DOCS_REF": ("📎", "⌘"),
-    "BROKEN_IMPL_LINK": ("💔", "⚡"),
-    "STUB_IMPL": ("🚧", "▲"),
-    "INCOMPLETE_IMPL": ("🔧", "◐"),
-    "UNDOC_IMPL": ("📋", "◎"),
-    "LARGE_DOC_MODULE": ("📚", "▤"),
-    "YAML_DRIFT": ("🗺️", "≋"),
-    "MISSING_TESTS": ("🧪", "⚗"),
-    "ORPHAN_DOCS": ("👻", "◌"),
-    "STALE_IMPL": ("📉", "⇅"),
-    "DOC_GAPS": ("🕳️", "○"),
-    "ARBITRAGE": ("⚖️", "⚡"),
-    "SUGGESTION": ("💡", "?"),
-    "NEW_UNDOC_CODE": ("🆕", "+"),
-    "COMPONENT_NO_STORIES": ("📖", "◇"),
-    "HOOK_UNDOC": ("🪝", "⌒"),
-    "DOC_DUPLICATION": ("📋", "≡"),
-    "MAGIC_VALUES": ("🔢", "#"),
-    "HARDCODED_CONFIG": ("⚙️", "∞"),
-    "HARDCODED_SECRET": ("🔐", "!"),
-    "LONG_PROMPT": ("📜", "¶"),
-    "LONG_SQL": ("🗃️", "§"),
-}
-
-# Human-readable descriptions for issue types
-ISSUE_DESCRIPTIONS = {
-    "MONOLITH": ("split", "into smaller modules"),
-    "UNDOCUMENTED": ("add module mapping + docs for", ""),
-    "STALE_SYNC": ("update outdated SYNC for", ""),
-    "PLACEHOLDER": ("fill in placeholders in", ""),
-    "INCOMPLETE_CHAIN": ("add missing docs to", ""),
-    "NO_DOCS_REF": ("add DOCS: comment to", ""),
-    "BROKEN_IMPL_LINK": ("fix broken links in", ""),
-    "STUB_IMPL": ("implement stubs in", ""),
-    "INCOMPLETE_IMPL": ("complete functions in", ""),
-    "UNDOC_IMPL": ("add to IMPLEMENTATION docs:", ""),
-    "LARGE_DOC_MODULE": ("reduce size of", "docs"),
-    "YAML_DRIFT": ("fix modules.yaml entry for", ""),
-    "MISSING_TESTS": ("add tests for", ""),
-    "ORPHAN_DOCS": ("link or remove orphan docs in", ""),
-    "STALE_IMPL": ("update IMPLEMENTATION doc for", ""),
-    "DOC_GAPS": ("complete gaps left in", ""),
-    "ARBITRAGE": ("resolve conflict in", ""),
-    "SUGGESTION": ("implement suggestion from", ""),
-    "NEW_UNDOC_CODE": ("update docs for", ""),
-    "COMPONENT_NO_STORIES": ("add stories for", ""),
-    "HOOK_UNDOC": ("document hook", ""),
-    "DOC_DUPLICATION": ("consolidate duplicate docs in", ""),
-    "MAGIC_VALUES": ("extract magic numbers from", "to constants"),
-    "HARDCODED_CONFIG": ("externalize config in", ""),
-    "HARDCODED_SECRET": ("remove secret from", ""),
-    "LONG_PROMPT": ("externalize prompts in", "to prompts/"),
-    "LONG_SQL": ("externalize SQL in", "to .sql files"),
-}
-
-
-def get_learnings_content(target_dir: Path) -> str:
-    """
-    Load learnings from GLOBAL_LEARNINGS.md and return content to append.
-
-    For repair agents, we use GLOBAL learnings since they're not VIEW-specific.
-    """
-    learnings_parts = []
-    views_dir = target_dir / ".ngram" / "views"
-
-    # Load global learnings
-    global_learnings = views_dir / "GLOBAL_LEARNINGS.md"
-    if global_learnings.exists():
-        content = global_learnings.read_text()
-        # Only include if there are actual learnings (more than just the template)
-        if "## Learnings" in content and content.count("\n") > 10:
-            learnings_parts.append("# GLOBAL LEARNINGS (apply to ALL tasks)\n")
-            learnings_parts.append(content)
-
-    if learnings_parts:
-        return "\n\n---\n\n" + "\n\n".join(learnings_parts)
-    return ""
-
-
-def get_issue_action_parts(issue_type: str) -> tuple:
-    """Get action parts (prefix, suffix) for an issue type."""
-    return ISSUE_DESCRIPTIONS.get(issue_type, ("fix", ""))
-
-
-def get_issue_action(issue_type: str, path: str) -> str:
-    """Get human-readable action for an issue (uncolored)."""
-    prefix, suffix = get_issue_action_parts(issue_type)
-    if suffix:
-        return f"{prefix} {path} {suffix}"
-    return f"{prefix} {path}"
-
+# CLI-specific helper functions (using imported constants from repair_core)
+# NOTE: These are intentionally simple one-line utility functions.
+# They provide semantic meaning to common operations (color lookup, symbol lookup, text wrapping).
+# Short body does not mean incomplete - these are complete implementations.
 
 def get_severity_color(severity: str) -> str:
     """Get color code for severity level."""
@@ -160,81 +84,19 @@ def get_severity_color(severity: str) -> str:
         "info": Colors.DIM,
     }.get(severity, Colors.RESET)
 
-# Agent symbols for parallel execution (memorable characters!)
-AGENT_SYMBOLS = ["🥷", "🧚", "🤖", "🦊", "🐙", "🦄", "🧙", "🐲", "🦅", "🐺"]
-
-# Issue priority (lower = fix first) - ordered by impact
-ISSUE_PRIORITY = {
-    # Foundation - fix manifest first
-    "YAML_DRIFT": 1,          # Broken manifest breaks everything
-
-    # Documentation creation - in dependency order
-    "UNDOCUMENTED": 2,        # Create module + initial docs
-    "INCOMPLETE_CHAIN": 3,    # Complete doc chain (needs UNDOCUMENTED first)
-    "PLACEHOLDER": 4,         # Fill in content
-
-    # Link fixes - need docs to exist first
-    "BROKEN_IMPL_LINK": 5,    # Fix broken links (docs now exist)
-    "NO_DOCS_REF": 6,         # Add DOCS: comments (docs now exist)
-
-    # Staleness
-    "STALE_SYNC": 7,          # Outdated state misleads
-    "UNDOC_IMPL": 8,          # Add files to IMPLEMENTATION
-
-    # Staleness and drift
-    "STALE_IMPL": 9,          # IMPLEMENTATION doesn't match files
-
-    # Code quality - more complex, do last
-    "MONOLITH": 10,           # Large files harder to fix
-    "STUB_IMPL": 11,          # Needs real implementation
-    "INCOMPLETE_IMPL": 12,    # Needs code completion
-
-    # Size and cleanup
-    "LARGE_DOC_MODULE": 13,   # Docs too big
-    "ORPHAN_DOCS": 14,        # Docs not linked from code
-    "MISSING_TESTS": 15,      # No tests (lowest - tests are optional)
-
-    # Handoff from previous agents
-    "DOC_GAPS": 3,            # High priority - previous agent left work
-
-    # Conflicts needing resolution
-    "ARBITRAGE": 0,           # Highest priority - needs human decision first
-
-    # User-requested actions
-    "SUGGESTION": 1,          # User accepted - do after conflicts but before other work
-
-    # Documentation drift
-    "NEW_UNDOC_CODE": 8,      # Code changed but docs not updated
-    "COMPONENT_NO_STORIES": 16,  # FE component without stories (low priority)
-    "HOOK_UNDOC": 16,         # Hook without docs (low priority)
-    "DOC_DUPLICATION": 6,     # Consolidate duplicate docs (after docs created)
-
-    # Code quality issues
-    "HARDCODED_SECRET": 0,    # CRITICAL: Security issue - fix immediately
-    "HARDCODED_CONFIG": 12,   # Should externalize config
-    "MAGIC_VALUES": 17,       # Low priority - code smell
-    "LONG_PROMPT": 17,        # Low priority - refactoring opportunity
-    "LONG_SQL": 17,           # Low priority - refactoring opportunity
-}
-
-
-def get_issue_symbol(issue_type: str) -> tuple:
-    """Get emoji and symbol for an issue type."""
-    return ISSUE_SYMBOLS.get(issue_type, ("🔹", "•"))
-
 
 def get_agent_color(agent_id: int) -> str:
-    """Get color code for an agent."""
+    """Get color code for an agent by cycling through available colors."""
     return Colors.AGENT_COLORS[agent_id % len(Colors.AGENT_COLORS)]
 
 
 def get_agent_symbol(agent_id: int) -> str:
-    """Get symbol for an agent."""
+    """Get visual symbol for an agent by cycling through available symbols."""
     return AGENT_SYMBOLS[agent_id % len(AGENT_SYMBOLS)]
 
 
 def color(text: str, color_code: str) -> str:
-    """Wrap text in ANSI color codes."""
+    """Wrap text in ANSI color codes with automatic reset."""
     return f"{color_code}{text}{Colors.RESET}"
 
 
@@ -265,250 +127,8 @@ def save_github_issue_mapping(target_dir: Path, mapping: Dict[str, Dict[str, Any
             json.dump(mapping, f, indent=2)
 
 
-# Issue types categorized by repair depth
-DEPTH_LINKS = {
-    # Only fix references and links
-    "NO_DOCS_REF",        # Add DOCS: reference to source file
-    "BROKEN_IMPL_LINK",   # Fix broken file references in IMPLEMENTATION doc
-    "YAML_DRIFT",         # Fix modules.yaml mappings
-    "UNDOC_IMPL",         # Add file to IMPLEMENTATION doc
-    "ORPHAN_DOCS",        # Link or remove orphan docs
-}
-
-DEPTH_DOCS = DEPTH_LINKS | {
-    # Also create/update documentation content
-    "UNDOCUMENTED",       # Create module docs
-    "STALE_SYNC",         # Update stale SYNC files
-    "PLACEHOLDER",        # Fill in placeholder content
-    "INCOMPLETE_CHAIN",   # Create missing doc types
-    "LARGE_DOC_MODULE",   # Reduce doc module size
-    "STALE_IMPL",         # Update outdated IMPLEMENTATION doc
-    "DOC_GAPS",           # Complete gaps from previous agent
-    "ARBITRAGE",          # Resolve conflicts with human decision
-    "DOC_DUPLICATION",    # Consolidate duplicate documentation
-}
-
-DEPTH_FULL = DEPTH_DOCS | {
-    # Also make code changes
-    "MONOLITH",           # Split large files
-    "STUB_IMPL",          # Implement stub functions
-    "INCOMPLETE_IMPL",    # Complete empty functions
-    "MISSING_TESTS",      # Write tests for module
-    # Code quality
-    "HARDCODED_SECRET",   # Remove secrets from code
-    "HARDCODED_CONFIG",   # Externalize configuration
-    "MAGIC_VALUES",       # Extract to constants
-    "LONG_PROMPT",        # Move to prompts directory
-    "LONG_SQL",           # Move to .sql files
-}
-
-
-@dataclass
-class RepairResult:
-    """Result from a single repair agent."""
-    issue_type: str
-    target_path: str
-    success: bool
-    agent_output: str
-    duration_seconds: float
-    error: Optional[str] = None
-    decisions_made: List[Dict[str, str]] = None  # [{name, conflict, resolution, reasoning}]
-
-
-# Agent system prompt template
-AGENT_SYSTEM_PROMPT = """You are an ngram repair agent. Your job is to fix ONE specific issue in the project.
-
-CRITICAL RULES:
-1. FIRST: Read all documentation listed in "Docs to Read" before making changes
-2. Follow the VIEW instructions exactly
-3. After fixing, update the relevant SYNC file with what you changed
-4. Keep changes minimal and focused on the specific issue
-5. Do NOT make unrelated changes or "improvements"
-6. Report completion status clearly at the end
-7. NEVER create git branches - always work on the current branch
-8. NEVER use git stash - other agents are working in parallel
-
-CLI COMMANDS (use these!):
-- `ngram context {file}` - Get full doc chain for any source file
-- `ngram validate` - Check protocol invariants after changes
-- `ngram doctor --no-github` - Re-check project health
-
-BIDIRECTIONAL LINKS:
-- When creating new docs, add CHAIN section linking to related docs
-- When modifying code, ensure DOCS: reference points to correct docs
-- When creating module docs, add mapping to modules.yaml
-
-AFTER CHANGES:
-- Run `ngram validate` to verify links are correct
-- Update SYNC file with what changed
-- Commit with descriptive message (include "Closes #NUMBER" if GitHub issue provided)
-
-IF YOU CAN'T COMPLETE THE FULL FIX:
-- Still report "REPAIR COMPLETE" for what you DID finish
-- Add a "## GAPS" section to the relevant SYNC file listing:
-  - What was completed
-  - What remains to be done
-  - Why you couldn't finish (missing info, too complex, needs human decision, etc.)
-- Example SYNC addition:
-  ```
-  ## GAPS
-
-  ### From repair session {date}
-  - [x] Created PATTERNS doc
-  - [ ] ALGORITHM doc needs: detailed flow for edge cases
-  - [ ] Blocked: need clarification on error handling strategy
-  ```
-- This ensures the next agent knows exactly where to pick up
-
-IF YOU FIND CONTRADICTIONS (docs vs code, or doc vs doc):
-- Add a "## CONFLICTS" section to the relevant SYNC file
-- **BE DECISIVE** - make the call yourself unless you truly cannot
-- We can always improve later; progress > perfection
-
-**Before making a DECISION:**
-- If <70% confident, RE-READ the relevant docs first
-- Check: PATTERNS (why), BEHAVIORS (what), ALGORITHM (how), VALIDATION (constraints)
-- Often the answer is in the docs - you just need to look again
-
-- For each conflict, categorize as DECISION or ARBITRAGE:
-  - DECISION: You resolve it (this should be 90%+ of conflicts)
-  - ARBITRAGE: Only when you truly cannot decide (missing critical info, major architectural choice)
-
-- **DECISION format** (preferred - be decisive!):
-  ```
-  ### DECISION: {conflict name}
-  - Conflict: {what contradicted what}
-  - Resolution: {what you decided}
-  - Reasoning: {why this choice}
-  - Updated: {what files you changed}
-  ```
-
-- ARBITRAGE only when truly blocked - can be TWO types:
-
-  **Type 1: Choice needed** - you understand but can't decide
-  - Provide options in (A)/(B)/(C) format with pros/cons
-  - Give recommendation with reasoning if you have one
-
-  **Type 2: Context needed** - you lack information to proceed
-  - Explain what you're trying to do
-  - Explain what you need to know
-  - Be specific about what context would unblock you
-
-- Example SYNC addition:
-  ```
-  ## CONFLICTS
-
-  ### DECISION: Auth timeout value
-  - BEHAVIORS says 30 min, code uses 15 min
-  - Resolved: Updated BEHAVIORS to match code (15 min is intentional per commit history)
-
-  ### ARBITRAGE: Error handling strategy
-  - PATTERNS says "fail fast", ALGORITHM says "retry 3 times"
-  - Needs human: Which approach should we use?
-  - (A) Fail fast everywhere
-    - Pro: Simpler, surfaces bugs early, easier to debug
-    - Con: Poor UX for transient network issues
-  - (B) Retry for network errors only
-    - Pro: Resilient to transient failures, better UX
-    - Con: Can mask real issues, adds latency
-  - (C) Configurable per-call
-    - Pro: Maximum flexibility
-    - Con: More complex API, decisions pushed to callers
-  - **Recommendation:** (B) - Most codebases benefit from retry on network errors.
-    The "fail fast" in PATTERNS likely refers to logic errors, not I/O.
-
-  ### ARBITRAGE: Payment provider integration
-  - Trying to: Document the payment flow in ALGORITHM
-  - Need to know: Which payment provider is being used? (Stripe, PayPal, custom?)
-  - Context needed: The code uses `PaymentClient` but I can't find its implementation
-    or configuration. Is this an internal service or third-party API?
-  - This would help me: Write accurate ALGORITHM docs and error handling guidance
-  ```
-- DECISION items: resolve and mark as resolved
-- ARBITRAGE items: leave for human review, will be detected by doctor
-- The `repair` command will prompt users interactively for ARBITRAGE items
-"""
-
-
-# NOTE: get_issue_instructions() moved to repair_instructions.py
-# See import at top: from .repair_instructions import get_issue_instructions
-
-
-def build_agent_prompt(
-    issue: DoctorIssue,
-    instructions: Dict[str, Any],
-    target_dir: Path,
-    github_issue_number: Optional[int] = None,
-) -> str:
-    """Build the full prompt for the repair agent."""
-    docs_list = "\n".join(f"- {d}" for d in instructions["docs_to_read"])
-
-    github_section = ""
-    if github_issue_number:
-        github_section = f"""
-## GitHub Issue
-This fix is tracked by GitHub issue #{github_issue_number}.
-When committing, include "Closes #{github_issue_number}" in your commit message.
-"""
-
-    return f"""# ngram Repair Task
-
-## Issue Type: {issue.issue_type}
-## Severity: {issue.severity}
-{github_section}
-## VIEW to Follow
-Load and follow: `.ngram/views/{instructions['view']}`
-
-## Docs to Read FIRST (before any changes)
-{docs_list}
-
-{instructions['prompt']}
-
-## After Completion
-1. Commit your changes with a descriptive message{f' (include "Closes #{github_issue_number}")' if github_issue_number else ''}
-2. Update `.ngram/state/SYNC_Project_State.md` with:
-   - What you fixed
-   - Files created/modified
-   - Any issues encountered
-"""
-
-
-def parse_decisions_from_output(output: str) -> List[Dict[str, str]]:
-    """Parse DECISION items from agent output."""
-    decisions = []
-    lines = output.split('\n')
-
-    current_decision = None
-    for line in lines:
-        stripped = line.strip()
-
-        # Look for DECISION headers
-        if '### DECISION:' in stripped or '### Decision:' in stripped:
-            if current_decision and current_decision.get('name'):
-                decisions.append(current_decision)
-            name = stripped.split(':', 1)[1].strip() if ':' in stripped else ''
-            current_decision = {'name': name, 'conflict': '', 'resolution': '', 'reasoning': ''}
-        elif current_decision:
-            lower = stripped.lower()
-            if lower.startswith('- conflict:') or lower.startswith('conflict:'):
-                current_decision['conflict'] = stripped.split(':', 1)[1].strip()
-            elif lower.startswith('- resolution:') or lower.startswith('resolution:'):
-                current_decision['resolution'] = stripped.split(':', 1)[1].strip()
-            elif lower.startswith('- reasoning:') or lower.startswith('reasoning:'):
-                current_decision['reasoning'] = stripped.split(':', 1)[1].strip()
-            elif lower.startswith('- updated:') or lower.startswith('updated:'):
-                current_decision['updated'] = stripped.split(':', 1)[1].strip()
-            elif stripped.startswith('###') or stripped.startswith('## '):
-                # New section, save current decision
-                if current_decision.get('name'):
-                    decisions.append(current_decision)
-                current_decision = None
-
-    # Don't forget last decision
-    if current_decision and current_decision.get('name'):
-        decisions.append(current_decision)
-
-    return decisions
+# Core repair logic (DEPTH_*, RepairResult, ArbitrageDecision, AGENT_SYSTEM_PROMPT,
+# build_agent_prompt, parse_decisions_from_output, etc.) imported from repair_core.py
 
 
 def spawn_repair_agent(
@@ -955,23 +575,7 @@ def print_progress_bar(current: int, total: int, width: int = 40, status: str = 
     sys.stdout.flush()
 
 
-def get_depth_types(depth: str) -> set:
-    """Get the set of issue types for a given depth level."""
-    if depth == "links":
-        return DEPTH_LINKS
-    elif depth == "docs":
-        return DEPTH_DOCS
-    else:  # full
-        return DEPTH_FULL
-
-
-@dataclass
-class ArbitrageDecision:
-    """User's decision for an ARBITRAGE conflict."""
-    conflict_title: str
-    decision: str  # User's choice or "pass"
-    passed: bool = False
-
+# get_depth_types and ArbitrageDecision imported from repair_core.py
 
 # Global state for manager input
 manager_input_queue = []
