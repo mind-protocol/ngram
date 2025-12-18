@@ -48,3 +48,41 @@ ignores:
       Doctor bug tracked - the doc references are valid.
     added_by: repair-agent
     added_date: 2025-12-18
+
+  - issue_type: INCOMPLETE_IMPL
+    path: src/ngram/repair.py
+    reason: |
+      False positive for get_agent_color and get_agent_symbol functions.
+      These are complete one-liner utility functions that index into color/symbol
+      arrays. File contains explicit comment at lines 47-50 stating these are
+      "intentionally simple one-line utility functions" and "Short body does not
+      mean incomplete". Doctor's empty function detection incorrectly flags
+      single-line implementations.
+    added_by: repair-agent
+    added_date: 2025-12-18
+
+  - issue_type: INCOMPLETE_IMPL
+    path: src/ngram/repair_core.py
+    reason: |
+      False positive for get_issue_symbol and get_issue_action_parts functions.
+      These are complete one-liner dictionary lookups with sensible defaults.
+      Short body does not mean incomplete - they are working implementations
+      used throughout the codebase.
+    added_by: repair-agent
+    added_date: 2025-12-18
+
+  - issue_type: INCOMPLETE_IMPL
+    path: src/ngram/tui/app.py
+    reason: |
+      False positive - the flagged functions are implemented, just short:
+      - _startup_sequence: Awaits two method calls (doctor check + manager overview)
+      - on_claude_output: Nested callback that adds messages to panel
+      - _build_manager_overview_prompt: Returns multi-line string prompt
+      - on_click: Focuses input bar (2 statements)
+      - on_exception: Calls log_error (1 statement, intentionally minimal)
+      - action_doctor: Awaits _run_doctor (delegating method)
+      - action_repair: Awaits handle_command (delegating method)
+      These are legitimate short methods, not incomplete implementations.
+      Doctor bug: threshold of ≤2 lines is too aggressive for delegating methods.
+    added_by: repair-agent
+    added_date: 2025-12-18

@@ -61,6 +61,7 @@ ngram CLI project with doctor/repair functionality for maintaining project healt
 - **Why:** INCOMPLETE_IMPL issue flagged these as empty, but they are complete one-liner implementations.
 - **Impact:** No code changes needed. Functions correctly index into `Colors.AGENT_COLORS` and `AGENT_SYMBOLS` constants.
 - **Note:** File contains explicit comment at lines 47-50 stating these are "intentionally simple one-line utility functions" and "Short body does not mean incomplete".
+- **Added:** Ignore entry in `.ngram/doctor-ignore.yaml` to suppress future false positives for both `repair.py` and `repair_core.py`.
 
 ---
 
