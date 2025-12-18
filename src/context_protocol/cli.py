@@ -1,7 +1,7 @@
 """
 Context Protocol CLI
 
-DOCS: ../../docs/protocol/
+DOCS: docs/cli/PATTERNS_Why_CLI_Over_Copy.md
 
 This is intentionally minimal. The protocol is just files — this CLI copies them.
 
