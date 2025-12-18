@@ -51,72 +51,54 @@ modules:
 # YOUR MODULES
 # =============================================================================
 
-  # The core ADD Framework CLI implementation
-  ngram-cli:
-    code: "src/ngram/**"
+  cli:
+    code: "src/ngram/"
     docs: "docs/cli/"
-    maturity: DESIGNING
+    maturity: CANONICAL
     owner: agent
-
     entry_points:
-      - cli.py              # Main CLI entry point
-
-    # Subsystems with their extracted helper modules
-    subsystems:
-      doctor:
-        - doctor.py               # Health check orchestration (OK - 211L)
-        - doctor_checks.py        # Core health check functions (SPLIT - 1364L, needs further split)
-        - doctor_checks_content.py # Content analysis checks (OK - 410L)
-        - doctor_types.py         # DoctorIssue, DoctorConfig types
-        - doctor_report.py        # Report generation, scoring (WATCH)
-        - doctor_files.py         # File discovery utilities
-      repair:
-        - repair.py           # Repair orchestration (SPLIT - 1013L, needs more extraction)
-        - repair_core.py      # Shared repair logic, data structures (OK - 465L)
-        - repair_report.py    # Report generation (OK - 305L)
-        - repair_instructions.py  # Issue-specific prompts (SPLIT - 813L)
-      project_map:
-        - project_map.py      # Terminal dependency map
-        - project_map_html.py # HTML export
-
+      - cli.py
+      - doctor.py
+      - repair.py
     internal:
+      - doctor_checks.py
+      - doctor_checks_content.py
+      - doctor_files.py
+      - doctor_report.py
+      - doctor_types.py
+      - github.py
+      - repair_core.py
+      - repair_instructions.py
+      - repair_report.py
       - utils.py
-      - __pycache__/
-
-    patterns:
-      - "Command Pattern for CLI subcommands"
-      - "Composition for health checks"
-      - "Subprocess isolation for agents"
-      - "Factory pattern for repair prompts"
-
     notes: |
-      The core ADD Framework CLI implementation.
-      Provides commands: init, validate, doctor, repair, sync, context, prompt, map.
-      Uses subprocess to spawn Claude Code agents for automated repairs.
+      Core ngram CLI - doctor, repair, init, validate commands.
+      Doctor subsystem checks project health.
+      Repair subsystem spawns agents to fix issues.
 
-      SPLIT status files need continued extraction - see IMPLEMENTATION doc for details.
-
-  # ngram TUI - Claude Code-style interactive interface
-  ngram-tui:
-    # code: "src/ngram/tui/**"  # Not yet implemented - see notes
+  tui:
+    code: "src/ngram/tui/**"
     docs: "docs/tui/"
     maturity: DESIGNING
     owner: agent
-
+    entry_points:
+      - app.py
+      - commands.py
+    internal:
+      - state.py
+      - manager.py
+      - widgets/
     depends_on:
-      - ngram-cli           # Will use repair_core, doctor functionality
-
-    patterns:
-      - "Textual framework for TUI"
-      - "Async agent spawning"
-      - "CSS-based styling (TCSS)"
-      - "Manager + Workers column layout"
-
+      - cli
     notes: |
-      Claude Code-style TUI interface for ngram.
-      STATUS: DOCS ONLY - code not yet implemented.
-      See docs/tui/SYNC_TUI_State.md for implementation plan.
-      Entry point will be: `ngram` (no subcommand).
-      Planned: Persistent session with manager and worker agent columns.
+      Terminal UI for interactive repair sessions.
+      Currently in development - many stub implementations.
 
-  # Add more modules as they emerge...
+  protocol:
+    code: ".ngram/**"
+    docs: "docs/protocol/"
+    maturity: CANONICAL
+    owner: human
+    notes: |
+      The ADD Framework protocol itself - templates, views, state.
+      This is the meta-documentation about how documentation works.

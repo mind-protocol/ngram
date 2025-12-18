@@ -32,11 +32,11 @@ UPDATED_BY: {AGENT/HUMAN}
 - **Why:** NO_DOCS_REF issue - file lacked bidirectional link to documentation
 - **Impact:** Enables `ngram context` to find doc chain for this file
 
-### {DATE}: {Summary}
+### 2025-12-18: Added DOCS reference to github.py
 
-- **What:** {description}
-- **Why:** {motivation}
-- **Impact:** {what this affects}
+- **What:** Added `# DOCS: docs/cli/PATTERNS_Why_CLI_Over_Copy.md` to `src/ngram/github.py`; added github.py to modules.yaml internal list
+- **Why:** NO_DOCS_REF issue - file lacked bidirectional link to documentation
+- **Impact:** Enables `ngram context` to find doc chain for github.py
 
 ---
 
