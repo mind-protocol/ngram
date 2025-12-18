@@ -2,8 +2,8 @@
 
 ```
 LAST_UPDATED: 2025-12-18
-UPDATED_BY: repair-agent (INCOMPLETE_CHAIN fix)
-STATUS: DESIGNING
+UPDATED_BY: Claude (TUI session improvements)
+STATUS: IMPLEMENTED
 ```
 
 ---
@@ -24,139 +24,158 @@ THIS:            SYNC_TUI_State.md (you are here)
 
 ## CURRENT STATE
 
-**Status: DESIGNING** — Documentation exists, implementation beginning.
+**Status: FUNCTIONAL** — TUI working with Claude integration.
 
-The TUI will provide a Claude Code-style persistent chat interface for ngram. Entry point is `ngram` (no subcommand).
+The TUI provides a Claude Code-style persistent chat interface for ngram. Entry point is `ngram` (no subcommand).
 
-### Completed
-- PATTERNS documentation
-- Core extraction (`repair_core.py`) for shared repair logic
-- Full documentation chain (BEHAVIORS, ALGORITHM, VALIDATION, IMPLEMENTATION, TEST)
+### Completed Features
+
+#### Two-Panel Layout
+- **Manager panel** (left, 45%): Displays orchestration messages, user input (magenta), Claude responses, thinking (collapsible)
+- **Agent panel** (right, 55%): Shows SYNC_Project_State.md by default, agent panels during repair
+- Responsive layout using Textual's Horizontal container
+- Auto-scroll: All panels scroll to latest content when messages added (B10)
+- Bottom padding on manager panel creates empty line above input bar
+
+#### Status Bar
+- **Left**: Project folder name (`ngram: {folder}`)
+- **Right**: Health score with color coding (green ≥80, yellow ≥50, red <50)
+- Dynamic width calculation for proper right-alignment
+- Resize handling: Health score repositions automatically on terminal resize (B12)
+
+#### Claude Integration
+- Subprocess-based with `claude -p` and `--output-format stream-json`
+- Conversation continuity via `--continue` flag (with fallback retry)
+- System prompt from `.ngram/agents/manager/CLAUDE.md`
+- Global learnings appended from `.ngram/views/GLOBAL_LEARNINGS.md`
+- Streaming responses: Text streams to manager panel as it arrives (B6)
+- Thinking blocks: 3-line preview with collapsible "Show more..." for longer thoughts
+- Animated loading indicator (`. → .. → ...`) during Claude responses
+
+#### Command Detection
+- Detects runnable commands in Claude responses (backticks, bold, code blocks, "Run X" patterns)
+- Shows interactive numbered options: `1. ngram repair --depth full`
+- User can type number to execute suggested command
+- Supports ngram subcommands: doctor, repair, sync, init, validate, context, prompt
+
+#### Input Handling
+- Command routing (`/help`, `/repair`, `/doctor`, `/quit`, `/clear`, `/run`, `/issues`)
+- `/run CMD` - Execute shell command with streaming output
+- Non-command text sent to Claude manager
+- User input echoed in magenta with blank line separator
+- Input history: Up/Down arrows navigate previous commands (B8)
+- Tab completion: Tab key completes `/` commands (B9)
+
+#### Conversation History
+- Persistent storage in `.ngram/state/conversation_history.json`
+- Previous sessions displayed on TUI launch with separators
+- Command outputs logged to history for later display
+
+#### Agent Panels (during /repair)
+- Up to 3 concurrent agents displayed in right panel
+- Brown header showing: `{symbol} {issue_type}: {target_path}`
+- Real-time streaming output with 100ms throttling
+- Status colors: brown (running), green (completed), rust (failed)
+- Output limited to last 50 lines to prevent slowdown
+
+#### Error Handling
+- All errors logged to `.ngram/error_log.txt` with timestamps
+- Errors displayed in manager panel in red
+- Infinite loop protection in error handler
+- Chunk-based stdout reading (64KB) to avoid line length limits
+
+#### Theme
+- Paper & Parchment color palette (warm cream backgrounds, wood-tone text)
+- Inline code: transparent background, dark bold text (#1a1a1a)
+- Clean minimal design without footer
+- Rich markup rendering (colors, bold, italic, dim)
 
 ### In Progress
-- Package structure creation
+- Queue management for >3 issues in repair
 
-### Planned
-- Textual-based app with multi-column layout
-- Manager panel (left) + Agent panels (right columns/tabs)
-- Input bar with /command support
-- White theme CSS
-- Integration with existing repair/doctor functionality
+### Planned Features
 
----
+#### Streaming & Display
+- [x] Streaming responses - Stream text as it arrives (B6)
+- [x] Auto-scroll - All panels auto-scroll to show latest content (B10)
+- [x] Markdown rendering - SYNC file and responses render as markdown
+- [ ] Syntax highlighting - Highlight code blocks in responses
 
-## DESIGN DECISIONS
+#### Commands
+- [x] `/issues` command - Switch right panel to show issues list
+- [x] `/run` command - Execute shell commands with streaming output
+- [ ] `/sync` auto-refresh - Right panel SYNC display refreshes automatically on file change
+- [ ] `/repair --max N` - Configure max concurrent agents
 
-### Entry Point: `ngram`
+#### Input
+- [x] Input history - Up/down arrow to navigate previous commands (B8)
+- [x] Tab completion - Complete `/` commands with Tab key (B9)
+- [x] Command detection - Detect and offer to run commands from responses
+- [ ] Right-click copy - Explicit copy functionality (terminal native works with Shift)
 
-Running `ngram` with no subcommand launches the TUI. All other subcommands (`ngram doctor`, `ngram repair`, etc.) continue to work as CLI tools.
+#### Layout
+- [x] Resize handling - Status bar health alignment updates on terminal resize (B12)
+- [x] Right panel scrolling - Long SYNC files wrapped in VerticalScroll (B10)
+- [ ] Tab layout for >3 agents
 
-**Rationale**: Mirrors Claude Code where just typing `claude` launches the interface.
-
-### Layout: Manager + Agents
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│  ngram                                               Health: 32/100 │
-├───────────────────────┬─────────────────────────────────────────────┤
-│      MANAGER          │           AGENTS (columns or tabs)          │
-│                       │  ┌─────────────┬─────────────┬───────────┐  │
-│  > Status messages    │  │  Agent 1    │  Agent 2    │  Agent 3  │  │
-│  > Decisions          │  │             │             │           │  │
-│                       │  └─────────────┴─────────────┴───────────┘  │
-├───────────────────────┴─────────────────────────────────────────────┤
-│ > input field                                                    ⏎  │
-└─────────────────────────────────────────────────────────────────────┘
-```
-
-- Manager (left, fixed ~30% width): Orchestration output
-- Agents (right, dynamic): One column per agent, tabs if >3
-- Input (bottom): Claude Code-style prompt
-
-### Theme: White
-
-Light background for readability. CSS-based via Textual's TCSS.
-
-### Shared Core: repair_core.py
-
-Extracted shared logic from `repair.py`:
-- Dataclasses: `RepairResult`, `ArbitrageDecision`
-- Constants: `ISSUE_SYMBOLS`, `ISSUE_PRIORITY`, `DEPTH_*`
-- Functions: `build_agent_prompt()`, `parse_decisions_from_output()`
-- Async spawn: `spawn_repair_agent_async()` for TUI integration
-
-Both CLI (`repair.py`) and TUI import from `repair_core.py`.
-
----
-
-## FILE STRUCTURE (Planned)
-
-```
-src/ngram/
-├── tui/                         # TUI package
-│   ├── __init__.py
-│   ├── app.py                   # Main Textual App
-│   ├── widgets/
-│   │   ├── __init__.py
-│   │   ├── manager_panel.py     # Left column
-│   │   ├── agent_panel.py       # Single agent display
-│   │   ├── agent_container.py   # Columns/tabs switcher
-│   │   ├── input_bar.py         # Bottom input
-│   │   └── status_bar.py        # Top status bar
-│   ├── styles/
-│   │   └── theme.tcss           # White theme
-│   ├── state.py                 # Session state
-│   ├── commands.py              # /command handlers
-│   └── manager.py               # Manager agent logic
-├── tui_command.py               # Entry point
-└── repair_core.py               # Shared repair logic (created)
-```
+### Known Gaps
+- Tab layout for >3 agents not fully implemented
+- Agent queue processing (issues beyond first 3) not implemented
 
 ---
 
 ## KNOWN ISSUES
 
-| Issue | Notes |
-|-------|-------|
-| BROKEN_IMPL_LINK | IMPLEMENTATION doc references planned files that don't exist yet. This is expected for DESIGNING status - will resolve when code is implemented. |
+None currently.
+
+**Resolved 2025-12-18:**
+- Previous BROKEN_IMPL_LINK resolved - IMPLEMENTATION doc now reflects actual implemented code
+- INCOMPLETE_IMPL false positive resolved - `app.py` short methods (_startup_sequence, on_click,
+  on_exception, action_doctor, action_repair, etc.) are complete implementations, just short
+  delegating methods. Added to doctor-ignore.yaml.
 
 ---
 
 ## HANDOFF: FOR AGENTS
 
-**Your likely VIEW:** `VIEW_Implement_Write_Or_Modify_Code.md`
+**Your likely VIEW:** `VIEW_Extend_Add_Features_To_Existing.md`
 
-**Where I stopped:** Documentation created. Need to implement:
-1. Add TUI module to `modules.yaml`
-2. Create package structure
-3. Update `cli.py` for TUI launch
-4. Add textual dependency
-5. Implement widgets
+**Where I stopped:** TUI fully functional. Recent session added:
+1. Command detection for interactive execution
+2. Conversation history persistence
+3. Agent panel streaming with throttling
+4. Chunk-based stdout reading (fixes line length errors)
+5. UI polish (colors, spacing, headers)
 
 **What you need to understand:**
 - TUI uses Textual framework (async, CSS styling)
-- Must integrate with `repair_core.py` for agent spawning
-- White theme is required (CSS in `theme.tcss`)
+- Integrates with `repair_core.py` for agent spawning via `spawn_repair_agent_async()`
+- Theme in `styles/theme.tcss` - Paper & Parchment palette
+- Commands in `commands.py`, app in `app.py`, widgets in `widgets/`
 
 **Watch out for:**
 - Textual is optional dependency — CLI must work without it
-- Async integration: Textual is async, repair_core provides async spawn
+- Rich markup vs Markdown: `add_message()` auto-detects, but `[color]` patterns need Static not Markdown
+- Stdout reading: Use 64KB chunks, not readline() to avoid length limit errors
 
 ---
 
 ## HANDOFF: FOR HUMAN
 
 **Executive summary:**
-TUI design documented. Core extraction done. Ready for implementation.
+TUI is functional with Claude integration, repair agent spawning, and conversation history.
 
 **Decisions made:**
 - Entry point: `ngram` (no subcommand)
-- Layout: Manager left, agents right (columns/tabs)
-- Theme: White
-- Shared core: `repair_core.py`
+- Layout: Manager left (45%), agents right (55%)
+- Theme: Paper & Parchment (warm cream, wood tones)
+- Max 3 concurrent agents during repair
+- User input color: magenta
+- Thinking: 3-line preview with collapsible expansion
 
 **Needs your input:**
-- None currently
+- Should `/repair --max N` be configurable?
+- Priority for remaining features (syntax highlighting, tab layout, queue processing)
 
 ---
 
@@ -168,3 +187,10 @@ TUI design documented. Core extraction done. Ready for implementation.
 | Shared repair logic | `src/ngram/repair_core.py` |
 | CLI integration point | `src/ngram/cli.py` |
 | Implementation plan | `/home/mind-protocol/.claude/plans/structured-cooking-alpaca.md` |
+
+
+---
+
+## ARCHIVE
+
+Older content archived to: `SYNC_TUI_State_archive_2025-12.md`

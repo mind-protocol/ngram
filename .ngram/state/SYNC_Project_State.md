@@ -63,6 +63,14 @@ ngram CLI project with doctor/repair functionality for maintaining project healt
 - **Note:** File contains explicit comment at lines 47-50 stating these are "intentionally simple one-line utility functions" and "Short body does not mean incomplete".
 - **Added:** Ignore entry in `.ngram/doctor-ignore.yaml` to suppress future false positives for both `repair.py` and `repair_core.py`.
 
+### 2025-12-18: Verified app.py TUI functions as complete (false positive)
+
+- **What:** Verified 7 functions in `src/ngram/tui/app.py` are implemented correctly (not empty).
+- **Why:** INCOMPLETE_IMPL flagged: _startup_sequence, on_claude_output, _build_manager_overview_prompt, on_click, on_exception, action_doctor, action_repair.
+- **Impact:** No code changes needed. These are legitimate short methods (delegating, callbacks, or one-liners).
+- **Added:** Ignore entry in `.ngram/doctor-ignore.yaml` to suppress future false positives.
+- **Note:** Doctor threshold of ≤2 lines is too aggressive for delegating methods.
+
 ---
 
 ## KNOWN ISSUES
