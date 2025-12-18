@@ -2,7 +2,7 @@
 
 ```
 LAST_UPDATED: 2025-12-18
-UPDATED_BY: repair-agent (BROKEN_IMPL_LINK fix)
+UPDATED_BY: repair-agent (NO_DOCS_REF fix for init_cmd.py)
 STATUS: CANONICAL
 ```
 
@@ -51,6 +51,15 @@ No active development at this time.
 ---
 
 ## RECENT CHANGES
+
+### 2025-12-18: Added DOCS reference to init_cmd.py
+
+**What changed:**
+- Added `DOCS: docs/cli/PATTERNS_Why_CLI_Over_Copy.md` reference to `src/ngram/init_cmd.py` header
+- Enables `ngram context` to properly trace documentation chain for this file
+
+**Files modified:**
+- `src/ngram/init_cmd.py`
 
 ### 2025-12-18: Fixed BROKEN_IMPL_LINK for ALGORITHM reference
 

@@ -5,6 +5,7 @@ Initializes the ngram in a project directory by:
 - Copying protocol files to .ngram/
 - Creating/updating CLAUDE.md with protocol bootstrap
 """
+# DOCS: docs/cli/PATTERNS_Why_CLI_Over_Copy.md
 
 import shutil
 from pathlib import Path
