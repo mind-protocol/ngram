@@ -6,6 +6,8 @@ Provides:
 - Module documentation discovery
 - Dependency mapping
 - Trace logging for access patterns
+
+DOCS: docs/cli/PATTERNS_Why_CLI_Over_Copy.md
 """
 
 import json

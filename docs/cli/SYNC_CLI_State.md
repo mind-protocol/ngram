@@ -2,7 +2,7 @@
 
 ```
 LAST_UPDATED: 2025-12-18
-UPDATED_BY: repair-agent (LARGE_DOC_MODULE fix)
+UPDATED_BY: repair-agent (NO_DOCS_REF fix)
 STATUS: CANONICAL
 ```
 
@@ -51,6 +51,15 @@ No active development at this time.
 ---
 
 ## RECENT CHANGES
+
+### 2025-12-18: Added DOCS reference to context.py
+
+**What changed:**
+- Added `DOCS: docs/cli/PATTERNS_Why_CLI_Over_Copy.md` reference to `src/ngram/context.py` header
+- Enables `ngram context` to properly trace documentation chain for this file
+
+**Files modified:**
+- `src/ngram/context.py`
 
 ### 2025-12-18: Reduced documentation size (LARGE_DOC_MODULE fix)
 
