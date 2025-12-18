@@ -1,6 +1,8 @@
 """
 Prompt command for ngram CLI.
 
+DOCS: docs/cli/PATTERNS_Why_CLI_Over_Copy.md
+
 Generates a bootstrap prompt for LLMs that guides them through:
 1. Understanding the protocol
 2. Checking project state
