@@ -1,5 +1,7 @@
 """
 Shared utilities for ngram CLI.
+
+DOCS: docs/cli/PATTERNS_Why_CLI_Over_Copy.md
 """
 
 from pathlib import Path
