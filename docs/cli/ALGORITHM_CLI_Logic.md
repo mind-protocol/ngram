@@ -30,40 +30,10 @@ The CLI processes commands through a simple dispatch pattern: parse arguments, r
 
 ## DATA STRUCTURES
 
-### ValidationResult
-
-```
-ValidationResult:
-  check_id: str          # V1, V2, etc.
-  name: str              # Human-readable check name
-  passed: bool           # Did check pass?
-  message: str           # Summary message
-  details: List[str]     # Detailed findings
-```
-
-### DoctorIssue
-
-```
-DoctorIssue:
-  issue_type: str        # MONOLITH, UNDOCUMENTED, etc.
-  severity: str          # critical, warning, info
-  path: str              # Affected file/directory
-  message: str           # Human description
-  details: Dict          # Issue-specific details
-  suggestion: str        # How to fix
-```
-
-### RepairResult
-
-```
-RepairResult:
-  issue_type: str        # What was being fixed
-  target_path: str       # What file/dir
-  success: bool          # Did agent succeed?
-  agent_output: str      # Full agent output
-  duration_seconds: float
-  error: Optional[str]   # Error if failed
-```
+See `IMPLEMENTATION_CLI_Code_Architecture.md#SCHEMA` for full type definitions:
+- `ValidationResult` — check result structure
+- `DoctorIssue` — health issue structure
+- `RepairResult` — repair outcome structure
 
 ---
 

@@ -2,7 +2,7 @@
 
 ```
 LAST_UPDATED: 2025-12-18
-UPDATED_BY: repair agent (HARDCODED_CONFIG fix for doctor_checks.py)
+UPDATED_BY: repair agent (LARGE_DOC_MODULE fix for docs/cli)
 ```
 
 ---
@@ -20,6 +20,13 @@ A Claude Code-style TUI is being developed. Entry point: `ngram` (no subcommand)
 - Core extraction done: `repair_core.py` with shared logic for CLI and TUI
 
 ### Recent Changes
+
+**2025-12-18:** Fixed LARGE_DOC_MODULE for docs/cli (53K → 48K chars):
+- Removed duplicate data structures from ALGORITHM (now references IMPLEMENTATION#SCHEMA)
+- Removed duplicate check reference tables from VALIDATION (now references ALGORITHM)
+- Simplified verbose DATA FLOW diagrams in IMPLEMENTATION (now references ALGORITHM)
+- Consolidated TEST_CLI_Coverage.md verbose "NOT TESTED" tables into compact lists
+- Result: Module now under 50K threshold with no content loss (just deduplication)
 
 **2025-12-18:** Fixed HARDCODED_CONFIG false positive in doctor_checks.py:
 - The flagged value `[:2000]` was an array slice for character limit, not a port number

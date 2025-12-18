@@ -32,110 +32,35 @@ The CLI module currently lacks automated tests. Testing is performed manually th
 
 ---
 
-## UNIT TESTS
+## UNIT TESTS (0% coverage)
 
-### Init Command
+**None automated.** Planned tests per command:
 
-| Test | Input | Expected | Status |
-|------|-------|----------|--------|
-| init_creates_protocol_dir | empty directory | .ngram/ created | NOT TESTED |
-| init_creates_claude_md | directory without CLAUDE.md | CLAUDE.md created | NOT TESTED |
-| init_updates_claude_md | directory with existing CLAUDE.md | Protocol section appended | NOT TESTED |
-| init_no_duplicate | CLAUDE.md already has protocol | No duplicate section | NOT TESTED |
-| init_force_overwrites | --force flag | Existing .ngram/ replaced | NOT TESTED |
-| init_rejects_existing | no --force, existing protocol | Error message, exit 1 | NOT TESTED |
-
-### Validate Command
-
-| Test | Input | Expected | Status |
-|------|-------|----------|--------|
-| validate_passes_healthy | complete protocol | All checks pass, exit 0 | NOT TESTED |
-| validate_fails_missing_protocol | no .ngram/ | V6 fails | NOT TESTED |
-| validate_fails_missing_views | incomplete views/ | V7 fails | NOT TESTED |
-| validate_fails_missing_patterns | module without PATTERNS | V2 fails | NOT TESTED |
-| validate_detects_broken_chain | invalid CHAIN link | V3 fails | NOT TESTED |
-
-### Doctor Command
-
-| Test | Input | Expected | Status |
-|------|-------|----------|--------|
-| doctor_detects_monolith | 600-line file | MONOLITH issue | NOT TESTED |
-| doctor_detects_undocumented | unmapped code dir | UNDOCUMENTED issue | NOT TESTED |
-| doctor_detects_stale_sync | 30-day-old SYNC | STALE_SYNC issue | NOT TESTED |
-| doctor_score_100 | healthy project | score = 100 | NOT TESTED |
-| doctor_score_decreases | critical issues | score < 100 | NOT TESTED |
-| doctor_saves_report | default run | SYNC_Project_Health.md created | NOT TESTED |
-
-### Repair Command
-
-| Test | Input | Expected | Status |
-|------|-------|----------|--------|
-| repair_spawns_agents | issues exist | Claude subprocess started | NOT TESTED |
-| repair_respects_depth | depth=links | Only link fixes attempted | NOT TESTED |
-| repair_respects_max | --max 3 | At most 3 issues fixed | NOT TESTED |
-| repair_dry_run | --dry-run | No agents spawned | NOT TESTED |
-| repair_parallel | --parallel 3 | 3 concurrent agents | NOT TESTED |
+- **Init:** protocol dir creation, CLAUDE.md update, force overwrite, duplicate prevention
+- **Validate:** healthy project pass, missing protocol fail, broken chain detection
+- **Doctor:** monolith detection, undocumented detection, stale sync, score calculation
+- **Repair:** agent spawning, depth filtering, max limit, dry-run, parallel execution
 
 ---
 
-## INTEGRATION TESTS
+## INTEGRATION TESTS (0% coverage)
 
-### Full Init-Validate Cycle
-
-```
-GIVEN:  Empty project directory
-WHEN:   ngram init && ngram validate
-THEN:   All validation checks pass
-STATUS: NOT TESTED
-```
-
-### Doctor-Repair Cycle
-
-```
-GIVEN:  Project with known issues
-WHEN:   ngram doctor && ngram repair
-THEN:   Health score improves
-STATUS: NOT TESTED
-```
-
-### Context Navigation
-
-```
-GIVEN:  Source file with DOCS: reference
-WHEN:   ngram context <file>
-THEN:   Documentation chain is displayed
-STATUS: NOT TESTED
-```
+**Planned integration tests:**
+- Init → Validate cycle (protocol installation verified)
+- Doctor → Repair cycle (health score improves)
+- Context navigation (DOCS: references resolve)
 
 ---
 
-## EDGE CASES
+## EDGE CASES (manual only)
 
-| Case | Test | Status |
-|------|------|--------|
-| Empty project | init on empty dir | Manual testing only |
-| Large codebase | doctor on 1000+ files | Manual testing only |
-| No YAML dependency | doctor without pyyaml | Manual testing only |
-| Agent timeout | repair with slow agent | NOT TESTED |
-| Broken templates | init with missing templates | NOT TESTED |
-| Unicode paths | files with special characters | NOT TESTED |
+Empty project, large codebase (1000+ files), missing YAML dependency, agent timeout, broken templates, unicode paths.
 
 ---
 
 ## TEST COVERAGE
 
-| Component | Coverage | Notes |
-|-----------|----------|-------|
-| cli.py | 0% | No automated tests |
-| init_cmd.py | 0% | No automated tests |
-| validate.py | 0% | No automated tests |
-| doctor.py | 0% | No automated tests |
-| repair.py | 0% | No automated tests |
-| sync.py | 0% | No automated tests |
-| context.py | 0% | No automated tests |
-| utils.py | 0% | No automated tests |
-
-**Overall: 0% automated test coverage**
+**Overall: 0% automated test coverage** across all modules (cli, init_cmd, validate, doctor, repair, sync, context, utils).
 
 ---
 

@@ -2,7 +2,7 @@
 
 ```
 LAST_UPDATED: 2025-12-18
-UPDATED_BY: repair-agent (doctor.py extraction)
+UPDATED_BY: repair-agent (LARGE_DOC_MODULE fix)
 STATUS: CANONICAL
 ```
 
@@ -51,6 +51,16 @@ No active development at this time.
 ---
 
 ## RECENT CHANGES
+
+### 2025-12-18: Reduced documentation size (LARGE_DOC_MODULE fix)
+
+**What changed:**
+- Removed duplicate data structures from ALGORITHM (now references IMPLEMENTATION#SCHEMA)
+- Removed duplicate check reference tables from VALIDATION (now references ALGORITHM)
+- Simplified verbose DATA FLOW diagrams in IMPLEMENTATION (now references ALGORITHM)
+- Consolidated TEST_CLI_Coverage.md verbose "NOT TESTED" tables
+
+**Result:** Total module size reduced from 53K to 48K chars (threshold: 50K)
 
 ### 2025-12-18: Fixed DOC_DUPLICATION false positive for archive files
 

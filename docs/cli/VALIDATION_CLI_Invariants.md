@@ -198,41 +198,11 @@ ngram context src/ngram/cli.py
 
 ---
 
-## VALIDATION CHECKS REFERENCE
+## CHECK REFERENCES
 
-The `validate` command runs these checks:
-
-| Check ID | Name | What It Verifies |
-|----------|------|------------------|
-| V6 | Protocol installed | .ngram/ exists with core files |
-| V7 | VIEWs exist | All 11 VIEW files present |
-| V6 | Project SYNC exists | SYNC_Project_State.md exists and initialized |
-| V2 | Module docs minimum | Every doc module has PATTERNS + SYNC |
-| FC | Full chain | Doc modules have complete chain (7 types) |
-| NC | Naming conventions | Files follow PATTERNS_/BEHAVIORS_/etc pattern |
-| V3 | CHAIN links valid | All CHAIN references point to existing files |
-| MM | Module manifest | modules.yaml has mappings for code directories |
-
----
-
-## DOCTOR CHECKS REFERENCE
-
-The `doctor` command runs these health checks:
-
-| Check | Severity | Threshold |
-|-------|----------|-----------|
-| MONOLITH | critical | > 500 lines (1000 for .md) |
-| UNDOCUMENTED | critical | Code dir not in modules.yaml |
-| STALE_SYNC | warning | LAST_UPDATED > 14 days ago |
-| PLACEHOLDER | critical | Template markers in non-template files |
-| INCOMPLETE_CHAIN | warning | Missing doc types (< 7) |
-| NO_DOCS_REF | info | Source file > 50 lines without DOCS: |
-| BROKEN_IMPL_LINK | critical | IMPLEMENTATION doc refs non-existent files |
-| STUB_IMPL | warning | >= 3 stub indicators (TODO, pass, etc.) |
-| INCOMPLETE_IMPL | warning | >= 2 empty functions |
-| UNDOC_IMPL | info | File not in IMPLEMENTATION doc |
-| LARGE_DOC_MODULE | warning | > 50K chars total in module |
-| YAML_DRIFT | critical | modules.yaml paths don't exist |
+For detailed check definitions, see `ALGORITHM_CLI_Logic.md`:
+- **Validate checks:** V6, V7, V2, FC, NC, V3, MM (8 total)
+- **Doctor checks:** MONOLITH, UNDOCUMENTED, STALE_SYNC, PLACEHOLDER, INCOMPLETE_CHAIN, NO_DOCS_REF, BROKEN_IMPL_LINK, STUB_IMPL, INCOMPLETE_IMPL, UNDOC_IMPL, LARGE_DOC_MODULE, YAML_DRIFT (12 total)
 
 ---
 
