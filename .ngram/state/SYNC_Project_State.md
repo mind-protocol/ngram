@@ -2,7 +2,7 @@
 
 ```
 LAST_UPDATED: 2025-12-18
-UPDATED_BY: repair-agent (NO_DOCS_REF fix for utils.py)
+UPDATED_BY: repair-agent (NO_DOCS_REF fix for sync.py)
 ```
 
 ---
@@ -25,6 +25,12 @@ UPDATED_BY: repair-agent (NO_DOCS_REF fix for utils.py)
 ---
 
 ## RECENT CHANGES
+
+### 2025-12-18: Added DOCS reference to sync.py
+
+- **What:** Added `# DOCS: docs/cli/PATTERNS_Why_CLI_Over_Copy.md` to `src/ngram/sync.py`; added sync.py to modules.yaml internal list
+- **Why:** NO_DOCS_REF issue - file lacked bidirectional link to documentation
+- **Impact:** Enables `ngram context` to find doc chain for sync.py
 
 ### 2025-12-18: Added DOCS reference to utils.py
 

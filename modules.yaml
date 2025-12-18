@@ -70,6 +70,7 @@ modules:
       - repair_core.py
       - repair_instructions.py
       - repair_report.py
+      - sync.py
       - utils.py
     notes: |
       Core ngram CLI - doctor, repair, init, validate commands.
