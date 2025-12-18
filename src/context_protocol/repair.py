@@ -60,8 +60,8 @@ ISSUE_SYMBOLS = {
     "YAML_DRIFT": ("🗺️", "≋"),
 }
 
-# Agent symbols for parallel execution (highly distinct shapes)
-AGENT_SYMBOLS = ["◆", "●", "▲", "■", "★", "⬟", "✦", "◐", "⬡", "✿"]
+# Agent symbols for parallel execution (memorable characters!)
+AGENT_SYMBOLS = ["🥷", "🧚", "🤖", "🦊", "🐙", "🦄", "🧙", "🐲", "🦅", "🐺"]
 
 
 def get_issue_symbol(issue_type: str) -> tuple:
@@ -162,7 +162,7 @@ CRITICAL RULES:
 BIDIRECTIONAL LINKS:
 - When creating new docs, add CHAIN section linking to related docs
 - When modifying code, ensure DOCS: reference points to correct docs
-- When creating module docs, add mapping to .context-protocol/modules.yaml
+- When creating module docs, add mapping to modules.yaml
 
 GIT COMMITS:
 - After making changes, commit with a descriptive message
@@ -227,7 +227,7 @@ Report "REPAIR COMPLETE" when done, or "REPAIR FAILED: <reason>" if you cannot c
 
 1. Read the VIEW and template docs listed above
 2. Read the code in `{issue.path}` to understand what it does
-3. Add mapping to `.context-protocol/modules.yaml`:
+3. Add mapping to `modules.yaml`:
    ```yaml
    modules:
      {Path(issue.path).name}:
@@ -250,7 +250,7 @@ Report "REPAIR COMPLETE" when done, or "REPAIR FAILED: <reason>" if you cannot c
 Report "REPAIR COMPLETE" when done, or "REPAIR FAILED: <reason>" if you cannot complete.
 """,
             "docs_to_update": [
-                ".context-protocol/modules.yaml",
+                "modules.yaml",
                 ".context-protocol/state/SYNC_Project_State.md",
             ],
         },
@@ -372,7 +372,7 @@ Report "REPAIR COMPLETE" when done, or "REPAIR FAILED: <reason>" if you cannot c
 
 ## Steps:
 
-1. Find the documentation for this code (check docs/ and .context-protocol/modules.yaml)
+1. Find the documentation for this code (check docs/ and modules.yaml)
 2. Add a DOCS: reference near the top of the file:
    - Python: `# DOCS: docs/path/to/PATTERNS_*.md`
    - JS/TS: `// DOCS: docs/path/to/PATTERNS_*.md`
@@ -564,7 +564,7 @@ Report "REPAIR COMPLETE" when done, or "REPAIR FAILED: <reason>" if you cannot c
             "description": "Fix modules.yaml drift",
             "docs_to_read": [
                 ".context-protocol/views/VIEW_Document_Create_Module_Documentation.md",
-                ".context-protocol/modules.yaml",
+                "modules.yaml",
             ],
             "prompt": f"""## Task: Fix YAML Drift
 
@@ -589,7 +589,7 @@ Report "REPAIR COMPLETE" when done, or "REPAIR FAILED: <reason>" if you cannot c
 
 Report "REPAIR COMPLETE" when done, or "REPAIR FAILED: <reason>" if you cannot complete.
 """,
-            "docs_to_update": [".context-protocol/modules.yaml"],
+            "docs_to_update": ["modules.yaml"],
         },
     }
 

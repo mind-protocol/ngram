@@ -384,7 +384,7 @@ def doctor_check_undocumented(target_dir: Path, config: DoctorConfig) -> List[Do
     issues = []
 
     # Load modules.yaml if it exists
-    manifest_path = target_dir / ".context-protocol" / "modules.yaml"
+    manifest_path = target_dir / "modules.yaml"
     mapped_paths = set()
 
     if manifest_path.exists() and HAS_YAML:
@@ -432,7 +432,7 @@ def doctor_check_undocumented(target_dir: Path, config: DoctorConfig) -> List[Do
                 path=rel_path,
                 message=f"No documentation mapping ({file_count} files)",
                 details={"file_count": file_count},
-                suggestion="Add mapping to .context-protocol/modules.yaml"
+                suggestion="Add mapping to modules.yaml"
             ))
 
     return issues
@@ -956,7 +956,7 @@ def doctor_check_yaml_drift(target_dir: Path, config: DoctorConfig) -> List[Doct
         return []
 
     issues = []
-    manifest_path = target_dir / ".context-protocol" / "modules.yaml"
+    manifest_path = target_dir / "modules.yaml"
 
     if not manifest_path.exists() or not HAS_YAML:
         return issues
@@ -1009,7 +1009,7 @@ def doctor_check_yaml_drift(target_dir: Path, config: DoctorConfig) -> List[Doct
             issues.append(DoctorIssue(
                 issue_type="YAML_DRIFT",
                 severity="critical",
-                path=f".context-protocol/modules.yaml#{module_name}",
+                path=f"modules.yaml#{module_name}",
                 message=f"Module '{module_name}' has {len(drift_issues)} drift issue(s)",
                 details={"module": module_name, "issues": drift_issues},
                 suggestion="; ".join(drift_issues[:3])
@@ -1176,7 +1176,7 @@ def get_issue_guidance(issue_type: str) -> Dict[str, str]:
         },
         "UNDOCUMENTED": {
             "view": "VIEW_Document_Create_Module_Documentation.md",
-            "file": ".context-protocol/modules.yaml",
+            "file": "modules.yaml",
             "tip": "Add module mapping, then create PATTERNS + SYNC docs"
         },
         "STALE_SYNC": {
@@ -1226,7 +1226,7 @@ def get_issue_guidance(issue_type: str) -> Dict[str, str]:
         },
         "YAML_DRIFT": {
             "view": "VIEW_Document_Create_Module_Documentation.md",
-            "file": ".context-protocol/modules.yaml",
+            "file": "modules.yaml",
             "tip": "Update paths to match reality or remove stale modules"
         },
     }
@@ -1242,7 +1242,7 @@ def get_issue_explanation(issue_type: str) -> Dict[str, str]:
         },
         "UNDOCUMENTED": {
             "risk": "Code without documentation becomes a black box. Agents will reverse-engineer intent from implementation, make changes that violate invisible design decisions, or duplicate existing patterns.",
-            "action": "Add a mapping in modules.yaml, then create at minimum PATTERNS + SYNC docs for the module.",
+            "action": "Add a mapping in modules.yaml (project root), then create at minimum PATTERNS + SYNC docs for the module.",
         },
         "STALE_SYNC": {
             "risk": "Outdated SYNC files mislead agents about current state. They may work from wrong assumptions or miss important context about recent changes.",

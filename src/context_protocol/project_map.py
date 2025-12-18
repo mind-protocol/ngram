@@ -43,7 +43,7 @@ def load_modules_yaml(project_dir: Path) -> Dict[str, Any]:
     if not HAS_YAML:
         return {}
 
-    config_path = project_dir / ".context-protocol" / "modules.yaml"
+    config_path = project_dir / "modules.yaml"
     if not config_path.exists():
         return {}
 

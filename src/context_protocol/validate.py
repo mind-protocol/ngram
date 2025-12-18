@@ -370,7 +370,7 @@ def check_views_exist(target_dir: Path) -> ValidationResult:
 
 def check_module_manifest(target_dir: Path) -> ValidationResult:
     """Check that modules.yaml exists and has mappings for code directories."""
-    manifest_path = target_dir / ".context-protocol" / "modules.yaml"
+    manifest_path = target_dir / "modules.yaml"
 
     # Check if manifest exists
     if not manifest_path.exists():
@@ -379,7 +379,7 @@ def check_module_manifest(target_dir: Path) -> ValidationResult:
             name="Module manifest",
             passed=True,  # Not a failure, just info
             message="No modules.yaml (optional)",
-            details=["Create .context-protocol/modules.yaml to map code to docs"]
+            details=["Create modules.yaml in project root to map code to docs"]
         )
 
     content = manifest_path.read_text()
@@ -421,7 +421,7 @@ def check_module_manifest(target_dir: Path) -> ValidationResult:
                         "Unmapped code directories:"
                     ] + [f"  - {d}" for d in unmapped] + [
                         "",
-                        "Add mappings to .context-protocol/modules.yaml",
+                        "Add mappings to modules.yaml",
                         "See VIEW_Document for guidance"
                     ]
                 )
@@ -628,7 +628,7 @@ def generate_fix_prompt(target_dir: Path, results: List[ValidationResult]) -> st
             prompt_parts.append("- Validation can check for drift between code and docs\n\n")
 
             prompt_parts.append("### How to Fix\n")
-            prompt_parts.append("Edit `.context-protocol/modules.yaml` and add mappings:\n\n")
+            prompt_parts.append("Edit `modules.yaml` and add mappings:\n\n")
             prompt_parts.append("```yaml\n")
             prompt_parts.append("modules:\n")
             prompt_parts.append("  your_module:\n")
@@ -640,7 +640,7 @@ def generate_fix_prompt(target_dir: Path, results: List[ValidationResult]) -> st
 
             prompt_parts.append("### Reference\n")
             prompt_parts.append("- VIEW: `.context-protocol/views/VIEW_Document_Create_Module_Documentation.md`\n")
-            prompt_parts.append("- Template: `.context-protocol/modules.yaml`\n\n")
+            prompt_parts.append("- Template: `modules.yaml`\n\n")
 
         else:
             # Generic fallback

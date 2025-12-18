@@ -21,7 +21,7 @@ Extensions require more context than new implementations because you're working 
 
 ### Module Manifest First
 
-Check `.context-protocol/modules.yaml`:
+Check `modules.yaml` (project root):
 - Find the target module's mapping
 - Check its dependencies (what else to load?)
 - Check its patterns (conventions to follow)
@@ -84,7 +84,7 @@ Write your plan in SYNC before starting.
 If your extension adds new code directories or changes dependencies:
 
 ```yaml
-# .context-protocol/modules.yaml
+# modules.yaml (project root)
 modules:
   your_module:
     depends_on:

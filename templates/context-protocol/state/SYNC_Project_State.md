@@ -108,7 +108,7 @@ UPDATED_BY: {AGENT/HUMAN}
 
 ## MODULE COVERAGE
 
-Check `.context-protocol/modules.yaml` for full manifest.
+Check `modules.yaml` (project root) for full manifest.
 
 **Mapped modules:**
 | Module | Code | Docs | Maturity |

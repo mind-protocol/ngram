@@ -25,7 +25,7 @@ This view ensures you understand before you build.
    - What's happening in the project
    - Recent changes that might affect your work
 
-2. **Module manifest:** `.context-protocol/modules.yaml`
+2. **Module manifest:** `modules.yaml` (project root)
    - Find which module your code belongs to
    - Check dependencies, patterns, ownership
 
@@ -74,7 +74,7 @@ Update SYNC files with:
 If you created new code directories or changed structure:
 
 ```yaml
-# .context-protocol/modules.yaml
+# modules.yaml (project root)
 modules:
   your_module:
     code: "src/path/to/code/**"

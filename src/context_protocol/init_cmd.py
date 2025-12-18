@@ -35,9 +35,11 @@ def init_protocol(target_dir: Path, force: bool = False, claude_md_dir: Path = N
     # Source paths
     protocol_source = templates_path / "context-protocol"
     claude_addition = templates_path / "CLAUDE_ADDITION.md"
+    modules_yaml_source = templates_path / "modules.yaml"
 
     # Destination paths
     protocol_dest = target_dir / ".context-protocol"
+    modules_yaml_dest = target_dir / "modules.yaml"
 
     # CLAUDE.md location - can be customized
     if claude_md_dir:
@@ -59,6 +61,14 @@ def init_protocol(target_dir: Path, force: bool = False, claude_md_dir: Path = N
 
     shutil.copytree(protocol_source, protocol_dest)
     print(f"✓ Created: {protocol_dest}/")
+
+    # Copy modules.yaml to project root (if not exists or force)
+    if not modules_yaml_dest.exists() or force:
+        if modules_yaml_source.exists():
+            shutil.copy2(modules_yaml_source, modules_yaml_dest)
+            print(f"✓ Created: {modules_yaml_dest}")
+    else:
+        print(f"○ {modules_yaml_dest} already exists")
 
     # Create/update CLAUDE.md with @ includes for system prompt
     # This loads PRINCIPLES and PROTOCOL directly into context
