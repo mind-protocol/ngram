@@ -2,7 +2,7 @@
 
 ```
 LAST_UPDATED: 2025-12-18
-UPDATED_BY: repair agent (TUI INCOMPLETE_CHAIN fix)
+UPDATED_BY: repair agent (HARDCODED_CONFIG fix for doctor_checks.py)
 ```
 
 ---
@@ -20,6 +20,19 @@ A Claude Code-style TUI is being developed. Entry point: `ngram` (no subcommand)
 - Core extraction done: `repair_core.py` with shared logic for CLI and TUI
 
 ### Recent Changes
+
+**2025-12-18:** Fixed HARDCODED_CONFIG false positive in doctor_checks.py:
+- The flagged value `[:2000]` was an array slice for character limit, not a port number
+- Added `docs_ref_search_chars: int = 2000` to `DoctorConfig` in doctor_types.py
+- Updated doctor_checks.py to use `config.docs_ref_search_chars` instead of hardcoded value
+- This externalizes the configuration and fixes the false positive detection
+
+**2025-12-18:** Extracted content analysis checks from doctor_checks.py:
+- Created `doctor_checks_content.py` with 3 content-analysis check functions (~410 lines)
+- Moved: `doctor_check_doc_duplication`, `doctor_check_new_undoc_code`, `doctor_check_long_strings`
+- `doctor_checks.py` reduced from 1738L → 1364L (374 lines extracted, still SPLIT status)
+- Updated: `doctor.py` imports, IMPLEMENTATION doc, modules.yaml
+- File still needs further splitting by check category (doc checks, code checks, config checks)
 
 **2025-12-18:** Completed TUI documentation chain (INCOMPLETE_CHAIN fix):
 - Created: BEHAVIORS_TUI_Interactions.md, ALGORITHM_TUI_Flow.md, VALIDATION_TUI_Invariants.md
@@ -109,7 +122,7 @@ A Claude Code-style TUI is being developed. Entry point: `ngram` (no subcommand)
 - Next steps: Create package structure, implement widgets, update cli.py, then uncomment code path in modules.yaml
 
 **MONOLITH Cleanup** (Ongoing):
-- `doctor_checks.py` (1732L) - needs splitting by category
+- `doctor_checks.py` (1364L) - reduced from 1738L via doctor_checks_content.py extraction, needs further splitting
 - `repair.py` (1013L) - reduced from 1273L via repair_report.py extraction, still above threshold
 - `repair_instructions.py` (813L) - needs further splitting
 
