@@ -21,3 +21,12 @@ ignores:
     Used throughout repair.py for display formatting. Short body != incomplete.
   added_by: repair-agent
   added_date: '2025-12-18'
+- issue_type: HARDCODED_CONFIG
+  path: src/ngram/project_map_html.py
+  reason: >-
+    False positive - 'http://www.w3.org/2000/svg' is the W3C standard SVG namespace URI,
+    not a configurable URL. This is a fixed specification constant required for creating
+    SVG elements in JavaScript/DOM. It cannot be changed and is not configuration.
+    Similar to SQL keywords - it's part of the standard, not an endpoint.
+  added_by: repair-agent
+  added_date: '2025-12-18'

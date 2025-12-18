@@ -2,7 +2,7 @@
 
 ```
 LAST_UPDATED: 2025-12-18
-UPDATED_BY: repair agent (YAML_DRIFT fix)
+UPDATED_BY: repair agent (HARDCODED_CONFIG false positive fix)
 ```
 
 ---
@@ -20,6 +20,11 @@ A Claude Code-style TUI is being developed. Entry point: `ngram` (no subcommand)
 - Core extraction done: `repair_core.py` with shared logic for CLI and TUI
 
 ### Recent Changes
+
+**2025-12-18:** Fixed HARDCODED_CONFIG false positive in project_map_html.py:
+- The flagged URL `http://www.w3.org/2000/svg` is the W3C standard SVG namespace URI
+- This is a fixed specification constant, not configurable - required for SVG DOM operations
+- Added suppression entry to `.ngram/doctor-ignore.yaml` explaining it's a false positive
 
 **2025-12-18:** Fixed INCOMPLETE_IMPL false positive in repair_core.py:
 - Functions `get_issue_symbol`, `get_issue_action_parts` are intentionally simple one-liner dictionary lookup functions
