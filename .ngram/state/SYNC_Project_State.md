@@ -55,13 +55,20 @@ ngram CLI project with doctor/repair functionality for maintaining project healt
 - **Impact:** No code changes needed. Functions return correct tuples used throughout the codebase.
 - **Note:** Doctor's empty function detection may flag single-line implementations as incomplete.
 
+### 2025-12-18: Verified repair.py functions as complete (false positive)
+
+- **What:** Verified that `get_agent_color` and `get_agent_symbol` in `repair.py` are already implemented correctly.
+- **Why:** INCOMPLETE_IMPL issue flagged these as empty, but they are complete one-liner implementations.
+- **Impact:** No code changes needed. Functions correctly index into `Colors.AGENT_COLORS` and `AGENT_SYMBOLS` constants.
+- **Note:** File contains explicit comment at lines 47-50 stating these are "intentionally simple one-line utility functions" and "Short body does not mean incomplete".
+
 ---
 
 ## KNOWN ISSUES
 
 | Issue | Severity | Area | Notes |
 |-------|----------|------|-------|
-| {description} | {level} | `{area}/` | {context} |
+| INCOMPLETE_IMPL false positives | info | `src/ngram/` | Doctor flags one-liner functions as "empty". Files have explanatory comments. Consider improving empty function detection heuristics. |
 
 ---
 
