@@ -2,7 +2,7 @@
 
 ```
 LAST_UPDATED: 2025-12-18
-UPDATED_BY: repair-agent (doctor.py monolith extraction)
+UPDATED_BY: repair agent (YAML_DRIFT fix)
 ```
 
 ---
@@ -11,9 +11,28 @@ UPDATED_BY: repair-agent (doctor.py monolith extraction)
 
 The ADD Framework project is functional and in active use. The CLI provides commands for initializing, validating, diagnosing, and repairing protocol compliance in any project.
 
-Documentation coverage is complete. The `src/` directory containing the CLI implementation has proper module documentation mapped in `modules.yaml`.
+**NEW: TUI Feature in Progress**
+
+A Claude Code-style TUI is being developed. Entry point: `ngram` (no subcommand). Features manager + worker agent columns, input bar, /commands, white theme.
+
+- Documentation created: `docs/tui/PATTERNS_TUI_Design.md`, `docs/tui/SYNC_TUI_State.md`
+- Module mapped: `ngram-tui` in `modules.yaml`
+- Core extraction done: `repair_core.py` with shared logic for CLI and TUI
 
 ### Recent Changes
+
+**2025-12-18:** Fixed YAML_DRIFT for ngram-tui module:
+- Commented out `code: "src/ngram/tui/**"` in modules.yaml (path doesn't exist yet)
+- Removed `entry_points:` section (no code to point to)
+- Updated notes to clarify this is DOCS ONLY until implementation
+- Module entry preserved for documentation tracking; code path will be uncommented when TUI is implemented
+
+**2025-12-18:** TUI Feature Design and Core Extraction:
+- Created `repair_core.py` with shared repair logic (dataclasses, constants, async spawn)
+- Refactored `repair.py` to import from `repair_core.py` (1674 -> 1055 lines)
+- Created TUI documentation: PATTERNS and SYNC docs
+- Added `ngram-tui` module to `modules.yaml`
+- Implementation pending: package structure, widgets, cli.py integration
 
 **2025-12-18:** Fixed DOC_DUPLICATION false positive for archive files in doctor_checks.py:
 - Added `_archive_` filename exclusion in Check 3 (doc type tracking by folder)
@@ -54,11 +73,15 @@ Documentation coverage is complete. The `src/` directory containing the CLI impl
 
 ## ACTIVE WORK
 
-- MONOLITH issues remain: `doctor_checks.py` (1732L), `repair.py` (1384L), `repair_instructions.py` (1001L)
-- `doctor.py` is now OK (211L) after extraction
-- Next extraction candidates:
-  - `doctor_checks.py`: Split by check category (doc checks, code checks, config checks)
-  - `repair.py`: `spawn_repair_agent()`, agent streaming logic
+**TUI Implementation** (Priority):
+- ~~YAML_DRIFT: `ngram-tui` mapped but `src/ngram/tui/` doesn't exist yet~~ FIXED: Code path commented out
+- INCOMPLETE_CHAIN: `docs/tui/` needs BEHAVIORS, ALGORITHM, VALIDATION, IMPLEMENTATION, TEST
+- Next steps: Create package structure, implement widgets, update cli.py, then uncomment code path in modules.yaml
+
+**MONOLITH Cleanup** (Ongoing):
+- `doctor_checks.py` (1411L) - needs splitting by category
+- `repair.py` (1055L) - reduced from 1674L, still above threshold
+- `repair_instructions.py` (1001L) - needs further splitting
 
 ---
 
@@ -135,8 +158,9 @@ Check `modules.yaml` for full manifest.
 | Module | Code | Docs | Maturity |
 |--------|------|------|----------|
 | ngram-cli | `src/ngram/**` | `docs/cli/` | CANONICAL |
+| ngram-tui | (not yet implemented) | `docs/tui/` | DESIGNING |
 
-**Unmapped code:** None after this repair
+**Unmapped code:** None
 
 **Coverage notes:**
 The CLI module is the main code in this project. Templates are not mapped as they're static resources, not code.

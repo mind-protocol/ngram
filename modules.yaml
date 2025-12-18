@@ -93,4 +93,27 @@ modules:
 
       SPLIT status files need continued extraction - see IMPLEMENTATION doc for details.
 
+  # ngram TUI - Claude Code-style interactive interface
+  ngram-tui:
+    # code: "src/ngram/tui/**"  # Not yet implemented - see notes
+    docs: "docs/tui/"
+    maturity: DESIGNING
+    owner: agent
+
+    depends_on:
+      - ngram-cli           # Will use repair_core, doctor functionality
+
+    patterns:
+      - "Textual framework for TUI"
+      - "Async agent spawning"
+      - "CSS-based styling (TCSS)"
+      - "Manager + Workers column layout"
+
+    notes: |
+      Claude Code-style TUI interface for ngram.
+      STATUS: DOCS ONLY - code not yet implemented.
+      See docs/tui/SYNC_TUI_State.md for implementation plan.
+      Entry point will be: `ngram` (no subcommand).
+      Planned: Persistent session with manager and worker agent columns.
+
   # Add more modules as they emerge...
