@@ -228,6 +228,12 @@ def main():
         action="store_true",
         help="Show what would be done without spawning agents"
     )
+    repair_parser.add_argument(
+        "--parallel", "-p",
+        type=int,
+        default=5,
+        help="Number of parallel agents (default: 5, use 1 for sequential)"
+    )
 
     # version
     parser.add_argument(
@@ -269,6 +275,7 @@ def main():
             issue_types=args.types,
             depth=args.depth,
             dry_run=args.dry_run,
+            parallel=args.parallel,
         )
         sys.exit(exit_code)
     elif args.command is None:

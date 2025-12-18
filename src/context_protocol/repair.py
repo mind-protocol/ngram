@@ -9,12 +9,79 @@ import json
 import subprocess
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
+from threading import Lock
 from typing import List, Dict, Any, Optional
 
 from .doctor import run_doctor, load_doctor_config, DoctorIssue
+
+
+# ANSI color codes
+class Colors:
+    RESET = "\033[0m"
+    BOLD = "\033[1m"
+    DIM = "\033[2m"
+
+    # Agent colors (cycle through for parallel agents)
+    AGENT_COLORS = [
+        "\033[38;5;39m",   # Blue
+        "\033[38;5;208m",  # Orange
+        "\033[38;5;42m",   # Green
+        "\033[38;5;201m",  # Pink
+        "\033[38;5;226m",  # Yellow
+        "\033[38;5;51m",   # Cyan
+        "\033[38;5;196m",  # Red
+        "\033[38;5;141m",  # Purple
+    ]
+
+    # Status colors
+    SUCCESS = "\033[38;5;42m"   # Green
+    FAILURE = "\033[38;5;196m"  # Red
+    WARNING = "\033[38;5;208m"  # Orange
+    INFO = "\033[38;5;39m"      # Blue
+
+
+# Symbols and emojis per issue type
+ISSUE_SYMBOLS = {
+    "MONOLITH": ("🏔️", "▓"),
+    "UNDOCUMENTED": ("📝", "□"),
+    "STALE_SYNC": ("⏰", "◷"),
+    "PLACEHOLDER": ("🔲", "▢"),
+    "INCOMPLETE_CHAIN": ("🔗", "⛓"),
+    "NO_DOCS_REF": ("📎", "⌘"),
+    "BROKEN_IMPL_LINK": ("💔", "⚡"),
+    "STUB_IMPL": ("🚧", "▲"),
+    "INCOMPLETE_IMPL": ("🔧", "◐"),
+    "UNDOC_IMPL": ("📋", "◎"),
+    "LARGE_DOC_MODULE": ("📚", "▤"),
+    "YAML_DRIFT": ("🗺️", "≋"),
+}
+
+# Agent symbols for parallel execution
+AGENT_SYMBOLS = ["◆", "●", "▲", "■", "★", "◈", "▶", "◉"]
+
+
+def get_issue_symbol(issue_type: str) -> tuple:
+    """Get emoji and symbol for an issue type."""
+    return ISSUE_SYMBOLS.get(issue_type, ("🔹", "•"))
+
+
+def get_agent_color(agent_id: int) -> str:
+    """Get color code for an agent."""
+    return Colors.AGENT_COLORS[agent_id % len(Colors.AGENT_COLORS)]
+
+
+def get_agent_symbol(agent_id: int) -> str:
+    """Get symbol for an agent."""
+    return AGENT_SYMBOLS[agent_id % len(AGENT_SYMBOLS)]
+
+
+def color(text: str, color_code: str) -> str:
+    """Wrap text in ANSI color codes."""
+    return f"{color_code}{text}{Colors.RESET}"
 
 
 def load_github_issue_mapping(target_dir: Path) -> Dict[str, int]:
@@ -808,6 +875,7 @@ def repair_command(
     issue_types: Optional[List[str]] = None,
     depth: str = "docs",
     dry_run: bool = False,
+    parallel: int = 5,
 ) -> int:
     """Run the repair command."""
 
@@ -820,6 +888,7 @@ def repair_command(
     print(f"🔧 Context Protocol Repair")
     print(f"{'='*60}")
     print(f"  Depth: {depth_labels.get(depth, depth)}")
+    print(f"  Parallel agents: {parallel}")
     print()
 
     # Step 1: Run doctor to get issues
@@ -867,20 +936,22 @@ def repair_command(
     from collections import Counter
     type_counts = Counter(i.issue_type for i in issues_to_fix)
 
-    print(f"  Issues to fix: {len(issues_to_fix)}")
+    print(f"  Issues to fix: {color(str(len(issues_to_fix)), Colors.BOLD)}")
     if max_issues is not None and len(all_issues) > max_issues:
-        print(f"  (Limited to {max_issues}, {len(all_issues) - max_issues} remaining)")
+        print(f"  {color(f'(Limited to {max_issues}, {len(all_issues) - max_issues} remaining)', Colors.DIM)}")
     print()
     print("  By type:")
     for issue_type, count in sorted(type_counts.items()):
-        print(f"    • {issue_type}: {count}")
+        emoji, sym = get_issue_symbol(issue_type)
+        print(f"    {emoji} {issue_type}: {count}")
     print()
     print("  Files:")
     # Show first 10 files
     for i, issue in enumerate(issues_to_fix[:10]):
-        print(f"    {i+1}. [{issue.issue_type}] {issue.path}")
+        emoji, sym = get_issue_symbol(issue.issue_type)
+        print(f"    {i+1}. {emoji} {color(issue.issue_type, Colors.INFO)} {issue.path}")
     if len(issues_to_fix) > 10:
-        print(f"    ... and {len(issues_to_fix) - 10} more")
+        print(f"    {color(f'... and {len(issues_to_fix) - 10} more', Colors.DIM)}")
     print()
 
     if dry_run:
@@ -897,21 +968,28 @@ def repair_command(
         print(f"  GitHub issues found: {len(github_mapping)}")
         print()
 
-    # Step 3: Execute repairs with progress bar
+    # Step 3: Execute repairs
     print(f"🔨 Step 3: Executing repairs...")
     print()
 
     repair_results: List[RepairResult] = []
+    print_lock = Lock()
+    completed_count = [0]  # Use list to allow modification in nested function
 
-    for i, issue in enumerate(issues_to_fix, 1):
-        # Update progress bar
-        print_progress_bar(i - 1, len(issues_to_fix), status=f"Starting {issue.issue_type}...")
-        print()  # Newline after progress bar
-
-        # Get GitHub issue number if one exists for this path
+    def run_repair(issue_tuple):
+        """Run a single repair in a thread."""
+        idx, issue = issue_tuple
         github_issue_num = github_mapping.get(issue.path)
-        github_info = f" (#{github_issue_num})" if github_issue_num else ""
-        print(f"\n  [{i}/{len(issues_to_fix)}] {issue.issue_type}: {issue.path}{github_info}")
+
+        # Get agent and issue visual identifiers
+        agent_color = get_agent_color(idx - 1)
+        agent_sym = get_agent_symbol(idx - 1)
+        issue_emoji, issue_sym = get_issue_symbol(issue.issue_type)
+
+        with print_lock:
+            agent_tag = color(f"{agent_sym}", agent_color)
+            type_tag = f"{issue_emoji} {issue.issue_type}"
+            print(f"  {agent_tag} {color('Starting', Colors.INFO)} [{idx}/{len(issues_to_fix)}] {type_tag}: {issue.path[:45]}...")
 
         result = spawn_repair_agent(
             issue,
@@ -919,15 +997,68 @@ def repair_command(
             dry_run=False,
             github_issue_number=github_issue_num,
         )
-        repair_results.append(result)
 
-        if result.success:
-            print(f"\n  ✓ Complete ({result.duration_seconds:.1f}s)")
-        else:
-            print(f"\n  ✗ Failed: {result.error or 'Unknown error'}")
+        with print_lock:
+            completed_count[0] += 1
+            if result.success:
+                status = color("✓ Done", Colors.SUCCESS)
+            else:
+                status = color("✗ Failed", Colors.FAILURE)
+            agent_tag = color(f"{agent_sym}", agent_color)
+            print(f"  {agent_tag} {status} [{completed_count[0]}/{len(issues_to_fix)}] {issue_emoji} {issue.path[:35]}... ({result.duration_seconds:.1f}s)")
 
-    # Final progress bar
-    print_progress_bar(len(issues_to_fix), len(issues_to_fix), status="Done!")
+        return result
+
+    # Run agents in parallel or sequentially
+    if parallel > 1:
+        active_workers = min(parallel, len(issues_to_fix))
+        print(f"  Running {len(issues_to_fix)} repairs with {active_workers} parallel agents...")
+        print()
+
+        # Show legend of agent symbols
+        legend = "  Agents: "
+        for i in range(active_workers):
+            sym = get_agent_symbol(i)
+            clr = get_agent_color(i)
+            legend += color(f"{sym} ", clr)
+        print(legend)
+        print()
+
+        with ThreadPoolExecutor(max_workers=parallel) as executor:
+            futures = {
+                executor.submit(run_repair, (i, issue)): issue
+                for i, issue in enumerate(issues_to_fix, 1)
+            }
+
+            for future in as_completed(futures):
+                result = future.result()
+                repair_results.append(result)
+    else:
+        # Sequential execution with more verbose output
+        for i, issue in enumerate(issues_to_fix, 1):
+            issue_emoji, issue_sym = get_issue_symbol(issue.issue_type)
+            print_progress_bar(i - 1, len(issues_to_fix), status=f"Starting {issue.issue_type}...")
+            print()
+
+            github_issue_num = github_mapping.get(issue.path)
+            github_info = f" (#{github_issue_num})" if github_issue_num else ""
+            print(f"\n  {issue_emoji} [{i}/{len(issues_to_fix)}] {color(issue.issue_type, Colors.INFO)}: {issue.path}{github_info}")
+
+            result = spawn_repair_agent(
+                issue,
+                target_dir,
+                dry_run=False,
+                github_issue_number=github_issue_num,
+            )
+            repair_results.append(result)
+
+            if result.success:
+                print(f"\n  {color('✓ Complete', Colors.SUCCESS)} ({result.duration_seconds:.1f}s)")
+            else:
+                print(f"\n  {color('✗ Failed', Colors.FAILURE)}: {result.error or 'Unknown error'}")
+
+        print_progress_bar(len(issues_to_fix), len(issues_to_fix), status="Done!")
+
     print("\n")
 
     # Step 4: Run doctor again
