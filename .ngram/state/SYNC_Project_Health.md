@@ -10,15 +10,15 @@ STATUS: CRITICAL
 
 ## CURRENT STATE
 
-**Health Score:** 32/100
+**Health Score:** 38/100
 
 The project has critical issues that will significantly impact agent effectiveness. Address these before starting new work.
 
 | Severity | Count |
 |----------|-------|
 | Critical | 2 |
-| Warning | 0 |
-| Info | 0 |
+| Warning | 4 |
+| Info | 30 |
 
 ---
 
@@ -34,10 +34,65 @@ The project has critical issues that will significantly impact agent effectivene
 
 **Files:**
 
-- `src/ngram/doctor_checks.py` - 1407 lines (threshold: 800)
-  - Split: def doctor_check_doc_duplication() (155L, :1273), def doctor_check_new_undoc_code() (127L, :655), def doctor_check_long_strings() (94L, :1640)
+- `src/ngram/doctor_checks.py` - 1411 lines (threshold: 800)
+  - Split: def doctor_check_doc_duplication() (160L, :1273), def doctor_check_new_undoc_code() (127L, :655), def doctor_check_long_strings() (94L, :1645)
 - `src/ngram/repair.py` - 1386 lines (threshold: 800)
   - Split: def repair_command() (439L, :1236), def run_repair() (291L, :1384), def spawn_repair_agent() (224L, :514)
+
+### INCOMPLETE_IMPL (1 files)
+
+**What's wrong:** Empty functions indicate incomplete implementation. The interface exists but the behavior doesn't.
+
+**How to fix:** Fill in the empty functions with actual implementation.
+
+**Protocol:** Load `VIEW_Implement_Write_Or_Modify_Code.md` before starting.
+
+**Files:**
+
+- `src/ngram/repair.py` - Contains 5 empty/incomplete function(s)
+
+### LARGE_DOC_MODULE (1 files)
+
+**What's wrong:** Large doc modules consume significant context window when loaded. Agents may not be able to load everything they need.
+
+**How to fix:** Archive old sections to dated files, split into sub-modules, or remove redundant content.
+
+**Protocol:** Load `VIEW_Refactor_Improve_Code_Structure.md` before starting.
+
+**Files:**
+
+- `docs/cli` - Total 53K chars (threshold: 50K)
+
+### HARDCODED_CONFIG (2 files)
+
+**What's wrong:** This issue may cause problems.
+
+**How to fix:** Review and fix.
+
+**Protocol:** Load `VIEW_Implement_Write_Or_Modify_Code.md` before starting.
+
+**Files:**
+
+- `src/ngram/project_map_html.py` - Contains hardcoded configuration values
+- `src/ngram/doctor_checks.py` - Contains hardcoded configuration values
+
+---
+
+## LATER
+
+These are minor issues that don't block work but would improve project health:
+
+- [ ] `src/ngram/context.py` - No DOCS: reference in file header
+- [ ] `src/ngram/doctor_files.py` - No DOCS: reference in file header
+- [ ] `src/ngram/github.py` - No DOCS: reference in file header
+- [ ] `src/ngram/init_cmd.py` - No DOCS: reference in file header
+- [ ] `src/ngram/project_map.py` - No DOCS: reference in file header
+- [ ] `src/ngram/prompt.py` - No DOCS: reference in file header
+- [ ] `src/ngram/repair.py` - No DOCS: reference in file header
+- [ ] `src/ngram/repair_instructions.py` - No DOCS: reference in file header
+- [ ] `src/ngram/sync.py` - No DOCS: reference in file header
+- [ ] `src/ngram/utils.py` - No DOCS: reference in file header
+- ... and 20 more
 
 ---
 

@@ -1335,6 +1335,11 @@ def doctor_check_doc_duplication(target_dir: Path, config: DoctorConfig) -> List
             doc_fingerprints[rel_path] = (words, headings)
 
             # Check 3: Track by doc type and parent folder (topic)
+            # Skip archive files - they are intentionally created by auto-archiving
+            # and should not be flagged as duplicates of the main doc
+            if '_archive_' in doc_file.name:
+                continue
+
             doc_type = None
             for dtype in ['PATTERNS', 'BEHAVIORS', 'ALGORITHM', 'IMPLEMENTATION', 'VALIDATION', 'SYNC']:
                 if dtype in doc_file.name:
