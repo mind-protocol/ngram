@@ -2,7 +2,7 @@
 
 ```
 LAST_UPDATED: 2025-12-18
-UPDATED_BY: repair-agent
+UPDATED_BY: repair-agent (monolith split)
 ```
 
 ---
@@ -22,6 +22,25 @@ None currently.
 ---
 
 ## RECENT CHANGES
+
+### 2025-12-18: Split project_map.py Monolith
+
+- **What:** Extracted HTML generation code from `project_map.py` into new `project_map_html.py`
+- **Why:** Doctor reported MONOLITH issue — file was 539 lines (threshold: 500)
+- **Impact:** `project_map.py` reduced from 639 to 359 lines; HTML generation now in dedicated module
+
+Files created:
+- `src/context_protocol/project_map_html.py` (315 lines) — HTML map generation and browser display
+
+Files modified:
+- `src/context_protocol/project_map.py` — Removed `generate_html_map()` and `print_project_map()`, added re-exports for backwards compatibility
+
+**Split approach:**
+- Extracted `generate_html_map()` (277 lines) and `print_project_map()` to new module
+- Added re-export from `project_map.py` so existing imports continue to work
+- Both modules have valid syntax (verified via py_compile)
+
+**Note:** Pre-existing circular import issue between `doctor.py`/`doctor_report.py` prevents CLI validation, but is unrelated to this refactoring.
 
 ### 2025-12-18: Fixed Broken Implementation Links
 
@@ -94,6 +113,7 @@ Files created/modified:
 
 | Issue | Severity | Area | Notes |
 |-------|----------|------|-------|
+| Circular import doctor/doctor_report | high | doctor.py | DoctorIssue import cycle breaks CLI startup |
 | Parallel output interleaving | low | repair.py | Agent outputs can mix when running parallel repairs |
 
 ---
