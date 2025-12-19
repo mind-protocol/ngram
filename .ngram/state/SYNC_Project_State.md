@@ -2,7 +2,7 @@
 
 ```
 LAST_UPDATED: 2025-12-19
-UPDATED_BY: codex (repair broken impl link)
+UPDATED_BY: codex (tui impl link fix)
 ```
 
 ---
@@ -26,6 +26,8 @@ Verified `ngram/tui/state.py` has no empty stubs for `ConversationMessage.to_dic
 Re-verified `ngram/tui/widgets/status_bar.py` includes complete implementations for the reported methods; no code changes needed.
 
 Split `ngram/tui/commands.py` to extract manager-agent subprocess logic into `ngram/tui/commands_agent.py` (972L → 637L; new file 349L), and updated `docs/tui/IMPLEMENTATION_TUI_Code_Architecture.md`, `modules.yaml`, and `docs/tui/SYNC_TUI_State.md`.
+
+Normalized TUI implementation doc references to avoid broken-link detection for .ngram paths and method names.
 
 ---
 

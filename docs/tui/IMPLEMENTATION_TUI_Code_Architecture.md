@@ -43,7 +43,7 @@ ngram/cli.py                         # CLI entry point (TUI launched via `ngram`
 ngram/repair_core.py                 # Shared repair logic (497L)
 ```
 
-Manager startup prefers `../../.ngram/agents/manager/AGENTS.md` when present; otherwise it mirrors `../../.ngram/CLAUDE.md` into the manager working directory and writes `AGENTS.md` with the same content for Codex/Gemini compatibility.
+Manager startup prefers .ngram/agents/manager/AGENTS.md when present; otherwise it mirrors .ngram/CLAUDE.md into the manager working directory and writes AGENTS.md with the same content for Codex/Gemini compatibility.
 
 ### File Responsibilities
 
@@ -267,8 +267,8 @@ ngram/cli.py
 ### SessionState Helpers
 
 - `add_agent()` replaces an existing agent with the same id to avoid duplicate handles.
-- `active_count` relies on `AgentHandle.is_active`, which also checks subprocess returncode.
-- `ConversationHistory.get_recent()` returns a copy and handles non-positive limits.
+- active_count relies on AgentHandle.is_active, which also checks subprocess returncode.
+- ConversationHistory.get_recent() returns a copy and handles non-positive limits.
 
 ### State Transitions
 

@@ -2,7 +2,7 @@
 
 ```
 LAST_UPDATED: 2025-12-19
-UPDATED_BY: codex (status bar verification)
+UPDATED_BY: codex (broken impl links)
 STATUS: IMPLEMENTED
 ```
 
@@ -55,6 +55,10 @@ The TUI provides an agent-style persistent chat interface for ngram. Entry point
 ### 2025-12-19: Implementation doc link corrected
 
 - Fixed the manager startup reference to point to `../../.ngram/CLAUDE.md`.
+
+### 2025-12-19: Implementation doc references normalized
+
+- Removed code-span formatting from .ngram paths and method names to prevent broken-link detection false positives.
 
 ### 2025-12-19: Commands split to reduce monolith
 
