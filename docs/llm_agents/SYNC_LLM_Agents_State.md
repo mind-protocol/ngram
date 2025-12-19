@@ -59,6 +59,12 @@ None.
 - **Files:** `docs/llm_agents/BEHAVIORS_Gemini_Agent_Output.md`, `docs/llm_agents/ALGORITHM_Gemini_Stream_Flow.md`, `docs/llm_agents/VALIDATION_Gemini_Agent_Invariants.md`, `docs/llm_agents/IMPLEMENTATION_LLM_Agent_Code_Architecture.md`, `docs/llm_agents/TEST_LLM_Agent_Coverage.md`, `docs/llm_agents/PATTERNS_Provider_Specific_LLM_Subprocesses.md`, `docs/llm_agents/SYNC_LLM_Agents_State.md`, `modules.yaml`, `ngram/llms/gemini_agent.py`
 - **Struggles/Insights:** Needed the full chain to satisfy `ngram validate`.
 
+### 2025-12-19: Fixed implementation doc links
+
+- **What:** Updated LLM agent implementation doc to use concrete file paths and avoid non-file link detection for external packages and module commands.
+- **Why:** Broken link detector flagged non-existent references for gemini entry points and the GenAI package.
+- **Files:** `docs/llm_agents/IMPLEMENTATION_LLM_Agent_Code_Architecture.md`
+
 ---
 
 ## KNOWN ISSUES

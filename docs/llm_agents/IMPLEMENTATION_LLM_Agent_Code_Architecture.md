@@ -25,15 +25,14 @@ SYNC:            ./SYNC_LLM_Agents_State.md
 ## MODULE LAYOUT
 
 ```
-ngram/llms/
-  gemini_agent.py        # Gemini adapter CLI
+ngram/llms/gemini_agent.py  # Gemini adapter CLI
 ```
 
 ---
 
 ## ENTRY POINTS
 
-- `python3 -m ngram.llms.gemini_agent` (invoked by `ngram/agent_cli.py`)
+- `ngram/llms/gemini_agent.py` (invoked by python -m ngram.llms.gemini_agent from `ngram/agent_cli.py`)
 
 ---
 
@@ -48,7 +47,7 @@ ngram/llms/
 ```
 ngram/agent_cli.py
     ↓ build subprocess command
-python3 -m ngram.llms.gemini_agent
+ngram/llms/gemini_agent.py (python -m ngram.llms.gemini_agent)
     ↓ parse args + load env
     ↓ genai.configure(api_key)
     ↓ start_chat + send_message
@@ -59,7 +58,7 @@ python3 -m ngram.llms.gemini_agent
 
 ## EXTERNAL DEPENDENCIES
 
-- `google.genai` for Gemini API access
+- Google GenAI SDK (python package name: google.genai) for Gemini API access
 - `dotenv` for `.env` loading
 
 ---
