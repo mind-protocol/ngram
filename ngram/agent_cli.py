@@ -42,8 +42,7 @@ def build_agent_command(
         cmd.extend(["-p", combined_prompt])
         
         cmd.extend(["--output-format", "stream-json" if stream_json else "text"])
-        if use_dangerous:
-            cmd.append("--yolo")
+        cmd.append("--yolo") # Always include for headless operation
         if allowed_tools:
             cmd.extend(["--allowed-tools", allowed_tools])
         if add_dir:
@@ -69,12 +68,13 @@ def build_agent_command(
         return AgentCommand(cmd=cmd)
 
     combined_prompt = prompt if not system_prompt else f"{system_prompt}\n\n{prompt}"
-    if continue_session:
-        cmd = ["codex", "exec", "resume", "--last", "-"]
-    else:
-        cmd = ["codex", "exec", "-"]
+    cmd = ["codex", "exec"]
     if stream_json:
         cmd.append("--json")
     if use_dangerous:
         cmd.append("--dangerously-bypass-approvals-and-sandbox")
+    if continue_session:
+        cmd.extend(["resume", "--last", "-"])
+    else:
+        cmd.append("-")
     return AgentCommand(cmd=cmd, stdin=combined_prompt)
