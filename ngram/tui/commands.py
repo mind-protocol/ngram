@@ -26,6 +26,30 @@ def _truncate_thinking(text: str, max_lines: int = 3) -> str:
     return f"{truncated}..."
 
 
+def _output_indicates_rate_limit(agent_output: str) -> bool:
+    """Heuristic check for provider rate limit errors in agent output."""
+    if not agent_output:
+        return False
+    markers = (
+        "usage_limit_reached",
+        "rate_limit",
+        "rate limit",
+        "429",
+        "too many requests",
+        "quota exceeded",
+    )
+    error_hints = ("error", "exception", "http", "status", "response")
+    for line in agent_output.splitlines():
+        line_lower = line.strip().lower()
+        if not line_lower:
+            continue
+        if any(marker in line_lower for marker in markers) and any(
+            hint in line_lower for hint in error_hints
+        ):
+            return True
+    return False
+
+
 if TYPE_CHECKING:
     from .app import NgramApp
 
@@ -505,9 +529,7 @@ async def _run_agent(app: "NgramApp", agent, issue, instructions: dict, on_outpu
         agent.error = result.error
 
         # Check for rate limit errors - stop repair loop if detected
-        rate_limit_markers = ["usage_limit_reached", "rate_limit", "429", "Too Many Requests", "quota exceeded"]
-        output_lower = result.agent_output.lower() if result.agent_output else ""
-        is_rate_limited = any(marker.lower() in output_lower for marker in rate_limit_markers)
+        is_rate_limited = (not result.success) and _output_indicates_rate_limit(result.agent_output)
 
         if is_rate_limited:
             agent_container.add_summary(f"[red]⛔ RATE LIMIT - stopping repair[/]")

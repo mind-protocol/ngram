@@ -15,7 +15,7 @@ def _detect_commands(text: str) -> list[str]:
     commands = []
 
     # ngram subcommands we know about
-    ngram_subs = r'(?:doctor|repair|sync|init|validate|context|prompt)'
+    ngram_subs = r'(?:doctor|repair|sync|init|validate|context|prompt|solve-escalations)'
     # Other CLI tools
     other_cmds = r'(?:python|pip|npm|git|pytest|uv|make|cargo|go)'
 
