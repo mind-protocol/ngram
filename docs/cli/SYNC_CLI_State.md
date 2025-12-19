@@ -36,6 +36,11 @@ No active development at this time.
 
 ## RECENT CHANGES
 
+### 2025-12-19: Externalized SVG namespace config
+
+- `project_map_html.py` now reads SVG namespace from `NGRAM_SVG_NAMESPACE` with default fallback
+- Documented env var in CLI implementation config table
+
 ### 2025-12-20: Multi-agent provider support
 
 - `repair` accepts `--agents {claude,codex,gemini}` and `init` mirrors `.ngram/CLAUDE.md` into root `AGENTS.md`
@@ -77,6 +82,7 @@ No active development at this time.
 
 ### Remarks
 - `get_issue_symbol` and `get_issue_action_parts` already have complete lookup implementations.
+ - SVG namespace now configurable via `NGRAM_SVG_NAMESPACE` for project map HTML output.
 
 ### Suggestions
 - [ ] Reconcile `modules.yaml` with CLI module docs to remove mapping drift.

@@ -2,7 +2,7 @@
 
 ```
 LAST_UPDATED: 2025-12-19
-UPDATED_BY: Codex (GPT-5)
+UPDATED_BY: codex (repair hardcoded config)
 ```
 
 ---
@@ -10,6 +10,8 @@ UPDATED_BY: Codex (GPT-5)
 ## CURRENT STATE
 
 Updated protocol implementation documentation to avoid broken link detection for the .ngram/CLAUDE.md bootstrap file.
+
+Externalized the SVG namespace used by project map HTML to `NGRAM_SVG_NAMESPACE` with a default fallback and documented it in the CLI implementation docs.
 
 ---
 

@@ -8,6 +8,7 @@ DOCS: docs/ngram-cli/project-map/
 """
 
 import json
+import os
 from pathlib import Path
 from typing import Optional
 
@@ -44,6 +45,8 @@ def generate_html_map(project_dir: Path) -> str:
 
     # Get project name
     project_name = project_dir.resolve().name
+
+    svg_namespace = os.getenv("NGRAM_SVG_NAMESPACE", "http://www.w3.org/2000/svg")
 
     # Generate HTML
     html = f'''<!DOCTYPE html>
@@ -255,7 +258,7 @@ def generate_html_map(project_dir: Path) -> str:
         const positions = {json.dumps(positions)};
 
         const svg = document.getElementById('arrows');
-        const ns = 'http://www.w3.org/2000/svg';
+        const ns = {json.dumps(svg_namespace)};
 
         // Add arrow marker
         const defs = document.createElementNS(ns, 'defs');
