@@ -16,6 +16,8 @@ Updated protocol implementation doc to avoid a broken link reference by describi
 
 Updated protocol implementation documentation to remove backticks from .ngram/CLAUDE.md references so broken link detection no longer strips the leading dot.
 
+Verified the protocol implementation overview no longer references removed sub-docs; BROKEN_IMPL_LINK appears already resolved.
+
 Consolidated protocol IMPLEMENTATION docs under `docs/protocol/IMPLEMENTATION/IMPLEMENTATION_Overview.md` and removed duplicate sub-docs.
 Updated `docs/protocol/IMPLEMENTATION_Overview.md` to point to the consolidated implementation overview and note the consolidation.
 
