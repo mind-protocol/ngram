@@ -84,6 +84,8 @@ def load_doctor_config(target_dir: Path) -> DoctorConfig:
             config.monolith_lines = int(doctor_config["monolith_lines"])
         if "stale_sync_days" in doctor_config:
             config.stale_sync_days = int(doctor_config["stale_sync_days"])
+        if "docs_ref_search_chars" in doctor_config:
+            config.docs_ref_search_chars = int(doctor_config["docs_ref_search_chars"])
         if "ignore" in doctor_config:
             # Extend defaults, don't replace
             config.ignore.extend(doctor_config["ignore"])

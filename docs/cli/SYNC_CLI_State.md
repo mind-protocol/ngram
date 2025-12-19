@@ -2,7 +2,7 @@
 
 ```
 LAST_UPDATED: 2025-12-19
-UPDATED_BY: codex (repair incomplete helpers)
+UPDATED_BY: codex (repair hardcoded config)
 STATUS: CANONICAL
 ```
 
@@ -35,6 +35,11 @@ No active development at this time.
 ---
 
 ## RECENT CHANGES
+
+### 2025-12-19: Externalized overview DOCS header scan length
+
+- `repo_overview.py` now reads DOCS header scan length from DoctorConfig instead of a hardcoded value
+- `doctor_files.py` loads `doctor.docs_ref_search_chars` from `.ngram/config.yaml` (default 2000)
 
 ### 2025-12-19: Externalized SVG namespace config
 
@@ -83,6 +88,7 @@ No active development at this time.
 ### Remarks
 - `get_issue_symbol` and `get_issue_action_parts` already have complete lookup implementations.
  - SVG namespace now configurable via `NGRAM_SVG_NAMESPACE` for project map HTML output.
+- Overview DOCS header scan length now configurable via `doctor.docs_ref_search_chars` in `.ngram/config.yaml`.
 
 ### Suggestions
 - [ ] Reconcile `modules.yaml` with CLI module docs to remove mapping drift.

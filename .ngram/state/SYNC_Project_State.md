@@ -13,6 +13,8 @@ Updated protocol implementation documentation to remove backticks from .ngram/CL
 
 Externalized the SVG namespace used by project map HTML to `NGRAM_SVG_NAMESPACE` with a default fallback and documented it in the CLI implementation docs.
 
+Repo overview now uses DoctorConfig for DOCS header scan length, configurable via `.ngram/config.yaml`.
+
 ---
 
 ## ACTIVE WORK
@@ -120,6 +122,7 @@ Check `modules.yaml` (project root) for full manifest.
 - doctor-ignore now reflects TUI false positives that were already documented in TUI sync.
 - `ngram validate` fails due to missing `IMPLEMENTATION_Project_Health_Doctor.md` references.
 - `ngram/tui/state.py` INCOMPLETE_IMPL report was outdated; functions already implemented.
+- `repo_overview.py` now reads DOCS header scan length from DoctorConfig instead of a hardcoded value.
 
 ### Suggestions
 - [ ] Add module mappings in `modules.yaml` for `ngram/tui/**` to avoid unmapped warnings.

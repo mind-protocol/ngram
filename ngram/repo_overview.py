@@ -13,7 +13,7 @@ Output formats: markdown, yaml, json
 
 import json
 import re
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -25,12 +25,13 @@ from .doctor_files import (
 from .project_map import analyze_modules, load_modules_yaml
 from .context import parse_imports
 from .utils import IGNORED_EXTENSIONS
-
-try:
-    import yaml
-    HAS_YAML = True
-except ImportError:
-    HAS_YAML = False
+from .repo_overview_formatters import (
+    format_markdown,
+    format_yaml,
+    format_json,
+    file_info_to_dict,
+    overview_to_dict,
+)
 
 
 @dataclass
@@ -48,6 +49,7 @@ class FileInfo:
     sections: List[str] = field(default_factory=list)  # # and ## headers for md
     functions: List[str] = field(default_factory=list)  # function/class names
     children: List["FileInfo"] = field(default_factory=list)
+    hidden_count: int = 0  # files hidden by min_size or top_files filters
 
 
 @dataclass
@@ -101,7 +103,7 @@ def get_language(file_path: Path) -> str:
     return ext_map.get(file_path.suffix.lower(), '')
 
 
-def extract_docs_ref(file_path: Path) -> str:
+def extract_docs_ref(file_path: Path, search_chars: int) -> str:
     """Extract DOCS: reference from file header (bidirectional link).
 
     Looks for patterns like:
@@ -115,8 +117,8 @@ def extract_docs_ref(file_path: Path) -> str:
     except Exception:
         return ""
 
-    # Only search in first 2000 chars (file header)
-    header = content[:2000]
+    # Only search in the configured header slice
+    header = content[:max(0, search_chars)]
 
     # Pattern to match DOCS: references in various comment styles
     patterns = [
@@ -428,9 +430,21 @@ def build_file_tree(
     config,
     current_path: Optional[Path] = None,
     depth: int = 0,
-    max_depth: int = 10
+    max_depth: int = 10,
+    min_size: int = 0,
+    top_files: int = 0,
 ) -> Optional[FileInfo]:
-    """Build file tree recursively."""
+    """Build file tree recursively.
+
+    Args:
+        target_dir: Root directory of the project
+        config: Doctor config with ignore patterns
+        current_path: Current path being processed
+        depth: Current recursion depth
+        max_depth: Maximum recursion depth
+        min_size: Minimum file size in chars to include (0 = include all)
+        top_files: Maximum files per directory, sorted by size (0 = include all)
+    """
     if current_path is None:
         current_path = target_dir
 
@@ -474,7 +488,7 @@ def build_file_tree(
             doc_refs = extract_markdown_doc_refs(current_path)
         elif language in ['python', 'javascript', 'typescript', 'tsx', 'jsx', 'go', 'rust', 'java']:
             functions = extract_code_definitions(current_path)
-            docs_ref = extract_docs_ref(current_path)
+            docs_ref = extract_docs_ref(current_path, config.docs_ref_search_chars)
             raw_imports = parse_imports(current_path)
             # Filter to only local imports (not stdlib/third-party)
             imports = _filter_local_imports(raw_imports, target_dir)
@@ -501,19 +515,52 @@ def build_file_tree(
         if current_path.name in skip_dirs:
             return None
 
-        children = []
+        # Collect all children first
+        all_children = []
         for child in sorted(current_path.iterdir()):
-            child_info = build_file_tree(target_dir, config, child, depth + 1, max_depth)
+            child_info = build_file_tree(
+                target_dir, config, child, depth + 1, max_depth,
+                min_size=min_size, top_files=top_files
+            )
             if child_info:
-                children.append(child_info)
+                all_children.append(child_info)
 
-        # Don't include empty directories
-        if not children and current_path != target_dir:
+        # Separate directories and files
+        dirs = [c for c in all_children if c.type == 'dir']
+        files = [c for c in all_children if c.type == 'file']
+
+        # Apply min_size filter to files
+        hidden_by_size = 0
+        if min_size > 0:
+            filtered_files = []
+            for f in files:
+                if f.chars >= min_size:
+                    filtered_files.append(f)
+                else:
+                    hidden_by_size += 1
+            files = filtered_files
+
+        # Apply top_files filter (keep largest files)
+        hidden_by_top = 0
+        if top_files > 0 and len(files) > top_files:
+            # Sort by size descending, take top N
+            files_sorted = sorted(files, key=lambda f: f.chars, reverse=True)
+            hidden_by_top = len(files) - top_files
+            files = files_sorted[:top_files]
+            # Re-sort alphabetically for display
+            files = sorted(files, key=lambda f: f.path)
+
+        # Combine: directories first, then files
+        children = dirs + files
+        hidden_count = hidden_by_size + hidden_by_top
+
+        # Don't include empty directories (unless they have hidden files)
+        if not children and hidden_count == 0 and current_path != target_dir:
             return None
 
-        # Calculate total chars for directory (sum of all children)
+        # Calculate total chars for directory (sum of all children, including hidden)
         total_chars = 0
-        for child in children:
+        for child in all_children:
             if child.type == 'file':
                 total_chars += child.chars
             else:
@@ -524,6 +571,7 @@ def build_file_tree(
             type='dir',
             total_chars=total_chars,
             children=children,
+            hidden_count=hidden_count,
         )
 
     return None
@@ -618,14 +666,28 @@ def count_docs_structure(target_dir: Path) -> Dict[str, int]:
     return {'areas': areas, 'modules': modules}
 
 
-def generate_repo_overview(target_dir: Path) -> RepoOverview:
-    """Generate complete repository overview."""
+def generate_repo_overview(
+    target_dir: Path,
+    min_size: int = 500,
+    top_files: int = 10,
+) -> RepoOverview:
+    """Generate complete repository overview.
+
+    Args:
+        target_dir: Root directory of the project
+        min_size: Minimum file size in chars to include (default 500)
+        top_files: Maximum files per directory (default 10, 0 = unlimited)
+    """
     from datetime import datetime
 
     config = load_doctor_config(target_dir)
 
-    # Build file tree
-    file_tree = build_file_tree(target_dir, config)
+    # Build file tree with filtering
+    file_tree = build_file_tree(
+        target_dir, config,
+        min_size=min_size,
+        top_files=top_files,
+    )
     if not file_tree:
         file_tree = FileInfo(path=target_dir.name, type='dir')
 
@@ -649,210 +711,21 @@ def generate_repo_overview(target_dir: Path) -> RepoOverview:
     )
 
 
-def file_info_to_dict(info: FileInfo) -> Dict[str, Any]:
-    """Convert FileInfo to dict, handling nested structures."""
-    result = {
-        'path': info.path,
-        'type': info.type,
-    }
-    if info.language:
-        result['language'] = info.language
-    if info.chars:
-        result['chars'] = info.chars
-    if info.total_chars:
-        result['total_chars'] = info.total_chars
-    if info.docs_ref:
-        result['docs_ref'] = info.docs_ref
-    if info.code_refs:
-        result['code_refs'] = info.code_refs
-    if info.doc_refs:
-        result['doc_refs'] = info.doc_refs
-    if info.imports:
-        result['imports'] = info.imports
-    if info.sections:
-        result['sections'] = info.sections
-    if info.functions:
-        result['functions'] = info.functions
-    if info.children:
-        result['children'] = [file_info_to_dict(c) for c in info.children]
-    return result
+def generate_and_save(
+    target_dir: Path,
+    output_format: str = "md",
+    min_size: int = 500,
+    top_files: int = 10,
+) -> Path:
+    """Generate overview and save to docs/map.{format}.
 
-
-def overview_to_dict(overview: RepoOverview) -> Dict[str, Any]:
-    """Convert RepoOverview to dict."""
-    return {
-        'project_name': overview.project_name,
-        'generated_at': overview.generated_at,
-        'stats': overview.stats,
-        'dependencies': [asdict(d) for d in overview.dependencies],
-        'file_tree': file_info_to_dict(overview.file_tree),
-    }
-
-
-def _format_size(chars: int) -> str:
-    """Format character count with K/M suffix."""
-    if chars >= 1_000_000:
-        return f"{chars / 1_000_000:.1f}M"
-    elif chars >= 1_000:
-        return f"{chars / 1_000:.1f}K"
-    else:
-        return str(chars)
-
-
-def format_markdown(overview: RepoOverview) -> str:
-    """Format overview as markdown."""
-    lines = []
-    lines.append(f"# Repository Map: {overview.project_name}")
-    lines.append("")
-    lines.append(f"*Generated: {overview.generated_at}*")
-    lines.append("")
-
-    # Stats
-    lines.append("## Statistics")
-    lines.append("")
-    lines.append(f"- **Files:** {overview.stats['total_files']}")
-    lines.append(f"- **Directories:** {overview.stats['total_dirs']}")
-    lines.append(f"- **Total Size:** {_format_size(overview.stats['total_chars'])}")
-    lines.append(f"- **Doc Files:** {overview.stats.get('doc_files', 0)}")
-    lines.append(f"- **Code Files:** {overview.stats.get('code_files', 0)}")
-    lines.append(f"- **Areas:** {overview.stats.get('areas', 0)} (docs/ subfolders)")
-    lines.append(f"- **Modules:** {overview.stats.get('modules', 0)} (subfolders in areas)")
-    lines.append(f"- **DOCS Links:** {overview.stats.get('link_count', 0)} ({overview.stats.get('avg_links_per_file', 0)} avg per code file)")
-    lines.append("")
-
-    if overview.stats.get('by_language'):
-        lines.append("### By Language")
-        lines.append("")
-        for lang, count in sorted(overview.stats['by_language'].items(), key=lambda x: -x[1]):
-            lines.append(f"- {lang}: {count}")
-        lines.append("")
-
-    # Dependencies
-    if overview.dependencies:
-        lines.append("## Module Dependencies")
-        lines.append("")
-        lines.append("```mermaid")
-        lines.append("graph TD")
-        for dep in overview.dependencies:
-            node_id = dep.name.replace('-', '_').replace('.', '_')
-            lines.append(f"    {node_id}[{dep.name}]")
-            for d in dep.depends_on:
-                dep_id = d.replace('-', '_').replace('.', '_')
-                lines.append(f"    {node_id} --> {dep_id}")
-        lines.append("```")
-        lines.append("")
-
-        lines.append("### Module Details")
-        lines.append("")
-        lines.append("| Module | Code | Docs | Lines | Files | Dependencies |")
-        lines.append("|--------|------|------|-------|-------|--------------|")
-        for dep in overview.dependencies:
-            deps_str = ', '.join(dep.depends_on) if dep.depends_on else '-'
-            lines.append(f"| {dep.name} | `{dep.code_pattern}` | `{dep.docs_path}` | {dep.lines} | {dep.files} | {deps_str} |")
-        lines.append("")
-
-    # File tree
-    lines.append("## File Tree")
-    lines.append("")
-    lines.append("```")
-
-    def render_tree(node: FileInfo, prefix: str = "", is_last: bool = True):
-        connector = "└── " if is_last else "├── "
-        # Only show the basename, not full path
-        name = Path(node.path).name
-        if node.type == 'dir':
-            # Show directory with total chars
-            dir_info = f"{name}/"
-            if node.total_chars:
-                dir_info += f" ({_format_size(node.total_chars)})"
-            lines.append(f"{prefix}{connector}{dir_info}")
-            new_prefix = prefix + ("    " if is_last else "│   ")
-            for i, child in enumerate(node.children):
-                render_tree(child, new_prefix, i == len(node.children) - 1)
-        else:
-            info = name
-            if node.chars:
-                info += f" ({_format_size(node.chars)})"
-            if node.docs_ref:
-                info += " →"  # Arrow indicates has docs link
-            lines.append(f"{prefix}{connector}{info}")
-
-    # Start with root's children (not root itself)
-    for i, child in enumerate(overview.file_tree.children):
-        render_tree(child, "", i == len(overview.file_tree.children) - 1)
-
-    lines.append("```")
-    lines.append("")
-
-    # File details with sections/functions
-    lines.append("## File Details")
-    lines.append("")
-
-    def render_details(node: FileInfo, path_parts: List[str] = None):
-        if path_parts is None:
-            path_parts = []
-
-        name = Path(node.path).name
-        current_parts = path_parts + [name]
-
-        if node.type == 'file':
-            if node.sections or node.functions or node.docs_ref or node.code_refs or node.doc_refs or node.imports:
-                full_path = "/".join(current_parts)
-                lines.append(f"### `{full_path}`")
-                lines.append("")
-                if node.docs_ref:
-                    lines.append(f"**Docs:** `{node.docs_ref}`")
-                    lines.append("")
-                if node.code_refs:
-                    lines.append("**Code refs:**")
-                    for ref in node.code_refs:
-                        lines.append(f"- `{ref}`")
-                    lines.append("")
-                if node.doc_refs:
-                    lines.append("**Doc refs:**")
-                    for ref in node.doc_refs:
-                        lines.append(f"- `{ref}`")
-                    lines.append("")
-                if node.imports:
-                    lines.append("**Imports:**")
-                    for imp in node.imports:
-                        lines.append(f"- `{imp}`")
-                    lines.append("")
-                if node.sections:
-                    lines.append("**Sections:**")
-                    for s in node.sections:
-                        lines.append(f"- {s}")
-                    lines.append("")
-                if node.functions:
-                    lines.append("**Definitions:**")
-                    for f in node.functions:
-                        lines.append(f"- `{f}`")
-                    lines.append("")
-        elif node.type == 'dir':
-            for child in node.children:
-                render_details(child, current_parts)
-
-    for child in overview.file_tree.children:
-        render_details(child, [])
-
-    return "\n".join(lines)
-
-
-def format_yaml(overview: RepoOverview) -> str:
-    """Format overview as YAML."""
-    if not HAS_YAML:
-        return "# YAML not available - install pyyaml"
-    return yaml.dump(overview_to_dict(overview), default_flow_style=False, sort_keys=False)
-
-
-def format_json(overview: RepoOverview) -> str:
-    """Format overview as JSON."""
-    return json.dumps(overview_to_dict(overview), indent=2)
-
-
-def generate_and_save(target_dir: Path, output_format: str = "md") -> Path:
-    """Generate overview and save to docs/map.{format}."""
-    overview = generate_repo_overview(target_dir)
+    Args:
+        target_dir: Root directory of the project
+        output_format: Output format (md, yaml, json)
+        min_size: Minimum file size in chars to include (default 500)
+        top_files: Maximum files per directory (default 10, 0 = unlimited)
+    """
+    overview = generate_repo_overview(target_dir, min_size=min_size, top_files=top_files)
 
     # Ensure docs directory exists
     docs_dir = target_dir / "docs"
