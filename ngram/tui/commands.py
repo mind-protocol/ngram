@@ -361,43 +361,18 @@ async def _spawn_agent(app: "NgramApp", issue, agent_index: int) -> None:
     # Get instructions
     instructions = get_issue_instructions(issue, app.target_dir)
 
-    # Create throttled output callback for this agent
-    # Use default args to capture values (not references) in closure
-    output_buffer = []
-    last_update = [0.0]
-    pending_update = [False]  # Flag to prevent stacking updates
-
-    async def on_output(
-        text: str,
-        aid=agent_id,
-        buf=output_buffer,
-        upd=last_update,
-        agent_ref=agent,
-        pending=pending_update
-    ) -> None:
-        """Handle agent output with throttling to prevent UI blocking."""
-        import time
-        # Skip empty or whitespace-only deltas
+    # Simple output callback - buffer and update the agent panel
+    async def on_output(text: str, agent_ref=agent) -> None:
+        """Buffer agent output and update the agent panel."""
         if not text or not text.strip():
             return
-        buf.append(text)
-        # Also store in agent handle for later retrieval
         agent_ref.append_output(text)
-        now = time.time()
-        # Only schedule UI update every 250ms and if no update pending
-        if now - upd[0] > 0.25 and not pending[0]:
-            upd[0] = now
-            pending[0] = True
-            combined = "".join(buf)
-            # Schedule update on next event loop iteration (non-blocking)
-            def do_update(content=combined, agent_id=aid):
-                try:
-                    agent_container.update_agent(agent_id, content)
-                except Exception:
-                    pass
-                finally:
-                    pending[0] = False
-            app.call_later(do_update)
+        panel = agent_container._agent_panels.get(agent_ref.id)
+        if panel is None:
+            agent_container.add_agent(agent_ref)
+            panel = agent_container._agent_panels.get(agent_ref.id)
+        if panel:
+            panel.append_output(text)
 
     manager.add_message(f"{symbol} {issue.issue_type}: {issue.path}")
 
@@ -510,7 +485,21 @@ async def _spawn_next_from_queue(app: "NgramApp") -> None:
 
 async def handle_doctor(app: "NgramApp", args: str) -> None:
     """Run health check."""
-    await app._run_doctor()
+    manager = app.query_one("#manager-panel")
+    status_bar = app.query_one("#status-bar")
+
+    manager.add_message("[blue]Running health check...[/]")
+
+    try:
+        result = await app._run_doctor_async()
+        score = result.get("score", 0)
+        app.state.health_score = score
+        status_bar.update_health(score)
+        manager.add_message(f"Health: {score}/100")
+        app.conversation.add_message("system", f"/doctor\nHealth: {score}/100")
+    except Exception as e:
+        manager.add_message(f"[red]Health check failed: {e}[/]")
+        app.log_error(f"Doctor command failed: {e}")
 
 
 async def handle_quit(app: "NgramApp", args: str) -> None:

@@ -341,7 +341,7 @@ class AgentContainer(Container):
             header = "## File Changes"
             if updated_at:
                 header += f" *(updated {updated_at})*"
-            header += f" — {change_rate:.2f} changes/min, {commit_rate:.2f} commits/min"
+            header += f" — {change_rate:.1f} changes/min, {commit_rate:.1f} commits/min"
             lines = [header + "\n"]
             if file_changes.strip():
                 lines.append(f"```\n{file_changes}\n```")
