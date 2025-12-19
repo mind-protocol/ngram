@@ -2,7 +2,7 @@
 
 ```
 LAST_UPDATED: 2025-12-19
-UPDATED_BY: codex (repair hardcoded config)
+UPDATED_BY: codex (repair incomplete impl false positive)
 STATUS: CANONICAL
 ```
 
@@ -58,6 +58,11 @@ No active development at this time.
 
 - Reduced `docs/cli` module size by simplifying verbose sections
 
+### 2025-12-19: INCOMPLETE_IMPL false positive review
+
+- Confirmed `get_issue_symbol` and `get_issue_action_parts` already implement lookups
+- No code changes required; this repair only updates SYNC to document the check
+
 ---
 
 ## KNOWN ISSUES
@@ -86,8 +91,8 @@ No active development at this time.
 ## Agent Observations
 
 ### Remarks
-- `get_issue_symbol` and `get_issue_action_parts` already have complete lookup implementations.
- - SVG namespace now configurable via `NGRAM_SVG_NAMESPACE` for project map HTML output.
+- Confirmed INCOMPLETE_IMPL finding was a false positive due to short helper bodies.
+- SVG namespace now configurable via `NGRAM_SVG_NAMESPACE` for project map HTML output.
 - Overview DOCS header scan length now configurable via `doctor.docs_ref_search_chars` in `.ngram/config.yaml`.
 
 ### Suggestions
