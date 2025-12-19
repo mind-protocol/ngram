@@ -444,6 +444,7 @@ async def _run_agent_message(app: "NgramApp", message: str, response_widget, sto
             if inspect.isawaitable(result):
                 await result
             response_widget.refresh()
+            app.notify_manager_response()
 
             # Save assistant response to history (strip markup for storage)
             clean_response = response.replace("[dim italic]", "").replace("[/]", "")

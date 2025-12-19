@@ -323,6 +323,7 @@ class NgramApp(App if TEXTUAL_AVAILABLE else object):
                 full_response = "".join(response_parts)
                 manager.add_message(full_response)
                 self._llm_conversation_started = True
+                self.notify_manager_response()
 
                 # Detect commands and show interactive options
                 from .commands import _detect_commands
@@ -667,6 +668,16 @@ Keep it concise and actionable (2-3 paragraphs max)."""
                 return True  # Suppress silently - known Textual bug
         self.log_error(str(error))
         return True  # Return True to prevent crash, keep app running
+
+    def notify_manager_response(self) -> None:
+        """Emit an audible bell when the manager responds."""
+        import sys
+
+        try:
+            sys.stdout.write("\a")
+            sys.stdout.flush()
+        except Exception:
+            pass
 
     async def action_interrupt_or_quit(self) -> None:
         """Handle Ctrl+C: first press interrupts, second press quits."""
