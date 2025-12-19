@@ -3,7 +3,7 @@
 ```
 STATUS: IMPLEMENTED
 CREATED: 2025-12-18
-UPDATED: 2025-12-18
+UPDATED: 2025-12-19
 ```
 
 ---
@@ -43,7 +43,7 @@ ngram/cli.py                         # CLI entry point (TUI launched via `ngram`
 ngram/repair_core.py                 # Shared repair logic (497L)
 ```
 
-Manager startup prefers .ngram/agents/manager/AGENTS.md when present; otherwise it mirrors .ngram/CLAUDE.md into the manager working directory and writes AGENTS.md with the same content for Codex/Gemini compatibility.
+Manager startup prefers `.ngram/agents/manager/AGENTS.md` when present; otherwise it mirrors `.ngram/CLAUDE.md` into the manager working directory and writes AGENTS.md for Codex/Gemini compatibility.
 
 ### File Responsibilities
 
@@ -63,84 +63,6 @@ Manager startup prefers .ngram/agents/manager/AGENTS.md when present; otherwise 
 | `ngram/cli.py` | - | EXISTS | CLI entry point | TUI launched via `ngram` (no subcommand) |
 | `ngram/repair_core.py` | 497L | EXISTS | Shared logic | `spawn_repair_agent_async()` |
 
-### Manager Supervisor Details
-
-- Drift detection parses agent output for change verbs and categorizes code updates vs markdown docs.
-- ClaudePTY running state reflects subprocess exit to avoid stale "running" flags.
-
----
-
-## DESIGN PATTERNS
-
-### Architecture Pattern: Component-Based UI
-
-**Pattern:** Textual widget composition
-
-**Why:** Textual provides CSS-like styling, async support, and composable widgets. Matches agent CLI aesthetic.
-
-**Where:** All widget files in ngram/tui/widgets/ compose into ngram/tui/app.py
-
-### Code Patterns
-
-| Pattern | Where Used | Purpose |
-|---------|------------|---------|
-| Observer | Agent output callbacks | Stream output to panels |
-| Factory | `ngram/tui/commands.py` | Route commands to handlers |
-| State | `ngram/tui/state.py` | Centralized session state |
-| Composition | `ngram/tui/app.py` | Build UI from widgets |
-
-### Anti-Patterns to Avoid
-
-- **Monolithic app.py** — Keep under 200 lines, delegate to widgets
-- **Sync blocking** — Never block event loop, use async throughout
-- **Global state** — Use SessionState class, not module globals
-- **Hardcoded colors** — All styling in `ngram/tui/styles/theme.tcss`
-
-### Boundary Definitions
-
-**Inside TUI module:**
-- Widget rendering
-- User input handling
-- Layout management
-- Command parsing
-
-**Outside TUI module (use via imports):**
-- Repair logic (`ngram/repair_core.py`)
-- Doctor checks (`ngram/doctor.py`)
-- File operations (agents handle this)
-
----
-
-## SCHEMA
-
-### SessionState
-
-```yaml
-SessionState:
-  required:
-    - health_score: int           # Current health 0-100
-    - active_agents: List[AgentHandle]
-    - running: bool               # App running state
-  optional:
-    - manager_messages: List[str] # Message history
-    - last_command: str           # Most recent command
-```
-
-### AgentHandle
-
-```yaml
-AgentHandle:
-  required:
-    - id: str                     # Unique identifier
-    - issue_type: str             # e.g., "INCOMPLETE_CHAIN"
-    - target_path: str            # Issue target
-    - process: asyncio.Process    # Subprocess handle
-    - status: str                 # running/completed/failed/timeout
-  optional:
-    - output_buffer: List[str]    # Captured output lines
-    - start_time: float           # For duration tracking
-```
-
 ---
 
 ## ENTRY POINTS
@@ -153,73 +75,11 @@ AgentHandle:
 
 ---
 
-## DATA FLOW
-
-### User Command Flow
+## DATA FLOW (HIGH LEVEL)
 
 ```
-┌─────────────────┐
-│   User Input    │
-│   "/repair"     │
-└────────┬────────┘
-         │ string
-         ▼
-┌─────────────────────────┐
-│       InputBar          │ ← captures input, emits event
-│ ngram/tui/widgets/  │
-│       input_bar.py      │
-└───────────┬─────────────┘
-            │ SlashCommand
-            ▼
-┌─────────────────────────┐
-│       NgramApp          │ ← routes to handler
-│   ngram/tui/app.py  │
-└───────────┬─────────────┘
-            │ dispatch
-            ▼
-┌─────────────────────────┐
-│ ngram/tui/commands  │ ← handle_repair()
-│       handle_*()        │
-└───────────┬─────────────┘
-            │ spawns agents
-            ▼
-┌─────────────────────────┐
-│ ngram/repair_core   │ ← spawn_repair_agent_async()
-└───────────┬─────────────┘
-            │ asyncio.Process per issue
-            ▼
-┌─────────────────────────┐
-│     AgentContainer      │ ← displays in columns
-│ ngram/tui/widgets/  │
-│   agent_container.py    │
-└─────────────────────────┘
-```
-
-### Agent Output Flow
-
-```
-┌─────────────────────────┐
-│      Manager Agent      │ ← subprocess (Claude, Gemini, or Codex)
-│       (external)        │
-└───────────┬─────────────┘
-            │ stdout lines
-            ▼
-┌─────────────────────────┐
-│ ngram/repair_core   │ ← on_output callback
-│   spawn_async()         │
-└───────────┬─────────────┘
-            │ parsed text
-            ▼
-┌─────────────────────────┐
-│      AgentPanel         │ ← append_output()
-│ ngram/tui/widgets/  │
-│    agent_panel.py       │
-└───────────┬─────────────┘
-            │ render
-            ▼
-┌─────────────────────────┐
-│     User Display        │
-└─────────────────────────┘
+User input -> InputBar -> NgramApp -> commands.py handlers
+  -> repair_core.spawn_repair_agent_async() -> AgentPanel output
 ```
 
 ---
@@ -230,19 +90,18 @@ AgentHandle:
 
 ```
 ngram/tui/app.py
-    └── imports → widget modules
-    └── imports → ngram/tui/state.py
-    └── imports → ngram/tui/commands.py
-    └── imports → ngram/tui/manager.py
+    -> widgets
+    -> ngram/tui/state.py
+    -> ngram/tui/commands.py
+    -> ngram/tui/manager.py
 
 ngram/tui/commands.py
-    └── imports → ngram/tui/commands_agent.py
-    └── imports → ngram/repair_core.py
-    └── imports → ngram/doctor.py
-    └── imports → ngram/tui/app.py (type hint)
+    -> ngram/tui/commands_agent.py
+    -> ngram/repair_core.py
+    -> ngram/doctor.py
 
 ngram/cli.py
-    └── imports → ngram/tui/app.py (NgramApp)
+    -> ngram/tui/app.py
 ```
 
 ### External Dependencies
@@ -254,119 +113,15 @@ ngram/cli.py
 
 ---
 
-## STATE MANAGEMENT
+## STATE MANAGEMENT (SUMMARY)
 
-### Where State Lives
-
-| State | Location | Scope | Lifecycle |
-|-------|----------|-------|-----------|
-| Session state | `ngram/tui/state.py:SessionState` | App instance | App lifetime |
-| Agent handles | SessionState active_agents | Session | Per repair run |
-| Widget state | Individual widgets | Widget instance | Widget lifetime |
-
-### SessionState Helpers
-
-- `add_agent()` replaces an existing agent with the same id to avoid duplicate handles.
-- active_count relies on AgentHandle.is_active, which also checks subprocess returncode.
-- ConversationHistory.get_recent() returns a copy and handles non-positive limits.
-
-### State Transitions
-
-```
-IDLE ──/repair──▶ RUNNING ──complete──▶ IDLE
-                     │
-                     ├──error──▶ IDLE (with error message)
-                     │
-                     └──timeout──▶ IDLE (with timeout message)
-```
+- Session state lives in `ngram/tui/state.py:SessionState`
+- Agent handles stored in `SessionState.active_agents`
+- Widgets own their local UI state
 
 ---
 
-## RUNTIME BEHAVIOR
+## ARCHIVED DETAIL
 
-### Initialization
-
-```
-1. Import textual (fail gracefully if missing)
-2. Create NgramApp instance
-3. Mount widgets (compose)
-4. Run initial doctor check
-5. Focus input bar
-6. Enter event loop
-```
-
-### Main Loop
-
-```
-1. Await input event
-2. Parse command
-3. Dispatch to handler
-4. Update UI
-5. Back to step 1
-```
-
-### Shutdown
-
-```
-1. Signal all agent processes to terminate
-2. Wait for graceful shutdown (timeout 5s)
-3. Force kill remaining
-4. Restore terminal
-5. Exit
-```
-
----
-
-## CONCURRENCY MODEL
-
-| Component | Model | Notes |
-|-----------|-------|-------|
-| Textual App | async | Event-driven, single thread |
-| Agent processes | subprocess | Independent processes |
-| Output streaming | async callback | Non-blocking |
-
----
-
-## CONFIGURATION
-
-| Config | Location | Default | Description |
-|--------|----------|---------|-------------|
-| `AGENT_TIMEOUT` | `ngram/repair_core.py` | 600s | Max agent runtime |
-| Theme | `ngram/tui/styles/theme.tcss` | Paper & Parchment | Visual theme |
-
----
-
-## BIDIRECTIONAL LINKS
-
-### Code → Docs
-
-Files reference this documentation:
-
-| File | Line | Reference |
-|------|------|-----------|
-| ngram/tui/app.py | 1 | DOCS reference to PATTERNS_TUI_Design.md |
-| ngram/tui/state.py | 1 | DOCS reference to this file |
-
-### Docs → Code
-
-| Doc Section | Implemented In |
-|-------------|----------------|
-| ALGORITHM main loop | `ngram/tui/app.py:NgramApp.run()` |
-| BEHAVIOR B1 launch | `ngram/tui/app.py:main()`, `ngram/cli.py` |
-| BEHAVIOR B2 repair | `ngram/tui/commands.py:handle_repair()` |
-
----
-
-## REMAINING WORK
-
-- [ ] Tab layout for >3 agents (columns work, tabs not implemented)
-- [ ] Markdown rendering for responses
-- [ ] Syntax highlighting for code blocks
-- [ ] `/issues` command to switch right panel to issues list
-- [ ] Auto-refresh SYNC display on file change
-
-## DECISIONS MADE
-
-- [x] Single `ngram/tui/commands.py` for all command handlers (implemented)
-- [x] Widgets are classes (standard Textual pattern)
-- [x] Paper & Parchment theme in `ngram/tui/styles/theme.tcss`
+More detailed design/runtime notes and historical decisions are archived in:
+`docs/tui/archive/IMPLEMENTATION_archive_2024-12.md`

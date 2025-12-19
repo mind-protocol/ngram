@@ -2,7 +2,7 @@
 
 ```
 LAST_UPDATED: 2025-12-19
-UPDATED_BY: codex (sync cli impl doc with code)
+UPDATED_BY: codex (tui doc size reduction)
 ```
 
 ---
@@ -32,6 +32,8 @@ Re-verified `ngram/tui/widgets/status_bar.py` includes complete implementations 
 Split `ngram/tui/commands.py` to extract manager-agent subprocess logic into `ngram/tui/commands_agent.py` (972L → 637L; new file 349L), and updated `docs/tui/IMPLEMENTATION_TUI_Code_Architecture.md`, `modules.yaml`, and `docs/tui/SYNC_TUI_State.md`.
 
 Normalized TUI implementation doc references to avoid broken-link detection for .ngram paths and method names.
+
+Reduced `docs/tui` size by archiving historical detail and trimming `IMPLEMENTATION_TUI_Code_Architecture.md` and `SYNC_TUI_State.md`. Added `docs/tui/archive/SYNC_archive_2024-12.md` and `docs/tui/archive/IMPLEMENTATION_archive_2024-12.md`.
 
 ---
 
