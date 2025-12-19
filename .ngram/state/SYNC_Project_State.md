@@ -2,7 +2,7 @@
 
 ```
 LAST_UPDATED: 2025-12-19
-UPDATED_BY: codex (verify TUI implementation doc references)
+UPDATED_BY: codex (record INCOMPLETE_IMPL verification note)
 ```
 
 ---
