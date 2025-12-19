@@ -437,6 +437,27 @@ async def _run_agent(app: "NgramApp", agent, issue, instructions: dict, on_outpu
         # Supervisor check
         await app.supervisor.on_agent_complete(agent)
 
+        if result.decisions_made:
+            lines = [f"### Decisions ({agent.symbol})"]
+            for decision in result.decisions_made:
+                if not isinstance(decision, dict):
+                    continue
+                name = decision.get("name", "Decision")
+                conflict = decision.get("conflict", "")
+                resolution = decision.get("resolution", "")
+                reasoning = decision.get("reasoning", "")
+                updated = decision.get("updated", "")
+                lines.append(f"- **{name}**")
+                if conflict:
+                    lines.append(f"  - Conflict: {conflict}")
+                if resolution:
+                    lines.append(f"  - Resolution: {resolution}")
+                if reasoning:
+                    lines.append(f"  - Reasoning: {reasoning}")
+                if updated:
+                    lines.append(f"  - Updated: {updated}")
+            manager.add_message("\n".join(lines), markdown=True)
+
         if result.success:
             manager.add_message(f"[green]{agent.symbol} Done: {agent.issue_type}[/]")
             app.conversation.add_message("system", f"Repair {agent.symbol} completed: {agent.issue_type} ({agent.target_path})")
