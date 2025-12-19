@@ -50,6 +50,12 @@ TUI implementations are complete, but doctor was flagging short delegating metho
 - **Why:** Doctor flagged short delegating methods that are already fully implemented.
 - **Impact:** Doctor no longer reports these false positives.
 
+### 2025-12-19: Verified TUI status bar implementations
+
+- **What:** Checked `ngram/tui/widgets/status_bar.py` for reported empty methods; confirmed all listed methods already have implementations.
+- **Why:** Repair task flagged INCOMPLETE_IMPL, but the status bar already handles refresh, animation, and progress updates.
+- **Impact:** No code changes required; recorded as false-positive repair.
+
 ---
 
 ## KNOWN ISSUES
@@ -72,6 +78,12 @@ TUI implementations are complete, but doctor was flagging short delegating metho
 - Conflict: Repair task claimed multiple methods in `ngram/tui/state.py` were empty, but implementations are present.
 - Resolution: Treat as false positive; no code changes required.
 - Reasoning: Methods already implement history, agent output, and session state helpers.
+- Updated: /home/mind-protocol/ngram/.ngram/state/SYNC_Project_State.md
+
+### DECISION: tui/widgets/status_bar.py INCOMPLETE_IMPL false positive
+- Conflict: Repair task claimed `set_folder`, `update_health`, `set_repair_progress`, `_start_animation`, `_animate`, and `_refresh_display` were empty, but implementations are present.
+- Resolution: Treat as false positive; no code changes required.
+- Reasoning: Methods already update display state, animation timers, and health/progress rendering.
 - Updated: /home/mind-protocol/ngram/.ngram/state/SYNC_Project_State.md
 
 ---

@@ -170,6 +170,7 @@ None currently.
   tab switching, and input focus helpers) are complete delegating implementations. Added to
   doctor-ignore.yaml.
 - INCOMPLETE_IMPL report in `tui/state.py` was outdated - all functions already implemented; no code change needed.
+- INCOMPLETE_IMPL report in `widgets/status_bar.py` was outdated - all flagged methods already have implementations; no code change needed.
 
 ---
 
