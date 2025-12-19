@@ -158,8 +158,10 @@ class NgramApp(App if TEXTUAL_AVAILABLE else object):
         await self._run_doctor_with_display()
 
         manager = self.query_one("#manager-panel")
-        manager_wakeup_msg = manager.add_message("[blue]Waking up ngram manager...[/]")
-        self._manager_wakeup_animation_task = asyncio.create_task(self._animate_loading(manager_wakeup_msg))
+        manager_wakeup_msg = manager.add_message("[blue]Waking up ngram manager[/] [dim]...[/]")
+        self._manager_wakeup_animation_task = asyncio.create_task(
+            self._animate_loading(manager_wakeup_msg, prefix="[blue]Waking up ngram manager[/] ")
+        )
 
         # Start manager session (also in this background task)
         await self._start_manager_with_overview()
@@ -364,14 +366,17 @@ Keep it concise and actionable (2-3 paragraphs max)."""
         else:
             manager.add_message("No SYNC file found. Initialize with `ngram init` or check .ngram/ directory.")
 
-    async def _animate_loading(self, widget) -> None:
+    async def _animate_loading(self, widget, prefix: str = "") -> None:
         """Animate the loading indicator until cancelled."""
         dots = [".", "..", "...", ".."]
         i = 0
         try:
             while True:
                 await asyncio.sleep(0.3)
-                widget.update(f"[dim]{dots[i % len(dots)]}[/]")
+                if prefix:
+                    widget.update(f"{prefix}[dim]{dots[i % len(dots)]}[/]")
+                else:
+                    widget.update(f"[dim]{dots[i % len(dots)]}[/]")
                 i += 1
         except asyncio.CancelledError:
             pass  # Animation cancelled, exit cleanly
