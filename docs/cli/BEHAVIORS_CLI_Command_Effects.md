@@ -44,6 +44,7 @@ WHEN:   `ngram init --force` is executed
 THEN:   Existing .ngram/ is removed
 AND:    Fresh protocol files are copied
 AND:    .ngram/CLAUDE.md and AGENTS.md are updated (not duplicated)
+AND:    If removal fails due to permissions, init falls back to a partial refresh with warnings
 ```
 
 ### B3: Validate Command
@@ -74,7 +75,7 @@ AND:    Results saved to .ngram/state/SYNC_Project_Health.md
 GIVEN:  A project with health issues from doctor
 WHEN:   `ngram repair` is executed
 THEN:   Repair agents are spawned for each issue
-AND:    `--agents {claude,codex}` selects the agent provider
+AND:    `--agents {claude,codex,gemini}` selects the agent provider
 AND:    Agents follow appropriate VIEW for each issue type
 AND:    Progress is streamed to terminal
 AND:    Report saved to .ngram/state/REPAIR_REPORT.md

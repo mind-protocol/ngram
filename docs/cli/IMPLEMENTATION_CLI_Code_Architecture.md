@@ -35,7 +35,7 @@ ngram/
 ├── doctor_types.py         # DoctorIssue, DoctorConfig types
 ├── doctor_report.py        # Report generation, scoring
 ├── doctor_files.py         # File discovery utilities
-├── agent_cli.py            # Agent CLI wrapper (claude/codex)
+├── agent_cli.py            # Agent CLI wrapper (claude/codex/gemini)
 ├── repair.py               # Agent orchestration for repairs
 ├── repair_report.py        # Repair report generation (LLM + template)
 ├── repair_instructions.py  # Code/test/config repair prompts (main)
@@ -186,7 +186,7 @@ RepairResult:
 For detailed algorithmic steps, see `docs/cli/ALGORITHM_CLI_Logic.md`.
 
 **Summary:**
-- **Init:** `get_templates_path()` → `shutil.copytree()` → update .ngram/CLAUDE.md + root AGENTS.md (append `templates/CODEX_SYSTEM_PROMPT_ADDITION.md`)
+- **Init:** `get_templates_path()` → `shutil.copytree()` → update .ngram/CLAUDE.md + root AGENTS.md (append `templates/CODEX_SYSTEM_PROMPT_ADDITION.md`); on permission errors, fall back to in-place copy with warnings
 - **Doctor:** `load_config()` → 12 health checks → `calculate_health_score()` → write report
 - **Repair:** `run_doctor()` → filter issues → parallel agents → re-check → report
 

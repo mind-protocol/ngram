@@ -32,7 +32,7 @@ The CLI is functional and in active use. All core commands work:
 
 **doctor**: Comprehensive health checks for 12 issue types (MONOLITH, UNDOCUMENTED, STALE_SYNC, PLACEHOLDER, INCOMPLETE_CHAIN, NO_DOCS_REF, BROKEN_IMPL_LINK, STUB_IMPL, INCOMPLETE_IMPL, UNDOC_IMPL, LARGE_DOC_MODULE, YAML_DRIFT). Generates SYNC-formatted health report. Supports GitHub issue creation.
 
-**repair**: The most sophisticated command. Spawns repair agents in parallel (default 5) to fix issues. Each agent follows a VIEW, reads required docs, makes focused changes, and updates SYNC. Supports depth levels (links, docs, full), issue type filtering, and `--agents {claude,codex}`.
+**repair**: The most sophisticated command. Spawns repair agents in parallel (default 5) to fix issues. Each agent follows a VIEW, reads required docs, makes focused changes, and updates SYNC. Supports depth levels (links, docs, full), issue type filtering, and `--agents {claude,codex,gemini}`.
 
 **sync**: Shows SYNC file status and auto-archives large files.
 
@@ -75,9 +75,10 @@ See `SYNC_CLI_State_archive_2025-12.md` for detailed change logs.
 
 ### 2025-12-20: Added multi-agent provider support
 
-- `repair` and TUI can now use `--agents {claude,codex}`
-- Manager calls resume sessions for both providers
-- `init` writes `AGENTS.md` at repo root (mirrors `.ngram/CLAUDE.md` and adds Codex guidance)
+- `repair` and TUI can now use `--agents {claude,codex,gemini}`
+- Manager calls resume sessions across providers
+- `init` writes `AGENTS.md` at repo root (mirrors `.ngram/CLAUDE.md` and adds Codex/Gemini guidance)
+- `init` falls back to in-place refresh when `.ngram/` removal fails due to permissions
 
 ---
 
@@ -102,7 +103,7 @@ See `SYNC_CLI_State_archive_2025-12.md` for detailed change logs.
 - Each command is in its own file under `ngram/`
 - `cli.py` is the entry point that wires up argparse
 - `utils.py` has shared utilities (template paths, module discovery)
-- The repair system spawns agent subprocesses (`claude` or `codex`) with specific prompts
+- The repair system spawns agent subprocesses (`claude`, `gemini`, or `codex`) with specific prompts
 - `AGENTS.md` mirrors `.ngram/CLAUDE.md` and appends `CODEX_SYSTEM_PROMPT_ADDITION.md`
 
 **Watch out for:**

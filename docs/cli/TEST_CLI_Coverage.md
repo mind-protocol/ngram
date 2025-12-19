@@ -28,7 +28,7 @@ The CLI module currently lacks automated tests. Testing is performed manually th
 **Testing philosophy:**
 - Commands should be tested in isolation first
 - Integration tests should verify end-to-end flows
-- Agent tests require mocking agent subprocess (claude or codex)
+- Agent tests require mocking agent subprocess (claude, gemini, or codex)
 
 ---
 
@@ -36,7 +36,8 @@ The CLI module currently lacks automated tests. Testing is performed manually th
 
 **None automated.** Planned tests per command:
 
-- **Init:** protocol dir creation, .ngram/CLAUDE.md + AGENTS.md update (includes Codex addition), force overwrite, duplicate prevention
+- **Init:** protocol dir creation, .ngram/CLAUDE.md + AGENTS.md update (includes Codex/Gemini addition), force overwrite, duplicate prevention
+- **Init (permissions):** partial refresh when .ngram/ removal fails
 - **Validate:** healthy project pass, missing protocol fail, broken chain detection
 - **Doctor:** monolith detection, undocumented detection, stale sync, score calculation
 - **Repair:** agent spawning, depth filtering, max limit, dry-run, parallel execution

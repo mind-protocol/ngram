@@ -63,7 +63,7 @@ The TUI stays open. After a repair completes, you're back at the prompt. You can
 - Continue the conversation
 
 This mirrors how agent CLIs work — it's a session, not a command. The manager can be backed
-by Claude or Codex via `--agents {claude,codex}`.
+by Claude, Gemini, or Codex via `--agents {claude,codex,gemini}`.
 
 ### Principle 2: Manager + Workers Visualization
 

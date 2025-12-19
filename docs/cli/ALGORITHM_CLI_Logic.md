@@ -28,6 +28,41 @@ The CLI processes commands through a simple dispatch pattern: parse arguments, r
 
 ---
 
+## ALGORITHM: Init Command
+
+### Step 1: Preserve Learnings
+
+```
+if .ngram/views/*_LEARNINGS.md exists:
+    preserve non-empty learnings
+```
+
+### Step 2: Copy Protocol Files
+
+```
+if .ngram/ exists and force:
+    try rmtree(.ngram/)
+    if permission error:
+        copy files in place and warn
+else:
+    copytree(templates/ngram, .ngram/)
+```
+
+### Step 3: Write Bootstrap Files
+
+```
+write .ngram/CLAUDE.md
+write AGENTS.md (.ngram/CLAUDE.md + CODEX_SYSTEM_PROMPT_ADDITION.md)
+```
+
+### Step 4: Restore Learnings + Generate Map
+
+```
+restore preserved learnings
+generate docs/map.md
+```
+
+---
 ## DATA STRUCTURES
 
 See `IMPLEMENTATION_CLI_Code_Architecture.md#SCHEMA` for full type definitions:
@@ -181,7 +216,7 @@ cmd = build_agent_command(
     continue_session=False,
 )
 process = subprocess.Popen(cmd, stdout=PIPE)
-stream output, parse JSON (Claude) or text (Codex), show progress
+stream output, parse JSON (Claude) or text (Gemini/Codex), show progress
 check for "REPAIR COMPLETE" or "REPAIR FAILED"
 ```
 

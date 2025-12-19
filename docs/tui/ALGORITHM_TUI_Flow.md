@@ -121,6 +121,9 @@ MATCH command.name:
 IF --agents=codex:
     Use codex exec resume --last for manager prompts
     Parse plain text output
+ELIF --agents=gemini:
+    Use gemini --resume latest for manager prompts
+    Parse plain text output
 ELSE:
     Use claude --continue with stream-json output
 ```

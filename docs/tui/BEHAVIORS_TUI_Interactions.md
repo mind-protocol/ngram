@@ -65,7 +65,7 @@ THEN:   User input displays in blue with blank line before
 AND:    Animated "..." appears while waiting
 AND:    Agent thinking displays in dim italic (Claude only)
 AND:    Agent response displays in manager panel
-AND:    Conversation resumes on each turn (Claude or Codex)
+AND:    Conversation resumes on each turn (Claude, Gemini, or Codex)
 ```
 
 ### B3.2: Display SYNC on Launch

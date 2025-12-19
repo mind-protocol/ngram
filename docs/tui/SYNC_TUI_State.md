@@ -24,7 +24,7 @@ THIS:            SYNC_TUI_State.md (you are here)
 
 ## CURRENT STATE
 
-**Status: FUNCTIONAL** — TUI working with agent integration (Claude or Codex).
+**Status: FUNCTIONAL** — TUI working with agent integration (Claude, Gemini, or Codex).
 
 The TUI provides an agent-style persistent chat interface for ngram. Entry point is `ngram` (no subcommand).
 
@@ -45,11 +45,11 @@ The TUI provides an agent-style persistent chat interface for ngram. Entry point
 - Resize handling: Health score repositions automatically on terminal resize (B12)
 
 #### Agent Integration
-- Subprocess-based with `claude` or `codex exec`
-- Conversation continuity via `--continue` / `codex exec resume --last`
+- Subprocess-based with `claude`, `gemini`, or `codex exec`
+- Conversation continuity via `--continue` / `gemini --resume latest` / `codex exec resume --last`
 - System prompt from `.ngram/agents/manager/CLAUDE.md` mirrored into `AGENTS.md`
 - Global learnings appended from `.ngram/views/GLOBAL_LEARNINGS.md`
-- Streaming responses for Claude; text output for Codex
+- Streaming responses for Claude; text output for Gemini/Codex
 - Thinking blocks: 3-line preview with collapsible "Show more..." for longer thoughts (Claude only)
 - Animated loading indicator (`. → .. → ...`) during agent responses
 
@@ -106,8 +106,8 @@ The TUI provides an agent-style persistent chat interface for ngram. Entry point
 
 ### 2025-12-20: Added multi-agent provider support
 
-- TUI accepts `--agents {claude,codex}` and uses the selected provider for manager and repairs
-- Manager resumes sessions across turns for both providers
+- TUI accepts `--agents {claude,codex,gemini}` and uses the selected provider for manager and repairs
+- Manager resumes sessions across turns for all providers
 
 ### Planned Features
 

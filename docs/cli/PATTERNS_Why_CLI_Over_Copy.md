@@ -43,7 +43,7 @@ The CLI does NOT add complex logic. It provides:
 1. **Installation** — Copy protocol files to target project
 2. **Validation** — Check protocol invariants are satisfied
 3. **Health Checks** — Identify documentation gaps, stale syncs, code monoliths
-4. **Automated Repair** — Spawn repair agents (Claude or Codex) to fix issues
+4. **Automated Repair** — Spawn repair agents (Claude, Gemini, or Codex) to fix issues
 5. **Navigation** — Find docs from code paths, generate context
 
 The protocol itself remains file-based. The CLI is orchestration, not logic.
@@ -98,7 +98,7 @@ This is not "AI magic" — it's structured task delegation. Each agent gets:
 - Instructions to update SYNC when done
 
 Agent entrypoints are normalized through `agent_cli.py`. Root `AGENTS.md` mirrors
-`.ngram/CLAUDE.md` plus `templates/CODEX_SYSTEM_PROMPT_ADDITION.md` for Codex-compatible
+`.ngram/CLAUDE.md` plus `templates/CODEX_SYSTEM_PROMPT_ADDITION.md` for Codex/Gemini-compatible
 instructions.
 
 ---
