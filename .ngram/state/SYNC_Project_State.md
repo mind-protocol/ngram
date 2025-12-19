@@ -2,7 +2,7 @@
 
 ```
 LAST_UPDATED: 2025-12-19
-UPDATED_BY: codex (tui doctor-ignore sync)
+UPDATED_BY: codex (repair_core INCOMPLETE_IMPL verification)
 ```
 
 ---
@@ -26,6 +26,12 @@ TUI implementations are complete, but doctor was flagging short delegating metho
 
 ## RECENT CHANGES
 
+### 2025-12-19: Verified repair_core helpers already implemented
+
+- **What:** Checked `ngram/repair_core.py` for reported empty functions; confirmed `get_issue_symbol` and `get_issue_action_parts` already have implementations.
+- **Why:** Repair task flagged INCOMPLETE_IMPL, but code already includes lookup logic.
+- **Impact:** No code changes required; recorded as false-positive repair.
+
 ### 2025-12-19: Suppressed false-positive TUI INCOMPLETE_IMPL
 
 - **What:** Added doctor-ignore entries for `ngram/tui/app.py`, `ngram/tui/widgets/input_bar.py`, and `ngram/tui/widgets/manager_panel.py`.
@@ -39,6 +45,16 @@ TUI implementations are complete, but doctor was flagging short delegating metho
 | Issue | Severity | Area | Notes |
 |-------|----------|------|-------|
 | Broken CHAIN links in doctor feature docs | medium | `docs/protocol/features/doctor/` | `ngram validate` reports missing IMPLEMENTATION_Project_Health_Doctor.md links. |
+
+---
+
+## CONFLICTS
+
+### DECISION: repair_core INCOMPLETE_IMPL false positive
+- Conflict: Repair task claimed `get_issue_symbol` and `get_issue_action_parts` were empty, but `ngram/repair_core.py` already implements both.
+- Resolution: Treat as false positive; no code changes required.
+- Reasoning: Implementations exist and align with CLI SYNC note about verified helpers.
+- Updated: /home/mind-protocol/ngram/.ngram/state/SYNC_Project_State.md
 
 ---
 
