@@ -518,9 +518,11 @@ Keep it concise and actionable (2-3 paragraphs max)."""
             if isinstance(git_data, Exception):
                 manager.add_message(f"[red]CHANGES error: {git_data}[/]")
             else:
-                file_changes, commits, updated_at = git_data
+                file_changes, commits, updated_at, change_rate, commit_rate = git_data
                 try:
-                    agent_container.update_changes_content(file_changes, commits, updated_at)
+                    agent_container.update_changes_content(
+                        file_changes, commits, updated_at, change_rate, commit_rate
+                    )
                 except Exception as e:
                     manager.add_message(f"[red]CHANGES tab error: {e}[/]")
 
@@ -583,6 +585,7 @@ Keep it concise and actionable (2-3 paragraphs max)."""
         from datetime import datetime
 
         updated_at = datetime.now().strftime("%H:%M")
+        window_minutes = 60
 
         async def get_status():
             try:
@@ -610,8 +613,39 @@ Keep it concise and actionable (2-3 paragraphs max)."""
             except Exception:
                 return "(unable to get git log)"
 
-        file_changes, commits = await asyncio.gather(get_status(), get_log())
-        return file_changes, commits, updated_at
+        async def get_recent_commit_rate():
+            try:
+                proc = await asyncio.create_subprocess_exec(
+                    "git", "log", f"--since={window_minutes}.minutes", "--pretty=oneline",
+                    cwd=self.target_dir,
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE,
+                )
+                stdout, _ = await asyncio.wait_for(proc.communicate(), timeout=5)
+                lines = stdout.decode().splitlines()
+                count = len([line for line in lines if line.strip()])
+                return count / window_minutes
+            except Exception:
+                return 0.0
+
+        async def get_recent_change_rate():
+            try:
+                proc = await asyncio.create_subprocess_exec(
+                    "git", "log", f"--since={window_minutes}.minutes", "--name-only", "--pretty=format:",
+                    cwd=self.target_dir,
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE,
+                )
+                stdout, _ = await asyncio.wait_for(proc.communicate(), timeout=5)
+                files = {line for line in stdout.decode().splitlines() if line.strip()}
+                return len(files) / window_minutes
+            except Exception:
+                return 0.0
+
+        file_changes, commits, change_rate, commit_rate = await asyncio.gather(
+            get_status(), get_log(), get_recent_change_rate(), get_recent_commit_rate()
+        )
+        return file_changes, commits, updated_at, change_rate, commit_rate
 
     async def _run_doctor_async(self) -> dict:
         """Run doctor check asynchronously."""

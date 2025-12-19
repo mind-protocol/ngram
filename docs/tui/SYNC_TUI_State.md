@@ -33,7 +33,10 @@ Recent stability work:
 - Agent handle de-duplication and empty message suppression
 - Manager drift detection path normalization and PTY state handling
 - Verified `ngram/tui/widgets/status_bar.py` already implements reported methods; no code changes needed.
+- Implemented `/doctor` handler logic to update health status and log results.
+- Streamed repair agent output into agent panels while buffering agent logs.
 - Re-verified `ngram/tui/state.py` already implements `ConversationMessage.to_dict` and `AgentHandle.duration`; no code changes required.
+- CHANGES tab header now shows recent changes/min and commits/min (last 60 minutes).
 
 Module mapping:
 - `modules.yaml` includes `tui` module mapping under `modules`

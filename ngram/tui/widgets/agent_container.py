@@ -126,12 +126,9 @@ class AgentContainer(Container):
             )
             yield TabPane(
                 "AGENTS",
-                Container(
-                    Container(
-                        VerticalScroll(Static("No completed agents yet.", classes="placeholder"), id="agents-completed"),
-                        Horizontal(Static("No agents running. Type /repair to start.", classes="placeholder"), id="agents-columns"),
-                        id="agents-stack",
-                    ),
+                VerticalScroll(
+                    Static("Agent summaries will appear here during /repair", classes="placeholder"),
+                    id="summary-log"
                 ),
                 id="agents-tab"
             )
@@ -280,20 +277,27 @@ class AgentContainer(Container):
                 warnings = [i for i in issues if i.severity == "warning"]
                 info = [i for i in issues if i.severity == "info"]
 
+                def get_path(issue):
+                    """Safely get issue path as string."""
+                    p = issue.path
+                    if isinstance(p, list):
+                        return p[0] if p else ""
+                    return str(p)
+
                 if critical:
                     lines.append(f"\n### Critical ({len(critical)})\n")
                     for issue in critical:
-                        lines.append(f"- **{issue.issue_type}**: `{issue.path}`")
+                        lines.append(f"- **{issue.issue_type}**: `{get_path(issue)}`")
 
                 if warnings:
                     lines.append(f"\n### Warnings ({len(warnings)})\n")
                     for issue in warnings:
-                        lines.append(f"- **{issue.issue_type}**: `{issue.path}`")
+                        lines.append(f"- **{issue.issue_type}**: `{get_path(issue)}`")
 
                 if info:
                     lines.append(f"\n### Info ({len(info)})\n")
                     for issue in info[:10]:
-                        lines.append(f"- {issue.issue_type}: `{issue.path}`")
+                        lines.append(f"- {issue.issue_type}: `{get_path(issue)}`")
                     if len(info) > 10:
                         lines.append(f"- ... and {len(info) - 10} more")
 
@@ -323,13 +327,21 @@ class AgentContainer(Container):
         except Exception as e:
             self.log.error(f"update_map_content failed: {e}")
 
-    def update_changes_content(self, file_changes: str, commits: str, updated_at: str = "") -> None:
+    def update_changes_content(
+        self,
+        file_changes: str,
+        commits: str,
+        updated_at: str = "",
+        change_rate: float = 0.0,
+        commit_rate: float = 0.0,
+    ) -> None:
         """Update the CHANGES tab with Markdown."""
         try:
             # Build markdown content
             header = "## File Changes"
             if updated_at:
                 header += f" *(updated {updated_at})*"
+            header += f" — {change_rate:.2f} changes/min, {commit_rate:.2f} commits/min"
             lines = [header + "\n"]
             if file_changes.strip():
                 lines.append(f"```\n{file_changes}\n```")
@@ -359,3 +371,26 @@ class AgentContainer(Container):
         """Switch to a specific tab."""
         if self._tabbed:
             self._tabbed.active = tab_id
+
+    def add_summary(self, text: str) -> None:
+        """Add a summary entry to the AGENTS summary log."""
+        try:
+            scroll = self.app.query_one("#summary-log", VerticalScroll)
+            # Remove placeholder if present
+            for child in list(scroll.children):
+                if hasattr(child, 'has_class') and child.has_class("placeholder"):
+                    child.remove()
+            scroll.mount(Static(text, markup=True))
+            scroll.scroll_end(animate=False)
+        except Exception as e:
+            self.log.error(f"add_summary failed: {e}")
+
+    def clear_summary(self) -> None:
+        """Clear the summary log."""
+        try:
+            scroll = self.app.query_one("#summary-log", VerticalScroll)
+            for child in list(scroll.children):
+                child.remove()
+            scroll.mount(Static("Agent summaries will appear here during /repair", classes="placeholder"))
+        except Exception as e:
+            self.log.error(f"clear_summary failed: {e}")

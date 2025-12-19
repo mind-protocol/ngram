@@ -47,6 +47,7 @@ ngram/repair_core.py                 # Shared repair logic (497L)
 ```
 
 Manager startup prefers .ngram/agents/manager/AGENTS.md when present; otherwise it mirrors .ngram/CLAUDE.md into the manager working directory and writes `AGENTS.md` for Codex/Gemini compatibility.
+CHANGES tab header includes change/commit rates computed from recent git history (last 60 minutes).
 
 ### File Responsibilities
 
@@ -190,6 +191,8 @@ User Input -> InputBar -> NgramApp -> ngram/tui/commands.py -> ngram/repair_core
 ```
 Subprocess stdout -> repair_core output callback -> AgentPanel.append_output() -> render
 ```
+
+`ngram/tui/commands.py` wires the output callback to buffer chunks in `AgentHandle` and forward them to the active `AgentPanel` for streaming.
 
 ---
 

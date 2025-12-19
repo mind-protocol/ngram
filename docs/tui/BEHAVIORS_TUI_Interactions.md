@@ -75,6 +75,7 @@ GIVEN:  TUI launches successfully
 WHEN:   Doctor check completes
 THEN:   Right panel shows contents of .ngram/state/SYNC_Project_State.md
 AND:    If SYNC file missing, shows issues list instead
+AND:    CHANGES tab header shows recent changes/commits per minute
 ```
 
 ### B4: Quit TUI

@@ -55,6 +55,7 @@ Re-verified `ngram/tui/state.py` already implements `ConversationMessage.to_dict
 Updated `docs/tui/SYNC_TUI_State.md` to record the verification for this repair.
 
 Split `ngram/tui/commands.py` to extract manager-agent subprocess logic into `ngram/tui/commands_agent.py` (972L → 637L; new file 349L), and updated `docs/tui/IMPLEMENTATION_TUI_Code_Architecture.md`, `modules.yaml`, and `docs/tui/SYNC_TUI_State.md`.
+Filled the TUI `/doctor` handler to update health status and log results, and wired repair agent output streaming to agent panels in `ngram/tui/commands.py`.
 
 Normalized TUI implementation doc references to avoid broken-link detection for .ngram paths and method names.
 Adjusted TUI implementation structure doc to use explicit relative paths for `.ngram` files and PATTERNS/app references.
@@ -172,29 +173,9 @@ Check `modules.yaml` (project root) for full manifest.
 
 ---
 
-## Agent Observations
+## ARCHIVE
 
-### Remarks
-- doctor-ignore now reflects TUI false positives that were already documented in TUI sync.
-- `ngram validate` fails due to missing `IMPLEMENTATION_Project_Health_Doctor.md` references.
-- `ngram/tui/state.py` INCOMPLETE_IMPL report was outdated; functions already implemented.
-- Updated `docs/tui/SYNC_TUI_State.md` to note the INCOMPLETE_IMPL repair verification for `ngram/tui/state.py`.
-- Re-verified `ngram/tui/widgets/status_bar.py` implementations for the INCOMPLETE_IMPL report; no code changes required.
-- Re-verified `ngram/tui/widgets/status_bar.py` for the current INCOMPLETE_IMPL repair; implementations already present, so no code changes required.
-- `repo_overview.py` now reads DOCS header scan length from DoctorConfig instead of a hardcoded value.
-- INCOMPLETE_IMPL task for `ngram/repair_core.py` was a false positive; SYNC updated to document the check.
-- Manager-agent subprocess handling moved to `ngram/tui/commands_agent.py` to keep `ngram/tui/commands.py` under the monolith threshold.
-- CLI implementation doc cleaned up broken file references that tripped BROKEN_IMPL_LINK.
-- Project map SVG namespace now reads from `.ngram/config.yaml` with an env var override.
-- Re-verified `ngram/repair_core.py` issue lookups and updated CLI SYNC to reflect the check.
-- Gemini adapter tool stubs were replaced with real filesystem/web handlers and light persistence.
-
-### Suggestions
-- [ ] Add module mappings in `modules.yaml` for `ngram/tui/**` to avoid unmapped warnings.
-
-### Propositions
-- Consider a helper that syncs doctor-ignore entries into module SYNC entries automatically.
-The module manifest is still in template form; mapping work is pending.
+Older content archived to: `SYNC_Project_State_archive_2025-12.md`
 
 
 ---
