@@ -3,7 +3,7 @@ Init command for ngram CLI.
 
 Initializes the ngram in a project directory by:
 - Copying protocol files to .ngram/
-- Creating/updating CLAUDE.md with protocol bootstrap
+- Creating/updating CLAUDE.md with protocol bootstrap (inlined content)
 """
 # DOCS: docs/cli/PATTERNS_Why_CLI_Over_Copy.md
 
@@ -11,13 +11,98 @@ import shutil
 from pathlib import Path
 
 from .utils import get_templates_path
+from .repo_overview import generate_and_save
+
+
+def _build_claude_addition(templates_path: Path) -> str:
+    """Build CLAUDE.md content with inlined PRINCIPLES and PROTOCOL.
+
+    Instead of using @ references (which Claude doesn't expand),
+    we inline the actual content of the files.
+    """
+    principles_path = templates_path / "ngram" / "PRINCIPLES.md"
+    protocol_path = templates_path / "ngram" / "PROTOCOL.md"
+
+    principles_content = principles_path.read_text() if principles_path.exists() else ""
+    protocol_content = protocol_path.read_text() if protocol_path.exists() else ""
+
+    return f"""# ngram
+
+{principles_content}
+
+---
+
+{protocol_content}
+
+---
+
+## Before Any Task
+
+Check project state:
+```
+.ngram/state/SYNC_Project_State.md
+```
+
+What's happening? What changed recently? Any handoffs for you?
+
+## Choose Your VIEW
+
+Based on your task, load ONE view from `.ngram/views/`:
+
+| Task | VIEW |
+|------|------|
+| Processing raw data (chats, PDFs) | VIEW_Ingest_Process_Raw_Data_Sources.md |
+| Getting oriented | VIEW_Onboard_Understand_Existing_Codebase.md |
+| Analyzing structure | VIEW_Analyze_Structural_Analysis.md |
+| Defining architecture | VIEW_Specify_Design_Vision_And_Architecture.md |
+| Writing/modifying code | VIEW_Implement_Write_Or_Modify_Code.md |
+| Adding features | VIEW_Extend_Add_Features_To_Existing.md |
+| Pair programming | VIEW_Collaborate_Pair_Program_With_Human.md |
+| Writing tests | VIEW_Test_Write_Tests_And_Verify.md |
+| Debugging | VIEW_Debug_Investigate_And_Fix_Issues.md |
+| Reviewing changes | VIEW_Review_Evaluate_Changes.md |
+| Refactoring | VIEW_Refactor_Improve_Code_Structure.md |
+
+## After Any Change
+
+Update `.ngram/state/SYNC_Project_State.md` with what you did.
+If you changed a module, update its `docs/{{area}}/{{module}}/SYNC_*.md` too.
+
+## CLI Commands
+
+The `ngram` command is available for project management:
+
+```bash
+ngram init [--force]    # Initialize/re-sync protocol files
+ngram validate          # Check protocol invariants
+ngram doctor            # Health checks (auto-archives large SYNCs)
+ngram sync              # Show SYNC status (auto-archives large SYNCs)
+ngram repair [--max N]  # Auto-fix issues using Claude Code agents
+ngram context <file>    # Get doc context for a file
+ngram prompt            # Generate bootstrap prompt for LLM
+ngram overview          # Generate repo map with file tree, links, definitions
+```
+
+### Overview Command
+
+`ngram overview` generates a comprehensive repository map:
+
+- File tree with character counts (respecting .gitignore/.ngramignore)
+- Bidirectional links: code→docs (DOCS: markers), docs→code (references)
+- Section headers from markdown, function definitions from code
+- Local imports (stdlib/npm filtered out)
+- Module dependencies from modules.yaml
+- Output: `docs/map.{{md|yaml|json}}`
+
+Options: `--dir PATH`, `--format {{md,yaml,json}}`
+"""
 
 
 def init_protocol(target_dir: Path, force: bool = False, claude_md_dir: Path = None) -> bool:
     """
     Initialize the ngram in a project directory.
 
-    Copies protocol files and updates CLAUDE.md.
+    Copies protocol files and updates CLAUDE.md with inlined content.
 
     Args:
         target_dir: The project directory to initialize
@@ -35,7 +120,6 @@ def init_protocol(target_dir: Path, force: bool = False, claude_md_dir: Path = N
 
     # Source paths
     protocol_source = templates_path / "ngram"
-    claude_addition = templates_path / "CLAUDE_ADDITION.md"
     modules_yaml_source = templates_path / "modules.yaml"
     ignore_source = templates_path / "ngramignore"
 
@@ -44,13 +128,14 @@ def init_protocol(target_dir: Path, force: bool = False, claude_md_dir: Path = N
     modules_yaml_dest = target_dir / "modules.yaml"
     ignore_dest = target_dir / ".ngramignore"
 
-    # CLAUDE.md location - can be customized
+    # CLAUDE.md location - defaults to .ngram/ directory
     if claude_md_dir:
         claude_md_dir = Path(claude_md_dir)
         claude_md_dir.mkdir(parents=True, exist_ok=True)
         claude_md = claude_md_dir / "CLAUDE.md"
     else:
-        claude_md = target_dir / "CLAUDE.md"
+        # Default: CLAUDE.md lives inside .ngram/
+        claude_md = protocol_dest / "CLAUDE.md"
 
     # Check if already initialized
     if protocol_dest.exists() and not force:
@@ -108,62 +193,27 @@ def init_protocol(target_dir: Path, force: bool = False, claude_md_dir: Path = N
     else:
         print(f"○ {ignore_dest} already exists")
 
-    # Create/update CLAUDE.md with @ includes for system prompt
-    # This loads PRINCIPLES and PROTOCOL directly into context
-    claude_includes = """# ngram
+    # Build CLAUDE.md content with inlined PRINCIPLES and PROTOCOL
+    # (Claude doesn't expand @ references, so we inline the actual content)
+    claude_content = _build_claude_addition(templates_path)
 
-@.ngram/PRINCIPLES.md
-
----
-
-@.ngram/PROTOCOL.md
-
----
-
-## Before Any Task
-
-Check project state:
-```
-.ngram/state/SYNC_Project_State.md
-```
-
-What's happening? What changed recently? Any handoffs for you?
-
-## Choose Your VIEW
-
-Based on your task, load ONE view from `.ngram/views/`:
-
-| Task | VIEW |
-|------|------|
-| Processing raw data (chats, PDFs) | VIEW_Ingest_Process_Raw_Data_Sources.md |
-| Getting oriented | VIEW_Onboard_Understand_Existing_Codebase.md |
-| Defining architecture | VIEW_Specify_Design_Vision_And_Architecture.md |
-| Writing/modifying code | VIEW_Implement_Write_Or_Modify_Code.md |
-| Adding features | VIEW_Extend_Add_Features_To_Existing.md |
-| Pair programming | VIEW_Collaborate_Pair_Program_With_Human.md |
-| Writing tests | VIEW_Test_Write_Tests_And_Verify.md |
-| Debugging | VIEW_Debug_Investigate_And_Fix_Issues.md |
-| Reviewing changes | VIEW_Review_Evaluate_Changes.md |
-| Refactoring | VIEW_Refactor_Improve_Code_Structure.md |
-
-## After Any Change
-
-Update `.ngram/state/SYNC_Project_State.md` with what you did.
-If you changed a module, update its `docs/{area}/{module}/SYNC_*.md` too.
-"""
-
+    # Always write/overwrite CLAUDE.md with fresh inlined content
+    # This ensures the latest PRINCIPLES and PROTOCOL are always included
     if claude_md.exists():
-        existing_content = claude_md.read_text()
-        if "@.ngram/PRINCIPLES.md" in existing_content or "## ngram" in existing_content:
-            print(f"○ {claude_md} already has ngram section")
-        else:
-            with open(claude_md, "a") as f:
-                f.write("\n\n")
-                f.write(claude_includes)
-            print(f"✓ Updated: {claude_md}")
+        claude_md.write_text(claude_content)
+        print(f"✓ Updated: {claude_md}")
     else:
-        claude_md.write_text(claude_includes)
+        claude_md.write_text(claude_content)
         print(f"✓ Created: {claude_md}")
+
+    # Generate repository map
+    print()
+    print("Generating repository map...")
+    try:
+        output_path = generate_and_save(target_dir, output_format="md")
+        print(f"✓ Created: {output_path}")
+    except Exception as e:
+        print(f"○ Map generation skipped: {e}")
 
     print()
     print("ngram initialized!")

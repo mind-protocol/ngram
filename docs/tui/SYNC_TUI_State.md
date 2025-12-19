@@ -184,8 +184,8 @@ TUI is functional with Claude integration, repair agent spawning, and conversati
 | What | Where |
 |------|-------|
 | Design rationale | `docs/tui/PATTERNS_TUI_Design.md` |
-| Shared repair logic | `src/ngram/repair_core.py` |
-| CLI integration point | `src/ngram/cli.py` |
+| Shared repair logic | `ngram/repair_core.py` |
+| CLI integration point | `ngram/cli.py` |
 | Implementation plan | `/home/mind-protocol/.claude/plans/structured-cooking-alpaca.md` |
 
 

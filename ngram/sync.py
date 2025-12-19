@@ -92,6 +92,9 @@ def find_all_sync_files(target_dir: Path) -> List[SyncFileInfo]:
             continue
 
         for sync_file in search_dir.rglob("SYNC_*.md"):
+            # Skip archive files - they should not be processed
+            if "_archive_" in sync_file.name:
+                continue
             try:
                 content = sync_file.read_text()
                 line_count = len(content.split('\n'))
@@ -146,6 +149,10 @@ def archive_sync_file(sync_path: Path, max_lines: int = 200) -> Optional[Path]:
 
     Returns the archive path if archiving occurred, None otherwise.
     """
+    # Never archive an archive file
+    if "_archive_" in sync_path.name:
+        return None
+
     content = sync_path.read_text()
     lines = content.split('\n')
 

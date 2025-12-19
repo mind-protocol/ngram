@@ -43,12 +43,14 @@ from .doctor_checks import (
     doctor_check_incomplete_chain,
     doctor_check_missing_tests,
     doctor_check_orphan_docs,
-    doctor_check_conflicts,
-    doctor_check_doc_gaps,
-    doctor_check_suggestions,
     doctor_check_stale_impl,
     doctor_check_magic_values,
     doctor_check_hardcoded_secrets,
+)
+from .doctor_checks_sync import (
+    doctor_check_conflicts,
+    doctor_check_doc_gaps,
+    doctor_check_suggestions,
 )
 from .doctor_checks_content import (
     doctor_check_new_undoc_code,

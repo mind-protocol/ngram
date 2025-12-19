@@ -374,7 +374,16 @@ def parse_stream_json_line(line: str) -> Optional[str]:
             content = data.get("content_block", {})
             if content.get("type") == "tool_use":
                 tool_name = content.get("name", "")
-                return f"[Using: {tool_name}]"
+                tool_input = content.get("input", {})
+                if tool_input:
+                    # Show key params briefly
+                    params = []
+                    for k, v in list(tool_input.items())[:2]:
+                        val = str(v)[:40] + "..." if len(str(v)) > 40 else str(v)
+                        params.append(f"{k}={val}")
+                    param_str = ", ".join(params)
+                    return f"\n**🔧 {tool_name}**(`{param_str}`)\n"
+                return f"\n**🔧 {tool_name}**\n"
 
         # Handle final assistant message (fallback)
         elif msg_type == "assistant":
@@ -401,6 +410,7 @@ async def spawn_repair_agent_async(
     instructions: Dict[str, Any],
     github_issue_number: Optional[int] = None,
     arbitrage_decisions: Optional[List[ArbitrageDecision]] = None,
+    agent_id: Optional[str] = None,
 ) -> RepairResult:
     """
     Async version of spawn_repair_agent for TUI integration.
@@ -448,23 +458,49 @@ async def spawn_repair_agent_async(
     text_output = []
 
     try:
+        # Create unique directory for this agent to avoid conversation conflicts
+        # Each agent gets its own subdirectory under .ngram/agents/
+        if agent_id:
+            agent_dir = target_dir / ".ngram" / "agents" / "repair" / agent_id
+        else:
+            import uuid
+            agent_dir = target_dir / ".ngram" / "agents" / "repair" / f"agent-{uuid.uuid4().hex[:8]}"
+        agent_dir.mkdir(parents=True, exist_ok=True)
+
+        # Copy/symlink CLAUDE.md so agent has context
+        claude_md_src = target_dir / ".ngram" / "CLAUDE.md"
+        claude_md_dst = agent_dir / "CLAUDE.md"
+        if claude_md_src.exists() and not claude_md_dst.exists():
+            import shutil
+            shutil.copy(claude_md_src, claude_md_dst)
+
         process = await asyncio.create_subprocess_exec(
             *cmd,
-            cwd=target_dir,
+            cwd=agent_dir,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.STDOUT,
         )
 
-        async for line in process.stdout:
-            line_str = line.decode().strip()
-            if not line_str:
-                continue
+        buffer = ""
+        while True:
+            # Use chunk-based reading to avoid line length limits
+            chunk = await process.stdout.read(65536)
+            if not chunk:
+                break
+            buffer += chunk.decode(errors='replace')
 
-            # Parse JSON and extract text
-            parsed = parse_stream_json_line(line_str)
-            if parsed:
-                text_output.append(parsed)
-                await on_output(parsed)
+            # Process complete lines
+            while '\n' in buffer:
+                line_str, buffer = buffer.split('\n', 1)
+                line_str = line_str.strip()
+                if not line_str:
+                    continue
+
+                # Parse JSON and extract text
+                parsed = parse_stream_json_line(line_str)
+                if parsed:
+                    text_output.append(parsed)
+                    await on_output(parsed)
 
         await process.wait()
         duration = time.time() - start_time

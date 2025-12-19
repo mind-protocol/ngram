@@ -24,7 +24,7 @@ This view guides you through understanding the module deeply enough to document 
 1. **Project state:** `.ngram/state/SYNC_Project_State.md`
    - Understand project context
 
-2. **Module manifest:** `.ngram/modules.yaml`
+2. **Module manifest:** `modules.yaml` (project root)
    - Check if this code already has a mapping
    - See related modules and dependencies
 
@@ -147,7 +147,7 @@ This enables `ngram context` to find the chain.
 
 ### Phase 6: Update Module Manifest
 
-Add or update the mapping in `.ngram/modules.yaml`:
+Add or update the mapping in `modules.yaml` (project root):
 
 ```yaml
 modules:

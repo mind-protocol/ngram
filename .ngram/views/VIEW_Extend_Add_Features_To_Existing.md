@@ -136,6 +136,40 @@ New behavior needs tests. Reference VALIDATION.
 
 ---
 
+## OBSERVATIONS (Living Documentation)
+
+**At the end of your work, add observations to SYNC AND relevant docs.**
+
+### Remarks
+What did you notice? Design tensions, integration challenges, unclear boundaries.
+→ Add to SYNC and relevant PATTERNS/IMPLEMENTATION docs
+
+### Suggestions
+What should be improved? Refactoring, abstraction needs, documentation gaps.
+→ Add to SYNC with `[ ]` checkbox - these become actionable items
+
+### Propositions
+What would you do next? Related extensions, optimizations, architectural improvements.
+→ Add to SYNC and relevant PATTERNS docs (proposed section)
+
+**Format in SYNC:**
+```markdown
+## Agent Observations
+
+### Remarks
+- [What you noticed]
+
+### Suggestions
+- [ ] [Actionable improvement] <!-- Repair will prompt user -->
+
+### Propositions
+- [What future agents could tackle]
+```
+
+**IMPORTANT:** Suggestions with `[ ]` checkboxes will be offered interactively during `ngram repair`.
+
+---
+
 ## VERIFICATION
 
 - Extension fits existing PATTERNS
@@ -144,3 +178,4 @@ New behavior needs tests. Reference VALIDATION.
 - New invariants documented
 - Tests added
 - SYNC updated
+- Observations documented

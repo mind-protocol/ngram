@@ -404,11 +404,11 @@ def repair_command(
 
     # Step 3: Execute repairs
     print(f"{Colors.BOLD}🔨 Step 3: Executing repairs...{Colors.RESET}")
-    print(f"  {Colors.DIM}(Type anytime to invoke manager agent){Colors.RESET}")
+    print(f"  {Colors.DIM}(Type anytime to invoke ngram manager){Colors.RESET}")
     print(f"  {Colors.DIM}{'─' * 50}{Colors.RESET}")
     print()
 
-    # Start input listener for manager agent
+    # Start input listener for ngram manager
     reset_manager_state()
     recent_logs: List[str] = []
 

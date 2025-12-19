@@ -135,7 +135,7 @@ This means:
 
 ## GAPS / IDEAS / QUESTIONS
 
-- [ ] Should the manager agent have memory across sessions?
+- [ ] Should the ngram manager have memory across sessions?
 - [ ] Consider keyboard shortcuts (Ctrl+R for repair, Ctrl+D for doctor)
 - [ ] How to handle very long agent outputs? Auto-scroll? Truncation?
 - IDEA: Agent history panel showing completed agents

@@ -20,7 +20,7 @@ WHY A CLI INSTEAD OF "JUST COPY THE FOLDER":
 - Future: can add `validate`, `new-module`, etc. without changing workflow
 
 TEMPLATES LOCATION:
-- When installed: src/ngram/templates/ (bundled with package)
+- When installed: ngram/templates/ (bundled with package)
 - When developing: templates/ at repo root
 - CLI checks both locations
 """
@@ -39,6 +39,7 @@ from .doctor_files import add_doctor_ignore, load_doctor_ignore
 from .project_map import print_project_map
 from .sync import sync_command
 from .repair import repair_command
+from .repo_overview import generate_and_save as generate_overview
 
 
 def main():
@@ -56,9 +57,10 @@ def main():
         help="Initialize ngram in the current directory"
     )
     init_parser.add_argument(
-        "--force", "-f",
+        "--no-force",
         action="store_true",
-        help="Overwrite existing .ngram/ directory"
+        dest="no_force",
+        help="Don't overwrite existing .ngram/ directory (default: overwrite)"
     )
     init_parser.add_argument(
         "--dir", "-d",
@@ -177,6 +179,24 @@ def main():
         help="Output HTML file path (default: open in browser)"
     )
 
+    # overview command
+    overview_parser = subparsers.add_parser(
+        "overview",
+        help="Generate repository overview with file tree, sections, functions, and dependencies"
+    )
+    overview_parser.add_argument(
+        "--dir", "-d",
+        type=Path,
+        default=Path.cwd(),
+        help="Project directory (default: current directory)"
+    )
+    overview_parser.add_argument(
+        "--format", "-f",
+        choices=["md", "yaml", "json"],
+        default="md",
+        help="Output format (default: md)"
+    )
+
     # sync command
     sync_parser = subparsers.add_parser(
         "sync",
@@ -279,7 +299,7 @@ def main():
     args = parser.parse_args()
 
     if args.command == "init":
-        success = init_protocol(args.dir, args.force, args.claude_md_dir)
+        success = init_protocol(args.dir, not args.no_force, args.claude_md_dir)
         sys.exit(0 if success else 1)
     elif args.command == "validate":
         success = validate_protocol(args.dir, args.verbose)
@@ -298,6 +318,10 @@ def main():
         sys.exit(exit_code)
     elif args.command == "map":
         print_project_map(args.dir, args.output)
+        sys.exit(0)
+    elif args.command == "overview":
+        output_path = generate_overview(args.dir, args.format)
+        print(f"Generated: {output_path}")
         sys.exit(0)
     elif args.command == "sync":
         exit_code = sync_command(args.dir)
@@ -355,8 +379,20 @@ def main():
             print("  ngram ignore --type MAGIC_VALUES --path tests/** --reason 'Test fixtures'")
             sys.exit(1)
     elif args.command is None:
-        parser.print_help()
-        sys.exit(0)
+        # Launch TUI when no subcommand is given (like Claude Code)
+        try:
+            from .tui import NgramApp
+            app = NgramApp(target_dir=Path.cwd())
+            app.run()
+            sys.exit(0)
+        except ImportError as e:
+            if "textual" in str(e).lower():
+                print("TUI requires textual. Install with: pip install ngram[tui]")
+                print()
+                parser.print_help()
+                sys.exit(1)
+            else:
+                raise
     else:
         parser.print_help()
         sys.exit(1)

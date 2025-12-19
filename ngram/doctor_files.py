@@ -306,7 +306,7 @@ def find_code_directories(target_dir: Path, config: DoctorConfig) -> List[Path]:
 
     Only returns directories that have code files DIRECTLY in them,
     not just subdirectories with code. This means:
-    - src/ngram/ is returned (has .py files directly)
+    - ngram/ is returned (has .py files directly)
     - src/ is NOT returned (only has subdirectories)
     """
     skip_dirs = {'.git', '.ngram', 'docs', '__pycache__', '.venv', 'venv', 'templates', 'data'}

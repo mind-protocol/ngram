@@ -284,7 +284,7 @@ def find_module_docs(target_dir: Path, file_path: Path) -> Optional[Path]:
             pass
 
     # Fallback: try to match file path to docs structure
-    # e.g., src/ngram/cli.py -> docs/ngram/cli/
+    # e.g., ngram/cli.py -> docs/ngram/cli/
     try:
         rel_path = file_path.relative_to(target_dir)
     except ValueError:

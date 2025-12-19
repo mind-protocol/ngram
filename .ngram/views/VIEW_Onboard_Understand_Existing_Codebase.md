@@ -20,6 +20,16 @@ This view is about building mental models before building code.
 
 **FIRST: Read all documentation listed below before starting any work.** Orientation prevents wasted effort. Do not skip this step.
 
+### Quick Overview
+
+Run `ngram overview` to generate a comprehensive map:
+- File tree with sizes
+- Bidirectional code↔docs links
+- Function definitions and section headers
+- Module dependencies
+
+Output: `docs/map.md` — scan this first to see what exists.
+
 ### Start With State
 
 ```

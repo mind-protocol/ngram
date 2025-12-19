@@ -121,9 +121,47 @@ Update `BEHAVIORS_*.md` to reflect new observable behavior.
 
 ---
 
+## OBSERVATIONS (Living Documentation)
+
+**At the end of your work, add observations to SYNC AND relevant docs.**
+
+Documentation is living - update it with what you learned.
+
+### Remarks
+What did you notice? Code smells, unclear areas, inconsistencies.
+→ Add to SYNC and relevant PATTERNS/IMPLEMENTATION docs
+
+### Suggestions
+What should be improved? Technical debt, refactoring, missing tests.
+→ Add to SYNC with `[ ]` checkbox - these become actionable items
+
+### Propositions
+What would you do next? Future features, optimizations, cleanups.
+→ Add to SYNC and relevant PATTERNS docs (proposed section)
+
+**Format in SYNC:**
+```markdown
+## Agent Observations
+
+### Remarks
+- [What you noticed]
+
+### Suggestions
+- [ ] [Actionable improvement] <!-- Repair will prompt user -->
+- [ ] [Another suggestion]
+
+### Propositions
+- [What future agents could tackle]
+```
+
+**IMPORTANT:** Suggestions with `[ ]` checkboxes will be detected by `ngram repair` and offered to the user interactively. If accepted, an agent will be spawned to implement the suggestion.
+
+---
+
 ## VERIFICATION
 
 - Does code reflect PATTERNS?
 - Do tests pass (if they exist)?
 - Is SYNC updated?
+- Are observations documented?
 - Could another agent continue your work with what you've written?

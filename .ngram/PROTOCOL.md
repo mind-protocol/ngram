@@ -60,6 +60,7 @@ VIEWs are organized by product development lifecycle. Pick the one matching your
 **Understanding & Planning:**
 - `views/VIEW_Ingest_Process_Raw_Data_Sources.md` — processing raw data (chats, PDFs, research)
 - `views/VIEW_Onboard_Understand_Existing_Codebase.md` — getting oriented
+- `views/VIEW_Analyze_Structural_Analysis.md` — analyzing structure, recommending improvements
 - `views/VIEW_Specify_Design_Vision_And_Architecture.md` — defining what to build
 
 **Building:**

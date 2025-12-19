@@ -97,8 +97,43 @@ Compare your fix against the documentation chain:
 
 ---
 
+## OBSERVATIONS (Living Documentation)
+
+**At the end of your work, add observations to SYNC AND relevant docs.**
+
+### Remarks
+What did you notice? Fragile areas, unclear logic, missing error handling.
+→ Add to SYNC and relevant PATTERNS/IMPLEMENTATION docs
+
+### Suggestions
+What should be improved? Error handling, logging, defensive coding, test coverage.
+→ Add to SYNC with `[ ]` checkbox - these become actionable items
+
+### Propositions
+What related issues might exist? Similar bugs, systemic problems, preventive measures.
+→ Add to SYNC and relevant docs
+
+**Format in SYNC:**
+```markdown
+## Agent Observations
+
+### Remarks
+- [What you noticed]
+
+### Suggestions
+- [ ] [Actionable improvement] <!-- Repair will prompt user -->
+
+### Propositions
+- [What future agents could investigate]
+```
+
+**IMPORTANT:** Suggestions with `[ ]` checkboxes will be offered interactively during `ngram repair`.
+
+---
+
 ## VERIFICATION
 
 - Does the fix address root cause (not just symptom)?
 - Is the bug documented in SYNC?
 - Is there a test preventing regression?
+- Are observations documented?

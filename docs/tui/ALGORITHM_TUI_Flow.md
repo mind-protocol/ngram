@@ -97,7 +97,7 @@ IF text starts with "/":
     Split into command name and args
     Return SlashCommand(name, args)
 ELSE:
-    Return natural language input (for future manager agent)
+    Return natural language input (for future ngram manager)
 ```
 
 ### Step 4: Dispatch Command
@@ -247,4 +247,4 @@ User Input
 - [ ] How to handle agent output parsing for progress indicators
 - IDEA: Progress bars for agents based on output patterns
 - IDEA: Pause/resume agent execution
-- QUESTION: Should manager agent run continuously in background?
+- QUESTION: Should ngram manager run continuously in background?

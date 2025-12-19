@@ -1,9 +1,9 @@
 # ngram TUI — Behaviors: User Interactions and Observable Effects
 
 ```
-STATUS: DRAFT
+STATUS: IMPLEMENTED
 CREATED: 2025-12-18
-VERIFIED: Not yet — implementation pending
+VERIFIED: 2025-12-18 — core behaviors working (B6, B8, B10, B12 implemented 2025-12-18)
 ```
 
 ---
@@ -53,8 +53,28 @@ AND:    Input returns to prompt when complete
 GIVEN:  TUI is running
 WHEN:   User types `/doctor` and presses Enter
 THEN:   Health check runs
-AND:    Results display in manager panel
 AND:    Health score updates in status bar
+```
+
+### B3.1: Chat with Manager
+
+```
+GIVEN:  TUI is running with input focus
+WHEN:   User types non-command text and presses Enter
+THEN:   User input displays in blue with blank line before
+AND:    Animated "..." appears while waiting
+AND:    Claude thinking displays in dim italic (if present)
+AND:    Claude response displays in manager panel
+AND:    Conversation continues with --continue flag
+```
+
+### B3.2: Display SYNC on Launch
+
+```
+GIVEN:  TUI launches successfully
+WHEN:   Doctor check completes
+THEN:   Right panel shows contents of .ngram/state/SYNC_Project_State.md
+AND:    If SYNC file missing, shows issues list instead
 ```
 
 ### B4: Quit TUI
@@ -74,6 +94,55 @@ WHEN:   Agents spawn for each issue
 THEN:   Each agent gets its own column (up to 3)
 AND:    If >3 agents, tabs appear for switching
 AND:    Agent outputs stream in real-time
+AND:    Repository map (docs/map.md) refreshes after each successful agent
+```
+
+### B6: Streaming Responses
+
+```
+GIVEN:  User sends message to manager
+WHEN:   Claude generates response
+THEN:   Text streams to manager panel as it arrives
+AND:    "..." indicator replaced progressively with text
+AND:    Thinking blocks appear in dim italic as they arrive
+```
+
+### B7: Issues Command
+
+```
+GIVEN:  TUI is running with SYNC displayed
+WHEN:   User types `/issues`
+THEN:   Right panel switches to issues list
+AND:    Issues colored by severity (red/orange/dim)
+```
+
+### B8: Input History
+
+```
+GIVEN:  User has sent previous messages
+WHEN:   User presses Up arrow
+THEN:   Previous input appears in input bar
+AND:    Down arrow navigates forward through history
+AND:    Current draft is preserved when navigating history
+```
+
+### B10: Auto-Scroll
+
+```
+GIVEN:  Manager panel has messages
+WHEN:   New message added
+THEN:   Panel scrolls to show latest message
+AND:    AgentPanel scrolls when output appended
+AND:    Static content (SYNC/issues) wrapped in VerticalScroll for scrollability
+```
+
+### B12: Resize Handling
+
+```
+GIVEN:  TUI is running
+WHEN:   Terminal window resizes
+THEN:   Status bar health repositions to right
+AND:    Panels adjust proportionally
 ```
 
 ---
@@ -186,8 +255,24 @@ INSTEAD:  Show error about missing .ngram directory
 
 ## GAPS / IDEAS / QUESTIONS
 
-- [ ] Behavior when terminal resizes mid-session
+- [x] RESOLVED: Natural language input goes to Claude manager via subprocess
+
+### Planned Behaviors
+
+#### B9: Tab Completion
+```
+GIVEN:  User types `/` in input bar
+WHEN:   User presses Tab
+THEN:   Command autocompletes or shows options
+```
+
+#### B11: Markdown Rendering
+```
+GIVEN:  SYNC file displayed in right panel
+WHEN:   File contains markdown formatting
+THEN:   Markdown renders with proper styling
+AND:    Code blocks have syntax highlighting
+```
+
+### Open Questions
 - [ ] Behavior when agent produces binary/non-text output
-- IDEA: History of previous commands (up arrow)
-- IDEA: Tab completion for slash commands
-- QUESTION: Should natural language input go to manager agent?
