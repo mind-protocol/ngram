@@ -1,0 +1,124 @@
+# ngram LLM Agents — Algorithm: Gemini Stream Flow
+
+```
+STATUS: DRAFT
+CREATED: 2025-12-19
+VERIFIED: 2025-12-19 against commit ad538f8
+```
+
+---
+
+## CHAIN
+
+```
+PATTERNS:        ./PATTERNS_Provider_Specific_LLM_Subprocesses.md
+BEHAVIORS:       ./BEHAVIORS_Gemini_Agent_Output.md
+THIS:            ALGORITHM_Gemini_Stream_Flow.md (you are here)
+VALIDATION:      ./VALIDATION_Gemini_Agent_Invariants.md
+IMPLEMENTATION:  ./IMPLEMENTATION_LLM_Agent_Code_Architecture.md
+TEST:            ./TEST_LLM_Agent_Coverage.md
+SYNC:            ./SYNC_LLM_Agents_State.md
+```
+
+---
+
+## OVERVIEW
+
+The Gemini adapter is a CLI program that loads credentials, initializes the Gemini SDK, constructs a conversation history, and emits a normalized stream of JSON messages for the TUI.
+
+---
+
+## ALGORITHM: Gemini Adapter Execution
+
+### Step 1: Parse Arguments
+
+```
+parse_args()
+  - prompt (required)
+  - system_prompt (optional)
+  - output_format (stream-json or text)
+  - allowed_tools (unused)
+  - api_key (optional)
+```
+
+### Step 2: Load Credentials
+
+```
+config = dotenv_values()
+api_key = args.api_key or config[GEMINI_API_KEY] or env[GEMINI_API_KEY]
+if not api_key:
+    print error JSON
+    exit(1)
+```
+
+### Step 3: Configure Gemini SDK
+
+```
+configure(api_key)
+try:
+    list_models() -> stderr
+except:
+    print error to stderr
+```
+
+### Step 4: Build Conversation History
+
+```
+contents = []
+if system_prompt:
+    append user system_prompt
+    append model "ok" (Gemini requires response)
+append user prompt
+```
+
+### Step 5: Send Prompt
+
+```
+model = GenerativeModel("gemini-pro")
+chat = model.start_chat(history=contents[:-1])
+stream = chat.send_message(prompt, stream=output_format == stream-json)
+```
+
+### Step 6: Emit Output
+
+```
+if output_format == stream-json:
+    for chunk in stream:
+        if chunk.text:
+            emit assistant JSON with chunk
+            append chunk to response_parts
+    emit result JSON with full response text
+else:
+    response = chat.send_message(prompt)
+    print response.text
+```
+
+---
+
+## DATA FLOW
+
+```
+CLI args + env
+    ↓
+Credentials + Gemini SDK config
+    ↓
+Conversation history
+    ↓
+Gemini streaming response
+    ↓
+Normalized JSON output (TUI)
+```
+
+---
+
+## COMPLEXITY
+
+- Time: O(n) for streamed tokens
+- Space: O(n) to accumulate full response text for final result
+
+---
+
+## GAPS / IDEAS / QUESTIONS
+
+- [ ] Add model selection via CLI argument.
+- QUESTION: Should system prompts be passed separately from user prompts in agent_cli?
