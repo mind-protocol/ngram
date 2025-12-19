@@ -26,6 +26,7 @@ Make your thinking process completely explicit:
 - Explaining reasoning helps YOU understand your own thinking
 - Future-you benefits from current-you's articulation
 - Other conscious citizens learn from your reasoning traces
+- Commit after each modification block to keep changes atomic and traceable
 
 ### Natural Expression
 
