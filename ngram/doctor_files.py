@@ -17,7 +17,7 @@ Contains:
 import fnmatch
 import re
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Tuple
 
 from datetime import datetime
 from .utils import IGNORED_EXTENSIONS, HAS_YAML, find_module_directories
@@ -25,6 +25,14 @@ from .doctor_types import DoctorConfig, IgnoreEntry, DoctorIssue
 
 if HAS_YAML:
     import yaml
+
+DOCTOR_FALSE_POSITIVE_PATTERN = re.compile(
+    r'^@ngram:doctor:([A-Z0-9_]+):false_positive(?:\s+(.+))?$'
+)
+DOCTOR_TAG_PATTERN = re.compile(
+    r'^@ngram:doctor:([A-Z0-9_]+):([a-z_-]+)\s*(.*)$'
+)
+ISO_DATE_PATTERN = re.compile(r'^\d{4}-\d{2}-\d{2}$')
 
 
 def parse_gitignore(gitignore_path: Path) -> List[str]:
@@ -211,6 +219,176 @@ def filter_ignored_issues(issues: List[DoctorIssue], ignores: List[IgnoreEntry])
             filtered.append(issue)
 
     return filtered, ignored_count
+
+
+def extract_docs_references_from_file(path: Path, max_lines: int = 20) -> List[Path]:
+    """Extract DOCS: references from the top of a source file."""
+    doc_paths: List[Path] = []
+    try:
+        content = path.read_text(errors="ignore")
+    except Exception:
+        return doc_paths
+
+    for line in content.split("\n")[:max_lines]:
+        if "DOCS:" not in line:
+            continue
+        doc_path = line.split("DOCS:")[-1].strip()
+        if doc_path:
+            doc_paths.append(Path(doc_path))
+    return doc_paths
+
+
+def _parse_doc_false_positives(doc_path: Path) -> Dict[str, str]:
+    """Parse false positive markers from a doc file metadata block."""
+    try:
+        lines = doc_path.read_text(errors="ignore").splitlines()
+    except Exception:
+        return {}
+
+    in_metadata_block = False
+    updated_seen = False
+    results: Dict[str, str] = {}
+
+    for line in lines[:200]:
+        stripped = line.strip()
+        if stripped == "```":
+            in_metadata_block = not in_metadata_block
+            if not in_metadata_block:
+                updated_seen = False
+            continue
+        if not in_metadata_block:
+            continue
+        if stripped.startswith("UPDATED:"):
+            updated_seen = True
+            continue
+        if not updated_seen:
+            continue
+        match = DOCTOR_FALSE_POSITIVE_PATTERN.match(stripped)
+        if match:
+            issue_type = match.group(1).strip()
+            reason = (match.group(2) or "").strip()
+            results[issue_type] = reason
+
+    return results
+
+
+def parse_doctor_doc_tags(doc_path: Path) -> Dict[str, List[Dict[str, str]]]:
+    """Parse @ngram:doctor tags from a doc file metadata block."""
+    try:
+        lines = doc_path.read_text(errors="ignore").splitlines()
+    except Exception:
+        return {}
+
+    in_metadata_block = False
+    updated_seen = False
+    tags: Dict[str, List[Dict[str, str]]] = {}
+
+    for line in lines[:200]:
+        stripped = line.strip()
+        if stripped == "```":
+            in_metadata_block = not in_metadata_block
+            if not in_metadata_block:
+                updated_seen = False
+            continue
+        if not in_metadata_block:
+            continue
+        if stripped.startswith("UPDATED:"):
+            updated_seen = True
+            continue
+        if not updated_seen:
+            continue
+
+        match = DOCTOR_TAG_PATTERN.match(stripped)
+        if not match:
+            continue
+
+        issue_type = match.group(1).strip()
+        status = match.group(2).strip()
+        remainder = match.group(3).strip()
+
+        date_value = ""
+        message = remainder
+        if status == "postponed" and remainder:
+            parts = remainder.split(maxsplit=1)
+            if parts and ISO_DATE_PATTERN.match(parts[0]):
+                date_value = parts[0]
+                message = parts[1] if len(parts) > 1 else ""
+
+        tags.setdefault(issue_type, []).append({
+            "status": status,
+            "date": date_value,
+            "message": message,
+        })
+
+    return tags
+
+
+def load_doctor_false_positives(
+    target_dir: Path,
+    config: DoctorConfig,
+) -> Dict[Path, Dict[str, str]]:
+    """Load false positive declarations from docs metadata blocks."""
+    docs_dir = target_dir / "docs"
+    if not docs_dir.exists():
+        return {}
+
+    false_positives: Dict[Path, Dict[str, str]] = {}
+
+    for doc_path in docs_dir.rglob("*.md"):
+        if should_ignore_path(doc_path, config.ignore, target_dir):
+            continue
+        entries = _parse_doc_false_positives(doc_path)
+        if entries:
+            false_positives[doc_path.relative_to(target_dir)] = entries
+
+    return false_positives
+
+
+def filter_false_positive_issues(
+    issues: List[DoctorIssue],
+    false_positives: Dict[Path, Dict[str, str]],
+    target_dir: Path,
+    config: DoctorConfig,
+) -> Tuple[List[DoctorIssue], int]:
+    """Filter out issues suppressed by doc metadata false-positive entries."""
+    if not false_positives:
+        return issues, 0
+
+    filtered: List[DoctorIssue] = []
+    suppressed = 0
+
+    for issue in issues:
+        issue_path = issue.path
+        if isinstance(issue_path, list):
+            issue_path = issue_path[0] if issue_path else ""
+        issue_path = str(issue_path)
+        issue_rel = Path(issue_path)
+        issue_abs = target_dir / issue_rel
+
+        doc_refs: List[Path] = []
+        if issue_rel.suffix == ".md":
+            doc_refs = [issue_rel]
+        elif issue_abs.is_file() and not should_ignore_path(issue_abs, config.ignore, target_dir):
+            doc_refs = extract_docs_references_from_file(issue_abs)
+
+        suppressed_here = False
+        for doc_ref in doc_refs:
+            doc_rel = doc_ref
+            if doc_rel.is_absolute():
+                try:
+                    doc_rel = doc_rel.relative_to(target_dir)
+                except ValueError:
+                    continue
+            if doc_rel in false_positives and issue.issue_type in false_positives[doc_rel]:
+                suppressed_here = True
+                break
+
+        if suppressed_here:
+            suppressed += 1
+        else:
+            filtered.append(issue)
+
+    return filtered, suppressed
 
 
 def add_doctor_ignore(
