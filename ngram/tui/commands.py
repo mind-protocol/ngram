@@ -461,6 +461,7 @@ async def _run_agent_message(app: "NgramApp", message: str, response_widget, sto
 
     except Exception as e:
         stop_animation["flag"] = True  # Stop animation on error too
+        response_widget.remove()
         app.log_error(f"LLM failed: {e}")
 
 
