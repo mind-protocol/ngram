@@ -16,6 +16,8 @@ Updated protocol implementation doc to avoid a broken link reference by describi
 
 Updated protocol implementation documentation to remove backticks from .ngram/CLAUDE.md references so broken link detection no longer strips the leading dot.
 
+Consolidated protocol IMPLEMENTATION docs under `docs/protocol/IMPLEMENTATION/IMPLEMENTATION_Overview.md` and removed duplicate sub-docs.
+
 Externalized the SVG namespace used by project map HTML to `NGRAM_SVG_NAMESPACE` with a default fallback and documented it in the CLI implementation docs.
 Moved project map SVG namespace defaults into `.ngram/config.yaml` and kept `NGRAM_SVG_NAMESPACE` as an override.
 

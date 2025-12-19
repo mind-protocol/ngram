@@ -25,15 +25,182 @@ SYNC:            ../SYNC_Protocol_Current_State.md
 
 The protocol is implemented as markdown structure and templates. The "implementation" is the file layout, how agents navigate it, and how the CLI installs and validates it.
 
-This folder splits implementation details into:
-- File structure and responsibilities
-- Schemas and configuration
-- Flows, dependencies, and bidirectional links
+This document consolidates the protocol implementation details that were previously split across multiple files.
 
 ---
 
-## CONTENTS
+## FILE STRUCTURE
 
-- File structure: `IMPLEMENTATION_File_Structure.md`
-- Schemas and config: `IMPLEMENTATION_Schemas_And_Config.md`
-- Flows and links: `IMPLEMENTATION_Flows_And_Links.md`
+### Template Directory (Source of Truth)
+
+```
+templates/ngram/
+├── PROTOCOL.md
+├── PRINCIPLES.md
+├── views/                 # 11 VIEW files
+├── templates/             # 9 doc templates
+└── state/
+    └── SYNC_Project_State.md
+```
+
+### Installed Directory (Target Project)
+
+```
+.ngram/
+├── PROTOCOL.md
+├── PRINCIPLES.md
+├── views/
+├── templates/
+├── modules.yaml
+├── state/
+│   ├── SYNC_Project_State.md
+│   └── SYNC_Project_Health.md
+└── traces/                # Optional agent logs
+```
+
+### File Responsibilities
+
+| File Pattern | Purpose | When Loaded |
+|--------------|---------|-------------|
+| PROTOCOL.md | Navigation rules | Session start |
+| PRINCIPLES.md | Working stance | Session start |
+| VIEW_*.md | Task instructions | Based on task |
+| *_TEMPLATE.md | Doc scaffolding | When creating docs |
+| SYNC_Project_State.md | Project state and handoff | Session start |
+| SYNC_Project_Health.md | Doctor output | After `doctor` |
+| modules.yaml | Code ↔ docs mapping | CLI and tooling |
+
+### Bootstrap Files
+
+The protocol is surfaced through:
+- `.ngram/CLAUDE.md` (includes templates/CLAUDE_ADDITION.md, PRINCIPLES.md, PROTOCOL.md)
+- Root `AGENTS.md` mirroring `.ngram/CLAUDE.md` plus `templates/CODEX_SYSTEM_PROMPT_ADDITION.md`
+- `.ngram/agents/manager/AGENTS.md` for manager role
+
+---
+
+## SCHEMAS AND CONFIG
+
+### modules.yaml Schema
+
+```yaml
+modules:
+  {module_name}:
+    code: str           # Glob pattern for source files
+    docs: str           # Path to documentation directory
+    tests: str          # Optional test path
+    maturity: enum      # DESIGNING | CANONICAL | PROPOSED | DEPRECATED
+    owner: str          # agent | human | team-name
+    entry_points: list  # Main files to start reading
+    internal: list      # Implementation details, not public API
+    depends_on: list    # Other modules this requires
+    patterns: list      # Design patterns used
+    notes: str          # Quick context
+```
+
+### SYNC File Structure
+
+```yaml
+SYNC:
+  required:
+    - LAST_UPDATED: date
+    - STATUS: enum          # CANONICAL | DESIGNING | PROPOSED | DEPRECATED
+  sections:
+    - MATURITY
+    - CURRENT STATE
+    - HANDOFF: FOR AGENTS
+    - HANDOFF: FOR HUMAN
+  optional:
+    - CONSCIOUSNESS TRACE
+    - STRUCTURE
+    - POINTERS
+```
+
+### VIEW File Structure
+
+```yaml
+VIEW:
+  required:
+    - WHY THIS VIEW EXISTS
+    - CONTEXT TO LOAD
+    - THE WORK
+    - AFTER
+  optional:
+    - VERIFICATION
+```
+
+### Configuration Defaults
+
+| Config | Location | Default | Description |
+|--------|----------|---------|-------------|
+| Ignore patterns | .ngram/config.yaml | Common patterns | Paths to skip in doctor |
+| Monolith threshold | .ngram/config.yaml | 500 lines | SYNC archive trigger |
+| Stale days | .ngram/config.yaml | 14 days | When SYNC is stale |
+| Disabled checks | .ngram/config.yaml | [] | Doctor checks to skip |
+
+---
+
+## FLOWS AND LINKS
+
+### Entry Points
+
+| Entry Point | File | Triggered By |
+|-------------|------|--------------|
+| Bootstrap | .ngram/CLAUDE.md + AGENTS.md | Agent session start |
+| Navigation | .ngram/PROTOCOL.md | After bootstrap |
+| Task selection | .ngram/views/VIEW_*.md | Based on task type |
+| State check | .ngram/state/SYNC_Project_State.md | Before any work |
+| Module context | docs/{area}/{module}/PATTERNS_*.md | When modifying code |
+
+### Agent Session Flow
+
+```
+Agent starts
+  → read .ngram/CLAUDE.md / AGENTS.md
+  → read PROTOCOL + PRINCIPLES
+  → load SYNC_Project_State
+  → select VIEW_{Task}
+  → load module docs
+  → do work
+  → update SYNC files
+```
+
+### Documentation Chain Flow
+
+```
+PATTERNS → BEHAVIORS → ALGORITHM → VALIDATION → IMPLEMENTATION → TEST → SYNC
+```
+
+### Bidirectional Links
+
+#### Code → Docs
+
+```python
+# DOCS: docs/{area}/{module}/PATTERNS_*.md
+```
+
+#### Docs → Code
+
+| Doc Section | Points To |
+|-------------|-----------|
+| PATTERNS: Dependencies | Module imports |
+| IMPLEMENTATION: Code structure | File paths |
+| VALIDATION: Invariants | Test files |
+| SYNC: Pointers | Key file locations |
+
+### Dependencies (Internal)
+
+```
+.ngram/CLAUDE.md
+  → PROTOCOL.md
+  → PRINCIPLES.md
+PROTOCOL.md
+  → views/VIEW_*.md
+  → templates/*_TEMPLATE.md
+VIEW_*.md
+  → state/SYNC_Project_State.md
+  → docs/{area}/{module}/*.md
+modules.yaml
+  → code paths
+  → docs paths
+```

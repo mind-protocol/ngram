@@ -25,6 +25,3 @@ SYNC:            ./SYNC_Protocol_Current_State.md
 
 Detailed implementation docs live in `docs/protocol/IMPLEMENTATION/`:
 - `IMPLEMENTATION/IMPLEMENTATION_Overview.md`
-- `IMPLEMENTATION/IMPLEMENTATION_File_Structure.md`
-- `IMPLEMENTATION/IMPLEMENTATION_Schemas_And_Config.md`
-- `IMPLEMENTATION/IMPLEMENTATION_Flows_And_Links.md`
