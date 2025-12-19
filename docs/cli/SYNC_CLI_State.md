@@ -1,8 +1,8 @@
 # ADD Framework CLI — Sync: Current State
 
 ```
-LAST_UPDATED: 2025-12-18
-UPDATED_BY: repair-agent (NO_DOCS_REF fix for init_cmd.py)
+LAST_UPDATED: 2025-12-19
+UPDATED_BY: repair-agent (externalize hook_check_chars config)
 STATUS: CANONICAL
 ```
 
@@ -52,72 +52,22 @@ No active development at this time.
 
 ## RECENT CHANGES
 
-### 2025-12-18: Added DOCS reference to init_cmd.py
+### 2025-12-19: Externalized hook check buffer size
 
-**What changed:**
-- Added `DOCS: docs/cli/PATTERNS_Why_CLI_Over_Copy.md` reference to `src/ngram/init_cmd.py` header
-- Enables `ngram context` to properly trace documentation chain for this file
+- Added `hook_check_chars` config field to `DoctorConfig` in `doctor_types.py`
+- Updated `doctor_checks_content.py` to use config instead of hardcoded `1000`
+- This was flagged as HARDCODED_CONFIG (false positive: detected as "port" but was actually a buffer size)
+- Follows existing pattern with `docs_ref_search_chars`
 
-**Files modified:**
-- `src/ngram/init_cmd.py`
+### 2025-12-18: Documentation cleanup and fixes
 
-### 2025-12-18: Fixed BROKEN_IMPL_LINK for ALGORITHM reference
+- Added DOCS references to `init_cmd.py` and `context.py`
+- Fixed BROKEN_IMPL_LINK for ALGORITHM reference in IMPLEMENTATION doc
+- Reduced doc module size (53K → 48K chars)
+- Fixed DOC_DUPLICATION false positive for archive files
+- Extracted `doctor_checks.py` from `doctor.py`
 
-**What changed:**
-- Updated `IMPLEMENTATION_CLI_Code_Architecture.md` line 181 reference from `` `ALGORITHM_CLI_Logic.md` `` to `` `docs/cli/ALGORITHM_CLI_Logic.md` ``
-- The doctor check extracts backtick references and looks in `target_dir/`, `src/`, etc. but not relative to the doc file
-- Using the full path from project root resolves the broken link check
-
-**Files modified:**
-- `docs/cli/IMPLEMENTATION_CLI_Code_Architecture.md`
-
-### 2025-12-18: Added DOCS reference to context.py
-
-**What changed:**
-- Added `DOCS: docs/cli/PATTERNS_Why_CLI_Over_Copy.md` reference to `src/ngram/context.py` header
-- Enables `ngram context` to properly trace documentation chain for this file
-
-**Files modified:**
-- `src/ngram/context.py`
-
-### 2025-12-18: Reduced documentation size (LARGE_DOC_MODULE fix)
-
-**What changed:**
-- Removed duplicate data structures from ALGORITHM (now references IMPLEMENTATION#SCHEMA)
-- Removed duplicate check reference tables from VALIDATION (now references ALGORITHM)
-- Simplified verbose DATA FLOW diagrams in IMPLEMENTATION (now references ALGORITHM)
-- Consolidated TEST_CLI_Coverage.md verbose "NOT TESTED" tables
-
-**Result:** Total module size reduced from 53K to 48K chars (threshold: 50K)
-
-### 2025-12-18: Fixed DOC_DUPLICATION false positive for archive files
-
-**What changed:**
-- Added `_archive_` filename exclusion in `doctor_check_doc_duplication()` Check 3
-- Archive files are now skipped before being added to `docs_by_topic` tracking
-- This prevents SYNC archive files from being flagged as duplicates of main SYNC files
-
-**Files modified:**
-- `src/ngram/doctor_checks.py:1337-1341`
-
-### 2025-12-18: Extracted doctor_checks.py
-
-**What changed:**
-- Extracted all 23 `doctor_check_*()` functions from `doctor.py` to new `doctor_checks.py`
-- `doctor.py`: 1900L → 211L (now OK status)
-- `doctor_checks.py`: New file, 1732L (SPLIT status - needs further splitting)
-
-**Files created:**
-- `src/ngram/doctor_checks.py`
-
-**Files modified:**
-- `src/ngram/doctor.py`
-- `docs/cli/IMPLEMENTATION_CLI_Code_Architecture.md`
-- `modules.yaml`
-
-**What still needs extraction:**
-- `doctor_checks.py` needs splitting by check category (doc checks, code checks, config checks)
-- `repair.py` and `repair_instructions.py` also still need extraction
+See `SYNC_CLI_State_archive_2025-12.md` for detailed change logs.
 
 ---
 
@@ -139,7 +89,7 @@ No active development at this time.
 **Where I stopped:** Documentation complete. No pending work.
 
 **What you need to understand:**
-- Each command is in its own file under `src/ngram/`
+- Each command is in its own file under `ngram/`
 - `cli.py` is the entry point that wires up argparse
 - `utils.py` has shared utilities (template paths, module discovery)
 - The repair system spawns `claude` subprocess with specific prompts
@@ -174,11 +124,12 @@ CLI module now has documentation. All 8 commands work and are documented. Module
 
 | What | Where |
 |------|-------|
-| CLI entry point | `src/ngram/cli.py` |
-| Validation logic | `src/ngram/validate.py` |
-| Health check orchestration | `src/ngram/doctor.py` |
-| Health check functions | `src/ngram/doctor_checks.py` |
-| Repair agents | `src/ngram/repair.py` |
+| CLI entry point | `ngram/cli.py` |
+| Validation logic | `ngram/validate.py` |
+| Health check orchestration | `ngram/doctor.py` |
+| Health check functions | `ngram/doctor_checks.py` |
+| Health check types/config | `ngram/doctor_types.py` |
+| Repair agents | `ngram/repair.py` |
 | Module manifest | `modules.yaml` |
 | Design rationale | `docs/cli/PATTERNS_Why_CLI_Over_Copy.md` |
 

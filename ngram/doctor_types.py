@@ -26,6 +26,7 @@ class DoctorConfig:
     monolith_lines: int = 800
     stale_sync_days: int = 14
     docs_ref_search_chars: int = 2000  # How many chars to search for DOCS: reference
+    hook_check_chars: int = 1000  # How many chars to read when checking hooks for docs
     ignore: List[str] = field(default_factory=lambda: [
         "node_modules/**",
         ".next/**",

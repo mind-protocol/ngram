@@ -137,7 +137,7 @@ def doctor_check_new_undoc_code(target_dir: Path, config: DoctorConfig) -> List[
         if hook_pattern.match(source_file.name):
             # Check if hook has JSDoc or is documented
             try:
-                content = source_file.read_text()[:1000]
+                content = source_file.read_text()[:config.hook_check_chars]
                 has_jsdoc = '/**' in content or '* @' in content
                 has_docs_ref = 'DOCS:' in content
                 if not has_jsdoc and not has_docs_ref and line_count > 30:
