@@ -4,7 +4,7 @@ Report generation for ngram repair command.
 DOCS: docs/cli/PATTERNS_Why_CLI_Over_Copy.md
 
 This module contains:
-- LLM-generated report via Claude API
+- LLM-generated report via an agent CLI
 - Fallback template-based report
 - Report formatting and structure
 """
@@ -14,6 +14,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from .agent_cli import build_agent_command, normalize_agent
 from .repair_core import RepairResult
 
 
@@ -77,8 +78,9 @@ def generate_llm_report(
     repair_results: List[RepairResult],
     target_dir: Path,
     colors: Optional[Any] = None,
+    agent_provider: str = "claude",
 ) -> Optional[str]:
-    """Generate a detailed report using Claude.
+    """Generate a detailed report using an agent.
 
     Args:
         before_results: Doctor results before repairs
@@ -86,6 +88,7 @@ def generate_llm_report(
         repair_results: List of RepairResult from each agent
         target_dir: Project directory
         colors: Optional Colors class for CLI output formatting
+        agent_provider: Agent provider name (claude or codex)
 
     Returns:
         Generated report markdown, or None if generation fails
@@ -135,18 +138,23 @@ def generate_llm_report(
         remaining_warning=after_results["summary"]["warning"],
     )
 
+    agent_provider = normalize_agent(agent_provider)
+
     try:
-        cmd = [
-            "claude",
-            "-p", prompt,
-            "--output-format", "text",
-        ]
+        agent_cmd = build_agent_command(
+            agent_provider,
+            prompt=prompt,
+            stream_json=False,
+            continue_session=False,
+            use_dangerous=True,
+        )
 
         result = subprocess.run(
-            cmd,
+            agent_cmd.cmd,
             cwd=target_dir,
             capture_output=True,
             text=True,
+            input=(agent_cmd.stdin + "\n") if agent_cmd.stdin else None,
             timeout=60,
         )
 
@@ -157,7 +165,7 @@ def generate_llm_report(
 ```
 GENERATED: {datetime.now().strftime('%Y-%m-%d %H:%M')}
 PROJECT: {target_dir.name}
-GENERATED_BY: Claude
+GENERATED_BY: {agent_provider}
 ```
 
 ---

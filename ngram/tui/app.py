@@ -2,7 +2,7 @@
 """
 ngram TUI - Main Textual Application.
 
-Claude Code-style persistent chat interface with:
+Agent-style persistent chat interface with:
 - Manager panel (left column)
 - Agent panels (right columns/tabs)
 - Input bar (bottom)
@@ -48,9 +48,9 @@ class NgramApp(App if TEXTUAL_AVAILABLE else object):
     - Bottom: Input bar with /command support
     """
 
-    CSS_PATH = "styles/theme.tcss"
+    CSS_PATH = "styles/theme_light.tcss"
 
-    # Light mode by default (white theme)
+    # Light mode for Wood & Paper theme (sunlit desk)
     dark = False
 
     BINDINGS = [
@@ -71,18 +71,21 @@ class NgramApp(App if TEXTUAL_AVAILABLE else object):
         Binding("ctrl+shift+tab", "prev_tab", "Prev Tab", show=False),
     ]
 
-    def __init__(self, target_dir: Optional[Path] = None) -> None:
+    def __init__(self, target_dir: Optional[Path] = None, agent_provider: str = "claude") -> None:
         """Initialize the TUI app."""
+        from ..agent_cli import normalize_agent
+
         check_textual()
         super().__init__()
         self.target_dir = target_dir or Path.cwd()
+        self.agent_provider = normalize_agent(agent_provider)
         self.state = SessionState()
         self.conversation = ConversationHistory(self.target_dir)
         self.supervisor = ManagerSupervisor(on_warning=self._handle_drift_warning)
         self._in_error_handler = False  # Prevent infinite loops
         self.claude_pty: Optional[ClaudePTY] = None
         self._ctrl_c_pending = False  # Track first Ctrl+C press
-        self._running_process: Optional[asyncio.subprocess.Process] = None  # Track Claude subprocess
+        self._running_process: Optional[asyncio.subprocess.Process] = None  # Track agent subprocess
 
     def compose(self) -> ComposeResult:
         """Compose the TUI layout."""
@@ -149,15 +152,17 @@ class NgramApp(App if TEXTUAL_AVAILABLE else object):
         asyncio.create_task(self._startup_sequence())
 
     async def _startup_sequence(self) -> None:
-        """Run startup tasks: doctor check then Claude overview."""
+        """Run startup tasks: doctor check then manager overview."""
         # Run initial health check and show issues
         await self._run_doctor_with_display()
 
-        # Start Claude manager session (also in this background task)
+        # Start manager session (also in this background task)
         await self._start_manager_with_overview()
 
     async def _start_claude_pty(self) -> None:
         """Start the interactive Claude PTY session."""
+        if self.agent_provider != "claude":
+            return
         manager = self.query_one("#manager-panel")
 
         # Load system prompt from .ngram/agents/manager/CLAUDE.md
@@ -179,12 +184,12 @@ class NgramApp(App if TEXTUAL_AVAILABLE else object):
 
         success = await self.claude_pty.start()
         if not success:
-            manager.add_message("[dim]Claude not available - using fallback mode[/dim]")
+            manager.add_message("[dim]Manager agent not available - using fallback mode[/dim]")
 
     async def _start_manager_with_overview(self) -> None:
-        """Start Claude manager and prompt for project overview."""
-        import json
+        """Start manager and prompt for project overview."""
         import shutil
+        from ..agent_cli import build_agent_command
 
         manager = self.query_one("#manager-panel")
         initial_prompt = self._build_manager_overview_prompt()
@@ -196,26 +201,36 @@ class NgramApp(App if TEXTUAL_AVAILABLE else object):
         # Copy CLAUDE.md to manager directory if not present
         claude_md_src = self.target_dir / ".ngram" / "CLAUDE.md"
         claude_md_dst = manager_dir / "CLAUDE.md"
+        agents_md_src = self.target_dir / "AGENTS.md"
+        agents_md_dst = manager_dir / "AGENTS.md"
         if claude_md_src.exists() and not claude_md_dst.exists():
             shutil.copy(claude_md_src, claude_md_dst)
+        if agents_md_src.exists():
+            agents_md_dst.write_text(agents_md_src.read_text())
+        elif claude_md_src.exists():
+            agents_md_dst.write_text(claude_md_src.read_text())
 
         cwd = manager_dir
 
         # Find GLOBAL_LEARNINGS.md
         learnings_file = self.target_dir / ".ngram" / "views" / "GLOBAL_LEARNINGS.md"
-
-        cmd = [
-            "claude",
-            "-p", initial_prompt,
-            "--output-format", "stream-json",
-            "--verbose",
-            "--dangerously-skip-permissions",
-            "--add-dir", str(self.target_dir),
-            "--continue",
-        ]
-        cmd.extend(["--allowedTools", "Bash(*) Read(*) Edit(*) Write(*) Glob(*) Grep(*) WebFetch(*) WebSearch(*) NotebookEdit(*) Task(*) TodoWrite(*)"])
+        system_prompt = ""
         if learnings_file.exists():
-            cmd.extend(["--append-system-prompt", str(learnings_file)])
+            if self.agent_provider == "claude":
+                system_prompt = str(learnings_file)
+            else:
+                system_prompt = learnings_file.read_text()
+
+        allowed_tools = "Bash(*) Read(*) Edit(*) Write(*) Glob(*) Grep(*) WebFetch(*) WebSearch(*) NotebookEdit(*) Task(*) TodoWrite(*)"
+        agent_cmd = build_agent_command(
+            self.agent_provider,
+            prompt=initial_prompt,
+            system_prompt=system_prompt,
+            stream_json=(self.agent_provider == "claude"),
+            continue_session=True,
+            add_dir=self.target_dir,
+            allowed_tools=allowed_tools if self.agent_provider == "claude" else None,
+        )
 
         # Show loading indicator with animation
         thinking_msg = manager.add_message("[dim].[/]")
@@ -223,14 +238,16 @@ class NgramApp(App if TEXTUAL_AVAILABLE else object):
 
         try:
             process = await asyncio.create_subprocess_exec(
-                *cmd,
+                *agent_cmd.cmd,
                 cwd=cwd,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
+                stdin=asyncio.subprocess.PIPE if agent_cmd.stdin else None,
             )
             self._running_process = process
 
-            stdout_data, _ = await process.communicate()
+            stdin_data = (agent_cmd.stdin + "\n").encode() if agent_cmd.stdin else None
+            stdout_data, _ = await process.communicate(input=stdin_data)
             self._running_process = None
 
             # Stop animation and remove loading indicator
@@ -238,33 +255,39 @@ class NgramApp(App if TEXTUAL_AVAILABLE else object):
             thinking_msg.remove()
 
             response_parts = []
-            for line_str in stdout_data.decode().split('\n'):
-                line_str = line_str.strip()
-                if not line_str:
-                    continue
-                try:
-                    data = json.loads(line_str)
-                    if data.get("type") == "assistant":
-                        msg_data = data.get("message", {})
-                        for content in msg_data.get("content", []):
-                            if content.get("type") == "thinking":
-                                thinking = content.get("thinking", "")
-                                if thinking:
-                                    # Add thinking as collapsible
-                                    manager.add_thinking(thinking)
-                            elif content.get("type") == "tool_use":
-                                # Display tool call
-                                tool_name = content.get("name", "unknown")
-                                tool_input = content.get("input", {})
-                                manager.add_tool_call(tool_name, tool_input)
-                            elif content.get("type") == "text":
-                                response_parts.append(content.get("text", ""))
-                    elif data.get("type") == "result":
-                        result = data.get("result", "")
-                        if result and not response_parts:
-                            response_parts.append(result)
-                except json.JSONDecodeError:
-                    pass
+            if self.agent_provider == "claude":
+                import json
+                for line_str in stdout_data.decode(errors="replace").split('\n'):
+                    line_str = line_str.strip()
+                    if not line_str:
+                        continue
+                    try:
+                        data = json.loads(line_str)
+                        if data.get("type") == "assistant":
+                            msg_data = data.get("message", {})
+                            for content in msg_data.get("content", []):
+                                if content.get("type") == "thinking":
+                                    thinking = content.get("thinking", "")
+                                    if thinking:
+                                        # Add thinking as collapsible
+                                        manager.add_thinking(thinking)
+                                elif content.get("type") == "tool_use":
+                                    # Display tool call
+                                    tool_name = content.get("name", "unknown")
+                                    tool_input = content.get("input", {})
+                                    manager.add_tool_call(tool_name, tool_input)
+                                elif content.get("type") == "text":
+                                    response_parts.append(content.get("text", ""))
+                        elif data.get("type") == "result":
+                            result = data.get("result", "")
+                            if result and not response_parts:
+                                response_parts.append(result)
+                    except json.JSONDecodeError:
+                        pass
+            else:
+                text_output = stdout_data.decode(errors="replace").strip()
+                if text_output:
+                    response_parts.append(text_output)
 
             if response_parts:
                 full_response = "".join(response_parts)
@@ -306,7 +329,7 @@ Then provide a brief overview:
 Keep it concise and actionable (2-3 paragraphs max)."""
 
     async def _show_static_overview(self) -> None:
-        """Show static overview when Claude is not available."""
+        """Show static overview when the manager agent is not available."""
         manager = self.query_one("#manager-panel")
 
         # Read SYNC file directly
@@ -622,7 +645,7 @@ Keep it concise and actionable (2-3 paragraphs max)."""
 
         manager = self.query_one("#manager-panel")
 
-        # First press - interrupt Claude subprocess if running
+        # First press - interrupt agent subprocess if running
         if self._running_process and self._running_process.returncode is None:
             try:
                 self._running_process.kill()
@@ -650,7 +673,7 @@ Keep it concise and actionable (2-3 paragraphs max)."""
     async def action_quit(self) -> None:
         """Quit the application."""
         self.state.running = False
-        # Stop Claude PTY if running
+        # Stop PTY if running
         if self.claude_pty and self.claude_pty.is_running:
             await self.claude_pty.stop()
         self.exit()
@@ -718,14 +741,14 @@ Keep it concise and actionable (2-3 paragraphs max)."""
             pass
 
 
-def main(target_dir: Optional[Path] = None) -> None:
+def main(target_dir: Optional[Path] = None, agent_provider: str = "claude") -> None:
     """
     Launch the ngram TUI.
 
     Entry point for `ngram` command (no subcommand).
     """
     check_textual()
-    app = NgramApp(target_dir=target_dir)
+    app = NgramApp(target_dir=target_dir, agent_provider=agent_provider)
     app.run()
 
 

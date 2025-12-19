@@ -136,7 +136,7 @@ async def handle_command(app: "NgramApp", command: str) -> None:
 
 
 async def handle_message(app: "NgramApp", message: str) -> None:
-    """Handle a non-command message - send to Claude via subprocess."""
+    """Handle a non-command message - send to the agent via subprocess."""
     import asyncio
 
     manager = app.query_one("#manager-panel")
@@ -154,8 +154,8 @@ async def handle_message(app: "NgramApp", message: str) -> None:
     # Shared flag to signal animation to stop
     stop_animation = {"flag": False}
 
-    # Run Claude in background so UI stays responsive
-    asyncio.create_task(_run_claude_message(app, message, response_widget, stop_animation))
+    # Run agent in background so UI stays responsive
+    asyncio.create_task(_run_agent_message(app, message, response_widget, stop_animation))
 
     # Start animation task
     asyncio.create_task(_animate_loading(response_widget, stop_animation))
@@ -179,11 +179,25 @@ async def _animate_loading(widget, stop_flag: dict) -> None:
         pass  # Widget removed or app closing
 
 
-async def _run_claude_message(app: "NgramApp", message: str, response_widget, stop_animation: dict) -> None:
-    """Run Claude subprocess in background."""
+def _build_codex_history_prompt(app: "NgramApp", message: str) -> str:
+    """Build a lightweight conversation prompt for non-interactive agents."""
+    history = app.conversation.get_recent(limit=20)
+    lines = []
+    for msg in history:
+        role = msg.role.upper()
+        lines.append(f"{role}: {msg.content}")
+    if not history or history[-1].content != message:
+        lines.append(f"USER: {message}")
+    lines.append("ASSISTANT:")
+    return "\n\n".join(lines)
+
+
+async def _run_agent_message(app: "NgramApp", message: str, response_widget, stop_animation: dict) -> None:
+    """Run agent subprocess in background."""
     import asyncio
     import json
     import shutil
+    from ..agent_cli import build_agent_command
 
     manager = app.query_one("#manager-panel")
 
@@ -194,8 +208,14 @@ async def _run_claude_message(app: "NgramApp", message: str, response_widget, st
     # Copy CLAUDE.md to manager directory if not present
     claude_md_src = app.target_dir / ".ngram" / "CLAUDE.md"
     claude_md_dst = manager_dir / "CLAUDE.md"
+    agents_md_src = app.target_dir / "AGENTS.md"
+    agents_md_dst = manager_dir / "AGENTS.md"
     if claude_md_src.exists() and not claude_md_dst.exists():
         shutil.copy(claude_md_src, claude_md_dst)
+    if agents_md_src.exists():
+        agents_md_dst.write_text(agents_md_src.read_text())
+    elif claude_md_src.exists():
+        agents_md_dst.write_text(claude_md_src.read_text())
 
     cwd = manager_dir
 
@@ -204,28 +224,42 @@ async def _run_claude_message(app: "NgramApp", message: str, response_widget, st
     if not learnings_file.exists():
         learnings_file = None
 
-    async def run_claude(response_widget) -> tuple[bool, str]:
-        """Run claude and return (success, response). Updates response_widget as content arrives."""
-        cmd = [
-            "claude",
-            "-p", message,
-            "--output-format", "stream-json",
-            "--verbose",
-            "--dangerously-skip-permissions",
-            "--add-dir", str(app.target_dir),
-            "--continue",
-        ]
-        cmd.extend(["--allowedTools", "Bash(*) Read(*) Edit(*) Write(*) Glob(*) Grep(*) WebFetch(*) WebSearch(*) NotebookEdit(*) Task(*) TodoWrite(*)"])
+    async def run_agent(response_widget) -> tuple[bool, str]:
+        """Run agent and return (success, response). Updates response_widget as content arrives."""
+        system_prompt = ""
         if learnings_file:
-            cmd.extend(["--append-system-prompt", str(learnings_file)])
+            if app.agent_provider == "claude":
+                system_prompt = str(learnings_file)
+            else:
+                system_prompt = learnings_file.read_text()
+
+        prompt_text = message
+        if app.agent_provider != "claude":
+            prompt_text = _build_codex_history_prompt(app, message)
+
+        allowed_tools = "Bash(*) Read(*) Edit(*) Write(*) Glob(*) Grep(*) WebFetch(*) WebSearch(*) NotebookEdit(*) Task(*) TodoWrite(*)"
+        agent_cmd = build_agent_command(
+            app.agent_provider,
+            prompt=prompt_text,
+            system_prompt=system_prompt,
+            stream_json=(app.agent_provider == "claude"),
+            continue_session=True,
+            add_dir=app.target_dir,
+            allowed_tools=allowed_tools if app.agent_provider == "claude" else None,
+        )
 
         process = await asyncio.create_subprocess_exec(
-            *cmd,
+            *agent_cmd.cmd,
             cwd=cwd,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
+            stdin=asyncio.subprocess.PIPE if agent_cmd.stdin else None,
         )
         app._running_process = process
+        if agent_cmd.stdin and process.stdin:
+            process.stdin.write((agent_cmd.stdin + "\n").encode())
+            await process.stdin.drain()
+            process.stdin.close()
 
         response_parts = []
         buffer = ""
@@ -260,7 +294,7 @@ async def _run_claude_message(app: "NgramApp", message: str, response_widget, st
         stderr_task = asyncio.create_task(drain_stderr())
 
         # Read stdout in chunks and process complete JSON lines
-        if process.stdout:
+        if process.stdout and app.agent_provider == "claude":
             while True:
                 try:
                     # Use wait_for with timeout to prevent indefinite hanging
@@ -347,6 +381,24 @@ async def _run_claude_message(app: "NgramApp", message: str, response_widget, st
                                 app.log_error(f"Unknown stream type: {msg_type}")
                         except json.JSONDecodeError:
                             continue
+        elif process.stdout:
+            while True:
+                try:
+                    chunk = await asyncio.wait_for(
+                        process.stdout.read(65536),
+                        timeout=300.0,
+                    )
+                    if not chunk:
+                        break
+                    text = chunk.decode(errors="replace")
+                    if text:
+                        response_parts.append(text)
+                        throttled_update()
+                except asyncio.TimeoutError:
+                    process.kill()
+                    break
+                except Exception:
+                    break
                 except asyncio.TimeoutError:
                     # Timeout - kill process and break
                     process.kill()
@@ -363,16 +415,16 @@ async def _run_claude_message(app: "NgramApp", message: str, response_widget, st
         if process.returncode != 0 or not response_parts:
             stderr_output = "".join(stderr_chunks)[:500] if stderr_chunks else ""
             if stderr_output:
-                app.log_error(f"Claude stderr: {stderr_output}")
+                app.log_error(f"Agent stderr: {stderr_output}")
             elif process.returncode != 0:
-                app.log_error(f"Claude process exited with code {process.returncode}")
+                app.log_error(f"Agent process exited with code {process.returncode}")
 
         return process.returncode == 0, "".join(response_parts)
 
     try:
-        success, response = await run_claude(response_widget=response_widget)
+        success, response = await run_agent(response_widget=response_widget)
 
-        # Always stop animation after run_claude completes
+        # Always stop animation after agent completes
         stop_animation["flag"] = True
 
         if response:
@@ -501,6 +553,7 @@ async def _run_shell_command(app: "NgramApp", command: str, output_widget) -> No
 async def handle_repair(app: "NgramApp", args: str) -> None:
     """Start a repair session."""
     import asyncio
+    from datetime import datetime
     from ..doctor import run_doctor
     from ..doctor_files import load_doctor_config
     from ..repair_core import AGENT_SYMBOLS
@@ -511,6 +564,13 @@ async def handle_repair(app: "NgramApp", args: str) -> None:
 
     manager.add_message("")
     manager.add_message("[bold]Starting repair session...[/]")
+
+    # Create session folder with timestamp
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    session_dir = app.target_dir / ".ngram" / "repairs" / timestamp
+    session_dir.mkdir(parents=True, exist_ok=True)
+    app._repair_session_dir = session_dir
+    manager.add_message(f"[dim]Session: .ngram/repairs/{timestamp}/[/]")
 
     # Run doctor to find issues (load config from .ngramignore)
     try:
@@ -526,6 +586,20 @@ async def handle_repair(app: "NgramApp", args: str) -> None:
         all_issues = []
         for severity in ["critical", "warning"]:  # Skip info for repair
             all_issues.extend(issues_dict.get(severity, []))
+
+        # Deduplicate by (issue_type, path)
+        seen = set()
+        unique_issues = []
+        for issue in all_issues:
+            key = (issue.issue_type, issue.path)
+            if key not in seen:
+                seen.add(key)
+                unique_issues.append(issue)
+        all_issues = unique_issues
+
+        # Sort by priority (lower = fix first)
+        from ..repair_core import ISSUE_PRIORITY
+        all_issues.sort(key=lambda i: ISSUE_PRIORITY.get(i.issue_type, 50))
 
     except Exception as e:
         manager.add_message(f"[red]Doctor failed: {e}[/]")
@@ -576,14 +650,19 @@ async def _spawn_agent(app: "NgramApp", issue, agent_index: int) -> None:
     import asyncio
     import time
     from ..repair_instructions import get_issue_instructions
-    from ..repair_core import AGENT_SYMBOLS
+    from ..repair_core import AGENT_SYMBOLS, get_issue_folder_name
     from .state import AgentHandle
 
     manager = app.query_one("#manager-panel")
     agent_container = app.query_one("#agent-container")
 
     symbol = AGENT_SYMBOLS[agent_index % len(AGENT_SYMBOLS)]
+    # Use issue reference for folder name (more useful than symbol)
+    folder_name = get_issue_folder_name(issue.issue_type, issue.path, agent_index)
     agent_id = f"agent-{uuid.uuid4().hex[:8]}"
+
+    # Get session dir if available
+    session_dir = getattr(app, '_repair_session_dir', None)
 
     agent = AgentHandle(
         id=agent_id,
@@ -603,16 +682,17 @@ async def _spawn_agent(app: "NgramApp", issue, agent_index: int) -> None:
     # Use default args to capture values (not references) in closure
     output_buffer = []
     last_update = [0.0]
+    pending_update = [False]  # Flag to prevent stacking updates
 
     async def on_output(
         text: str,
         aid=agent_id,
         buf=output_buffer,
         upd=last_update,
-        agent_ref=agent
+        agent_ref=agent,
+        pending=pending_update
     ) -> None:
         """Handle agent output with throttling to prevent UI blocking."""
-        import asyncio
         import time
         # Skip empty or whitespace-only deltas
         if not text or not text.strip():
@@ -621,22 +701,30 @@ async def _spawn_agent(app: "NgramApp", issue, agent_index: int) -> None:
         # Also store in agent handle for later retrieval
         agent_ref.append_output(text)
         now = time.time()
-        # Only update UI every 100ms to prevent blocking
-        if now - upd[0] > 0.1:
-            combined = "".join(buf)
-            agent_container.update_agent(aid, combined)
+        # Only schedule UI update every 250ms and if no update pending
+        if now - upd[0] > 0.25 and not pending[0]:
             upd[0] = now
-            await asyncio.sleep(0)  # Yield to event loop
+            pending[0] = True
+            combined = "".join(buf)
+            # Schedule update on next event loop iteration (non-blocking)
+            def do_update(content=combined, agent_id=aid):
+                try:
+                    agent_container.update_agent(agent_id, content)
+                except Exception:
+                    pass
+                finally:
+                    pending[0] = False
+            app.call_later(do_update)
 
     manager.add_message(f"{symbol} {issue.issue_type}: {issue.path}")
 
     # Spawn agent in background
     asyncio.create_task(
-        _run_agent(app, agent, issue, instructions, on_output)
+        _run_agent(app, agent, issue, instructions, on_output, session_dir, folder_name)
     )
 
 
-async def _run_agent(app: "NgramApp", agent, issue, instructions: dict, on_output) -> None:
+async def _run_agent(app: "NgramApp", agent, issue, instructions: dict, on_output, session_dir=None, folder_name=None) -> None:
     """Run a single repair agent."""
     import asyncio
     from ..repair_core import spawn_repair_agent_async
@@ -652,6 +740,9 @@ async def _run_agent(app: "NgramApp", agent, issue, instructions: dict, on_outpu
             on_output=on_output,
             instructions=instructions,
             agent_id=agent.id,
+            session_dir=session_dir,
+            agent_symbol=folder_name,  # Now uses issue-based folder name
+            agent_provider=app.agent_provider,
         )
 
         agent.status = "completed" if result.success else "failed"
@@ -806,13 +897,14 @@ async def handle_logs(app: "NgramApp", args: str) -> None:
 
     manager.add_message(f"Showing logs for {len(completed_agents)} completed agents.")
 
-    # Switch to agents tab and use its scroll container
+    # Switch to agents tab and use its columns container
     agent_container.switch_to_tab("agents-tab")
 
     try:
-        scroll = app.query_one("#agents-scroll")
+        from textual.containers import Horizontal
+        columns = app.query_one("#agents-columns", Horizontal)
         # Clear existing content
-        for child in list(scroll.children):
+        for child in list(columns.children):
             child.remove()
         agent_container._agent_panels.clear()
 
@@ -834,7 +926,7 @@ async def handle_logs(app: "NgramApp", args: str) -> None:
                 title=title,
                 collapsed=True,
             )
-            await scroll.mount(collapsible)
+            await columns.mount(collapsible)
     except Exception as e:
         manager.add_message(f"[red]Logs error: {e}[/]")
 

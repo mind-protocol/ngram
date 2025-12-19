@@ -1,4 +1,4 @@
-# ADD Framework CLI — Test: Test Cases and Coverage
+# ngram Framework CLI — Test: Test Cases and Coverage
 
 ```
 STATUS: DRAFT
@@ -28,7 +28,7 @@ The CLI module currently lacks automated tests. Testing is performed manually th
 **Testing philosophy:**
 - Commands should be tested in isolation first
 - Integration tests should verify end-to-end flows
-- Agent tests require mocking claude subprocess
+- Agent tests require mocking agent subprocess (claude or codex)
 
 ---
 
@@ -36,7 +36,7 @@ The CLI module currently lacks automated tests. Testing is performed manually th
 
 **None automated.** Planned tests per command:
 
-- **Init:** protocol dir creation, CLAUDE.md update, force overwrite, duplicate prevention
+- **Init:** protocol dir creation, .ngram/CLAUDE.md + AGENTS.md update (includes Codex addition), force overwrite, duplicate prevention
 - **Validate:** healthy project pass, missing protocol fail, broken chain detection
 - **Doctor:** monolith detection, undocumented detection, stale sync, score calculation
 - **Repair:** agent spawning, depth filtering, max limit, dry-run, parallel execution
@@ -81,7 +81,7 @@ ngram doctor --no-github
 ngram repair --dry-run --max 3
 
 # Test context
-ngram context src/ngram/cli.py
+ngram context ngram/cli.py
 ```
 
 ---
@@ -92,7 +92,7 @@ ngram context src/ngram/cli.py
 - [ ] No integration tests
 - [ ] No property-based tests
 - [ ] No CI/CD test pipeline
-- [ ] No mocking infrastructure for claude subprocess
+- [ ] No mocking infrastructure for agent subprocess
 - [ ] No test fixtures for project structures
 
 ---
@@ -134,5 +134,5 @@ tests/
 - [ ] Add CI/CD with GitHub Actions
 - [ ] Consider snapshot testing for CLI output
 - IDEA: Use hypothesis for property-based testing
-- IDEA: Mock claude subprocess for repair tests
+- IDEA: Mock agent subprocess for repair tests
 - QUESTION: Should we test against real Claude or always mock?

@@ -1,4 +1,4 @@
-# ADD Framework CLI — Algorithm: Command Processing Logic
+# ngram Framework CLI — Algorithm: Command Processing Logic
 
 ```
 STATUS: STABLE
@@ -154,6 +154,7 @@ for issue in issues:
         docs_to_read=instructions.docs,
         task_description=instructions.prompt,
     )
+    # AGENTS.md = .ngram/CLAUDE.md + templates/CODEX_SYSTEM_PROMPT_ADDITION.md
 ```
 
 ### Step 3: Spawn Agents (Parallel)
@@ -172,15 +173,15 @@ with ThreadPoolExecutor(max_workers=parallel) as executor:
 ### Step 4: Execute Agent (per issue)
 
 ```
-cmd = [
-    "claude", "-p", prompt,
-    "--dangerously-skip-permissions",
-    "--append-system-prompt", AGENT_SYSTEM_PROMPT,
-    "--verbose",
-    "--output-format", "stream-json",
-]
+cmd = build_agent_command(
+    agent_provider,
+    prompt=prompt,
+    system_prompt=AGENT_SYSTEM_PROMPT,
+    stream_json=(agent_provider == "claude"),
+    continue_session=False,
+)
 process = subprocess.Popen(cmd, stdout=PIPE)
-stream output, parse JSON, show progress
+stream output, parse JSON (Claude) or text (Codex), show progress
 check for "REPAIR COMPLETE" or "REPAIR FAILED"
 ```
 

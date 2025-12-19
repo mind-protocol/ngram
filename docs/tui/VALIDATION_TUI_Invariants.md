@@ -125,12 +125,12 @@ SYMPTOM: CLI error message with install instructions
 ### E2: Agent Spawn Failure
 
 ```
-WHEN:    claude CLI not available or permission denied
+WHEN:    agent CLI not available or permission denied
 THEN:    Agent marked as failed immediately
 SYMPTOM: Error message in agent panel, red indicator
 ```
 
-**Tested by:** NOT YET TESTED — test with missing claude binary
+**Tested by:** NOT YET TESTED — test with missing agent binary
 
 ### E3: Terminal Too Small
 

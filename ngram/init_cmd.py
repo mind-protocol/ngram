@@ -3,7 +3,7 @@ Init command for ngram CLI.
 
 Initializes the ngram in a project directory by:
 - Copying protocol files to .ngram/
-- Creating/updating CLAUDE.md with protocol bootstrap (inlined content)
+- Creating/updating .ngram/CLAUDE.md and root AGENTS.md with protocol bootstrap (inlined content)
 """
 # DOCS: docs/cli/PATTERNS_Why_CLI_Over_Copy.md
 
@@ -98,17 +98,26 @@ Options: `--dir PATH`, `--format {{md,yaml,json}}`
 """
 
 
-def init_protocol(target_dir: Path, force: bool = False, claude_md_dir: Path = None) -> bool:
+def _build_agents_addition(templates_path: Path) -> str:
+    """Build AGENTS.md content by appending Codex-specific guidance."""
+    claude_content = _build_claude_addition(templates_path)
+    agents_content = _build_agents_addition(templates_path)
+    codex_addition_path = templates_path / "CODEX_SYSTEM_PROMPT_ADDITION.md"
+    codex_addition = codex_addition_path.read_text() if codex_addition_path.exists() else ""
+    if codex_addition:
+        return f"{claude_content}\n\n{codex_addition}"
+    return claude_content
+
+
+def init_protocol(target_dir: Path, force: bool = False) -> bool:
     """
     Initialize the ngram in a project directory.
 
-    Copies protocol files and updates CLAUDE.md with inlined content.
+    Copies protocol files and updates .ngram/CLAUDE.md and root AGENTS.md with inlined content.
 
     Args:
         target_dir: The project directory to initialize
         force: If True, overwrite existing .ngram/
-        claude_md_dir: Directory for CLAUDE.md (default: target_dir)
-
     Returns:
         True if successful, False otherwise
     """
@@ -128,14 +137,8 @@ def init_protocol(target_dir: Path, force: bool = False, claude_md_dir: Path = N
     modules_yaml_dest = target_dir / "modules.yaml"
     ignore_dest = target_dir / ".ngramignore"
 
-    # CLAUDE.md location - defaults to .ngram/ directory
-    if claude_md_dir:
-        claude_md_dir = Path(claude_md_dir)
-        claude_md_dir.mkdir(parents=True, exist_ok=True)
-        claude_md = claude_md_dir / "CLAUDE.md"
-    else:
-        # Default: CLAUDE.md lives inside .ngram/
-        claude_md = protocol_dest / "CLAUDE.md"
+    claude_md = protocol_dest / "CLAUDE.md"
+    agents_md = target_dir / "AGENTS.md"
 
     # Check if already initialized
     if protocol_dest.exists() and not force:
@@ -205,6 +208,13 @@ def init_protocol(target_dir: Path, force: bool = False, claude_md_dir: Path = N
     else:
         claude_md.write_text(claude_content)
         print(f"✓ Created: {claude_md}")
+
+    gemini_md = protocol_dest / "GEMINI.md"
+    gemini_md.write_text(claude_content)
+    print(f"✓ Created: {gemini_md}")
+
+    agents_md.write_text(agents_content)
+    print(f"✓ Updated: {agents_md}")
 
     # Generate repository map
     print()

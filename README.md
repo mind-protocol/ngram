@@ -50,10 +50,11 @@ After initialization:
 
 ```
 your-project/
-├── CLAUDE.md                    # Updated with protocol bootstrap
+├── AGENTS.md                    # Updated with protocol bootstrap
 └── .ngram/
     ├── PROTOCOL.md              # Core rules (agents read this)
     ├── PRINCIPLES.md            # Working principles
+    ├── CLAUDE.md                # Updated with protocol bootstrap
     ├── views/                   # Task-specific context instructions
     ├── templates/               # Templates for documentation
     └── state/
@@ -97,13 +98,13 @@ ngram repair --max 3      # Limit to 3 agents
 ngram repair --dry-run    # Preview what would be fixed
 ```
 
-Spawns Claude Code agents to autonomously fix issues found by doctor.
+Spawns agents (Claude or Codex) to autonomously fix issues found by doctor.
 
 ---
 
 ## How It Works
 
-### 1. Bootstrap (CLAUDE.md)
+### 1. Bootstrap (CLAUDE.md / AGENTS.md)
 
 Points agents to the protocol:
 

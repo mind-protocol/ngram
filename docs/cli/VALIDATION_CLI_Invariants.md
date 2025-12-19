@@ -1,4 +1,4 @@
-# ADD Framework CLI — Validation: Invariants and Correctness Checks
+# ngram Framework CLI — Validation: Invariants and Correctness Checks
 
 ```
 STATUS: STABLE
@@ -32,6 +32,9 @@ These must ALWAYS be true:
 After successful init:
   .ngram/PROTOCOL.md exists
   .ngram/PRINCIPLES.md exists
+  .ngram/CLAUDE.md exists
+  AGENTS.md exists at repo root
+  AGENTS.md includes Codex communication principles
   .ngram/views/ contains all 11 VIEW files
   .ngram/templates/ contains all template files
 ```
@@ -190,7 +193,7 @@ SYMPTOM: Module manifest checks skipped/failed gracefully
 ngram init --force
 ngram validate
 ngram doctor --no-github
-ngram context src/ngram/cli.py
+ngram context ngram/cli.py
 
 # No automated test suite yet
 # TODO: Add pytest tests

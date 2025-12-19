@@ -1,4 +1,4 @@
-# ADD Framework — Patterns: Bidirectional Documentation Chain for AI Agent Workflows
+# ngram Framework — Patterns: Bidirectional Documentation Chain for AI Agent Workflows
 
 ```
 STATUS: STABLE
@@ -38,7 +38,7 @@ Current failure modes:
 
 ## THE PATTERN
 
-**A ADD Framework for AI Agents Working on Code**
+**A ngram Framework for AI Agents Working on Code**
 
 The protocol specifies:
 1. **What to load** for each task type (VIEWS)
@@ -47,7 +47,7 @@ The protocol specifies:
 4. **Where to find things** (consistent structure)
 
 **Key insight:** Agents shouldn't understand the whole system. They should receive:
-- A tiny bootstrap (CLAUDE.md)
+- A tiny bootstrap (.ngram/CLAUDE.md + root AGENTS.md with Codex guidance)
 - One VIEW for their current task
 - Tools to navigate when needed
 

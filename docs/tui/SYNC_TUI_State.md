@@ -1,8 +1,8 @@
 # ngram TUI — Sync: Current State
 
 ```
-LAST_UPDATED: 2025-12-18
-UPDATED_BY: Claude (TUI session improvements)
+LAST_UPDATED: 2025-12-19
+UPDATED_BY: Claude (TUI dark theme & agent improvements)
 STATUS: IMPLEMENTED
 ```
 
@@ -24,18 +24,19 @@ THIS:            SYNC_TUI_State.md (you are here)
 
 ## CURRENT STATE
 
-**Status: FUNCTIONAL** — TUI working with Claude integration.
+**Status: FUNCTIONAL** — TUI working with agent integration (Claude or Codex).
 
-The TUI provides a Claude Code-style persistent chat interface for ngram. Entry point is `ngram` (no subcommand).
+The TUI provides an agent-style persistent chat interface for ngram. Entry point is `ngram` (no subcommand).
 
 ### Completed Features
 
 #### Two-Panel Layout
 - **Manager panel** (left, 45%): Displays orchestration messages, user input (magenta), Claude responses, thinking (collapsible)
-- **Agent panel** (right, 55%): Shows SYNC_Project_State.md by default, agent panels during repair
+- **Agent panel** (right, 55%): Tabbed interface (CHANGES, SYNC, DOCTOR, MAP, AGENTS)
 - Responsive layout using Textual's Horizontal container
 - Auto-scroll: All panels scroll to latest content when messages added (B10)
 - Bottom padding on manager panel creates empty line above input bar
+- Parallelized startup: doctor, SYNC, map, git commands run concurrently
 
 #### Status Bar
 - **Left**: Project folder name (`ngram: {folder}`)
@@ -43,14 +44,14 @@ The TUI provides a Claude Code-style persistent chat interface for ngram. Entry 
 - Dynamic width calculation for proper right-alignment
 - Resize handling: Health score repositions automatically on terminal resize (B12)
 
-#### Claude Integration
-- Subprocess-based with `claude -p` and `--output-format stream-json`
-- Conversation continuity via `--continue` flag (with fallback retry)
-- System prompt from `.ngram/agents/manager/CLAUDE.md`
+#### Agent Integration
+- Subprocess-based with `claude` or `codex exec`
+- Conversation continuity via `--continue` / `codex exec resume --last`
+- System prompt from `.ngram/agents/manager/CLAUDE.md` mirrored into `AGENTS.md`
 - Global learnings appended from `.ngram/views/GLOBAL_LEARNINGS.md`
-- Streaming responses: Text streams to manager panel as it arrives (B6)
-- Thinking blocks: 3-line preview with collapsible "Show more..." for longer thoughts
-- Animated loading indicator (`. → .. → ...`) during Claude responses
+- Streaming responses for Claude; text output for Codex
+- Thinking blocks: 3-line preview with collapsible "Show more..." for longer thoughts (Claude only)
+- Animated loading indicator (`. → .. → ...`) during agent responses
 
 #### Command Detection
 - Detects runnable commands in Claude responses (backticks, bold, code blocks, "Run X" patterns)
@@ -72,11 +73,19 @@ The TUI provides a Claude Code-style persistent chat interface for ngram. Entry 
 - Command outputs logged to history for later display
 
 #### Agent Panels (during /repair)
-- Up to 3 concurrent agents displayed in right panel
+- Up to 3 concurrent agents displayed in columns (side by side)
 - Brown header showing: `{symbol} {issue_type}: {target_path}`
-- Real-time streaming output with 100ms throttling
-- Status colors: brown (running), green (completed), rust (failed)
+- Real-time streaming output with non-blocking updates via `call_later()`
+- Status colors: copper (running), sage (completed), rust (failed)
 - Output limited to last 50 lines to prevent slowdown
+- Auto-collapse: Completed/failed agents collapse to header only (click to expand)
+- 20 unique emoji symbols for agent identification
+- Markdown widget for output (renders bold, code, lists)
+
+#### Repair Session Folders
+- Each `/repair` creates timestamped folder: `.ngram/repairs/{timestamp}/`
+- Each agent gets subfolder with issue reference: `{index}-{issue_type}-{path_slug}`
+- ISSUE.md created in each agent folder with issue details
 
 #### Error Handling
 - All errors logged to `.ngram/error_log.txt` with timestamps
@@ -85,13 +94,20 @@ The TUI provides a Claude Code-style persistent chat interface for ngram. Entry 
 - Chunk-based stdout reading (64KB) to avoid line length limits
 
 #### Theme
-- Paper & Parchment color palette (warm cream backgrounds, wood-tone text)
-- Inline code: transparent background, dark bold text (#1a1a1a)
+- Wood & Paper light theme (default) - paper backgrounds, wood text
+- Key colors: #F5F0E6 (vellum screen), #FAF6ED (cream panels), #2C1810 (ebony text)
+- Accents: #A0522D (rust), #B87333 (copper), #5F7A4A (sage)
+- Dark theme also available (set `dark = True` in app.py)
 - Clean minimal design without footer
 - Rich markup rendering (colors, bold, italic, dim)
 
 ### In Progress
 - Queue management for >3 issues in repair
+
+### 2025-12-20: Added multi-agent provider support
+
+- TUI accepts `--agents {claude,codex}` and uses the selected provider for manager and repairs
+- Manager resumes sessions across turns for both providers
 
 ### Planned Features
 
@@ -152,11 +168,12 @@ None currently.
 **Your likely VIEW:** `VIEW_Extend_Add_Features_To_Existing.md`
 
 **Where I stopped:** TUI fully functional. Recent session added:
-1. Command detection for interactive execution
-2. Conversation history persistence
-3. Agent panel streaming with throttling
-4. Chunk-based stdout reading (fixes line length errors)
-5. UI polish (colors, spacing, headers)
+1. Dark Wood & Paper theme with better contrast
+2. Parallelized startup (doctor, SYNC, map, git run concurrently)
+3. Agents displayed in columns (side by side layout)
+4. Auto-collapse for completed/failed agents
+5. Repair session folders with issue-based naming
+6. UI performance fix: Non-blocking agent updates via `call_later()`, batched subprocess output with periodic yields
 
 **What you need to understand:**
 - TUI uses Textual framework (async, CSS styling)

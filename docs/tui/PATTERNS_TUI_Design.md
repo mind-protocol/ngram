@@ -1,4 +1,4 @@
-# ngram TUI — Patterns: Claude Code-Style Interface
+# ngram TUI — Patterns: Agent CLI-Style Interface
 
 ```
 STATUS: DESIGNING
@@ -41,7 +41,7 @@ Without a TUI:
 
 **Persistent chat interface with multi-column agent display.**
 
-Inspired by Claude Code:
+Inspired by agent CLIs:
 - **Entry point**: Just `ngram` (no subcommand)
 - **Persistent session**: Runs until user quits
 - **Manager + Agents layout**: Manager on left, worker agents in columns on right
@@ -62,7 +62,8 @@ The TUI stays open. After a repair completes, you're back at the prompt. You can
 - Check health
 - Continue the conversation
 
-This mirrors how Claude Code works — it's a session, not a command.
+This mirrors how agent CLIs work — it's a session, not a command. The manager can be backed
+by Claude or Codex via `--agents {claude,codex}`.
 
 ### Principle 2: Manager + Workers Visualization
 
@@ -81,7 +82,7 @@ Use `/commands` rather than menus or keybindings:
 - `/help` — Show available commands
 - `/quit` — Exit
 
-This is familiar to Claude Code users and keeps the interface text-focused.
+This is familiar to agent CLI users and keeps the interface text-focused.
 
 ### Principle 4: White Theme for Readability
 
@@ -118,6 +119,7 @@ This means:
 ## INSPIRATIONS
 
 - **Claude Code** — Chat interface with real-time tool output
+- **Codex CLI** — Agent session UX with resumable runs
 - **htop/btop** — Multi-column terminal UIs
 - **tmux/screen** — Pane-based terminal layouts
 - **Lazygit** — TUI that wraps CLI functionality

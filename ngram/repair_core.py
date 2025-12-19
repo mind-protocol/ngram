@@ -18,6 +18,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Awaitable, Callable, Dict, List, Optional
 
+from .agent_cli import build_agent_command, normalize_agent
+
 
 # Symbols and emojis per issue type
 ISSUE_SYMBOLS = {
@@ -81,38 +83,121 @@ ISSUE_DESCRIPTIONS = {
     "LONG_SQL": ("externalize SQL in", "to .sql files"),
 }
 
-# Agent symbols for parallel execution
-AGENT_SYMBOLS = ["🥷", "🧚", "🤖", "🦊", "🐙", "🦄", "🧙", "🐲", "🦅", "🐺"]
+# Agent symbols for parallel execution (20 symbols for variety)
+AGENT_SYMBOLS = [
+    "🥷", "🧚", "🤖", "🦊", "🐙", "🦄", "🧙", "🐲", "🦅", "🐺",
+    "🦝", "🦉", "🐢", "🦎", "🐝", "🦋", "🐬", "🦈", "🦁", "🐯",
+]
+
+# Symbol to folder name mapping
+AGENT_SYMBOL_NAMES = {
+    "🥷": "ninja",
+    "🧚": "fairy",
+    "🤖": "robot",
+    "🦊": "fox",
+    "🐙": "octopus",
+    "🦄": "unicorn",
+    "🧙": "wizard",
+    "🐲": "dragon",
+    "🦅": "eagle",
+    "🐺": "wolf",
+    "🦝": "raccoon",
+    "🦉": "owl",
+    "🐢": "turtle",
+    "🦎": "lizard",
+    "🐝": "bee",
+    "🦋": "butterfly",
+    "🐬": "dolphin",
+    "🦈": "shark",
+    "🦁": "lion",
+    "🐯": "tiger",
+}
+
+
+def get_symbol_name(symbol: str, index: int = 0) -> str:
+    """Get folder-safe name for an agent symbol with optional index for duplicates.
+
+    Args:
+        symbol: The emoji symbol
+        index: The agent index (0-based), used for numbering when > 10 agents
+
+    Returns:
+        Folder name like "ninja" for first 10, "ninja-2" for 11th ninja, etc.
+    """
+    base_name = AGENT_SYMBOL_NAMES.get(symbol, f"agent-{ord(symbol) if len(symbol) == 1 else hash(symbol) % 10000}")
+    cycle = index // len(AGENT_SYMBOLS)
+    if cycle > 0:
+        return f"{base_name}-{cycle + 1}"
+    return base_name
+
+
+def get_issue_folder_name(issue_type: str, path: str, index: int = 0) -> str:
+    """Get folder-safe name from issue type and path.
+
+    Args:
+        issue_type: e.g., "MONOLITH", "STALE_SYNC"
+        path: e.g., "docs/physics/SYNC_Physics.md"
+        index: Agent index for uniqueness
+
+    Returns:
+        Folder name like "STALE_SYNC-physics-SYNC_Physics" (sanitized)
+    """
+    import re
+    # Extract meaningful parts from path
+    path_parts = path.replace("\\", "/").split("/")
+    # Take last 2 meaningful parts (skip extension)
+    meaningful = []
+    for part in reversed(path_parts):
+        if part and part not in (".", ".."):
+            # Remove extension
+            name = re.sub(r'\.[^.]+$', '', part)
+            if name:
+                meaningful.insert(0, name)
+            if len(meaningful) >= 2:
+                break
+
+    # Build folder name: TYPE-path_part1-path_part2
+    path_str = "-".join(meaningful) if meaningful else "unknown"
+    # Sanitize: only alphanumeric, dash, underscore
+    sanitized = re.sub(r'[^a-zA-Z0-9_-]', '_', f"{issue_type}-{path_str}")
+    # Add index if needed for uniqueness
+    if index > 0:
+        sanitized = f"{index:02d}-{sanitized}"
+    else:
+        sanitized = f"{index:02d}-{sanitized}"
+    return sanitized[:60]  # Limit length
 
 # Issue priority (lower = fix first)
+# Order: MONOLITH (blocks all) → INCOMPLETE_IMPL (code first) → DOC_DUPLICATION →
+#        INCOMPLETE_CHAIN (structural) → LARGE_DOC_MODULE (info) → HARDCODED_CONFIG (often false positive)
 ISSUE_PRIORITY = {
-    "YAML_DRIFT": 1,
-    "UNDOCUMENTED": 2,
-    "INCOMPLETE_CHAIN": 3,
-    "PLACEHOLDER": 4,
-    "BROKEN_IMPL_LINK": 5,
-    "NO_DOCS_REF": 6,
-    "STALE_SYNC": 7,
-    "UNDOC_IMPL": 8,
-    "STALE_IMPL": 9,
-    "MONOLITH": 10,
-    "STUB_IMPL": 11,
-    "INCOMPLETE_IMPL": 12,
-    "LARGE_DOC_MODULE": 13,
-    "ORPHAN_DOCS": 14,
-    "MISSING_TESTS": 15,
-    "DOC_GAPS": 3,
-    "ARBITRAGE": 0,
-    "SUGGESTION": 1,
-    "NEW_UNDOC_CODE": 8,
-    "COMPONENT_NO_STORIES": 16,
-    "HOOK_UNDOC": 16,
-    "DOC_DUPLICATION": 6,
-    "HARDCODED_SECRET": 0,
-    "HARDCODED_CONFIG": 12,
-    "MAGIC_VALUES": 17,
-    "LONG_PROMPT": 17,
-    "LONG_SQL": 17,
+    "HARDCODED_SECRET": 0,   # Security first
+    "ARBITRAGE": 1,          # Conflicts block progress
+    "MONOLITH": 2,           # Blocks everything
+    "INCOMPLETE_IMPL": 3,    # Code before docs
+    "STUB_IMPL": 4,          # Also code
+    "DOC_DUPLICATION": 5,    # Fix content
+    "INCOMPLETE_CHAIN": 6,   # Structural docs
+    "YAML_DRIFT": 7,         # Config alignment
+    "UNDOCUMENTED": 8,       # New docs needed
+    "PLACEHOLDER": 9,        # Fill in gaps
+    "BROKEN_IMPL_LINK": 10,  # Fix links
+    "NO_DOCS_REF": 11,       # Add refs
+    "STALE_SYNC": 12,        # Update state
+    "UNDOC_IMPL": 13,        # Doc existing code
+    "STALE_IMPL": 14,        # Update impl docs
+    "DOC_GAPS": 15,          # Fill gaps
+    "NEW_UNDOC_CODE": 16,    # New code docs
+    "SUGGESTION": 17,        # Nice to have
+    "ORPHAN_DOCS": 18,       # Cleanup
+    "MISSING_TESTS": 19,     # Tests last
+    "LARGE_DOC_MODULE": 20,  # Info only
+    "COMPONENT_NO_STORIES": 21,
+    "HOOK_UNDOC": 22,
+    "MAGIC_VALUES": 23,
+    "LONG_PROMPT": 24,
+    "LONG_SQL": 25,
+    "HARDCODED_CONFIG": 99,  # Often false positive, last
 }
 
 # Issue types categorized by repair depth
@@ -411,6 +496,9 @@ async def spawn_repair_agent_async(
     github_issue_number: Optional[int] = None,
     arbitrage_decisions: Optional[List[ArbitrageDecision]] = None,
     agent_id: Optional[str] = None,
+    session_dir: Optional[Path] = None,
+    agent_symbol: Optional[str] = None,
+    agent_provider: str = "claude",
 ) -> RepairResult:
     """
     Async version of spawn_repair_agent for TUI integration.
@@ -422,6 +510,10 @@ async def spawn_repair_agent_async(
         instructions: Instructions from get_issue_instructions()
         github_issue_number: Optional GitHub issue number
         arbitrage_decisions: Optional user decisions for ARBITRAGE issues
+        agent_id: Unique identifier for this agent
+        session_dir: Repair session directory (e.g., .ngram/repairs/2024-01-15_14-30-00/)
+        agent_symbol: Symbol for this agent (e.g., "ninja" for 🥷)
+        agent_provider: Agent provider name (claude or codex)
 
     Returns:
         RepairResult with success status and output
@@ -442,57 +534,92 @@ async def spawn_repair_agent_async(
             "(No decisions provided - skip this issue)"
         )
 
+    agent_provider = normalize_agent(agent_provider)
     prompt = build_agent_prompt(issue, instructions, target_dir, github_issue_number)
     system_prompt = AGENT_SYSTEM_PROMPT + get_learnings_content(target_dir)
 
-    cmd = [
-        "claude",
-        "-p", prompt,
-        "--dangerously-skip-permissions",
-        "--append-system-prompt", system_prompt,
-        "--verbose",
-        "--output-format", "stream-json",
-    ]
+    agent_cmd = build_agent_command(
+        agent_provider,
+        prompt=prompt,
+        system_prompt=system_prompt,
+        stream_json=(agent_provider == "claude"),
+        continue_session=False,
+    )
 
     start_time = time.time()
     text_output = []
 
     try:
-        # Create unique directory for this agent to avoid conversation conflicts
-        # Each agent gets its own subdirectory under .ngram/agents/
-        if agent_id:
+        import shutil
+
+        # Create agent directory within session folder
+        # Structure: .ngram/repairs/{timestamp}/{agent_symbol}/
+        if session_dir and agent_symbol:
+            # Use symbol name as folder (e.g., "ninja" for 🥷)
+            agent_dir = session_dir / agent_symbol
+        elif session_dir and agent_id:
+            agent_dir = session_dir / agent_id
+        elif agent_id:
+            # Fallback to old structure
             agent_dir = target_dir / ".ngram" / "agents" / "repair" / agent_id
         else:
             import uuid
             agent_dir = target_dir / ".ngram" / "agents" / "repair" / f"agent-{uuid.uuid4().hex[:8]}"
         agent_dir.mkdir(parents=True, exist_ok=True)
 
-        # Copy/symlink CLAUDE.md so agent has context
+        # Copy CLAUDE.md so agent has context
         claude_md_src = target_dir / ".ngram" / "CLAUDE.md"
         claude_md_dst = agent_dir / "CLAUDE.md"
+        agents_md_src = target_dir / "AGENTS.md"
+        agents_md_dst = agent_dir / "AGENTS.md"
         if claude_md_src.exists() and not claude_md_dst.exists():
-            import shutil
             shutil.copy(claude_md_src, claude_md_dst)
+        if agents_md_src.exists():
+            agents_md_dst.write_text(agents_md_src.read_text())
+        elif claude_md_src.exists():
+            agents_md_dst.write_text(claude_md_src.read_text())
+
+        # Write issue info to agent folder for reference
+        issue_info = agent_dir / "ISSUE.md"
+        issue_info.write_text(f"""# Repair Task
+
+**Issue Type:** {issue.issue_type}
+**Severity:** {issue.severity}
+**Target:** {issue.path}
+
+## Instructions
+{instructions.get('prompt', 'No instructions provided')}
+
+## Docs to Read
+{chr(10).join('- ' + d for d in instructions.get('docs_to_read', []))}
+""")
 
         process = await asyncio.create_subprocess_exec(
-            *cmd,
+            *agent_cmd.cmd,
             cwd=agent_dir,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.STDOUT,
+            stdin=asyncio.subprocess.PIPE if agent_cmd.stdin else None,
         )
+        if agent_cmd.stdin and process.stdin:
+            process.stdin.write((agent_cmd.stdin + "\n").encode())
+            await process.stdin.drain()
+            process.stdin.close()
 
         buffer = ""
+        lines_since_yield = 0
         while True:
-            # Use chunk-based reading to avoid line length limits
-            chunk = await process.stdout.read(65536)
+            # Read chunks from process
+            chunk = await process.stdout.read(32768)  # 32KB chunks
             if not chunk:
                 break
             buffer += chunk.decode(errors='replace')
 
             # Process complete lines
+            batch_output = []
             while '\n' in buffer:
-                line_str, buffer = buffer.split('\n', 1)
-                line_str = line_str.strip()
+                raw_line, buffer = buffer.split('\n', 1)
+                line_str = raw_line.strip()
                 if not line_str:
                     continue
 
@@ -500,7 +627,21 @@ async def spawn_repair_agent_async(
                 parsed = parse_stream_json_line(line_str)
                 if parsed:
                     text_output.append(parsed)
-                    await on_output(parsed)
+                    batch_output.append(parsed)
+                    lines_since_yield += 1
+                elif not line_str.startswith("{"):
+                    text_output.append(raw_line)
+                    batch_output.append(raw_line + "\n")
+                    lines_since_yield += 1
+
+            # Send batched output to callback (reduces await overhead)
+            if batch_output:
+                await on_output("".join(batch_output))
+
+            # Yield to event loop periodically to keep UI responsive
+            if lines_since_yield >= 20:
+                lines_since_yield = 0
+                await asyncio.sleep(0)
 
         await process.wait()
         duration = time.time() - start_time

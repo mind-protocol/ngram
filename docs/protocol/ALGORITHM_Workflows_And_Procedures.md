@@ -1,4 +1,4 @@
-# ADD Framework — Algorithm: Workflows and Procedures
+# ngram Framework — Algorithm: Workflows and Procedures
 
 ```
 STATUS: STABLE
@@ -23,7 +23,7 @@ SYNC:            ./SYNC_Protocol_Current_State.md
 
 ## OVERVIEW
 
-This document describes the step-by-step procedures for using the ADD Framework.
+This document describes the step-by-step procedures for using the ngram Framework.
 It covers installation, daily workflows, and maintenance.
 
 ---
@@ -58,11 +58,13 @@ Result:
         └── SYNC_Project_State.md
 ```
 
-### Step 2: Update CLAUDE.md
+### Step 2: Update CLAUDE.md and AGENTS.md
 
-Append content from `templates/CLAUDE_ADDITION.md` to project's CLAUDE.md.
+Append content from `templates/CLAUDE_ADDITION.md` to `.ngram/CLAUDE.md`.
 
-If CLAUDE.md doesn't exist, create it with the addition content.
+If `.ngram/CLAUDE.md` doesn't exist, create it with the addition content.
+Write the same content to root `AGENTS.md` (create or overwrite), then append
+`templates/CODEX_SYSTEM_PROMPT_ADDITION.md`.
 
 ### Step 3: Initialize Project SYNC
 
@@ -86,7 +88,7 @@ For existing modules, create docs using templates.
 ### Step 1: Read Bootstrap
 
 ```
-READ: CLAUDE.md → find protocol section
+READ: .ngram/CLAUDE.md (or root AGENTS.md) → find protocol section
 READ: .ngram/PROTOCOL.md
 ```
 
@@ -286,7 +288,7 @@ ADD reference to: docs/concepts/{concept}/CONCEPT_*.md
 ```
 Task Assigned
       ↓
-CLAUDE.md (bootstrap)
+.ngram/CLAUDE.md + root AGENTS.md (bootstrap)
       ↓
 PROTOCOL.md (rules)
       ↓
@@ -307,7 +309,7 @@ Task Complete
 
 ## COMPLEXITY
 
-**Time to install:** O(1) — copy files, update CLAUDE.md
+**Time to install:** O(1) — copy files, update .ngram/CLAUDE.md and root AGENTS.md
 **Time to start task:** O(1) — read VIEW, load specified docs
 **Time to maintain:** O(changes) — update SYNC proportional to changes
 

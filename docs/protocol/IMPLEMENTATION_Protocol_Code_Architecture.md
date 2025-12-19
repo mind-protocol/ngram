@@ -1,4 +1,4 @@
-# ADD Framework — Implementation: File Structure and Architecture
+# ngram Framework — Implementation: File Structure and Architecture
 
 ```
 STATUS: STABLE
@@ -23,7 +23,7 @@ SYNC:            ./SYNC_Protocol_Current_State.md
 
 ## OVERVIEW
 
-The ADD Framework is implemented as a system of markdown files that guide AI agents. Unlike traditional code modules, the "implementation" here is the structure and content of template files that get copied to projects.
+The ngram Framework is implemented as a system of markdown files that guide AI agents. Unlike traditional code modules, the "implementation" here is the structure and content of template files that get copied to projects.
 
 This document describes:
 - Where protocol files live
@@ -84,7 +84,9 @@ When installed in a target project, files are copied to `.ngram/`:
 
 ### CLAUDE.md Bootstrap
 
-The `.ngram/CLAUDE.md` file includes protocol files via `@` directives:
+The `.ngram/CLAUDE.md` file includes protocol files via `@` directives.
+Root `AGENTS.md` mirrors the same content for agent CLIs that read AGENTS.md,
+and appends `templates/CODEX_SYSTEM_PROMPT_ADDITION.md`:
 
 ```
 .ngram/CLAUDE.md
@@ -166,7 +168,7 @@ VIEW:
 
 | Entry Point | File | Triggered By |
 |-------------|------|--------------|
-| Bootstrap | .ngram/CLAUDE.md | Agent session start |
+| Bootstrap | .ngram/CLAUDE.md + AGENTS.md | Agent session start |
 | Navigation | .ngram/PROTOCOL.md | After bootstrap |
 | Task Selection | .ngram/views/VIEW_*.md | Based on task type |
 | State Check | .ngram/state/SYNC_Project_State.md | Before any work |
@@ -187,6 +189,7 @@ VIEW:
          ▼
 ┌─────────────────┐
 │ .ngram/CLAUDE.md│ ← Bootstrap with @includes
+│ AGENTS.md       │ ← Mirror for Codex
 │  (with @refs)   │
 └────────┬────────┘
          │ follows to
@@ -275,6 +278,7 @@ SYNC_*.md (WHERE we are now)
 ┌─────────────────┐
 │ Create/update   │ ← Add @includes
 │.ngram/CLAUDE.md │
+│AGENTS.md        │
 └────────┬────────┘
          │
          ▼

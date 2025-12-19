@@ -115,6 +115,16 @@ MATCH command.name:
 
 ## KEY DECISIONS
 
+### D0: Agent Provider
+
+```
+IF --agents=codex:
+    Use codex exec resume --last for manager prompts
+    Parse plain text output
+ELSE:
+    Use claude --continue with stream-json output
+```
+
 ### D1: Handle /repair Command
 
 ```

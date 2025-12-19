@@ -1,4 +1,4 @@
-# ADD Framework CLI — Sync: Current State
+# ngram Framework CLI — Sync: Current State
 
 ```
 LAST_UPDATED: 2025-12-19
@@ -26,13 +26,13 @@ THIS:            SYNC_CLI_State.md (you are here)
 
 The CLI is functional and in active use. All core commands work:
 
-**init**: Copies `.ngram/` directory and updates CLAUDE.md. Supports `--force` for re-initialization.
+**init**: Copies `.ngram/` directory and updates `.ngram/CLAUDE.md` plus root `AGENTS.md`. Supports `--force` for re-initialization.
 
 **validate**: Runs 8 validation checks including protocol installation, VIEW existence, module docs minimum, chain completeness, naming conventions, CHAIN link validity, and module manifest configuration.
 
 **doctor**: Comprehensive health checks for 12 issue types (MONOLITH, UNDOCUMENTED, STALE_SYNC, PLACEHOLDER, INCOMPLETE_CHAIN, NO_DOCS_REF, BROKEN_IMPL_LINK, STUB_IMPL, INCOMPLETE_IMPL, UNDOC_IMPL, LARGE_DOC_MODULE, YAML_DRIFT). Generates SYNC-formatted health report. Supports GitHub issue creation.
 
-**repair**: The most sophisticated command. Spawns Claude Code agents in parallel (default 5) to fix issues. Each agent follows a VIEW, reads required docs, makes focused changes, and updates SYNC. Supports depth levels (links, docs, full) and issue type filtering.
+**repair**: The most sophisticated command. Spawns repair agents in parallel (default 5) to fix issues. Each agent follows a VIEW, reads required docs, makes focused changes, and updates SYNC. Supports depth levels (links, docs, full), issue type filtering, and `--agents {claude,codex}`.
 
 **sync**: Shows SYNC file status and auto-archives large files.
 
@@ -73,6 +73,12 @@ No active development at this time.
 
 See `SYNC_CLI_State_archive_2025-12.md` for detailed change logs.
 
+### 2025-12-20: Added multi-agent provider support
+
+- `repair` and TUI can now use `--agents {claude,codex}`
+- Manager calls resume sessions for both providers
+- `init` writes `AGENTS.md` at repo root (mirrors `.ngram/CLAUDE.md` and adds Codex guidance)
+
 ---
 
 ## KNOWN ISSUES
@@ -96,7 +102,8 @@ See `SYNC_CLI_State_archive_2025-12.md` for detailed change logs.
 - Each command is in its own file under `ngram/`
 - `cli.py` is the entry point that wires up argparse
 - `utils.py` has shared utilities (template paths, module discovery)
-- The repair system spawns `claude` subprocess with specific prompts
+- The repair system spawns agent subprocesses (`claude` or `codex`) with specific prompts
+- `AGENTS.md` mirrors `.ngram/CLAUDE.md` and appends `CODEX_SYSTEM_PROMPT_ADDITION.md`
 
 **Watch out for:**
 - `repair.py` is complex — understand DEPTH_LINKS/DOCS/FULL before modifying

@@ -163,7 +163,7 @@ pytest tests/tui/ -m "integration"
 ```python
 # Mock for agent subprocess
 class MockAgentProcess:
-    """Simulates claude agent without actually running it."""
+    """Simulates agent without actually running it."""
     async def stream_output(self):
         yield "Starting repair..."
         yield "REPAIR COMPLETE"

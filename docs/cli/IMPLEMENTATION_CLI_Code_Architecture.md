@@ -1,4 +1,4 @@
-# ADD Framework CLI — Implementation: Code Architecture and Structure
+# ngram Framework CLI — Implementation: Code Architecture and Structure
 
 ```
 STATUS: STABLE
@@ -35,6 +35,7 @@ ngram/
 ├── doctor_types.py         # DoctorIssue, DoctorConfig types
 ├── doctor_report.py        # Report generation, scoring
 ├── doctor_files.py         # File discovery utilities
+├── agent_cli.py            # Agent CLI wrapper (claude/codex)
 ├── repair.py               # Agent orchestration for repairs
 ├── repair_report.py        # Repair report generation (LLM + template)
 ├── repair_instructions.py  # Code/test/config repair prompts (main)
@@ -51,6 +52,7 @@ ngram/
 **Logical Groupings** (all in `ngram/`):
 - **Doctor subsystem:** doctor, doctor_checks, doctor_checks_content, doctor_types, doctor_report, doctor_files
 - **Repair subsystem:** repair, repair_core, repair_report, repair_instructions, repair_instructions_docs
+- **Agent CLI:** agent_cli (provider normalization + command building)
 - **Project map:** project_map, project_map_html
 
 ### File Responsibilities
@@ -66,6 +68,7 @@ ngram/
 | `ngram/doctor_types.py` | Type definitions | `DoctorIssue`, `DoctorConfig` | ~41 | OK |
 | `ngram/doctor_report.py` | Report generation | `generate_health_markdown()`, `calculate_health_score()` | ~465 | WATCH |
 | `ngram/doctor_files.py` | File discovery | `find_source_files()`, `find_code_directories()` | ~321 | OK |
+| `ngram/agent_cli.py` | Agent CLI wrapper | `build_agent_command()`, `normalize_agent()` | ~60 | OK |
 | `ngram/repair.py` | Repair orchestration | `repair_command()`, `spawn_repair_agent()` | ~1013 | SPLIT |
 | `ngram/repair_report.py` | Report generation | `generate_llm_report()`, `generate_final_report()` | ~305 | OK |
 | `ngram/repair_instructions.py` | Code/test/config repair prompts | `get_issue_instructions()` | ~765 | WATCH |
@@ -183,7 +186,7 @@ RepairResult:
 For detailed algorithmic steps, see `docs/cli/ALGORITHM_CLI_Logic.md`.
 
 **Summary:**
-- **Init:** `get_templates_path()` → `shutil.copytree()` → update CLAUDE.md
+- **Init:** `get_templates_path()` → `shutil.copytree()` → update .ngram/CLAUDE.md + root AGENTS.md (append `templates/CODEX_SYSTEM_PROMPT_ADDITION.md`)
 - **Doctor:** `load_config()` → 12 health checks → `calculate_health_score()` → write report
 - **Repair:** `run_doctor()` → filter issues → parallel agents → re-check → report
 
@@ -260,8 +263,8 @@ Project → init → Protocol Installed → validate → Validated → doctor �
 
 ```
 1. Build prompt from issue + instructions
-2. Spawn claude subprocess with prompt
-3. Stream JSON output, parse for text/tool_use
+2. Spawn agent subprocess via agent_cli wrapper
+3. Stream JSON output (Claude) or text output (Codex), parse for text/tool_use
 4. Show progress to user
 5. Wait for completion or timeout
 6. Check for REPAIR COMPLETE/FAILED markers

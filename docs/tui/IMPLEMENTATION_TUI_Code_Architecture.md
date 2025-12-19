@@ -30,7 +30,7 @@ ngram/tui/__init__.py                # Package exports (11L)
 ngram/tui/app.py                     # Main Textual App (491L)
 ngram/tui/state.py                   # Session state management (169L)
 ngram/tui/commands.py                # Slash command handlers (443L)
-ngram/tui/manager.py                 # Manager supervisor & Claude PTY (275L)
+ngram/tui/manager.py                 # Manager supervisor & Claude PTY (Claude only) (275L)
 ngram/tui/widgets/__init__.py        # Widget exports (20L)
 ngram/tui/widgets/manager_panel.py   # Left column manager display (138L)
 ngram/tui/widgets/agent_panel.py     # Single agent output display (97L)
@@ -41,6 +41,8 @@ ngram/tui/styles/theme.tcss          # Paper & Parchment theme CSS (244L)
 ngram/cli.py                         # CLI entry point (TUI launched via `ngram`)
 ngram/repair_core.py                 # Shared repair logic (497L)
 ```
+
+Manager startup mirrors `.ngram/CLAUDE.md` into the manager working directory and writes `AGENTS.md` with the same content for Codex compatibility.
 
 ### File Responsibilities
 
@@ -67,7 +69,7 @@ ngram/repair_core.py                 # Shared repair logic (497L)
 
 **Pattern:** Textual widget composition
 
-**Why:** Textual provides CSS-like styling, async support, and composable widgets. Matches Claude Code aesthetic.
+**Why:** Textual provides CSS-like styling, async support, and composable widgets. Matches agent CLI aesthetic.
 
 **Where:** All widget files in ngram/tui/widgets/ compose into ngram/tui/app.py
 
@@ -190,7 +192,7 @@ AgentHandle:
 
 ```
 ┌─────────────────────────┐
-│      Claude Agent       │ ← subprocess
+│      Manager Agent      │ ← subprocess (Claude or Codex)
 │       (external)        │
 └───────────┬─────────────┘
             │ stdout lines

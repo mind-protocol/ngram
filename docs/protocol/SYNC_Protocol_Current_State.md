@@ -1,4 +1,4 @@
-# ADD Framework — Sync: Current State
+# ngram Framework — Sync: Current State
 
 ```
 LAST_UPDATED: 2025-12-18
@@ -49,6 +49,7 @@ Protocol V1 complete and in use. Dogfooding on itself + Blood Ledger.
   - Converted bare filename references to resolvable paths (e.g., `templates/ngram/PROTOCOL.md`)
   - Removed backticked paths that started with `.` (caused issues with validator path resolution)
 - Fixed CLAUDE.md references: Updated all references from `CLAUDE.md` to `.ngram/CLAUDE.md` since file moved from project root to `.ngram/` directory
+- AGENTS.md now mirrors .ngram/CLAUDE.md and appends CODEX_SYSTEM_PROMPT_ADDITION.md
 - Added doctor-ignore entry for false positive: doctor's `extract_impl_file_refs()` strips leading dots from paths (`.ngram/` becomes `ngram/`), causing false BROKEN_IMPL_LINK errors. Bug tracked in ignore reason.
 
 ---
@@ -66,7 +67,7 @@ Protocol V1 complete and in use. Dogfooding on itself + Blood Ledger.
    - 9 VIEWs in views/
    - 7 templates in templates/
    - state/SYNC_Project_State.md
-4. Verify CLAUDE.md created with principles summary
+4. Verify .ngram/CLAUDE.md and AGENTS.md created with principles summary
 
 **Key change since last handoff:**
 PRINCIPLES.md now exists. Make sure it's copied during init.
@@ -127,7 +128,7 @@ Whether agents will actually read PRINCIPLES.md or skip it. The summary in CLAUD
 |------|-------|
 | Protocol (navigation) | `templates/ngram/PROTOCOL.md` |
 | Principles (stance) | `templates/ngram/PRINCIPLES.md` |
-| CLI code | `src/ngram/cli.py` |
+| CLI code | `ngram/cli.py` |
 | CLAUDE addition | `templates/CLAUDE_ADDITION.md` |
 | VIEWs | `templates/ngram/views/` |
 

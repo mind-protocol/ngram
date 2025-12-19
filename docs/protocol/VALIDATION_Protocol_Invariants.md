@@ -1,4 +1,4 @@
-# ADD Framework — Validation: Protocol Invariants
+# ngram Framework — Validation: Protocol Invariants
 
 ```
 STATUS: STABLE
@@ -205,6 +205,8 @@ For project:
 [ ] All VIEW files are present
 [ ] Project SYNC is current
 [ ] CLAUDE.md references protocol
+[ ] AGENTS.md references protocol (mirrors .ngram/CLAUDE.md)
+[ ] AGENTS.md includes Codex communication principles
 ```
 
 ### Automated (To Be Implemented)

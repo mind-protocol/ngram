@@ -7,7 +7,7 @@ Protocol for context, state, and handoffs across sessions.
 
 What `ngram init` does:
 1. Copies the protocol files to .ngram/ in your project
-2. Appends the protocol bootstrap to your CLAUDE.md (creates it if missing)
+2. Appends the protocol bootstrap to .ngram/CLAUDE.md (creates it if missing)
 
 What `ngram validate` does:
 1. Checks protocol invariants (from VALIDATION_Protocol_Invariants.md)
@@ -28,8 +28,10 @@ TEMPLATES LOCATION:
 import argparse
 import sys
 from pathlib import Path
+from typing import Optional
 
 # Import from submodules
+from .agent_cli import AGENT_CHOICES, DEFAULT_AGENT
 from .init_cmd import init_protocol
 from .validate import validate_protocol
 from .prompt import print_bootstrap_prompt
@@ -42,14 +44,82 @@ from .repair import repair_command
 from .repo_overview import generate_and_save as generate_overview
 
 
+from .agent_cli import build_agent_command
+
+
+def agent_command(agent: str, prompt: str, continue_session: bool, add_dir: Optional[Path], system_prompt: str, use_dangerous: bool):
+    """Invoke an agent with a prompt."""
+    agent_cmd = build_agent_command(
+        agent=agent,
+        prompt=prompt,
+        system_prompt=system_prompt,
+        continue_session=continue_session,
+        add_dir=add_dir,
+        use_dangerous=use_dangerous,
+    )
+    # Execute the command
+    import subprocess
+    process = subprocess.run(agent_cmd.cmd, input=agent_cmd.stdin, text=True)
+    return process.returncode
+
+
 def main():
     """CLI entry point."""
     parser = argparse.ArgumentParser(
         prog="ngram",
         description="ngram - Memory for AI agents. Protocol for context, state, and handoffs."
     )
+    # This is now handled by the 'agents' subcommand
+    # parser.add_argument(
+    #     "--agents",
+    #     choices=AGENT_CHOICES,
+    #     default="claude",
+    #     help="Agent provider for repair and TUI (default: claude)",
+    # )
 
     subparsers = parser.add_subparsers(dest="command", help="Commands")
+    
+    # agents command
+    agents_parser = subparsers.add_parser(
+        "agents",
+        help="Invoke an agent"
+    )
+    agents_parser.add_argument(
+        "agent",
+        nargs="?",  # Make it optional
+        choices=AGENT_CHOICES,
+        default=DEFAULT_AGENT, # Use default agent if not specified
+        help="Agent to invoke (default: claude)"
+    )
+    agents_parser.add_argument(
+        "-p", "--prompt",
+        type=str,
+        required=True,
+        help="Prompt to send to the agent"
+    )
+    agents_parser.add_argument(
+        "--continue",
+        action="store_true",
+        dest="continue_session",
+        help="Continue the last session"
+    )
+    agents_parser.add_argument(
+        "--add-dir",
+        type=Path,
+        default=None,
+        help="Directory to add to the agent's context"
+    )
+    agents_parser.add_argument(
+        "--system-prompt",
+        type=str,
+        default="",
+        help="System prompt to send to the agent"
+    )
+    agents_parser.add_argument(
+        "--use-dangerous",
+        action="store_true",
+        help="Use dangerous settings for the agent"
+    )
 
     # init command
     init_parser = subparsers.add_parser(
@@ -67,12 +137,6 @@ def main():
         type=Path,
         default=Path.cwd(),
         help="Directory to initialize (default: current directory)"
-    )
-    init_parser.add_argument(
-        "--claude-md-dir",
-        type=Path,
-        default=None,
-        help="Directory for CLAUDE.md (default: same as --dir)"
     )
 
     # validate command
@@ -196,6 +260,23 @@ def main():
         default="md",
         help="Output format (default: md)"
     )
+    overview_parser.add_argument(
+        "--min-size",
+        type=int,
+        default=500,
+        help="Minimum file size in chars to include (default: 500, 0 = no limit)"
+    )
+    overview_parser.add_argument(
+        "--top",
+        type=int,
+        default=10,
+        help="Max files per directory, largest first (default: 10, 0 = no limit)"
+    )
+    overview_parser.add_argument(
+        "--all",
+        action="store_true",
+        help="Include all files (equivalent to --min-size 0 --top 0)"
+    )
 
     # sync command
     sync_parser = subparsers.add_parser(
@@ -212,7 +293,7 @@ def main():
     # repair command
     repair_parser = subparsers.add_parser(
         "repair",
-        help="Automatically fix project health issues using Claude Code agents"
+        help="Automatically fix project health issues using repair agents"
     )
     repair_parser.add_argument(
         "--dir", "-d",
@@ -254,6 +335,12 @@ def main():
         type=int,
         default=5,
         help="Number of parallel agents (default: 5, use 1 for sequential)"
+    )
+    repair_parser.add_argument(
+        "--agents",
+        choices=AGENT_CHOICES,
+        default="claude",
+        help="Agent provider for repair runs (default: claude)",
     )
 
     # ignore command
@@ -298,8 +385,11 @@ def main():
 
     args = parser.parse_args()
 
-    if args.command == "init":
-        success = init_protocol(args.dir, not args.no_force, args.claude_md_dir)
+    if args.command == "agents":
+        exit_code = agent_command(args.agent, args.prompt, args.continue_session, args.add_dir, args.system_prompt, args.use_dangerous)
+        sys.exit(exit_code)
+    elif args.command == "init":
+        success = init_protocol(args.dir, not args.no_force)
         sys.exit(0 if success else 1)
     elif args.command == "validate":
         success = validate_protocol(args.dir, args.verbose)
@@ -320,7 +410,14 @@ def main():
         print_project_map(args.dir, args.output)
         sys.exit(0)
     elif args.command == "overview":
-        output_path = generate_overview(args.dir, args.format)
+        # Handle --all flag
+        min_size = 0 if args.all else args.min_size
+        top_files = 0 if args.all else args.top
+        output_path = generate_overview(
+            args.dir, args.format,
+            min_size=min_size,
+            top_files=top_files,
+        )
         print(f"Generated: {output_path}")
         sys.exit(0)
     elif args.command == "sync":
@@ -334,6 +431,7 @@ def main():
             depth=args.depth,
             dry_run=args.dry_run,
             parallel=args.parallel,
+            agent_provider=args.agents,
         )
         sys.exit(exit_code)
     elif args.command == "ignore":
@@ -379,10 +477,10 @@ def main():
             print("  ngram ignore --type MAGIC_VALUES --path tests/** --reason 'Test fixtures'")
             sys.exit(1)
     elif args.command is None:
-        # Launch TUI when no subcommand is given (like Claude Code)
+        # Launch TUI when no subcommand is given (similar to agent CLIs)
         try:
             from .tui import NgramApp
-            app = NgramApp(target_dir=Path.cwd())
+            app = NgramApp(target_dir=Path.cwd(), agent_provider="gemini")
             app.run()
             sys.exit(0)
         except ImportError as e:

@@ -63,9 +63,9 @@ GIVEN:  TUI is running with input focus
 WHEN:   User types non-command text and presses Enter
 THEN:   User input displays in blue with blank line before
 AND:    Animated "..." appears while waiting
-AND:    Claude thinking displays in dim italic (if present)
-AND:    Claude response displays in manager panel
-AND:    Conversation continues with --continue flag
+AND:    Agent thinking displays in dim italic (Claude only)
+AND:    Agent response displays in manager panel
+AND:    Conversation resumes on each turn (Claude or Codex)
 ```
 
 ### B3.2: Display SYNC on Launch
@@ -101,7 +101,7 @@ AND:    Repository map (docs/map.md) refreshes after each successful agent
 
 ```
 GIVEN:  User sends message to manager
-WHEN:   Claude generates response
+WHEN:   Agent generates response
 THEN:   Text streams to manager panel as it arrives
 AND:    "..." indicator replaced progressively with text
 AND:    Thinking blocks appear in dim italic as they arrive
@@ -255,7 +255,7 @@ INSTEAD:  Show error about missing .ngram directory
 
 ## GAPS / IDEAS / QUESTIONS
 
-- [x] RESOLVED: Natural language input goes to Claude manager via subprocess
+- [x] RESOLVED: Natural language input goes to manager agent via subprocess
 
 ### Planned Behaviors
 

@@ -1,4 +1,4 @@
-# ADD Framework CLI — Patterns: Why CLI Over Copy
+# ngram Framework CLI — Patterns: Why CLI Over Copy
 
 ```
 STATUS: STABLE
@@ -24,7 +24,7 @@ SYNC:            ./SYNC_CLI_State.md
 
 ## THE PROBLEM
 
-The ADD Framework is fundamentally just markdown files. You could copy them manually. So why have a CLI at all?
+The ngram Framework is fundamentally just markdown files. You could copy them manually. So why have a CLI at all?
 
 Without tooling:
 - Version discovery is manual (which version of the protocol?)
@@ -43,7 +43,7 @@ The CLI does NOT add complex logic. It provides:
 1. **Installation** — Copy protocol files to target project
 2. **Validation** — Check protocol invariants are satisfied
 3. **Health Checks** — Identify documentation gaps, stale syncs, code monoliths
-4. **Automated Repair** — Spawn Claude Code agents to fix issues
+4. **Automated Repair** — Spawn repair agents (Claude or Codex) to fix issues
 5. **Navigation** — Find docs from code paths, generate context
 
 The protocol itself remains file-based. The CLI is orchestration, not logic.
@@ -75,15 +75,19 @@ Each CLI command lives in its own module:
 - `prompt.py` — Generate LLM bootstrap prompts
 - `project_map.py` — Visual project mapping
 - `github.py` — GitHub integration
+- `agent_cli.py` — Agent invocation
 
 New commands can be added without touching existing ones. Each module is self-contained.
 
-### Principle 3: Agent-Driven Repair
+### Principle 3: Agent-Driven Commands
 
-The `repair` command is the most sophisticated part of the CLI. It:
-1. Runs `doctor` to identify issues
+The `repair` and `agents` commands are the most sophisticated parts of the CLI. They:
+1. Run `doctor` to identify issues (for `repair`)
 2. For each issue, builds a task-specific prompt
-3. Spawns Claude Code subprocess with the prompt
+3. Spawns an agent subprocess with the prompt. The supported agents are:
+    - `gemini` (Note: `--system-prompt` is combined with `--prompt` due to CLI limitations)
+    - `claude`
+    - `codex`
 4. Streams agent output in real-time
 5. Tracks success/failure and generates report
 
@@ -93,13 +97,17 @@ This is not "AI magic" — it's structured task delegation. Each agent gets:
 - Clear success criteria
 - Instructions to update SYNC when done
 
+Agent entrypoints are normalized through `agent_cli.py`. Root `AGENTS.md` mirrors
+`.ngram/CLAUDE.md` plus `templates/CODEX_SYSTEM_PROMPT_ADDITION.md` for Codex-compatible
+instructions.
+
 ---
 
 ## DEPENDENCIES
 
 | Module | Why We Depend On It |
 |--------|---------------------|
-| subprocess | Spawn Claude Code agents for repair |
+| subprocess | Spawn agents for repair and invocation |
 | yaml (optional) | Parse modules.yaml for module mappings |
 | pathlib | File system operations throughout |
 | argparse | CLI argument parsing |

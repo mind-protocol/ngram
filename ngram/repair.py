@@ -1,7 +1,7 @@
 """
 Repair command for ngram CLI.
 
-Automatically fixes project health issues by spawning Claude Code agents.
+Automatically fixes project health issues by spawning repair agents.
 Each agent follows the protocol: read docs, fix issue, update SYNC.
 """
 # DOCS: docs/cli/PATTERNS_Why_CLI_Over_Copy.md
@@ -19,6 +19,7 @@ from typing import List, Dict, Any, Optional
 from .doctor import run_doctor, load_doctor_config, DoctorIssue
 from .repair_instructions import get_issue_instructions
 from .repair_report import generate_llm_report, generate_final_report
+from .agent_cli import build_agent_command, normalize_agent
 from .repair_core import (
     ISSUE_PRIORITY,
     AGENT_SYMBOLS,
@@ -106,8 +107,10 @@ def spawn_repair_agent(
     github_issue_number: Optional[int] = None,
     arbitrage_decisions: Optional[List['ArbitrageDecision']] = None,
     agent_symbol: str = "→",
+    agent_provider: str = "claude",
 ) -> RepairResult:
-    """Spawn a Claude Code agent to fix a single issue."""
+    """Spawn a repair agent to fix a single issue."""
+    agent_provider = normalize_agent(agent_provider)
 
     instructions = get_issue_instructions(issue, target_dir)
 
@@ -149,31 +152,34 @@ def spawn_repair_agent(
     # Build system prompt with learnings
     system_prompt = AGENT_SYSTEM_PROMPT + get_learnings_content(target_dir)
 
-    # Build the claude command
-    cmd = [
-        "claude",
-        "-p", prompt,
-        "--dangerously-skip-permissions",
-        "--append-system-prompt", system_prompt,
-        "--verbose",
-        "--output-format", "stream-json",
-    ]
+    agent_cmd = build_agent_command(
+        agent_provider,
+        prompt=prompt,
+        system_prompt=system_prompt,
+        stream_json=(agent_provider == "claude"),
+        continue_session=False,
+    )
 
     start_time = time.time()
     output_lines = []
     text_output = []  # Human-readable text only
 
     try:
-        # Run claude from .ngram/ directory where CLAUDE.md lives
+        # Run agent from .ngram/ directory where CLAUDE.md lives
         ngram_dir = target_dir / ".ngram"
         process = subprocess.Popen(
-            cmd,
+            agent_cmd.cmd,
             cwd=ngram_dir,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
+            stdin=subprocess.PIPE if agent_cmd.stdin else None,
             bufsize=1,  # Line buffered
         )
+        if agent_cmd.stdin and process.stdin:
+            process.stdin.write(agent_cmd.stdin + "\n")
+            process.stdin.flush()
+            process.stdin.close()
 
         # Stream output - parse JSON and extract text
         for line in process.stdout:
@@ -226,6 +232,7 @@ def spawn_repair_agent(
             except json.JSONDecodeError:
                 # Not JSON, might be plain text
                 if line and not line.startswith("{"):
+                    text_output.append(line)
                     sys.stdout.write(f"    {agent_symbol} {line}\n")
                     sys.stdout.flush()
 
@@ -282,8 +289,10 @@ def repair_command(
     depth: str = "docs",
     dry_run: bool = False,
     parallel: int = 5,
+    agent_provider: str = "claude",
 ) -> int:
     """Run the repair command."""
+    agent_provider = normalize_agent(agent_provider)
 
     depth_labels = {
         "links": "Links only (refs, mappings)",
@@ -295,6 +304,7 @@ def repair_command(
     print(f"{'='*60}")
     print(f"  Depth: {depth_labels.get(depth, depth)}")
     print(f"  Parallel agents: {parallel}")
+    print(f"  Agent provider: {agent_provider}")
     print()
 
     # Step 1: Run doctor to get issues
@@ -389,7 +399,7 @@ def repair_command(
     print()
 
     if dry_run:
-        print("  [DRY RUN] Would spawn Claude Code agents for each issue above.")
+        print("  [DRY RUN] Would spawn repair agents for each issue above.")
         print()
         return 0
 
@@ -446,6 +456,7 @@ def repair_command(
             github_issue_number=github_issue_num,
             arbitrage_decisions=arbitrage_decisions,
             agent_symbol=agent_sym,
+            agent_provider=agent_provider,
         )
 
         with print_lock:
@@ -487,6 +498,7 @@ def repair_command(
                     dry_run=False,
                     github_issue_number=github_issue_num,
                     arbitrage_decisions=decisions,
+                    agent_provider=agent_provider,
                 )
                 repair_results.append(result)
 
@@ -556,6 +568,7 @@ def repair_command(
                     dry_run=False,
                     github_issue_number=github_issue_num,
                     agent_symbol=agent_sym,
+                    agent_provider=agent_provider,
                 )
                 repair_results.append(result)
 
@@ -591,14 +604,14 @@ def repair_command(
                 recent_logs.append(log_entry)
 
                 # Check for manager input periodically
-                manager_response = check_for_manager_input(recent_logs, target_dir)
+                manager_response = check_for_manager_input(recent_logs, target_dir, agent_provider)
                 if manager_response:
                     manager_responses.append(manager_response)
     else:
         # Sequential execution with more verbose output
         for i, issue in other_issues:
             # Check for manager input between repairs
-            manager_response = check_for_manager_input(recent_logs, target_dir)
+            manager_response = check_for_manager_input(recent_logs, target_dir, agent_provider)
             if manager_response:
                 manager_responses.append(manager_response)
                 if "STOP REPAIRS" in manager_response:
@@ -624,6 +637,7 @@ def repair_command(
                 target_dir,
                 dry_run=False,
                 github_issue_number=github_issue_num,
+                agent_provider=agent_provider,
             )
             repair_results.append(result)
 
@@ -642,7 +656,7 @@ def repair_command(
     stop_manager_listener()
 
     # Final check for manager input
-    manager_response = check_for_manager_input(recent_logs, target_dir)
+    manager_response = check_for_manager_input(recent_logs, target_dir, agent_provider)
     if manager_response:
         manager_responses.append(manager_response)
 
@@ -670,9 +684,15 @@ def repair_command(
     print(f"{Colors.BOLD}📄 Step 5: Generating report...{Colors.RESET}")
 
     # Try LLM-generated report first, fall back to template
-    report = generate_llm_report(before_results, after_results, repair_results, target_dir)
+    report = generate_llm_report(
+        before_results,
+        after_results,
+        repair_results,
+        target_dir,
+        agent_provider=agent_provider,
+    )
     if report:
-        print(f"  {Colors.DIM}(Generated by Claude){Colors.RESET}")
+        print(f"  {Colors.DIM}(Generated by {agent_provider}){Colors.RESET}")
     else:
         report = generate_final_report(before_results, after_results, repair_results, target_dir)
         print(f"  {Colors.DIM}(Using template report){Colors.RESET}")

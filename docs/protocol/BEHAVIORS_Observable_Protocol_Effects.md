@@ -1,4 +1,4 @@
-# ADD Framework — Behaviors: Observable Protocol Effects
+# ngram Framework — Behaviors: Observable Protocol Effects
 
 ```
 STATUS: STABLE
@@ -123,7 +123,8 @@ AND:    TOUCHES_*.md shows where it appears in code
 - `.ngram/views/VIEW_*.md`
 - `.ngram/templates/*.md`
 - `.ngram/state/SYNC_Project_State.md`
-- Updated CLAUDE.md with protocol bootstrap
+- Updated .ngram/CLAUDE.md with protocol bootstrap
+- Updated AGENTS.md with the bootstrap plus Codex guidance
 
 ### Agent Task Execution
 

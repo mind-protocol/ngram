@@ -17,6 +17,7 @@ from pathlib import Path
 from threading import Lock
 from typing import List, Optional
 
+from .agent_cli import build_agent_command, normalize_agent
 from .repair_core import ArbitrageDecision, get_issue_symbol
 
 
@@ -99,13 +100,26 @@ def spawn_manager_agent(
     user_input: str,
     recent_logs: List[str],
     target_dir: Path,
+    agent_provider: str = "claude",
 ) -> Optional[str]:
     """Spawn the ngram manager with user input and recent logs."""
+    agent_provider = normalize_agent(agent_provider)
 
     manager_dir = target_dir / ".ngram" / "agents" / "manager"
     if not manager_dir.exists():
         print(f"  {Colors.DIM}(ngram manager not found at {manager_dir}){Colors.RESET}")
         return None
+
+    claude_md_src = target_dir / ".ngram" / "CLAUDE.md"
+    claude_md_dst = manager_dir / "CLAUDE.md"
+    agents_md_src = target_dir / "AGENTS.md"
+    agents_md_dst = manager_dir / "AGENTS.md"
+    if claude_md_src.exists() and not claude_md_dst.exists():
+        claude_md_dst.write_text(claude_md_src.read_text())
+    if agents_md_src.exists():
+        agents_md_dst.write_text(agents_md_src.read_text())
+    elif claude_md_src.exists():
+        agents_md_dst.write_text(claude_md_src.read_text())
 
     # Build context with recent logs
     logs_context = "\n".join(recent_logs[-50:]) if recent_logs else "(No recent logs)"
@@ -134,12 +148,12 @@ Keep your response concise - repairs are in progress.
 """
 
     try:
-        cmd = [
-            "claude",
-            "--continue",
-            "-p", prompt,
-            "--output-format", "text",
-        ]
+        agent_cmd = build_agent_command(
+            agent_provider,
+            prompt=prompt,
+            stream_json=False,
+            continue_session=True,
+        )
 
         print()
         print(f"{Colors.BOLD}🎛️  ngram Manager{Colors.RESET}")
@@ -147,12 +161,17 @@ Keep your response concise - repairs are in progress.
 
         # Stream output instead of capturing (faster feedback)
         process = subprocess.Popen(
-            cmd,
+            agent_cmd.cmd,
             cwd=manager_dir,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
+            stdin=subprocess.PIPE if agent_cmd.stdin else None,
         )
+        if agent_cmd.stdin and process.stdin:
+            process.stdin.write(agent_cmd.stdin + "\n")
+            process.stdin.flush()
+            process.stdin.close()
 
         response_lines = []
         try:
@@ -192,7 +211,11 @@ Keep your response concise - repairs are in progress.
     return None
 
 
-def check_for_manager_input(recent_logs: List[str], target_dir: Path) -> Optional[str]:
+def check_for_manager_input(
+    recent_logs: List[str],
+    target_dir: Path,
+    agent_provider: str = "claude",
+) -> Optional[str]:
     """Check if user has provided input, spawn manager if so."""
     global manager_input_queue
 
@@ -201,7 +224,7 @@ def check_for_manager_input(recent_logs: List[str], target_dir: Path) -> Optiona
             user_input = manager_input_queue.pop(0)
             # Echo user input in violet
             print(f"\n{Colors.VIOLET}💬 You: {user_input}{Colors.RESET}")
-            return spawn_manager_agent(user_input, recent_logs, target_dir)
+            return spawn_manager_agent(user_input, recent_logs, target_dir, agent_provider)
 
     return None
 
