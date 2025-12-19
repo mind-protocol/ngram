@@ -18,21 +18,14 @@ class ClickableStatic(Static):
         self.app.copy_to_clipboard(self._raw_content)
         self.notify("Copied!", timeout=1)
 
-    def update(self, content: str):
+    async def update(self, content: str) -> None:
         """Update content and raw content."""
         import inspect
-        import asyncio
 
         self._raw_content = content
         result = super().update(content)
         if inspect.isawaitable(result):
-            try:
-                loop = asyncio.get_running_loop()
-                task = loop.create_task(result)
-                return task
-            except RuntimeError:
-                return result
-        return result
+            await result
 
 
 class ClickableMarkdown(Markdown):
@@ -47,21 +40,14 @@ class ClickableMarkdown(Markdown):
         self.app.copy_to_clipboard(self._raw_content)
         self.notify("Copied!", timeout=1)
 
-    def update(self, content: str):
+    async def update(self, content: str) -> None:
         """Update content and raw content."""
         import inspect
-        import asyncio
 
         self._raw_content = content
         result = super().update(content)
         if inspect.isawaitable(result):
-            try:
-                loop = asyncio.get_running_loop()
-                task = loop.create_task(result)
-                return task
-            except RuntimeError:
-                return result
-        return result
+            await result
 
 
 class ManagerPanel(VerticalScroll):

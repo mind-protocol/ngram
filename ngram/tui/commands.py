@@ -138,6 +138,7 @@ async def handle_command(app: "NgramApp", command: str) -> None:
 async def handle_message(app: "NgramApp", message: str) -> None:
     """Handle a non-command message - send to the agent via subprocess."""
     import asyncio
+    import inspect
 
     manager = app.query_one("#manager-panel")
 
@@ -164,11 +165,14 @@ async def handle_message(app: "NgramApp", message: str) -> None:
 async def _animate_loading(widget, stop_flag: dict) -> None:
     """Animate the loading indicator until stop flag is set."""
     import asyncio
+    import inspect
     dots = [".", "..", "..."]
     i = 0
     try:
         while not stop_flag.get("flag", False):
-            widget.update(f"[dim]{dots[i % len(dots)]}[/]")
+            result = widget.update(f"[dim]{dots[i % len(dots)]}[/]")
+            if inspect.isawaitable(result):
+                await result
             widget.refresh()
             i += 1
             await asyncio.sleep(0.3)
@@ -269,6 +273,7 @@ async def _run_agent_message(app: "NgramApp", message: str, response_widget, sto
         def throttled_update():
             """Update widget, throttled to avoid Textual selection bugs."""
             import time
+            import inspect
             now = time.time()
             # Only update every 50ms to avoid overwhelming Textual
             if now - last_update_time[0] > 0.05:
@@ -276,7 +281,9 @@ async def _run_agent_message(app: "NgramApp", message: str, response_widget, sto
                 # Stop animation on first content update
                 stop_animation["flag"] = True
                 try:
-                    response_widget.update(content)
+                    result = response_widget.update(content)
+                    if inspect.isawaitable(result):
+                        asyncio.create_task(result)
                     response_widget.refresh()  # Force visual refresh
                     last_update_time[0] = now
                 except Exception as e:
@@ -372,7 +379,9 @@ async def _run_agent_message(app: "NgramApp", message: str, response_widget, sto
                                     # Force final update
                                     final_content = "".join(response_parts)
                                     try:
-                                        response_widget.update(final_content)
+                                        result = response_widget.update(final_content)
+                                        if inspect.isawaitable(result):
+                                            await result
                                         response_widget.refresh()  # Force visual refresh
                                     except Exception as e:
                                         app.log_error(f"Result widget update failed: {e}")
@@ -428,7 +437,9 @@ async def _run_agent_message(app: "NgramApp", message: str, response_widget, sto
 
         if response:
             # Final update with full response
-            response_widget.update(response)
+            result = response_widget.update(response)
+            if inspect.isawaitable(result):
+                await result
             response_widget.refresh()
 
             # Save assistant response to history (strip markup for storage)
