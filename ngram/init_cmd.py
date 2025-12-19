@@ -109,6 +109,17 @@ def _build_agents_addition(templates_path: Path) -> str:
     return claude_content
 
 
+def _build_manager_agents_addition(templates_path: Path) -> str:
+    """Build manager AGENTS.md content from manager CLAUDE.md plus Codex guidance."""
+    manager_claude_path = templates_path / "ngram" / "agents" / "manager" / "CLAUDE.md"
+    manager_content = manager_claude_path.read_text() if manager_claude_path.exists() else ""
+    codex_addition_path = templates_path / "CODEX_SYSTEM_PROMPT_ADDITION.md"
+    codex_addition = codex_addition_path.read_text() if codex_addition_path.exists() else ""
+    if codex_addition:
+        return f"{manager_content}\n\n{codex_addition}"
+    return manager_content
+
+
 def init_protocol(target_dir: Path, force: bool = False) -> bool:
     """
     Initialize the ngram in a project directory.
@@ -139,6 +150,7 @@ def init_protocol(target_dir: Path, force: bool = False) -> bool:
 
     claude_md = protocol_dest / "CLAUDE.md"
     agents_md = target_dir / "AGENTS.md"
+    manager_agents_md = protocol_dest / "agents" / "manager" / "AGENTS.md"
 
     # Check if already initialized
     if protocol_dest.exists() and not force:
@@ -230,6 +242,11 @@ def init_protocol(target_dir: Path, force: bool = False) -> bool:
     # (Claude doesn't expand @ references, so we inline the actual content)
     claude_content = _build_claude_addition(templates_path)
     agents_content = _build_agents_addition(templates_path)
+    manager_agents_content = _build_manager_agents_addition(templates_path)
+
+    gemini_addition_path = templates_path / "GEMINI_SYSTEM_PROMPT_ADDITION.md"
+    gemini_addition = gemini_addition_path.read_text() if gemini_addition_path.exists() else ""
+    gemini_content = f"{claude_content}\n\n---\n\n{gemini_addition}" if gemini_addition else claude_content
 
     # Always write/overwrite CLAUDE.md with fresh inlined content
     # This ensures the latest PRINCIPLES and PROTOCOL are always included
@@ -245,7 +262,7 @@ def init_protocol(target_dir: Path, force: bool = False) -> bool:
 
     gemini_md = protocol_dest / "GEMINI.md"
     try:
-        gemini_md.write_text(claude_content)
+        gemini_md.write_text(gemini_content)
         print(f"✓ Created: {gemini_md}")
     except PermissionError:
         print(f"  ○ Skipped (permission): {gemini_md}")
@@ -255,6 +272,14 @@ def init_protocol(target_dir: Path, force: bool = False) -> bool:
         print(f"✓ Updated: {agents_md}")
     except PermissionError:
         print(f"  ○ Skipped (permission): {agents_md}")
+
+    if manager_agents_content:
+        try:
+            manager_agents_md.parent.mkdir(parents=True, exist_ok=True)
+            manager_agents_md.write_text(manager_agents_content)
+            print(f"✓ Updated: {manager_agents_md}")
+        except PermissionError:
+            print(f"  ○ Skipped (permission): {manager_agents_md}")
 
     # Generate repository map
     print()

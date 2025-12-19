@@ -213,11 +213,14 @@ async def _run_agent_message(app: "NgramApp", message: str, response_widget, sto
     # Copy CLAUDE.md to manager directory if not present
     claude_md_src = app.target_dir / ".ngram" / "CLAUDE.md"
     claude_md_dst = manager_dir / "CLAUDE.md"
+    manager_agents_src = manager_dir / "AGENTS.md"
     agents_md_src = app.target_dir / "AGENTS.md"
     agents_md_dst = manager_dir / "AGENTS.md"
     if claude_md_src.exists() and not claude_md_dst.exists():
         shutil.copy(claude_md_src, claude_md_dst)
-    if agents_md_src.exists():
+    if manager_agents_src.exists():
+        agents_md_dst.write_text(manager_agents_src.read_text())
+    elif agents_md_src.exists():
         agents_md_dst.write_text(agents_md_src.read_text())
     elif claude_md_src.exists():
         agents_md_dst.write_text(claude_md_src.read_text())

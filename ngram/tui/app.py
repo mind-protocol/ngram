@@ -28,6 +28,7 @@ except ImportError:
 
 from .state import SessionState, ConversationHistory
 from .manager import ManagerSupervisor, DriftWarning, ClaudePTY
+from .widgets.manager_panel import ManagerPanel, ClickableStatic
 
 
 def check_textual() -> None:
@@ -146,16 +147,18 @@ class NgramApp(App if TEXTUAL_AVAILABLE else object):
         # Mark new session start
         self.conversation.start_new_session()
 
-        # Add welcome message in blue
-        manager.add_message("[blue]Running health check...[/]")
+        # Add welcome messages in blue
+        health_check_msg = manager.add_message("[blue]Running health check...[/]")
+        manager_wakeup_msg = manager.add_message("[blue]Waking up ngram manager...[/]")
+        self._manager_wakeup_animation_task = asyncio.create_task(self._animate_loading(manager_wakeup_msg))
 
         # Run startup tasks in background so UI appears immediately
-        asyncio.create_task(self._startup_sequence())
+        asyncio.create_task(self._startup_sequence(manager, health_check_msg, manager_wakeup_msg))
 
-    async def _startup_sequence(self) -> None:
+    async def _startup_sequence(self, manager: ManagerPanel, health_check_msg: ClickableStatic, manager_wakeup_msg: ClickableStatic) -> None:
         """Run startup tasks: doctor check then manager overview."""
         # Run initial health check and show issues
-        await self._run_doctor_with_display()
+        await self._run_doctor_with_display(manager)
 
         manager = self.query_one("#manager-panel")
         manager_wakeup_msg = manager.add_message("[blue]Waking up ngram manager[/] [dim]...[/]")
@@ -164,7 +167,7 @@ class NgramApp(App if TEXTUAL_AVAILABLE else object):
         )
 
         # Start manager session (also in this background task)
-        await self._start_manager_with_overview()
+        await self._start_manager_with_overview(manager)
 
         if self._manager_wakeup_animation_task:
             self._manager_wakeup_animation_task.cancel()
@@ -197,7 +200,7 @@ class NgramApp(App if TEXTUAL_AVAILABLE else object):
         if not success:
             manager.add_message("[dim]Manager agent not available - using fallback mode[/dim]")
 
-    async def _start_manager_with_overview(self) -> None:
+    async def _start_manager_with_overview(self, manager: ManagerPanel) -> None:
         """Start manager and prompt for project overview."""
         import shutil
         from ..agent_cli import build_agent_command
@@ -212,11 +215,14 @@ class NgramApp(App if TEXTUAL_AVAILABLE else object):
         # Copy CLAUDE.md to manager directory if not present
         claude_md_src = self.target_dir / ".ngram" / "CLAUDE.md"
         claude_md_dst = manager_dir / "CLAUDE.md"
+        manager_agents_src = manager_dir / "AGENTS.md"
         agents_md_src = self.target_dir / "AGENTS.md"
         agents_md_dst = manager_dir / "AGENTS.md"
         if claude_md_src.exists() and not claude_md_dst.exists():
             shutil.copy(claude_md_src, claude_md_dst)
-        if agents_md_src.exists():
+        if manager_agents_src.exists():
+            agents_md_dst.write_text(manager_agents_src.read_text())
+        elif agents_md_src.exists():
             agents_md_dst.write_text(agents_md_src.read_text())
         elif claude_md_src.exists():
             agents_md_dst.write_text(claude_md_src.read_text())
@@ -237,7 +243,7 @@ class NgramApp(App if TEXTUAL_AVAILABLE else object):
             self.agent_provider,
             prompt=initial_prompt,
             system_prompt=system_prompt,
-            stream_json=(self.agent_provider == "claude"),
+            stream_json=True, # Always request stream-json
             continue_session=True,
             add_dir=self.target_dir,
             allowed_tools=allowed_tools if self.agent_provider == "claude" else None,
@@ -275,39 +281,37 @@ class NgramApp(App if TEXTUAL_AVAILABLE else object):
             thinking_msg.remove()
 
             response_parts = []
-            if self.agent_provider == "claude":
-                import json
-                for line_str in stdout_data.decode(errors="replace").split('\n'):
-                    line_str = line_str.strip()
-                    if not line_str:
-                        continue
-                    try:
-                        data = json.loads(line_str)
-                        if data.get("type") == "assistant":
-                            msg_data = data.get("message", {})
-                            for content in msg_data.get("content", []):
-                                if content.get("type") == "thinking":
-                                    thinking = content.get("thinking", "")
-                                    if thinking:
-                                        # Add thinking as collapsible
-                                        manager.add_thinking(thinking)
-                                elif content.get("type") == "tool_use":
-                                    # Display tool call
-                                    tool_name = content.get("name", "unknown")
-                                    tool_input = content.get("input", {})
-                                    manager.add_tool_call(tool_name, tool_input)
-                                elif content.get("type") == "text":
-                                    response_parts.append(content.get("text", ""))
-                        elif data.get("type") == "result":
-                            result = data.get("result", "")
-                            if result and not response_parts:
-                                response_parts.append(result)
-                    except json.JSONDecodeError:
-                        pass
-            else:
-                text_output = stdout_data.decode(errors="replace").strip()
-                if text_output:
-                    response_parts.append(text_output)
+            stdout_str = stdout_data.decode(errors="replace")
+
+            for line_str in stdout_str.split('\n'):
+                line_str = line_str.strip()
+                if not line_str:
+                    continue
+                try:
+                    data = json.loads(line_str)
+                    if data.get("type") == "assistant":
+                        msg_data = data.get("message", {})
+                        for content in msg_data.get("content", []):
+                            if content.get("type") == "thinking":
+                                thinking = content.get("thinking", "")
+                                if thinking:
+                                    # Add thinking as collapsible
+                                    manager.add_thinking(thinking)
+                            elif content.get("type") == "tool_use":
+                                # Display tool call
+                                tool_name = content.get("name", "unknown")
+                                tool_input = content.get("input", {})
+                                manager.add_tool_call(tool_name, tool_input)
+                            elif content.get("type") == "text":
+                                response_parts.append(content.get("text", ""))
+                    elif data.get("type") == "result":
+                        result = data.get("result", "")
+                        if result and not response_parts:
+                            response_parts.append(result)
+                except json.JSONDecodeError:
+                    # Not JSON, treat as plain text if it's the first part of output
+                    if not response_parts and not thinking_msg.is_visible:
+                        response_parts.append(line_str)
 
             if stderr_data:
                 stderr_text = stderr_data.decode(errors="replace").strip()
@@ -336,7 +340,7 @@ class NgramApp(App if TEXTUAL_AVAILABLE else object):
             animation_task.cancel()
             thinking_msg.remove()
             self.log_error(f"Manager startup failed: {e}")
-            await self._show_static_overview()
+            await self._show_static_overview(manager)
 
     def _build_manager_overview_prompt(self) -> str:
         """Build the initial prompt for manager to provide project overview."""
@@ -353,7 +357,7 @@ Then provide a brief overview:
 
 Keep it concise and actionable (2-3 paragraphs max)."""
 
-    async def _show_static_overview(self) -> None:
+    async def _show_static_overview(self, manager: ManagerPanel) -> None:
         """Show static overview when the manager agent is not available."""
         manager = self.query_one("#manager-panel")
 
@@ -437,12 +441,11 @@ Keep it concise and actionable (2-3 paragraphs max)."""
         except Exception as e:
             self.log_error(f"Health check failed: {e}")
 
-    async def _run_doctor_with_display(self) -> None:
+    async def _run_doctor_with_display(self, manager: ManagerPanel) -> None:
         """Run doctor check and display issues in DOCTOR tab (parallelized)."""
         from .widgets.agent_container import AgentContainer
         import asyncio
 
-        manager = self.query_one("#manager-panel")
         agent_container = self.query_one("#agent-container", AgentContainer)
 
         try:

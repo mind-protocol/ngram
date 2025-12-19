@@ -67,7 +67,7 @@ The TUI provides an agent-style persistent chat interface for ngram. Entry point
 #### Agent Integration
 - Subprocess-based with `claude`, `gemini`, or `codex exec`
 - Conversation continuity via `--continue` / `gemini --resume latest` / `codex exec resume --last`
-- System prompt from `.ngram/agents/manager/CLAUDE.md` mirrored into `AGENTS.md`
+- System prompt from `.ngram/agents/manager/CLAUDE.md` and `.ngram/agents/manager/AGENTS.md` (for Codex/Gemini)
 - Global learnings appended from `.ngram/views/GLOBAL_LEARNINGS.md`
 - Streaming responses for Claude; text output for Gemini/Codex
 - Thinking blocks: 3-line preview with collapsible "Show more..." for longer thoughts (Claude only)

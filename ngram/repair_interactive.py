@@ -112,11 +112,14 @@ def spawn_manager_agent(
 
     claude_md_src = target_dir / ".ngram" / "CLAUDE.md"
     claude_md_dst = manager_dir / "CLAUDE.md"
+    manager_agents_src = manager_dir / "AGENTS.md"
     agents_md_src = target_dir / "AGENTS.md"
     agents_md_dst = manager_dir / "AGENTS.md"
     if claude_md_src.exists() and not claude_md_dst.exists():
         claude_md_dst.write_text(claude_md_src.read_text())
-    if agents_md_src.exists():
+    if manager_agents_src.exists():
+        agents_md_dst.write_text(manager_agents_src.read_text())
+    elif agents_md_src.exists():
         agents_md_dst.write_text(agents_md_src.read_text())
     elif claude_md_src.exists():
         agents_md_dst.write_text(claude_md_src.read_text())

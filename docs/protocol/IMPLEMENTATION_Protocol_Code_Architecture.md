@@ -88,6 +88,9 @@ The .ngram/CLAUDE.md file includes protocol files via `@` directives.
 Root `AGENTS.md` mirrors the same content for agent CLIs that read AGENTS.md,
 and appends `templates/CODEX_SYSTEM_PROMPT_ADDITION.md` (protocol-first reading, no self-run TUI, verbose outputs, parallel-work awareness):
 
+Manager bootstrap uses `.ngram/agents/manager/AGENTS.md`, which mirrors
+`templates/ngram/agents/manager/CLAUDE.md` and appends the same Codex addition.
+
 ```
 .ngram/CLAUDE.md
 ├── @templates/CLAUDE_ADDITION     # Include directive
