@@ -36,7 +36,7 @@ Split `ngram/tui/commands.py` to extract manager-agent subprocess logic into `ng
 
 Normalized TUI implementation doc references to avoid broken-link detection for .ngram paths and method names.
 
-Reduced `docs/tui` size by archiving historical detail and splitting `IMPLEMENTATION_TUI_Code_Architecture.md` into an overview plus detail files. Added `docs/tui/archive/SYNC_archive_2024-12.md` and updated `docs/tui/SYNC_TUI_State.md` to keep current state concise.
+Reduced `docs/tui` size by archiving historical detail and splitting `IMPLEMENTATION_TUI_Code_Architecture.md` into an overview plus detail files under `docs/tui/IMPLEMENTATION_TUI_Code_Architecture/`. Added `docs/tui/archive/SYNC_archive_2024-12.md` and updated `docs/tui/SYNC_TUI_State.md` to keep current state concise.
 
 ---
 
