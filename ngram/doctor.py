@@ -211,5 +211,5 @@ def doctor_command(
             print()
             print(f"Saved to {health_path.relative_to(target_dir)}")
 
-    # Exit code: 1 if critical issues
-    return 1 if results["issues"]["critical"] else 0
+    # Always exit 0; issues are reported in output and SYNC file
+    return 0

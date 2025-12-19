@@ -80,6 +80,10 @@ See `SYNC_CLI_State_archive_2025-12.md` for detailed change logs.
 - `init` writes `AGENTS.md` at repo root (mirrors `.ngram/CLAUDE.md` and adds Codex/Gemini guidance)
 - `init` falls back to in-place refresh when `.ngram/` removal fails due to permissions
 
+### 2025-12-20: Doctor exits cleanly on findings
+
+- `ngram doctor` now returns exit code 0 even when issues are found
+
 ---
 
 ## KNOWN ISSUES

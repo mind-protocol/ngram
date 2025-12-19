@@ -67,6 +67,7 @@ THEN:   12 health checks are run
 AND:    Issues are grouped by severity (critical, warning, info)
 AND:    Health score (0-100) is calculated
 AND:    Results saved to .ngram/state/SYNC_Project_Health.md
+AND:    Exit code is 0 even when issues are found
 ```
 
 ### B5: Repair Command
