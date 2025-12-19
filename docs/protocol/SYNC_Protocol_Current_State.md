@@ -50,6 +50,7 @@ Protocol V1 complete and in use. Dogfooding on itself + Blood Ledger.
 - Added root overview stubs so validation still sees full chain files.
 - Consolidated IMPLEMENTATION folder content into `IMPLEMENTATION/IMPLEMENTATION_Overview.md` to remove duplicate docs.
 - Consolidated protocol ALGORITHM docs into a single overview and removed duplicate workflow/install files.
+- Updated the protocol implementation overview entry point to point at the consolidated implementation file.
 
 ---
 

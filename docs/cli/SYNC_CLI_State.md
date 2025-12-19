@@ -2,7 +2,7 @@
 
 ```
 LAST_UPDATED: 2025-12-19
-UPDATED_BY: codex (project map svg config)
+UPDATED_BY: codex (modules.yaml cli path)
 STATUS: CANONICAL
 ```
 
@@ -35,6 +35,10 @@ No active development at this time.
 ---
 
 ## RECENT CHANGES
+
+### 2025-12-19: Fix CLI module code path drift
+
+- Updated `modules.yaml` CLI `code` pattern to avoid drift on non-existent `ngram.py`
 
 ### 2025-12-19: Sync CLI implementation doc with code structure
 

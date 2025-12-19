@@ -2,7 +2,7 @@
 
 ```
 LAST_UPDATED: 2025-12-19
-UPDATED_BY: codex (verify tui state functions)
+UPDATED_BY: codex (cli modules.yaml drift fix)
 ```
 
 ---
@@ -17,6 +17,7 @@ Updated protocol implementation doc to avoid a broken link reference by describi
 Updated protocol implementation documentation to remove backticks from .ngram/CLAUDE.md references so broken link detection no longer strips the leading dot.
 
 Consolidated protocol IMPLEMENTATION docs under `docs/protocol/IMPLEMENTATION/IMPLEMENTATION_Overview.md` and removed duplicate sub-docs.
+Updated `docs/protocol/IMPLEMENTATION_Overview.md` to point to the consolidated implementation overview and note the consolidation.
 
 Externalized the SVG namespace used by project map HTML to `NGRAM_SVG_NAMESPACE` with a default fallback and documented it in the CLI implementation docs.
 Moved project map SVG namespace defaults into `.ngram/config.yaml` and kept `NGRAM_SVG_NAMESPACE` as an override.
@@ -30,6 +31,7 @@ Documented the LLM agent module (`ngram/llms`) and added module mapping + DOCS p
 Updated LLM agent implementation docs to remove broken references and point to concrete file paths.
 
 Synced CLI implementation docs with current file layout (doctor check splits, repair helpers, repo overview files).
+Adjusted CLI module mapping to avoid YAML drift from the `ngram/*.py` pattern.
 
 Confirmed `ngram/repair_core.py` already implements `get_issue_symbol` and `get_issue_action_parts`; re-verified during INCOMPLETE_IMPL repair with no code changes required.
 Recorded the INCOMPLETE_IMPL verification in `docs/cli/SYNC_CLI_State.md` to keep module state aligned.

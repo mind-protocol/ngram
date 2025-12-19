@@ -23,5 +23,5 @@ SYNC:            ./SYNC_Protocol_Current_State.md
 
 ## ENTRY POINT
 
-Detailed implementation docs live in `docs/protocol/IMPLEMENTATION/`:
-- `IMPLEMENTATION/IMPLEMENTATION_Overview.md`
+Detailed implementation docs live in `docs/protocol/IMPLEMENTATION/`. The overview below consolidates the previously split implementation notes (schemas/config, file structure, and flows/links).
+- `docs/protocol/IMPLEMENTATION/IMPLEMENTATION_Overview.md`

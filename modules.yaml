@@ -52,7 +52,7 @@ modules:
 # =============================================================================
 
   cli:
-    code: "ngram/*.py"
+    code: "ngram/*"
     docs: "docs/cli/"
     maturity: CANONICAL
     owner: agent
