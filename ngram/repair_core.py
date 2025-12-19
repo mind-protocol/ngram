@@ -650,13 +650,26 @@ async def spawn_repair_agent_async(
         success = "REPAIR COMPLETE" in readable_output and "REPAIR FAILED" not in readable_output
         decisions = parse_decisions_from_output(readable_output)
 
+        # Workaround: Delete GEMINI.md created by gemini CLI in agent's directory
+        if agent_provider == "gemini":
+            gemini_md_path = agent_dir / "GEMINI.md"
+            if gemini_md_path.exists():
+                gemini_md_path.unlink()
+                print(f"Cleaned up: Deleted {gemini_md_path}")
+
+        error = None
+        if process.returncode != 0:
+            error = f"Exit code: {process.returncode}"
+        elif not success:
+            error = "Missing completion marker"
+
         return RepairResult(
             issue_type=issue.issue_type,
             target_path=issue.path,
             success=success,
             agent_output=readable_output,
             duration_seconds=duration,
-            error=None if process.returncode == 0 else f"Exit code: {process.returncode}",
+            error=error,
             decisions_made=decisions if decisions else None,
         )
 
