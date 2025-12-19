@@ -2,7 +2,7 @@
 
 ```
 LAST_UPDATED: 2025-12-19
-UPDATED_BY: codex (verify status bar implementations)
+UPDATED_BY: codex (verify tui state functions)
 STATUS: IMPLEMENTED
 ```
 
@@ -73,6 +73,7 @@ Archived detail:
 
 ### Remarks
 - Large sync content archived to keep module docs within size targets.
+- Verified `ConversationMessage.to_dict` and `AgentHandle.duration` are implemented in `ngram/tui/state.py`; no code changes required.
 
 ### Suggestions
 - [ ] Keep doctor-ignore and SYNC notes updated together to avoid drift.

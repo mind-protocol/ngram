@@ -2,7 +2,7 @@
 
 ```
 LAST_UPDATED: 2025-12-19
-UPDATED_BY: codex (verify status bar implementations)
+UPDATED_BY: codex (verify tui state functions)
 ```
 
 ---
@@ -26,7 +26,7 @@ Documented the LLM agent module (`ngram/llms`) and added module mapping + DOCS p
 
 Synced CLI implementation docs with current file layout (doctor check splits, repair helpers, repo overview files).
 
-Confirmed `ngram/repair_core.py` already implements `get_issue_symbol` and `get_issue_action_parts`; no code changes required for the INCOMPLETE_IMPL repair.
+Confirmed `ngram/repair_core.py` already implements `get_issue_symbol` and `get_issue_action_parts`; re-verified during INCOMPLETE_IMPL repair with no code changes required.
 
 Verified `ngram/tui/state.py` has no empty stubs for `ConversationMessage.to_dict` or `AgentHandle.duration`; documentation updated to reflect confirmation.
 
