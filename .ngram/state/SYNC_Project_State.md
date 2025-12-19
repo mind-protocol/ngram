@@ -11,8 +11,7 @@ UPDATED_BY: codex (record INCOMPLETE_IMPL verification note)
 
 Reduced `docs/protocol` size by splitting ALGORITHM/IMPLEMENTATION into folders, trimming SYNC detail, and adding a condensed archive file.
 Consolidated protocol ALGORITHM docs into `docs/protocol/ALGORITHM/ALGORITHM_Overview.md` and removed duplicate workflow/install docs.
-Added `docs/protocol/IMPLEMENTATION/IMPLEMENTATION_File_Structure.md` with corrected file paths to resolve broken implementation links.
-Verified `docs/protocol/IMPLEMENTATION/IMPLEMENTATION_File_Structure.md` already points to existing `.ngram` files; no edits needed.
+Removed redundant `docs/protocol/IMPLEMENTATION/IMPLEMENTATION_File_Structure.md` so file layout references live only in `docs/protocol/IMPLEMENTATION/IMPLEMENTATION_Overview.md`.
 
 Updated protocol implementation doc to avoid a broken link reference by describing the manager AGENTS.md sibling without an inline path.
 

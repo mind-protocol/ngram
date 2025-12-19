@@ -52,8 +52,7 @@ Protocol V1 complete and in use. Dogfooding on itself + Blood Ledger.
 - Consolidated protocol ALGORITHM docs into a single overview and removed duplicate workflow/install files.
 - Updated the protocol implementation overview entry point to point at the consolidated implementation file.
 - Verified the protocol implementation overview contains no references to removed sub-docs.
-- Added `docs/protocol/IMPLEMENTATION/IMPLEMENTATION_File_Structure.md` with corrected file paths to fix broken link detection.
-- Verified `docs/protocol/IMPLEMENTATION/IMPLEMENTATION_File_Structure.md` still points to existing `.ngram` paths.
+- Removed redundant `docs/protocol/IMPLEMENTATION/IMPLEMENTATION_File_Structure.md`; file layout references now live only in `IMPLEMENTATION/IMPLEMENTATION_Overview.md`.
 
 ---
 
