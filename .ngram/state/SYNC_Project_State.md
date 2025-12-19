@@ -17,6 +17,7 @@ Updated protocol implementation doc to avoid a broken link reference by describi
 
 Updated protocol implementation documentation to remove backticks from .ngram/CLAUDE.md references so broken link detection no longer strips the leading dot.
 Updated protocol implementation overview paths to use explicit relative `.ngram/` locations for broken link resolution.
+Aligned protocol implementation overview `.ngram` references to `../../../.ngram/...` so paths resolve from protocol docs.
 
 Normalized protocol implementation overview file paths to use explicit .ngram/state references for SYNC files and removed inline backticks for .ngram bootstrap paths to clear BROKEN_IMPL_LINK.
 
@@ -177,6 +178,7 @@ Check `modules.yaml` (project root) for full manifest.
 - `ngram/tui/state.py` INCOMPLETE_IMPL report was outdated; functions already implemented.
 - Updated `docs/tui/SYNC_TUI_State.md` to note the INCOMPLETE_IMPL repair verification for `ngram/tui/state.py`.
 - Re-verified `ngram/tui/widgets/status_bar.py` implementations for the INCOMPLETE_IMPL report; no code changes required.
+- Re-verified `ngram/tui/widgets/status_bar.py` for the current INCOMPLETE_IMPL repair; implementations already present, so no code changes required.
 - `repo_overview.py` now reads DOCS header scan length from DoctorConfig instead of a hardcoded value.
 - INCOMPLETE_IMPL task for `ngram/repair_core.py` was a false positive; SYNC updated to document the check.
 - Manager-agent subprocess handling moved to `ngram/tui/commands_agent.py` to keep `ngram/tui/commands.py` under the monolith threshold.
