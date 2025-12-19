@@ -153,3 +153,32 @@ ignores:
       Doctor's ≤2 line threshold incorrectly flags these legitimate one-liners.
     added_by: repair-agent
     added_date: 2025-12-19
+
+  - issue_type: INCOMPLETE_IMPL
+    path: ngram/tui/widgets/manager_panel.py
+    reason: |
+      False positive - all 6 flagged functions are fully implemented:
+      - __init__: Calls super().__init__(**kwargs) and initializes _messages list (2 lines)
+      - on_mount: Intentionally empty with comment "No header - clean look"
+      - _is_at_bottom: Returns scroll position check with tolerance (1 line)
+      - _auto_scroll: Conditional scroll to end logic (2 lines)
+      - add_tool_call: Full implementation (30+ lines) with formatting and widget mounting
+      - escape_markup: Nested function with complete Rich markup escaping logic
+      These are complete implementations. The short methods are intentionally concise.
+      Doctor's ≤2 line threshold incorrectly flags short but complete methods.
+    added_by: repair-agent
+    added_date: 2025-12-19
+
+  - issue_type: HARDCODED_CONFIG
+    path: ngram/repo_overview.py
+    reason: |
+      False positive - the value 2000 at line 121 is NOT a port number.
+      It's a character count limit for scanning file headers:
+        # Only search in first 2000 chars (file header)
+        header = content[:2000]
+      This limits how much of a file to scan when looking for DOCS: references
+      in the file header. The doctor's pattern detection incorrectly identified
+      this as a "hardcoded port" because 2000 resembles common port numbers.
+      This is an implementation constant, not network configuration.
+    added_by: repair-agent
+    added_date: 2025-12-19

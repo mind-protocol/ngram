@@ -1,55 +1,28 @@
 # SYNC: Project Health
 
 ```
-LAST_UPDATED: 2025-12-18
+LAST_UPDATED: 2025-12-19
 UPDATED_BY: ngram doctor
-STATUS: CRITICAL
+STATUS: NEEDS_ATTENTION
 ```
 
 ---
 
 ## CURRENT STATE
 
-**Health Score:** 38/100
+**Health Score:** 59/100
 
-The project has critical issues that will significantly impact agent effectiveness. Address these before starting new work.
+The project needs attention. Some documentation is stale or incomplete, which may slow down agents.
 
 | Severity | Count |
 |----------|-------|
-| Critical | 2 |
+| Critical | 0 |
 | Warning | 4 |
-| Info | 30 |
+| Info | 29 |
 
 ---
 
 ## ISSUES
-
-### MONOLITH (2 files)
-
-**What's wrong:** Large files are hard to navigate, test, and maintain. They slow down agents who need to load context, and changes become risky because side effects are hard to predict.
-
-**How to fix:** Extract cohesive functionality into separate modules. Start with the largest functions/classes listed above.
-
-**Protocol:** Load `VIEW_Refactor_Improve_Code_Structure.md` before starting.
-
-**Files:**
-
-- `src/ngram/doctor_checks.py` - 1411 lines (threshold: 800)
-  - Split: def doctor_check_doc_duplication() (160L, :1273), def doctor_check_new_undoc_code() (127L, :655), def doctor_check_long_strings() (94L, :1645)
-- `src/ngram/repair.py` - 1386 lines (threshold: 800)
-  - Split: def repair_command() (439L, :1236), def run_repair() (291L, :1384), def spawn_repair_agent() (224L, :514)
-
-### INCOMPLETE_IMPL (1 files)
-
-**What's wrong:** Empty functions indicate incomplete implementation. The interface exists but the behavior doesn't.
-
-**How to fix:** Fill in the empty functions with actual implementation.
-
-**Protocol:** Load `VIEW_Implement_Write_Or_Modify_Code.md` before starting.
-
-**Files:**
-
-- `src/ngram/repair.py` - Contains 5 empty/incomplete function(s)
 
 ### LARGE_DOC_MODULE (1 files)
 
@@ -61,7 +34,7 @@ The project has critical issues that will significantly impact agent effectivene
 
 **Files:**
 
-- `docs/cli` - Total 53K chars (threshold: 50K)
+- `docs/cli` - Total 50K chars (threshold: 50K)
 
 ### HARDCODED_CONFIG (2 files)
 
@@ -73,8 +46,13 @@ The project has critical issues that will significantly impact agent effectivene
 
 **Files:**
 
-- `src/ngram/project_map_html.py` - Contains hardcoded configuration values
-- `src/ngram/doctor_checks.py` - Contains hardcoded configuration values
+- `ngram/doctor_checks_content.py` - Contains hardcoded configuration values
+- `ngram/project_map_html.py` - Contains hardcoded configuration values
+
+**Resolved:**
+
+- `ngram/repo_overview.py` - False positive added to doctor-ignore.yaml (2025-12-19).
+  The value 2000 at line 121 is a character count limit for file header scanning, NOT a port number.
 
 ---
 
@@ -82,17 +60,17 @@ The project has critical issues that will significantly impact agent effectivene
 
 These are minor issues that don't block work but would improve project health:
 
-- [ ] `src/ngram/context.py` - No DOCS: reference in file header
-- [ ] `src/ngram/doctor_files.py` - No DOCS: reference in file header
-- [ ] `src/ngram/github.py` - No DOCS: reference in file header
-- [ ] `src/ngram/init_cmd.py` - No DOCS: reference in file header
-- [ ] `src/ngram/project_map.py` - No DOCS: reference in file header
-- [ ] `src/ngram/prompt.py` - No DOCS: reference in file header
-- [ ] `src/ngram/repair.py` - No DOCS: reference in file header
-- [ ] `src/ngram/repair_instructions.py` - No DOCS: reference in file header
-- [ ] `src/ngram/sync.py` - No DOCS: reference in file header
-- [ ] `src/ngram/utils.py` - No DOCS: reference in file header
-- ... and 20 more
+- [ ] `ngram/doctor_checks_docs.py` - Not referenced in any IMPLEMENTATION doc
+- [ ] `ngram/doctor_checks_quality.py` - Not referenced in any IMPLEMENTATION doc
+- [ ] `ngram/doctor_checks_sync.py` - Not referenced in any IMPLEMENTATION doc
+- [ ] `ngram/repair_interactive.py` - Not referenced in any IMPLEMENTATION doc
+- [ ] `ngram/repo_overview.py` - Not referenced in any IMPLEMENTATION doc
+- [ ] `ngram/repo_overview_formatters.py` - Not referenced in any IMPLEMENTATION doc
+- [ ] `cli` - No tests for module
+- [ ] `docs/map.md` - Doc not linked from code or modules.yaml
+- [ ] `docs/protocol/ALGORITHM_Workflows_And_Procedures.md` - Doc not linked from code or modules.yaml
+- [ ] `docs/protocol/BEHAVIORS_Observable_Protocol_Effects.md` - Doc not linked from code or modules.yaml
+- ... and 19 more
 
 ---
 
@@ -100,9 +78,7 @@ These are minor issues that don't block work but would improve project health:
 
 **For the next agent:**
 
-Before starting your task, consider addressing critical issues - especially if your work touches affected files. Monoliths and undocumented code will slow you down.
-
-**Recommended first action:** Pick one MONOLITH file you'll be working in and split its largest function into a separate module.
+The project is in reasonable shape. If you have time, update any stale SYNC files related to your work area.
 
 ---
 
