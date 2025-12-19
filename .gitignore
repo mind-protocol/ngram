@@ -37,6 +37,7 @@ Thumbs.db
 
 # Project specific
 project_map.html
+.env
 
 # ngram agent working directories
 .ngram/agents/repair/
