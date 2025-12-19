@@ -56,6 +56,12 @@ TUI implementations are complete, and the manager drift detection now parses cod
 - **Why:** Doctor flagged short delegating methods that are already fully implemented.
 - **Impact:** Doctor no longer reports these false positives.
 
+### 2025-12-19: Added module mappings for CLI and TUI
+
+- **What:** Mapped `ngram/*.py` to `docs/cli/` and `ngram/tui/**` to `docs/tui/` in the module manifest.
+- **Why:** Resolve UNDOCUMENTED module mapping for the ngram package.
+- **Impact:** `ngram validate` can associate CLI/TUI code with existing docs.
+
 ### 2025-12-19: Verified TUI status bar implementations
 
 - **What:** Checked `ngram/tui/widgets/status_bar.py` for reported empty methods; confirmed all listed methods already have implementations.
@@ -164,10 +170,11 @@ Check `modules.yaml` (project root) for full manifest.
 **Mapped modules:**
 | Module | Code | Docs | Maturity |
 |--------|------|------|----------|
-| tui | `ngram/tui/**` | `docs/tui/` | DESIGNING |
+| cli | `ngram/*.py` | `docs/cli/` | CANONICAL |
+| tui | `ngram/tui/**` | `docs/tui/` | CANONICAL |
 
 **Unmapped code:** (run `ngram validate` to check)
-- `ngram/` is currently unmapped in `modules.yaml`.
+- None noted after CLI/TUI mappings.
 
 **Coverage notes:**
 

@@ -51,30 +51,22 @@ modules:
 # YOUR MODULES
 # =============================================================================
 
-  cli:
-    code: "src/ngram/**"
-    docs: "docs/cli/"
-    maturity: DESIGNING
-    owner: agent
+cli:
+  code: "ngram/*.py"
+  docs: "docs/cli/"
+  maturity: CANONICAL
+  owner: agent
+  entry_points:
+    - cli.py
+  notes: |
+    Framework CLI commands (doctor, repair, validate, init, sync, context, prompt, map).
 
-    entry_points:
-      - cli.py
-      - doctor.py
-      - doctor_checks.py
-
-    internal:
-      - doctor_checks_quality.py   # Extracted: magic values, hardcoded secrets checks
-      - doctor_checks_docs.py      # Extracted: placeholder docs, orphan docs, stale impl checks
-      - doctor_checks_sync.py      # SYNC file analysis checks
-      - doctor_checks_content.py   # Content analysis checks (long strings, duplication)
-      - doctor_types.py
-      - doctor_files.py
-      - utils.py
-
-    notes: |
-      CLI tools including doctor health checks.
-      doctor_checks.py was split due to size (>800 lines):
-      - doctor_checks_quality.py: code quality/security checks
-      - doctor_checks_docs.py: documentation quality checks
-
-# Add more modules as they emerge...
+tui:
+  code: "ngram/tui/**"
+  docs: "docs/tui/"
+  maturity: CANONICAL
+  owner: agent
+  entry_points:
+    - app.py
+  notes: |
+    Textual-based interactive UI launched by `ngram` with no subcommand.
