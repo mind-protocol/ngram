@@ -52,6 +52,7 @@ Protocol V1 complete and in use. Dogfooding on itself + Blood Ledger.
 - Consolidated protocol ALGORITHM docs into a single overview and removed duplicate workflow/install files.
 - Updated the protocol implementation overview entry point to point at the consolidated implementation file.
 - Verified the protocol implementation overview contains no references to removed sub-docs.
+- Added `docs/protocol/IMPLEMENTATION/IMPLEMENTATION_File_Structure.md` with corrected file paths to fix broken link detection.
 
 ---
 

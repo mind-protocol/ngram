@@ -2,7 +2,7 @@
 
 ```
 LAST_UPDATED: 2025-12-19
-UPDATED_BY: codex (cli modules.yaml drift fix)
+UPDATED_BY: codex (fix TUI implementation doc broken links)
 ```
 
 ---
@@ -11,6 +11,7 @@ UPDATED_BY: codex (cli modules.yaml drift fix)
 
 Reduced `docs/protocol` size by splitting ALGORITHM/IMPLEMENTATION into folders, trimming SYNC detail, and adding a condensed archive file.
 Consolidated protocol ALGORITHM docs into `docs/protocol/ALGORITHM/ALGORITHM_Overview.md` and removed duplicate workflow/install docs.
+Added `docs/protocol/IMPLEMENTATION/IMPLEMENTATION_File_Structure.md` with corrected file paths to resolve broken implementation links.
 
 Updated protocol implementation doc to avoid a broken link reference by describing the manager AGENTS.md sibling without an inline path.
 
@@ -45,6 +46,7 @@ Re-verified `ngram/tui/widgets/status_bar.py` includes complete implementations 
 Split `ngram/tui/commands.py` to extract manager-agent subprocess logic into `ngram/tui/commands_agent.py` (972L → 637L; new file 349L), and updated `docs/tui/IMPLEMENTATION_TUI_Code_Architecture.md`, `modules.yaml`, and `docs/tui/SYNC_TUI_State.md`.
 
 Normalized TUI implementation doc references to avoid broken-link detection for .ngram paths and method names.
+Adjusted TUI implementation structure doc to use explicit relative paths for `.ngram` files and PATTERNS/app references.
 Updated `docs/tui/IMPLEMENTATION_TUI_Code_Architecture.md` to use full file paths for `ngram/repair_core.py` and TUI command modules to resolve BROKEN_IMPL_LINK.
 
 Reduced `docs/tui` size by archiving historical detail and splitting `IMPLEMENTATION_TUI_Code_Architecture.md` into an overview plus detail files under `docs/tui/IMPLEMENTATION_TUI_Code_Architecture/`. Added `docs/tui/archive/SYNC_archive_2024-12.md` and updated `docs/tui/SYNC_TUI_State.md` to keep current state concise.

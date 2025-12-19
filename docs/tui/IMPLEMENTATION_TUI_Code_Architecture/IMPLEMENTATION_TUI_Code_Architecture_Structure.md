@@ -44,7 +44,7 @@ ngram/cli.py                         # CLI entry point (TUI launched via `ngram`
 ngram/repair_core.py                 # Shared repair logic (497L)
 ```
 
-Manager startup prefers `.ngram/agents/manager/AGENTS.md` when present; otherwise it mirrors `.ngram/CLAUDE.md` into the manager working directory and writes `AGENTS.md` for Codex/Gemini compatibility.
+Manager startup prefers `../../../.ngram/agents/manager/AGENTS.md` when present; otherwise it mirrors `../../../.ngram/CLAUDE.md` into the manager working directory and writes `AGENTS.md` for Codex/Gemini compatibility.
 
 ### File Responsibilities
 
@@ -87,7 +87,7 @@ Manager startup prefers `.ngram/agents/manager/AGENTS.md` when present; otherwis
 
 ### Anti-Patterns to Avoid
 
-- Monolithic `app.py` — keep logic delegated to widgets/helpers.
+- Monolithic `ngram/tui/app.py` — keep logic delegated to widgets/helpers.
 - Sync blocking — use async throughout.
 - Global state — use SessionState class, not module globals.
 - Hardcoded colors — all styling in `ngram/tui/styles/theme.tcss`.
@@ -258,7 +258,7 @@ IDLE -> RUNNING -> IDLE (complete/error/timeout)
 
 | File | Line | Reference |
 |------|------|-----------|
-| `ngram/tui/app.py` | 1 | DOCS reference to `PATTERNS_TUI_Design.md` |
+| `ngram/tui/app.py` | 1 | DOCS reference to `../PATTERNS_TUI_Design.md` |
 | `ngram/tui/state.py` | 1 | DOCS reference to implementation docs |
 
 ### Docs → Code
