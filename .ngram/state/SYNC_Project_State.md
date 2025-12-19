@@ -56,6 +56,7 @@ Updated `docs/tui/SYNC_TUI_State.md` to record the verification for this repair.
 
 Split `ngram/tui/commands.py` to extract manager-agent subprocess logic into `ngram/tui/commands_agent.py` (972L → 637L; new file 349L), and updated `docs/tui/IMPLEMENTATION_TUI_Code_Architecture.md`, `modules.yaml`, and `docs/tui/SYNC_TUI_State.md`.
 Filled the TUI `/doctor` handler to update health status and log results, and wired repair agent output streaming to agent panels in `ngram/tui/commands.py`.
+Verified `ngram/tui/commands.py` already implements `on_output` and `handle_doctor`; the INCOMPLETE_IMPL report was stale.
 
 Normalized TUI implementation doc references to avoid broken-link detection for .ngram paths and method names.
 Adjusted TUI implementation structure doc to use explicit relative paths for `.ngram` files and PATTERNS/app references.
