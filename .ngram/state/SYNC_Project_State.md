@@ -150,6 +150,7 @@ Check `modules.yaml` (project root) for full manifest.
 - INCOMPLETE_IMPL task for `ngram/repair_core.py` was a false positive; SYNC updated to document the check.
 - Manager-agent subprocess handling moved to `ngram/tui/commands_agent.py` to keep `ngram/tui/commands.py` under the monolith threshold.
 - CLI implementation doc cleaned up broken file references that tripped BROKEN_IMPL_LINK.
+- Project map SVG namespace now reads from `.ngram/config.yaml` with an env var override.
 
 ### Suggestions
 - [ ] Add module mappings in `modules.yaml` for `ngram/tui/**` to avoid unmapped warnings.
