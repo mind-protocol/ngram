@@ -34,19 +34,19 @@ This document consolidates the protocol implementation details that were previou
 ### Template Directory (Source of Truth)
 
 ```
-templates/ngram/
+../../../templates/ngram/
 ├── PROTOCOL.md
 ├── PRINCIPLES.md
 ├── views/                 # 11 VIEW files
 ├── templates/             # 9 doc templates
 └── state/
-    └── .ngram/state/SYNC_Project_State.md
+    └── ../../../templates/ngram/state/SYNC_Project_State.md
 ```
 
 ### Installed Directory (Target Project)
 
 ```
-.ngram/
+../../../.ngram/
 ├── PROTOCOL.md
 ├── PRINCIPLES.md
 ├── views/
@@ -73,9 +73,9 @@ templates/ngram/
 ### Bootstrap Files
 
 The protocol is surfaced through:
-- .ngram/CLAUDE.md (includes templates/CLAUDE_ADDITION.md, PRINCIPLES.md, PROTOCOL.md)
-- Root `AGENTS.md` mirroring .ngram/CLAUDE.md plus `templates/CODEX_SYSTEM_PROMPT_ADDITION.md`
-- .ngram/agents/manager/AGENTS.md for manager role
+- ../../../.ngram/CLAUDE.md (includes templates/CLAUDE_ADDITION.md, PRINCIPLES.md, PROTOCOL.md)
+- Root `AGENTS.md` mirroring ../../../.ngram/CLAUDE.md plus `templates/CODEX_SYSTEM_PROMPT_ADDITION.md`
+- ../../../.ngram/agents/manager/AGENTS.md for manager role
 
 ---
 
@@ -133,10 +133,10 @@ VIEW:
 
 | Config | Location | Default | Description |
 |--------|----------|---------|-------------|
-| Ignore patterns | .ngram/config.yaml | Common patterns | Paths to skip in doctor |
-| Monolith threshold | .ngram/config.yaml | 500 lines | SYNC archive trigger |
-| Stale days | .ngram/config.yaml | 14 days | When SYNC is stale |
-| Disabled checks | .ngram/config.yaml | [] | Doctor checks to skip |
+| Ignore patterns | ../../../.ngram/config.yaml | Common patterns | Paths to skip in doctor |
+| Monolith threshold | ../../../.ngram/config.yaml | 500 lines | SYNC archive trigger |
+| Stale days | ../../../.ngram/config.yaml | 14 days | When SYNC is stale |
+| Disabled checks | ../../../.ngram/config.yaml | [] | Doctor checks to skip |
 
 ---
 
@@ -146,9 +146,9 @@ VIEW:
 
 | Entry Point | File | Triggered By |
 |-------------|------|--------------|
-| Bootstrap | .ngram/CLAUDE.md + AGENTS.md | Agent session start |
-| Navigation | .ngram/PROTOCOL.md | After bootstrap |
-| Task selection | .ngram/views/VIEW_*.md | Based on task type |
+| Bootstrap | ../../../.ngram/CLAUDE.md + AGENTS.md | Agent session start |
+| Navigation | ../../../.ngram/PROTOCOL.md | After bootstrap |
+| Task selection | ../../../.ngram/views/VIEW_*.md | Based on task type |
 | State check | .ngram/state/SYNC_Project_State.md | Before any work |
 | Module context | docs/{area}/{module}/PATTERNS_*.md | When modifying code |
 
@@ -156,7 +156,7 @@ VIEW:
 
 ```
 Agent starts
-  → read .ngram/CLAUDE.md / AGENTS.md
+  → read ../../../.ngram/CLAUDE.md / AGENTS.md
   → read PROTOCOL + PRINCIPLES
   → load .ngram/state/SYNC_Project_State.md
   → select VIEW_{Task}
@@ -191,7 +191,7 @@ PATTERNS → BEHAVIORS → ALGORITHM → VALIDATION → IMPLEMENTATION → TEST 
 ### Dependencies (Internal)
 
 ```
-.ngram/CLAUDE.md
+../../../.ngram/CLAUDE.md
   → PROTOCOL.md
   → PRINCIPLES.md
 PROTOCOL.md
