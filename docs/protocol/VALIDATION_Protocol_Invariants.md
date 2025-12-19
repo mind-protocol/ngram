@@ -206,7 +206,7 @@ For project:
 [ ] Project SYNC is current
 [ ] CLAUDE.md references protocol
 [ ] AGENTS.md references protocol (mirrors .ngram/CLAUDE.md)
-[ ] AGENTS.md includes Codex guidance, starting with protocol-first reading and no self-run TUI
+[ ] AGENTS.md includes Codex guidance, starting with protocol-first reading, no self-run TUI, and verbose outputs
 ```
 
 ### Automated (To Be Implemented)

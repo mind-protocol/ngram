@@ -86,7 +86,7 @@ When installed in a target project, files are copied to `.ngram/`:
 
 The `.ngram/CLAUDE.md` file includes protocol files via `@` directives.
 Root `AGENTS.md` mirrors the same content for agent CLIs that read AGENTS.md,
-and appends `templates/CODEX_SYSTEM_PROMPT_ADDITION.md` (protocol-first reading, no self-run TUI):
+and appends `templates/CODEX_SYSTEM_PROMPT_ADDITION.md` (protocol-first reading, no self-run TUI, verbose outputs):
 
 ```
 .ngram/CLAUDE.md
