@@ -24,7 +24,7 @@ SYNC:            ./SYNC_CLI_State.md
 ## CODE STRUCTURE
 
 ```
-src/ngram/
+ngram/
 ├── __init__.py             # Package init
 ├── cli.py                  # Entry point, argparse routing
 ├── init_cmd.py             # Init command implementation
@@ -48,7 +48,7 @@ src/ngram/
 └── utils.py                # Shared utilities
 ```
 
-**Logical Groupings** (all in `src/ngram/`):
+**Logical Groupings** (all in `ngram/`):
 - **Doctor subsystem:** doctor, doctor_checks, doctor_checks_content, doctor_types, doctor_report, doctor_files
 - **Repair subsystem:** repair, repair_core, repair_report, repair_instructions, repair_instructions_docs
 - **Project map:** project_map, project_map_html
@@ -57,26 +57,26 @@ src/ngram/
 
 | File | Purpose | Key Functions/Classes | Lines | Status |
 |------|---------|----------------------|-------|--------|
-| `src/ngram/cli.py` | Entry point, argument parsing | `main()` | ~290 | OK |
-| `src/ngram/init_cmd.py` | Protocol initialization | `init_protocol()` | ~168 | OK |
-| `src/ngram/validate.py` | Protocol invariant checking | `validate_protocol()`, `ValidationResult` | ~712 | SPLIT |
-| `src/ngram/doctor.py` | Health check orchestration | `run_doctor()`, `doctor_command()` | ~211 | OK |
-| `src/ngram/doctor_checks.py` | Health check functions (core) | `doctor_check_*()` (20 functions) | ~1364 | SPLIT |
-| `src/ngram/doctor_checks_content.py` | Content analysis checks | `doctor_check_doc_duplication()`, `doctor_check_new_undoc_code()`, `doctor_check_long_strings()` | ~410 | OK |
-| `src/ngram/doctor_types.py` | Type definitions | `DoctorIssue`, `DoctorConfig` | ~41 | OK |
-| `src/ngram/doctor_report.py` | Report generation | `generate_health_markdown()`, `calculate_health_score()` | ~465 | WATCH |
-| `src/ngram/doctor_files.py` | File discovery | `find_source_files()`, `find_code_directories()` | ~321 | OK |
-| `src/ngram/repair.py` | Repair orchestration | `repair_command()`, `spawn_repair_agent()` | ~1013 | SPLIT |
-| `src/ngram/repair_report.py` | Report generation | `generate_llm_report()`, `generate_final_report()` | ~305 | OK |
-| `src/ngram/repair_instructions.py` | Code/test/config repair prompts | `get_issue_instructions()` | ~765 | WATCH |
-| `src/ngram/repair_instructions_docs.py` | Doc-related repair prompts | `get_doc_instructions()` | ~492 | WATCH |
-| `src/ngram/sync.py` | SYNC file management | `sync_command()`, `archive_all_syncs()` | ~346 | OK |
-| `src/ngram/context.py` | Documentation discovery | `print_module_context()`, `get_module_context()` | ~553 | WATCH |
-| `src/ngram/prompt.py` | LLM prompt generation | `print_bootstrap_prompt()` | ~89 | OK |
-| `src/ngram/project_map.py` | Terminal dependency map | `print_project_map()` | ~359 | OK |
-| `src/ngram/project_map_html.py` | HTML export | `generate_html_map()` | ~315 | OK |
-| `src/ngram/github.py` | GitHub API integration | `create_issues_for_findings()` | ~288 | OK |
-| `src/ngram/utils.py` | Shared helpers | `get_templates_path()`, `find_module_directories()` | ~103 | OK |
+| `ngram/cli.py` | Entry point, argument parsing | `main()` | ~290 | OK |
+| `ngram/init_cmd.py` | Protocol initialization | `init_protocol()` | ~168 | OK |
+| `ngram/validate.py` | Protocol invariant checking | `validate_protocol()`, `ValidationResult` | ~712 | SPLIT |
+| `ngram/doctor.py` | Health check orchestration | `run_doctor()`, `doctor_command()` | ~211 | OK |
+| `ngram/doctor_checks.py` | Health check functions (core) | `doctor_check_*()` (20 functions) | ~1364 | SPLIT |
+| `ngram/doctor_checks_content.py` | Content analysis checks | `doctor_check_doc_duplication()`, `doctor_check_new_undoc_code()`, `doctor_check_long_strings()` | ~410 | OK |
+| `ngram/doctor_types.py` | Type definitions | `DoctorIssue`, `DoctorConfig` | ~41 | OK |
+| `ngram/doctor_report.py` | Report generation | `generate_health_markdown()`, `calculate_health_score()` | ~465 | WATCH |
+| `ngram/doctor_files.py` | File discovery | `find_source_files()`, `find_code_directories()` | ~321 | OK |
+| `ngram/repair.py` | Repair orchestration | `repair_command()`, `spawn_repair_agent()` | ~1013 | SPLIT |
+| `ngram/repair_report.py` | Report generation | `generate_llm_report()`, `generate_final_report()` | ~305 | OK |
+| `ngram/repair_instructions.py` | Code/test/config repair prompts | `get_issue_instructions()` | ~765 | WATCH |
+| `ngram/repair_instructions_docs.py` | Doc-related repair prompts | `get_doc_instructions()` | ~492 | WATCH |
+| `ngram/sync.py` | SYNC file management | `sync_command()`, `archive_all_syncs()` | ~346 | OK |
+| `ngram/context.py` | Documentation discovery | `print_module_context()`, `get_module_context()` | ~553 | WATCH |
+| `ngram/prompt.py` | LLM prompt generation | `print_bootstrap_prompt()` | ~89 | OK |
+| `ngram/project_map.py` | Terminal dependency map | `print_project_map()` | ~359 | OK |
+| `ngram/project_map_html.py` | HTML export | `generate_html_map()` | ~315 | OK |
+| `ngram/github.py` | GitHub API integration | `create_issues_for_findings()` | ~288 | OK |
+| `ngram/utils.py` | Shared helpers | `get_templates_path()`, `find_module_directories()` | ~103 | OK |
 
 **Size Thresholds:**
 - **OK** (<400 lines): Healthy size
@@ -166,15 +166,15 @@ RepairResult:
 
 | Entry Point | File:Line | Triggered By |
 |-------------|-----------|--------------|
-| main | src/ngram/cli.py:43 | ngram command |
-| init_protocol | src/ngram/init_cmd.py:15 | ngram init |
-| validate_protocol | src/ngram/validate.py:667 | ngram validate |
-| doctor_command | src/ngram/doctor.py:127 | ngram doctor |
-| repair_command | src/ngram/repair.py:970 | ngram repair |
-| sync_command | src/ngram/sync.py | ngram sync |
-| print_module_context | src/ngram/context.py:442 | ngram context |
-| print_bootstrap_prompt | src/ngram/prompt.py | ngram prompt |
-| print_project_map | src/ngram/project_map.py | ngram map |
+| main | ngram/cli.py:43 | ngram command |
+| init_protocol | ngram/init_cmd.py:15 | ngram init |
+| validate_protocol | ngram/validate.py:667 | ngram validate |
+| doctor_command | ngram/doctor.py:127 | ngram doctor |
+| repair_command | ngram/repair.py:970 | ngram repair |
+| sync_command | ngram/sync.py | ngram sync |
+| print_module_context | ngram/context.py:442 | ngram context |
+| print_bootstrap_prompt | ngram/prompt.py | ngram prompt |
+| print_project_map | ngram/project_map.py | ngram map |
 
 ---
 
@@ -193,57 +193,18 @@ For detailed algorithmic steps, see `docs/cli/ALGORITHM_CLI_Logic.md`.
 
 ### Internal Dependencies
 
-```
-cli.py
-    └── imports → init_cmd.py
-    └── imports → validate.py
-    └── imports → doctor.py
-    └── imports → repair.py
-    └── imports → sync.py
-    └── imports → context.py
-    └── imports → prompt.py
-    └── imports → project_map.py
+**Entry point:** cli.py → imports all command modules
 
-doctor.py
-    └── imports → doctor_checks.py (20 doctor_check_*() functions)
-    └── imports → doctor_checks_content.py (3 content analysis check functions)
-    └── imports → doctor_types.py (DoctorIssue, DoctorConfig)
-    └── imports → doctor_report.py (generate_health_markdown, print_doctor_report)
-    └── imports → doctor_files.py (load_doctor_config, load_doctor_ignore)
-    └── imports → sync.py
+**Doctor subsystem:**
+- doctor.py → doctor_checks, doctor_checks_content, doctor_types, doctor_report, doctor_files, sync
+- doctor_checks modules → doctor_types, doctor_files, utils
 
-doctor_checks.py
-    └── imports → doctor_types.py (DoctorIssue, DoctorConfig)
-    └── imports → doctor_files.py (should_ignore_path, find_source_files, etc.)
-    └── imports → utils.py
+**Repair subsystem:**
+- repair.py → doctor, repair_core, repair_report, repair_instructions
+- repair_instructions modules → doctor, repair_instructions_docs
+- repair_report.py → repair_core
 
-doctor_checks_content.py
-    └── imports → doctor_types.py (DoctorIssue, DoctorConfig)
-    └── imports → doctor_files.py (should_ignore_path, find_source_files, count_lines)
-    └── imports → utils.py (find_module_directories)
-
-repair.py
-    └── imports → doctor.py (run_doctor, DoctorIssue)
-    └── imports → repair_core.py (RepairResult, ArbitrageDecision, constants)
-    └── imports → repair_report.py (generate_llm_report, generate_final_report)
-    └── imports → repair_instructions.py (get_issue_instructions)
-
-repair_instructions.py
-    └── imports → doctor.py (DoctorIssue)
-    └── imports → repair_instructions_docs.py (get_doc_instructions)
-
-repair_instructions_docs.py
-    └── imports → doctor.py (DoctorIssue)
-
-repair_report.py
-    └── imports → repair_core.py (RepairResult)
-
-project_map.py
-    └── imports → project_map_html.py (generate_html_map)
-
-validate.py
-    └── imports → utils.py
-```
+**Other commands:** validate.py → utils; project_map.py → project_map_html
 
 ### External Dependencies
 
@@ -343,17 +304,17 @@ Files that reference this documentation:
 
 | File | Line | Reference |
 |------|------|-----------|
-| src/ngram/cli.py | 4 | DOCS: docs/cli/PATTERNS_Why_CLI_Over_Copy.md |
+| ngram/cli.py | 4 | DOCS: docs/cli/PATTERNS_Why_CLI_Over_Copy.md |
 
 ### Docs → Code
 
 | Doc Section | Implemented In |
 |-------------|----------------|
-| ALGORITHM: Validate | src/ngram/validate.py:667 |
-| ALGORITHM: Doctor | src/ngram/doctor.py:1160 |
-| ALGORITHM: Repair | src/ngram/repair.py:970 |
-| BEHAVIOR B1: Init | src/ngram/init_cmd.py:15 |
-| VALIDATION V1 | src/ngram/validate.py:33 |
+| ALGORITHM: Validate | ngram/validate.py:667 |
+| ALGORITHM: Doctor | ngram/doctor.py:1160 |
+| ALGORITHM: Repair | ngram/repair.py:970 |
+| BEHAVIOR B1: Init | ngram/init_cmd.py:15 |
+| VALIDATION V1 | ngram/validate.py:33 |
 
 ---
 
@@ -366,7 +327,7 @@ Files at SPLIT status need continued decomposition:
 | Current File | Lines | Target | Proposed New File | What to Move |
 |--------------|-------|--------|-------------------|--------------|
 | doctor_checks | ~1364L | <400L | doctor_checks_docs.py | Group remaining: doc checks, code checks, config checks |
-| repair | ~1013L | <400L | repair_interactive (planned) | Interactive UI: `resolve_arbitrage_interactive()`, manager agent functions |
+| repair | ~1013L | <400L | repair_interactive (planned) | Interactive UI: `resolve_arbitrage_interactive()`, ngram manager functions |
 | validate | ~712L | <400L | validate_checks (planned) | Individual validation check functions |
 
 ### Completed Extractions

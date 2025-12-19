@@ -2,7 +2,7 @@
 
 ```
 LAST_UPDATED: 2025-12-19
-UPDATED_BY: repair-agent (externalize hook_check_chars config)
+UPDATED_BY: repair-agent (reduce doc module size)
 STATUS: CANONICAL
 ```
 
@@ -52,12 +52,16 @@ No active development at this time.
 
 ## RECENT CHANGES
 
+### 2025-12-19: Reduced docs/cli module size (LARGE_DOC_MODULE fix)
+
+- Archived detailed RECENT CHANGES to `SYNC_CLI_State_archive_2025-12.md`
+- Simplified verbose internal dependencies diagram in IMPLEMENTATION doc
+- Total module size now under 50K threshold
+
 ### 2025-12-19: Externalized hook check buffer size
 
 - Added `hook_check_chars` config field to `DoctorConfig` in `doctor_types.py`
 - Updated `doctor_checks_content.py` to use config instead of hardcoded `1000`
-- This was flagged as HARDCODED_CONFIG (false positive: detected as "port" but was actually a buffer size)
-- Follows existing pattern with `docs_ref_search_chars`
 
 ### 2025-12-18: Documentation cleanup and fixes
 
