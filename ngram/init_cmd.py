@@ -8,6 +8,7 @@ Initializes the ngram in a project directory by:
 # DOCS: docs/cli/PATTERNS_Why_CLI_Over_Copy.md
 
 import shutil
+import os
 from pathlib import Path
 
 from .utils import get_templates_path
@@ -101,7 +102,6 @@ Options: `--dir PATH`, `--format {{md,yaml,json}}`
 def _build_agents_addition(templates_path: Path) -> str:
     """Build AGENTS.md content by appending Codex-specific guidance."""
     claude_content = _build_claude_addition(templates_path)
-    agents_content = _build_agents_addition(templates_path)
     codex_addition_path = templates_path / "CODEX_SYSTEM_PROMPT_ADDITION.md"
     codex_addition = codex_addition_path.read_text() if codex_addition_path.exists() else ""
     if codex_addition:
@@ -166,55 +166,95 @@ def init_protocol(target_dir: Path, force: bool = False) -> bool:
                     print(f"  ○ Preserving: GLOBAL_LEARNINGS.md")
 
     # Copy protocol files
-    if protocol_dest.exists():
-        shutil.rmtree(protocol_dest)
+    def copy_protocol_partial(src: Path, dst: Path) -> None:
+        for root, dirs, files in os.walk(src):
+            rel = Path(root).relative_to(src)
+            target_root = dst / rel
+            target_root.mkdir(parents=True, exist_ok=True)
+            for dirname in dirs:
+                (target_root / dirname).mkdir(parents=True, exist_ok=True)
+            for filename in files:
+                src_path = Path(root) / filename
+                dst_path = target_root / filename
+                try:
+                    shutil.copy2(src_path, dst_path)
+                except PermissionError:
+                    print(f"  ○ Skipped (permission): {dst_path}")
 
-    shutil.copytree(protocol_source, protocol_dest)
-    print(f"✓ Created: {protocol_dest}/")
+    if protocol_dest.exists():
+        try:
+            shutil.rmtree(protocol_dest)
+            shutil.copytree(protocol_source, protocol_dest)
+            print(f"✓ Created: {protocol_dest}/")
+        except PermissionError:
+            print(f"  ○ Permission denied removing {protocol_dest}, attempting partial refresh")
+            copy_protocol_partial(protocol_source, protocol_dest)
+    else:
+        shutil.copytree(protocol_source, protocol_dest)
+        print(f"✓ Created: {protocol_dest}/")
 
     # Restore preserved LEARNINGS files
     if preserved_learnings:
         views_dir = protocol_dest / "views"
         for filename, content in preserved_learnings.items():
             learnings_path = views_dir / filename
-            learnings_path.write_text(content)
-            print(f"  ✓ Restored: {filename}")
+            try:
+                learnings_path.write_text(content)
+                print(f"  ✓ Restored: {filename}")
+            except PermissionError:
+                print(f"  ○ Skipped (permission): {learnings_path}")
 
     # Copy modules.yaml to project root (if not exists or force)
     if not modules_yaml_dest.exists() or force:
         if modules_yaml_source.exists():
-            shutil.copy2(modules_yaml_source, modules_yaml_dest)
-            print(f"✓ Created: {modules_yaml_dest}")
+            try:
+                shutil.copy2(modules_yaml_source, modules_yaml_dest)
+                print(f"✓ Created: {modules_yaml_dest}")
+            except PermissionError:
+                print(f"  ○ Skipped (permission): {modules_yaml_dest}")
     else:
         print(f"○ {modules_yaml_dest} already exists")
 
     # Copy .ngramignore to project root (if not exists or force)
     if not ignore_dest.exists() or force:
         if ignore_source.exists():
-            shutil.copy2(ignore_source, ignore_dest)
-            print(f"✓ Created: {ignore_dest}")
+            try:
+                shutil.copy2(ignore_source, ignore_dest)
+                print(f"✓ Created: {ignore_dest}")
+            except PermissionError:
+                print(f"  ○ Skipped (permission): {ignore_dest}")
     else:
         print(f"○ {ignore_dest} already exists")
 
     # Build CLAUDE.md content with inlined PRINCIPLES and PROTOCOL
     # (Claude doesn't expand @ references, so we inline the actual content)
     claude_content = _build_claude_addition(templates_path)
+    agents_content = _build_agents_addition(templates_path)
 
     # Always write/overwrite CLAUDE.md with fresh inlined content
     # This ensures the latest PRINCIPLES and PROTOCOL are always included
-    if claude_md.exists():
-        claude_md.write_text(claude_content)
-        print(f"✓ Updated: {claude_md}")
-    else:
-        claude_md.write_text(claude_content)
-        print(f"✓ Created: {claude_md}")
+    try:
+        if claude_md.exists():
+            claude_md.write_text(claude_content)
+            print(f"✓ Updated: {claude_md}")
+        else:
+            claude_md.write_text(claude_content)
+            print(f"✓ Created: {claude_md}")
+    except PermissionError:
+        print(f"  ○ Skipped (permission): {claude_md}")
 
     gemini_md = protocol_dest / "GEMINI.md"
-    gemini_md.write_text(claude_content)
-    print(f"✓ Created: {gemini_md}")
+    try:
+        gemini_md.write_text(claude_content)
+        print(f"✓ Created: {gemini_md}")
+    except PermissionError:
+        print(f"  ○ Skipped (permission): {gemini_md}")
 
-    agents_md.write_text(agents_content)
-    print(f"✓ Updated: {agents_md}")
+    try:
+        agents_md.write_text(agents_content)
+        print(f"✓ Updated: {agents_md}")
+    except PermissionError:
+        print(f"  ○ Skipped (permission): {agents_md}")
 
     # Generate repository map
     print()
