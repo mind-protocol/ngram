@@ -203,6 +203,7 @@ class NgramApp(App if TEXTUAL_AVAILABLE else object):
     async def _start_manager_with_overview(self, manager: ManagerPanel) -> None:
         """Start manager and prompt for project overview."""
         import shutil
+        import json
         from ..agent_cli import build_agent_command
 
         manager = self.query_one("#manager-panel")
