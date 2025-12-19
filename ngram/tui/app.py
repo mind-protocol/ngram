@@ -168,6 +168,7 @@ class NgramApp(App if TEXTUAL_AVAILABLE else object):
 
         if self._manager_wakeup_animation_task:
             self._manager_wakeup_animation_task.cancel()
+        manager_wakeup_msg.remove()
 
     async def _start_claude_pty(self) -> None:
         """Start the interactive Claude PTY session."""
