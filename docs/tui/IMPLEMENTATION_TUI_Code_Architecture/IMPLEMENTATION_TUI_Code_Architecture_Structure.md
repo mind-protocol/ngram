@@ -178,7 +178,7 @@ ngram/cli.py
 ### User Command Flow
 
 ```
-User Input -> InputBar -> NgramApp -> commands.py -> repair_core.py -> AgentContainer
+User Input -> InputBar -> NgramApp -> ngram/tui/commands.py -> ngram/repair_core.py -> AgentContainer
 ```
 
 ### Agent Output Flow
