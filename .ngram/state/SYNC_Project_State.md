@@ -9,7 +9,7 @@ UPDATED_BY: codex (repair hardcoded config)
 
 ## CURRENT STATE
 
-Updated protocol implementation documentation to avoid broken link detection for the .ngram/CLAUDE.md bootstrap file.
+Updated protocol implementation documentation to remove backticks from .ngram/CLAUDE.md references so broken link detection no longer strips the leading dot.
 
 Externalized the SVG namespace used by project map HTML to `NGRAM_SVG_NAMESPACE` with a default fallback and documented it in the CLI implementation docs.
 
