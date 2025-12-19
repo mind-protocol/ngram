@@ -52,6 +52,12 @@ None.
 
 ## RECENT CHANGES
 
+### 2025-12-19: Updated default model and CLI integration
+
+- **What:** Set default Gemini model to `gemini-3-flash-preview` and updated `ngram/agent_cli.py` to use the internal `gemini_agent` adapter instead of the external `gemini` CLI.
+- **Why:** To fulfill user request for latest model and align the codebase with documentation while enabling local tools for Gemini.
+- **Files:** `ngram/llms/gemini_agent.py`, `ngram/agent_cli.py`, `docs/llm_agents/ALGORITHM_Gemini_Stream_Flow.md`, `docs/llm_agents/SYNC_LLM_Agents_State.md`
+
 ### 2025-12-19: Externalized Google search base URL
 
 - **What:** Replaced the hardcoded Google search URL with `NGRAM_GOOGLE_SEARCH_URL` (defaulting to the prior value).
@@ -92,7 +98,7 @@ None noted.
 **Where I stopped:** Documentation only; no behavior changes.
 
 **What you need to understand:**
-The Gemini adapter is a thin wrapper intended to isolate provider SDK usage. It streams JSON chunks for the TUI and supports basic local tool execution, but does not support model selection.
+The Gemini adapter is a thin wrapper intended to isolate provider SDK usage. It streams JSON chunks for the TUI and supports basic local tool execution. The default model is `gemini-3-flash-preview`.
 
 **Watch out for:**
 The adapter prints model listings to stderr unconditionally; consider gating if that output is noisy.

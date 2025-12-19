@@ -338,8 +338,8 @@ def main():
 
 
     # Create the GenerativeModel with tools
-    # Use gemini-2.5-flash as the default model
-    gemini_model = config.get("GEMINI_MODEL") or os.getenv("GEMINI_MODEL") or "gemini-2.5-flash"
+    # Use gemini-3-flash-preview as the default model
+    gemini_model = config.get("GEMINI_MODEL") or os.getenv("GEMINI_MODEL") or "gemini-3-flash-preview"
     model = client.models.GenerativeModel(
         model_name=gemini_model,
         tools=[

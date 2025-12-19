@@ -74,7 +74,7 @@ append user prompt
 ### Step 5: Send Prompt
 
 ```
-model = GenerativeModel("gemini-pro")
+model = GenerativeModel("gemini-3-flash-preview")
 chat = model.start_chat(history=contents[:-1])
 stream = chat.send_message(prompt, stream=output_format == stream-json)
 ```
