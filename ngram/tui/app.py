@@ -258,8 +258,17 @@ class NgramApp(App if TEXTUAL_AVAILABLE else object):
             self._running_process = process
 
             stdin_data = (agent_cmd.stdin + "\n").encode() if agent_cmd.stdin else None
-            stdout_data, _ = await process.communicate(input=stdin_data)
-            self._running_process = None
+            try:
+                stdout_data, stderr_data = await asyncio.wait_for(
+                    process.communicate(input=stdin_data),
+                    timeout=180.0,
+                )
+            except asyncio.TimeoutError:
+                process.kill()
+                await process.wait()
+                raise RuntimeError("Manager startup timed out")
+            finally:
+                self._running_process = None
 
             # Stop animation and remove loading indicator
             animation_task.cancel()
@@ -299,6 +308,11 @@ class NgramApp(App if TEXTUAL_AVAILABLE else object):
                 text_output = stdout_data.decode(errors="replace").strip()
                 if text_output:
                     response_parts.append(text_output)
+
+            if stderr_data:
+                stderr_text = stderr_data.decode(errors="replace").strip()
+                if stderr_text:
+                    self.log_error(f"Manager stderr: {stderr_text[:500]}")
 
             if response_parts:
                 full_response = "".join(response_parts)
