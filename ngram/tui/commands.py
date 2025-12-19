@@ -399,12 +399,6 @@ async def _run_agent_message(app: "NgramApp", message: str, response_widget, sto
                     break
                 except Exception:
                     break
-                except asyncio.TimeoutError:
-                    # Timeout - kill process and break
-                    process.kill()
-                    break
-                except Exception:
-                    break
 
         # Wait for process and stderr drain to complete
         await process.wait()
