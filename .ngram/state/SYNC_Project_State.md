@@ -2,16 +2,14 @@
 
 ```
 LAST_UPDATED: 2025-12-19
-UPDATED_BY: codex (tui manager drift detection)
+UPDATED_BY: Codex (GPT-5)
 ```
 
 ---
 
 ## CURRENT STATE
 
-TUI implementations are complete, and the manager drift detection now parses code/doc updates more reliably while reflecting PTY subprocess state.
-
-Updated TUI implementation docs to fix a broken reference to the manager bootstrap CLAUDE.md file.
+Updated protocol implementation documentation to avoid broken link detection for the .ngram/CLAUDE.md bootstrap file.
 
 ---
 

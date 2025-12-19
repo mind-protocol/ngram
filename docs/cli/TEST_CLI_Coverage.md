@@ -23,117 +23,50 @@ SYNC:            ./SYNC_CLI_State.md
 
 ## TEST STRATEGY
 
-The CLI module currently lacks automated tests. Testing is performed manually through CLI usage and repair agent execution. This document tracks what should be tested and current coverage gaps.
-
-**Testing philosophy:**
-- Commands should be tested in isolation first
-- Integration tests should verify end-to-end flows
-- Agent tests require mocking agent subprocess (claude, gemini, or codex)
+The CLI currently has no automated tests. Validation is manual through CLI usage. Tests should cover each command in isolation, then a small set of end-to-end flows.
 
 ---
 
-## UNIT TESTS (0% coverage)
+## COVERAGE SUMMARY
 
-**None automated.** Planned tests per command:
+- Automated unit tests: none
+- Automated integration tests: none
+- Manual smoke tests: ad hoc during development and repairs
 
-- **Init:** protocol dir creation, .ngram/CLAUDE.md + AGENTS.md update (includes Codex/Gemini addition), force overwrite, duplicate prevention
-- **Init (permissions):** partial refresh when .ngram/ removal fails
+---
+
+## PRIORITY TESTS (PLANNED)
+
+- **Init:** protocol files created, force behavior, bootstrap file updates
 - **Validate:** healthy project pass, missing protocol fail, broken chain detection
-- **Doctor:** monolith detection, undocumented detection, stale sync, score calculation
-- **Repair:** agent spawning, depth filtering, max limit, dry-run, parallel execution
+- **Doctor:** monolith detection, stale sync detection, score calculation
+- **Repair:** agent spawning, depth filtering, max limit, dry-run, parallel behavior
+- **Context:** docs chain resolution from `DOCS:` references
 
 ---
 
-## INTEGRATION TESTS (0% coverage)
+## INTEGRATION FLOWS (PLANNED)
 
-**Planned integration tests:**
-- Init → Validate cycle (protocol installation verified)
-- Doctor → Repair cycle (health score improves)
-- Context navigation (DOCS: references resolve)
-
----
-
-## EDGE CASES (manual only)
-
-Empty project, large codebase (1000+ files), missing YAML dependency, agent timeout, broken templates, unicode paths.
+- `init` → `validate`
+- `doctor` → `repair` (health score improves)
+- `context` → doc chain output for known file
 
 ---
 
-## TEST COVERAGE
-
-**Overall: 0% automated test coverage** across all modules (cli, init_cmd, validate, doctor, repair, sync, context, utils).
-
----
-
-## HOW TO RUN
+## MANUAL SMOKE
 
 ```bash
-# Currently no automated tests exist
-# Manual testing commands:
-
-# Test init
 ngram init --dir /tmp/test-project
 ngram validate --dir /tmp/test-project
-
-# Test doctor
 ngram doctor --no-github
-
-# Test repair (dry run)
 ngram repair --dry-run --max 3
-
-# Test context
 ngram context ngram/cli.py
 ```
 
 ---
 
-## KNOWN TEST GAPS
+## KNOWN GAPS
 
-- [ ] No unit tests for any module
-- [ ] No integration tests
-- [ ] No property-based tests
-- [ ] No CI/CD test pipeline
-- [ ] No mocking infrastructure for agent subprocess
-- [ ] No test fixtures for project structures
-
----
-
-## PROPOSED TEST STRUCTURE
-
-```
-tests/
-├── conftest.py           # Shared fixtures
-├── fixtures/
-│   ├── healthy_project/  # Project passing all checks
-│   ├── broken_project/   # Project with various issues
-│   └── templates/        # Test template files
-├── unit/
-│   ├── test_init.py
-│   ├── test_validate.py
-│   ├── test_doctor.py
-│   ├── test_repair.py
-│   └── test_utils.py
-└── integration/
-    ├── test_full_cycle.py
-    └── test_context_flow.py
-```
-
----
-
-## FLAKY TESTS
-
-| Test | Flakiness | Root Cause | Mitigation |
-|------|-----------|------------|------------|
-| (none yet) | — | — | — |
-
----
-
-## GAPS / IDEAS / QUESTIONS
-
-- [ ] Set up pytest infrastructure
-- [ ] Create test fixtures for common project states
-- [ ] Add CI/CD with GitHub Actions
-- [ ] Consider snapshot testing for CLI output
-- IDEA: Use hypothesis for property-based testing
-- IDEA: Mock agent subprocess for repair tests
-- QUESTION: Should we test against real Claude or always mock?
+- No automated tests or fixtures
+- No CI pipeline
+- No mocking for agent subprocess
