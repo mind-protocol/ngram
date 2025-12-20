@@ -1,7 +1,7 @@
 # LLM Agents — Sync: Current State
 
 ```
-LAST_UPDATED: 2025-12-19
+LAST_UPDATED: 2025-12-20
 UPDATED_BY: codex
 STATUS: DESIGNING
 ```
@@ -51,6 +51,19 @@ None.
 ---
 
 ## RECENT CHANGES
+
+### 2025-12-20: Documented scope and data expectations
+
+- **What:** Added SCOPE and DATA sections to clarify adapter boundaries and input/output expectations.
+- **Why:** Resolve doc template drift and make provider adapter responsibilities explicit.
+- **Files:** `docs/llm_agents/PATTERNS_Provider_Specific_LLM_Subprocesses.md`
+
+
+### 2025-12-20: Filled PATTERNS scope/data sections
+
+- **What:** Added SCOPE and DATA sections to the provider-specific subprocess patterns doc.
+- **Why:** Resolve DOC_TEMPLATE_DRIFT for missing template sections.
+- **Files:** `docs/llm_agents/PATTERNS_Provider_Specific_LLM_Subprocesses.md`
 
 ### 2025-12-19: Updated default model and CLI integration
 
@@ -162,6 +175,8 @@ That only the Gemini adapter exists, so the docs should stay lean.
 ## Agent Observations
 
 ### Remarks
+- Added SCOPE and DATA sections to the provider adapter PATTERNS doc to resolve template drift.
+- Added missing template sections (SCOPE/DATA) to the provider subprocess patterns doc.
 - Gemini tool stubs were replaced with real filesystem/web handlers and light persistence.
 - Google search base URL is now configurable via `NGRAM_GOOGLE_SEARCH_URL`.
 

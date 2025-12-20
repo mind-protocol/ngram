@@ -51,6 +51,16 @@ Without a dedicated adapter:
 
 ---
 
+## SCOPE
+
+This pattern applies only to provider-specific subprocess wrappers that sit between the main CLI and external LLM SDKs. It covers adapter entry points, credential handling, prompt shaping, and JSON streaming output. It does not define core CLI routing, UI rendering, or multi-provider orchestration policies.
+
+## DATA
+
+Adapters consume CLI arguments, `.env` files, and environment variables for credentials and runtime options, plus a prompt/system prompt payload from the CLI. They emit structured JSON stream messages (tool_code, tool_result, text) and structured error payloads to stderr/stdout. Logs and debug output must be explicit so downstream clients can filter them safely.
+
+---
+
 ## THE PATTERN
 
 **Provider-specific subprocess adapters.**

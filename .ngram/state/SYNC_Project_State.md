@@ -2,14 +2,14 @@
 
 ```
 LAST_UPDATED: 2025-12-20
-UPDATED_BY: codex (todo marker support + init refresh)
+UPDATED_BY: codex (archive duplication verification)
 ```
 
 ---
 
 ## CURRENT STATE
 
-Added `@ngram:todo` marker support to the special-marker workflow (doctor + solve-markers) and refreshed protocol files via `ngram init`. The .ngram folder was regenerated from templates; previous SYNC narrative was replaced by the template and has been rewritten here with the current changes only.
+Added `@ngram:todo` marker support to the special-marker workflow (doctor + solve-markers) and refreshed protocol files via `ngram init`. The .ngram folder was regenerated from templates; previous SYNC narrative was replaced by the template and has been rewritten here with the current changes only. Consolidated the TUI archive SYNC docs by keeping `docs/tui/archive/SYNC_TUI_State_Archive_2025-12.md` as canonical and referencing it from `docs/tui/archive/SYNC_Archive_2024-12.md`. Filled missing SCOPE/DATA sections in `docs/llm_agents/PATTERNS_Provider_Specific_LLM_Subprocesses.md` to resolve DOC_TEMPLATE_DRIFT.
 
 ---
 
@@ -26,6 +26,12 @@ None. Todo marker support and docs refresh complete; no follow-up task currently
 - **What:** Added `@ngram:todo` marker detection to doctor and solve-markers, updated protocol/CLI docs, and refreshed generated protocol files via `ngram init`.
 - **Why:** Allows agents and managers (especially during reviews) to record actionable tasks that appear in the doctor workflow.
 - **Impact:** Special-marker scanning now includes TODO items alongside escalations and propositions.
+
+### 2025-12-20: Archive duplication check
+
+- **What:** Verified the CLI/TUI archive consolidation state and ensured the canonical TUI archive keeps the 2024-12 snapshot with the older file reduced to a reference.
+- **Why:** Confirms the DOC_DUPLICATION warning is resolved without introducing new redundant content.
+- **Impact:** Archive references remain canonical and scoped to their modules.
 
 ---
 
@@ -70,6 +76,19 @@ None. Todo marker support and docs refresh complete; no follow-up task currently
 ### Backlog
 
 - [ ] Decide if the doctor should skip all docs/ views for special markers or only templates/views (currently skips templates + .ngram/views).
+
+---
+
+## Agent Observations
+
+### Remarks
+- Added missing SCOPE/DATA sections to the LLM agent patterns doc to resolve DOC_TEMPLATE_DRIFT.
+
+### Suggestions
+- None.
+
+### Propositions
+- None.
 
 ---
 
