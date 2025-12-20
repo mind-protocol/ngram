@@ -87,9 +87,6 @@ Confirm whether you want me to run `ngram --agents codex` now for verification.
 - Completed: Reviewed `docs/protocol/BEHAVIORS_Observable_Protocol_Effects.md` escalation task; no decisions were provided to implement.
 - Remaining: Resolve the protocol behaviors escalation once decisions are supplied and update the protocol SYNC accordingly.
 - Blocker: Human decisions missing for the escalation marker conflict.
-- Completed: Reviewed `docs/protocol/SYNC_Protocol_Current_State.md` escalation task; no decisions were provided to implement.
-- Remaining: Resolve the protocol SYNC escalation once decisions are supplied and update the protocol SYNC accordingly.
-- Blocker: Human decisions missing for the SYNC escalation task.
 - Completed: Reviewed `docs/protocol/PATTERNS_Bidirectional_Documentation_Chain_For_AI_Agents.md` escalation task; no decisions were provided to implement.
 - Remaining: Resolve the protocol PATTERNS escalation once decisions are supplied and update the protocol SYNC accordingly.
 - Blocker: Human decisions missing for the escalation marker conflict.
