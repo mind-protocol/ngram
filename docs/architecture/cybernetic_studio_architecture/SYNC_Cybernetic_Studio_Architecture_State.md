@@ -74,6 +74,12 @@ The Cybernetic Studio architecture docs are now a full chain (PATTERNS → BEHAV
 - **Why:** Fixes INCOMPLETE_CHAIN and keeps the chain bidirectional.
 - **Files:** `docs/architecture/cybernetic_studio_architecture/SYNC_Cybernetic_Studio_Architecture_State.md`
 
+### 2025-12-20: Linked architecture source to docs
+
+- **What:** Added a DOCS pointer in the architecture source file.
+- **Why:** Ensures `ngram context` can reach the documentation chain from the canonical source.
+- **Files:** `data/ARCHITECTURE — Cybernetic Studio.md`
+
 ---
 
 ## KNOWN ISSUES
