@@ -58,7 +58,7 @@ The doctor performs various checks across documentation, code, and project struc
 
 - **Sync and Workflow**
     - **Stale SYNC**: SYNC files not updated recently.
-    - **Special Markers**: Detects `@ngram:escalation` and `@ngram:proposition` markers in code and docs.
+    - **Special Markers**: Detects `@ngram&#58;escalation` and `@ngram&#58;proposition` markers in code and docs.
     - **Activity Gaps**: Long periods without any project activity.
 
 ---
@@ -67,13 +67,13 @@ The doctor performs various checks across documentation, code, and project struc
 
 The doctor scans the entire project for special markers that require human attention:
 
-- **@ngram:escalation**
+- **@ngram&#58;escalation**
     - **Type**: `ESCALATION`
     - **Severity**: `warning`
     - **Purpose**: Signals a blocker or conflict that requires a human decision.
     - **Action**: Use `ngram solve-markers` to review and resolve.
 
-- **@ngram:proposition**
+- **@ngram&#58;proposition**
     - **Type**: `PROPOSITION`
     - **Severity**: `info`
     - **Purpose**: Agent-suggested improvements, refactors, or new features.
