@@ -46,7 +46,8 @@ THIS:            SYNC_LLM_Agents_State.md (you are here)
 
 ## IN PROGRESS
 
-None.
+No active implementation work is underway; the last changes were
+documentation-only updates, and adapter behavior is unchanged.
 
 ---
 
@@ -64,6 +65,12 @@ None.
 - **What:** Added SCOPE and DATA sections to the provider-specific subprocess patterns doc.
 - **Why:** Resolve DOC_TEMPLATE_DRIFT for missing template sections.
 - **Files:** `docs/llm_agents/PATTERNS_Provider_Specific_LLM_Subprocesses.md`
+
+### 2025-12-20: Expanded short SYNC sections
+
+- **What:** Expanded IN PROGRESS and KNOWN ISSUES entries to meet template minimums.
+- **Why:** Resolve DOC_TEMPLATE_DRIFT for short sections.
+- **Files:** `docs/llm_agents/SYNC_LLM_Agents_State.md`
 
 ### 2025-12-19: Updated default model and CLI integration
 
@@ -100,7 +107,8 @@ None.
 
 ## KNOWN ISSUES
 
-None noted.
+No confirmed defects are tracked; the stderr model listing noise is
+noted in handoff context and has not been triaged yet.
 
 ---
 

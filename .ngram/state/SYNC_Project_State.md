@@ -2,7 +2,7 @@
 
 ```
 LAST_UPDATED: 2025-12-20
-UPDATED_BY: codex (archive duplication verification)
+UPDATED_BY: codex (llm agent patterns scope/data)
 ```
 
 ---
