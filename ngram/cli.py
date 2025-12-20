@@ -44,6 +44,7 @@ from .solve_escalations import solve_special_markers_command
 from .repair import repair_command
 from .refactor import refactor_command
 from .repo_overview import generate_and_save as generate_overview
+from .docs_fix import docs_fix_command
 
 
 from .agent_cli import build_agent_command
@@ -58,6 +59,33 @@ def _validate_module_translation(args):
     if args.module_old or args.module_new:
         if not (args.module_old and args.module_new):
             raise ValueError("--module-old and --module-new must be supplied together")
+
+
+def _add_refactor_conflict_args(parser):
+    parser.add_argument(
+        "--skip-existing",
+        action="store_true",
+        help="Skip moves when the target path already exists",
+    )
+    parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Overwrite existing targets when moving files/directories (default)",
+    )
+    parser.add_argument(
+        "--no-overwrite",
+        action="store_true",
+        help="Do not overwrite existing targets",
+    )
+
+
+def _validate_refactor_conflicts(args):
+    if args.skip_existing and args.overwrite:
+        raise ValueError("--skip-existing and --overwrite cannot be used together")
+    if args.no_overwrite:
+        args.overwrite = False
+        if args.skip_existing and args.overwrite:
+            raise ValueError("--skip-existing and --overwrite cannot be used together")
 
 
 
@@ -344,6 +372,8 @@ def main():
     rename_parser.add_argument("old", type=str, help="Existing path to rename (relative to project root)")
     rename_parser.add_argument("new", type=str, help="New target path (relative to project root)")
     _add_module_translation_args(rename_parser)
+    _add_refactor_conflict_args(rename_parser)
+    rename_parser.set_defaults(overwrite=True)
     rename_parser.set_defaults(action="rename")
 
     move_parser = refactor_subparsers.add_parser(
@@ -353,6 +383,8 @@ def main():
     move_parser.add_argument("old", type=str, help="Existing path to move (relative to project root)")
     move_parser.add_argument("new", type=str, help="Destination path (relative to project root)")
     _add_module_translation_args(move_parser)
+    _add_refactor_conflict_args(move_parser)
+    move_parser.set_defaults(overwrite=True)
     move_parser.set_defaults(action="move")
 
     promote_parser = refactor_subparsers.add_parser(
@@ -367,6 +399,8 @@ def main():
         help="Optional explicit target path (defaults to docs/<module>)"
     )
     _add_module_translation_args(promote_parser)
+    _add_refactor_conflict_args(promote_parser)
+    promote_parser.set_defaults(overwrite=True)
     promote_parser.set_defaults(action="promote")
 
     demote_parser = refactor_subparsers.add_parser(
@@ -381,7 +415,24 @@ def main():
         help="Area name under docs/ to move into"
     )
     _add_module_translation_args(demote_parser)
+    _add_refactor_conflict_args(demote_parser)
+    demote_parser.set_defaults(overwrite=True)
     demote_parser.set_defaults(action="demote")
+
+    batch_parser = refactor_subparsers.add_parser(
+        "batch",
+        help="Apply a filelist of refactor actions"
+    )
+    batch_parser.add_argument(
+        "--filelist", "-f",
+        type=str,
+        required=True,
+        help="Path to a file containing refactor actions"
+    )
+    _add_module_translation_args(batch_parser)
+    _add_refactor_conflict_args(batch_parser)
+    batch_parser.set_defaults(overwrite=True)
+    batch_parser.set_defaults(action="batch")
 
     # ignore command
     ignore_parser = subparsers.add_parser(
@@ -414,6 +465,23 @@ def main():
         type=str,
         default="",
         help="Reason for ignoring (for audit trail)"
+    )
+
+    # docs-fix command
+    docs_fix_parser = subparsers.add_parser(
+        "docs-fix",
+        help="Repair doc chains and create minimal missing docs"
+    )
+    docs_fix_parser.add_argument(
+        "--dir", "-d",
+        type=Path,
+        default=Path.cwd(),
+        help="Project directory (default: current directory)"
+    )
+    docs_fix_parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Show what would change without writing files"
     )
 
     # version
@@ -481,10 +549,14 @@ def main():
             sys.exit(1)
         try:
             _validate_module_translation(args)
+            _validate_refactor_conflicts(args)
         except ValueError as exc:
             print(exc)
             sys.exit(1)
         exit_code = refactor_command(args)
+        sys.exit(exit_code)
+    elif args.command == "docs-fix":
+        exit_code = docs_fix_command(args.dir, args.dry_run)
         sys.exit(exit_code)
     elif args.command == "ignore":
         if args.list:

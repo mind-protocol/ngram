@@ -31,6 +31,17 @@ def _escape_marker_tokens(content: str) -> str:
     return content
 
 
+def _copy_skills(skills_src: Path, target_dir: Path) -> None:
+    if not skills_src.exists():
+        return
+    target_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        shutil.copytree(skills_src, target_dir, dirs_exist_ok=True)
+        print(f"✓ Updated: {target_dir}")
+    except PermissionError:
+        print(f"  ○ Skipped (permission): {target_dir}")
+
+
 def _build_claude_addition(templates_path: Path) -> str:
     """Build CLAUDE.md content with inlined PRINCIPLES and PROTOCOL.
 
@@ -102,6 +113,7 @@ ngram solve-markers     # Review escalations and propositions
 ngram context <file>    # Get doc context for a file
 ngram prompt            # Generate bootstrap prompt for LLM
 ngram overview          # Generate repo map with file tree, links, definitions
+ngram docs-fix          # Repair doc chains and create minimal missing docs
 ```
 
 ### Overview Command
@@ -298,6 +310,14 @@ def init_protocol(target_dir: Path, force: bool = False) -> bool:
                 print(f"  ○ Skipped (permission): {ignore_dest}")
     else:
         print(f"○ {ignore_dest} already exists")
+
+    # Copy skills into .claude/skills and Codex skills directory
+    skills_src = protocol_dest / "skills"
+    claude_skills_dest = target_dir / ".claude" / "skills"
+    codex_home = Path(os.environ.get("CODEX_HOME", "~/.codex")).expanduser()
+    codex_skills_dest = codex_home / "skills"
+    _copy_skills(skills_src, claude_skills_dest)
+    _copy_skills(skills_src, codex_skills_dest)
 
     # Add agent working directories to .gitignore
     gitignore_path = target_dir / ".gitignore"

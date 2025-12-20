@@ -13,6 +13,7 @@ DOCS: docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview
 """
 
 import json
+import random
 from pathlib import Path
 from typing import List, Dict, Any
 
@@ -186,6 +187,11 @@ def doctor_command(
     elif level == "warning":
         results["issues"]["info"] = []
         results["summary"]["info"] = 0
+
+    # Randomize issue order within each severity to distribute focus.
+    rng = random.SystemRandom()
+    for severity in ("critical", "warning", "info"):
+        rng.shuffle(results["issues"][severity])
 
     print_doctor_report(results, output_format)
 

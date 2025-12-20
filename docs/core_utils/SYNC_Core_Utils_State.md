@@ -52,6 +52,11 @@ IMPL:            ngram/core_utils.py
 
 ## RECENT CHANGES
 
+### 2025-12-20: Pending external implementation references
+
+- **What:** Replaced stub file paths with pending import notes in implementation docs.
+- **Why:** Remove broken impl links until upstream code is imported.
+
 ### 2025-12-20: Renamed `utils.py` to `core_utils.py` and updated imports
 - **What:** The `utils.py` file was renamed to `core_utils.py` to provide a more descriptive name and prevent conflicts with generic `utils` imports.
 - **Why:** To adhere to project naming conventions and improve clarity. All internal imports have been updated.

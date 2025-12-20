@@ -10,13 +10,13 @@ CREATED: 2025-12-18
 ## CHAIN
 
 ```
-PATTERNS:        docs/cli/core/PATTERNS_Why_CLI_Over_Copy.md
-BEHAVIORS:       docs/cli/core/BEHAVIORS_CLI_Command_Effects.md
-ALGORITHM:       docs/cli/ALGORITHM_CLI_Command_Execution_Logic.md
-VALIDATION:      docs/cli/core/VALIDATION_CLI_Instruction_Invariants.md
+PATTERNS:        ./core/PATTERNS_Why_CLI_Over_Copy.md
+BEHAVIORS:       ./core/BEHAVIORS_CLI_Command_Effects.md
+ALGORITHM:       ./ALGORITHM_CLI_Command_Execution_Logic.md
+VALIDATION:      ./core/VALIDATION_CLI_Instruction_Invariants.md
 THIS:            docs/cli/IMPLEMENTATION_CLI_Code_Architecture.md
-HEALTH:          docs/cli/core/HEALTH_CLI_Command_Test_Coverage.md
-SYNC:            docs/cli/core/SYNC_CLI_Development_State.md
+HEALTH:          ./core/HEALTH_CLI_Command_Test_Coverage.md
+SYNC:            ./core/SYNC_CLI_Development_State.md
 
 IMPL:            ngram/cli.py
 IMPL:            ngram/doctor.py
@@ -70,7 +70,7 @@ This split is described in `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/I
 
 Anti-pattern guardrails:
 - **God objects** are avoided by splitting `doctor_checks` into `core`, `metadata`, and `reference` helpers as noted in the core doc chain.
-- **Premature optimization**: new limits go into `.ngram/config.yaml` only when validated by DOC_TEMPLATE_DRIFT insights.
+- **Premature optimization**: new limits go into the config file (in `.ngram/`) only when validated by DOC_TEMPLATE_DRIFT insights.
 
 Boundaries:
 | Boundary | Inside | Outside | Interface |
@@ -335,10 +335,10 @@ raw CLI args ──> dispatch context ──> command execution ──> issue ar
 
 | Config | Location | Default | Description |
 |--------|----------|---------|-------------|
-| `monolith_lines` | `.ngram/config.yaml` | `500` | When to split files before checking |
-| `stale_sync_days` | `.ngram/config.yaml` | `14` | Stale SYNC threshold before warning |
-| `disabled_checks` | `.ngram/config.yaml` | `[]` | Doctor checks to skip |
-| `svg_namespace` | `.ngram/config.yaml` | `http://www.w3.org/2000/svg` | Namespace for project map exports |
+| `monolith_lines` | config file (in `.ngram/`) | `500` | When to split files before checking |
+| `stale_sync_days` | config file (in `.ngram/`) | `14` | Stale SYNC threshold before warning |
+| `disabled_checks` | config file (in `.ngram/`) | `[]` | Doctor checks to skip |
+| `svg_namespace` | config file (in `.ngram/`) | `http://www.w3.org/2000/svg` | Namespace for project map exports |
 
 ---
 
@@ -348,8 +348,8 @@ raw CLI args ──> dispatch context ──> command execution ──> issue ar
 
 | File | Line | Reference |
 |------|------|-----------|
-| `ngram/cli.py` | ~40 | `DOCS: docs/cli/core/PATTERNS_Why_CLI_Over_Copy.md` |
-| `ngram/doctor.py` | ~120 | `DOCS: docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md` |
+| `ngram/cli.py` | ~40 | `docs/cli/core/PATTERNS_Why_CLI_Over_Copy.md` |
+| `ngram/doctor.py` | ~120 | `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md` |
 
 ### Docs → Code
 
@@ -371,7 +371,7 @@ raw CLI args ──> dispatch context ──> command execution ──> issue ar
 
 ### Missing Implementation
 
-- [ ] Add DOCS: pointers to `ngram/prompt.py` and `ngram/doctor_checks_*` in each submodule.
+- [ ] Add DOCS pointers to `ngram/prompt.py` and `ngram/doctor_checks_*` in each submodule.
 - [ ] Ensure `ngram/repair.py` writes to `.ngram/state/repair_results/` (future work).
 
 ### Ideas

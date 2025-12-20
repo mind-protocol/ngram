@@ -86,7 +86,7 @@ blood-ledger/               # Game Cartridge (world content + player experience)
 | Entry Point | File | Triggered By |
 |-------------|------|--------------|
 | `ngram` CLI | `ngram/` | Dev workflows (validation, sync, repair) |
-| `blood-ledger` runtime | `run.sh` | Game orchestration in dev |
+| `blood-ledger` runtime | run script (external) | Game orchestration in dev |
 
 ---
 

@@ -1,0 +1,18 @@
+{
+  "package": "ngram-skills",
+  "version": "0.1.0",
+  "root": ".ngram/skills",
+  "files": [
+    "SKILLS.md",
+    "create_module_documentation.md",
+    "debug_investigate_fix_issues.md",
+    "extend_add_features.md",
+    "health_define_and_verify.md",
+    "implement_write_or_modify_code.md",
+    "ingest_raw_data_sources.md",
+    "onboard_understand_module_codebase.md",
+    "orchestrate_feature_integration.md",
+    "review_evaluate_changes.md",
+    "sync_update_module_state.md"
+  ]
+}

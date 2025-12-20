@@ -11,13 +11,13 @@ VERIFIED: 2025-12-18 against commit 6e0062c
 ## CHAIN
 
 ```
-PATTERNS:        docs/cli/core/PATTERNS_Why_CLI_Over_Copy.md
-BEHAVIORS:       docs/cli/core/BEHAVIORS_CLI_Command_Effects.md
+PATTERNS:        ./core/PATTERNS_Why_CLI_Over_Copy.md
+BEHAVIORS:       ./core/BEHAVIORS_CLI_Command_Effects.md
 THIS:            docs/cli/ALGORITHM_CLI_Command_Execution_Logic.md
-VALIDATION:      docs/cli/core/VALIDATION_CLI_Instruction_Invariants.md
-IMPLEMENTATION:  docs/cli/IMPLEMENTATION_CLI_Code_Architecture.md
-HEALTH:          docs/cli/core/HEALTH_CLI_Command_Test_Coverage.md
-SYNC:            docs/cli/core/SYNC_CLI_Development_State.md
+VALIDATION:      ./core/VALIDATION_CLI_Instruction_Invariants.md
+IMPLEMENTATION:  ./IMPLEMENTATION_CLI_Code_Architecture.md
+HEALTH:          ./core/HEALTH_CLI_Command_Test_Coverage.md
+SYNC:            ./core/SYNC_CLI_Development_State.md
 
 IMPL:            ngram/cli.py
 IMPL:            ngram/doctor.py

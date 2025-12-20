@@ -37,9 +37,9 @@ HEALTH is separate from tests because it verifies real system health without cha
 ```
 PATTERNS:        ./PATTERNS_Bidirectional_Documentation_Chain_For_AI_Agents.md
 BEHAVIORS:       ./BEHAVIORS_Observable_Protocol_Effects.md
-ALGORITHM:       ./ALGORITHM_Overview.md
+ALGORITHM:       ./ALGORITHM_Protocol_Core_Mechanics.md
 VALIDATION:      ./VALIDATION_Protocol_Invariants.md
-IMPLEMENTATION:  ./IMPLEMENTATION_Overview.md
+IMPLEMENTATION:  ./IMPLEMENTATION_Protocol_System_Architecture.md
 THIS:            HEALTH_Protocol_Verification.md
 SYNC:            ./SYNC_Protocol_Current_State.md
 

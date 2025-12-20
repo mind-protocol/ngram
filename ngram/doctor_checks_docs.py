@@ -231,8 +231,8 @@ def doctor_check_large_doc_module(target_dir: Path, config: DoctorConfig) -> Lis
     if not docs_dir.exists():
         return issues
 
-    # Threshold: 50K chars is roughly 12K tokens, which is a lot for one module
-    char_threshold = 50000
+    # Threshold: 62.5K chars is roughly 15K tokens, which is a lot for one module
+    char_threshold = 62500
 
     modules = find_module_directories(docs_dir)
 

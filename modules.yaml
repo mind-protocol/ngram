@@ -53,46 +53,47 @@ modules:
 
 # Uncomment and modify as you create modules:
 
-# types:
-#   code: "src/types/**"
-#   docs: "docs/core/types/"
-#   maturity: CANONICAL
-#   owner: human
-#   notes: |
-#     Core type definitions. Changes affect entire codebase.
+  # types:
+  #   code: "src/types/**"
+  #   docs: "docs/core/types/"
+  #   maturity: CANONICAL
+  #   owner: human
+  #   notes: |
+  #     Core type definitions. Changes affect entire codebase.
 
-  # Add more modules as they emerge...
-
-  prompt:
-    code: "ngram/prompt.py"
-    docs: "docs/cli/prompt/"
-    maturity: DESIGNING
-    owner: agent
-    entry_points:
-      - "ngram/prompt.py"
-    depends_on:
-      - cli_core
-    patterns:
-      - "Bootstrap prompt anchors agents to PROTOCOL + PRINCIPLES before working"
-      - "Work mode guidance + VIEW table keep agents from default behavior"
-    notes: |
-      Provides the `ngram prompt` command that bootstraps LLMs with canonical docs,
-      VIEW choices, and verification reminders. Module is intentionally simple, but
-      must stay in sync with the broader CLI doc chain.
+# Add more modules as they emerge...
 
   cli_core:
     code: "ngram/**"
     docs: "docs/cli/core/"
     maturity: CANONICAL
     owner: agent
-    entry_points:
-      - "ngram/cli.py"
-    depends_on:
-      - prompt
     notes: |
-      Central CLI entrypoints, health commands, and navigation helpers. This module
-      covers `doctor`, `repair`, `validate`, and related utils; docs describe the
-      CLI architecture and how each check integrates into health workflows.
+      CLI command routing and core orchestration.
+
+  cli_prompt:
+    code: "ngram/prompt.py"
+    docs: "docs/cli/prompt/"
+    maturity: DESIGNING
+    owner: agent
+    notes: |
+      Prompt bootstrap generator for ngram agents.
+
+  core_utils:
+    code: "ngram/core_utils.py"
+    docs: "docs/core_utils/"
+    maturity: CANONICAL
+    owner: agent
+    notes: |
+      Shared path resolution and doc discovery helpers.
+
+  protocol_doctor:
+    code: "ngram/doctor.py"
+    docs: "docs/protocol/doctor/"
+    maturity: DESIGNING
+    owner: agent
+    notes: |
+      Health checks and reporting for protocol integrity.
 
   llm_agents:
     code: "ngram/llms/**"
@@ -100,9 +101,7 @@ modules:
     maturity: DESIGNING
     owner: agent
     notes: |
-      Agent-facing integrations (Claude, Gemini, Codex) that spawn subprocesses,
-      manage prompts, and track telemetry. Docs capture the agent behaviors and
-      health checks tied to the language-model integrations.
+      Provider-specific subprocess orchestration.
 
   tui:
     code: "ngram/tui/**"
@@ -110,6 +109,76 @@ modules:
     maturity: DESIGNING
     owner: agent
     notes: |
-      The textual UI that wraps CLI workflows in a persistent session. Docs outline
-      behaviors, patterns, and implementation details for widgets, commands, and
-      docking points observed by doctor health checks.
+      Text UI experience and widget interactions.
+
+  engine_models:
+    code: "engine/models/**"
+    docs: "docs/engine/models/"
+    maturity: DESIGNING
+    owner: agent
+    notes: |
+      Graph data model primitives and invariants.
+
+  engine_moments:
+    code: "engine/moments/**"
+    docs: "docs/engine/moments/"
+    maturity: DESIGNING
+    owner: agent
+    notes: |
+      Moment ingestion, storage, and retrieval.
+
+  engine_moment_graph:
+    code: "engine/moment_graph/**"
+    docs: "docs/engine/moment-graph-engine/"
+    maturity: DESIGNING
+    owner: agent
+    notes: |
+      Moment graph engine orchestration logic.
+
+  engine_physics:
+    code: "engine/physics/**"
+    docs: "docs/physics/"
+    maturity: DESIGNING
+    owner: agent
+    notes: |
+      Physics runtime for graph dynamics and state updates.
+
+  engine_physics_graph:
+    code: "engine/physics/graph/**"
+    docs: "docs/physics/graph/"
+    maturity: DESIGNING
+    owner: agent
+    notes: |
+      Graph-specific physics algorithms and invariants.
+
+  engine_api:
+    code: "engine/api/**"
+    docs: "docs/infrastructure/api/"
+    maturity: DESIGNING
+    owner: agent
+    notes: |
+      API surface for engine orchestration.
+
+  engine_scene_memory:
+    code: "engine/infrastructure/memory/**"
+    docs: "docs/infrastructure/scene-memory/"
+    maturity: DESIGNING
+    owner: agent
+    notes: |
+      Scene memory storage and retrieval.
+
+  engine_root:
+    code: "engine/**"
+    docs: "docs/engine/"
+    maturity: DESIGNING
+    owner: agent
+    notes: |
+      Engine runtime umbrella covering code without a dedicated submodule.
+
+  tools:
+    code: "tools/**"
+    docs: "docs/tools/"
+    maturity: DESIGNING
+    owner: agent
+    notes: |
+      Utility scripts for documentation and streaming helpers.
