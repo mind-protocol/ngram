@@ -62,3 +62,58 @@ modules:
 #     Core type definitions. Changes affect entire codebase.
 
 # Add more modules as they emerge...
+  cli:
+    code: "ngram/"
+    docs: "docs/cli/"
+    maturity: CANONICAL
+    owner: agent
+    entry_points:
+      - cli.py
+    notes: |
+      The main CLI for the ngram framework.
+
+  llm_agents:
+    code: "ngram/llms/"
+    docs: "docs/llm_agents/"
+    maturity: DESIGNING
+    owner: agent
+    notes: |
+      Contains implementations for various LLM agents.
+
+  tui:
+    code: "ngram/tui/"
+    docs: "docs/tui/"
+    maturity: DESIGNING
+    owner: agent
+    notes: |
+      The Textual User Interface for interacting with ngram.
+
+  tui_widgets:
+    code: "ngram/tui/widgets/"
+    docs: "docs/tui/" # Main TUI docs will cover widgets
+    maturity: DESIGNING
+    owner: agent
+    notes: |
+      Individual widgets used in the ngram TUI.
+
+  core_utils:
+    code: "ngram/core_utils.py"
+    docs: "docs/core_utils/" # Create a new docs folder for core_utils
+    maturity: CANONICAL
+    owner: agent
+    notes: |
+      Core utility functions for the ngram framework.
+
+  cybernetic_studio_architecture:
+    code: "data/ARCHITECTURE — Cybernetic Studio.md"
+    docs: "docs/architecture/cybernetic_studio_architecture/"
+    maturity: DESIGNING
+    owner: human
+    entry_points:
+      - "data/ARCHITECTURE — Cybernetic Studio.md"
+    patterns:
+      - "Two-repo platform + cartridge"
+      - "Graph as physics, repo as artifacts"
+    notes: |
+      Conceptual architecture for the Studio Platform (ngram) and Game Cartridge
+      (blood-ledger) with a shared graph service.

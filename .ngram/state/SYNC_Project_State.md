@@ -2,7 +2,7 @@
 
 ```
 LAST_UPDATED: 2025-12-20
-UPDATED_BY: codex (cybernetic studio doc chain)
+UPDATED_BY: codex (logged missing decisions for view escalation repair 19)
 ```
 
 ---
