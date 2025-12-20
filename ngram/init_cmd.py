@@ -94,7 +94,7 @@ ngram overview          # Generate repo map with file tree, links, definitions
 - Section headers from markdown, function definitions from code
 - Local imports (stdlib/npm filtered out)
 - Module dependencies from modules.yaml
-- Output: `docs/map.{{md|yaml|json}}`
+- Output: `map.{{md|yaml|json}}`
 
 Options: `--dir PATH`, `--format {{md,yaml,json}}`
 """

@@ -20,7 +20,7 @@ from pathlib import Path
 from typing import List, Dict, Any, Tuple
 
 from datetime import datetime
-from .utils import IGNORED_EXTENSIONS, HAS_YAML, find_module_directories
+from .core_utils import IGNORED_EXTENSIONS, HAS_YAML, find_module_directories
 from .doctor_types import DoctorConfig, IgnoreEntry, DoctorIssue
 
 if HAS_YAML:
@@ -33,6 +33,30 @@ DOCTOR_TAG_PATTERN = re.compile(
     r'^@ngram:doctor:([A-Z0-9_]+):([a-z_-]+)\s*(.*)$'
 )
 ISO_DATE_PATTERN = re.compile(r'^\d{4}-\d{2}-\d{2}$')
+
+
+def save_doctor_config(target_dir: Path, config: DoctorConfig) -> None:
+    """Save doctor configuration to .ngram/config.yaml."""
+    config_path = target_dir / ".ngram" / "config.yaml"
+    if not HAS_YAML:
+        return
+
+    try:
+        data = {"doctor": {
+            "monolith_lines": config.monolith_lines,
+            "stale_sync_days": config.stale_sync_days,
+            "docs_ref_search_chars": config.docs_ref_search_chars,
+            "hook_check_chars": config.hook_check_chars,
+            "ignore": config.ignore,
+            "disabled_checks": config.disabled_checks,
+            "gemini_model_fallback_status": config.gemini_model_fallback_status,
+        }}
+        config_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(config_path, "w") as f:
+            yaml.dump(data, f, default_flow_style=False, sort_keys=False)
+    except Exception as e:
+        # Log or print error, but don't fail the main process
+        print(f"Warning: Failed to save doctor config: {e}", file=sys.stderr)
 
 
 def parse_gitignore(gitignore_path: Path) -> List[str]:
@@ -99,6 +123,8 @@ def load_doctor_config(target_dir: Path) -> DoctorConfig:
             config.ignore.extend(doctor_config["ignore"])
         if "disabled_checks" in doctor_config:
             config.disabled_checks = list(doctor_config["disabled_checks"])
+        if "gemini_model_fallback_status" in doctor_config:
+            config.gemini_model_fallback_status = dict(doctor_config["gemini_model_fallback_status"])
 
     except Exception:
         pass  # Use defaults on error

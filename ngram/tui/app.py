@@ -433,7 +433,7 @@ class NgramApp(App if TEXTUAL_AVAILABLE else object):
         # Simple overview prompt - init tasks are handled by `ngram init`, not TUI launch
         return """Please read the following files to understand the project:
 
-1. Read `docs/map.md` - the project structure map
+1. Read `map.md` - the project structure map
 2. Read `.ngram/state/SYNC_Project_State.md` - current project state
 
 Then provide a brief overview:
@@ -589,7 +589,7 @@ Keep it concise and actionable (2-3 paragraphs max)."""
         """Load map.md in executor."""
         import asyncio
 
-        map_file = self.target_dir / "docs" / "map.md"
+        map_file = self.target_dir / "map.md"
         if not map_file.exists():
             return ""
 

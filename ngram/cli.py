@@ -218,6 +218,12 @@ def main():
         help="Project directory (default: current directory)"
     )
     overview_parser.add_argument(
+        "--folder", "-p",
+        type=str,
+        default=None,
+        help="Subfolder to map only (relative to project root)"
+    )
+    overview_parser.add_argument(
         "--format", "-f",
         choices=["md", "yaml", "json"],
         default="md",
@@ -378,6 +384,7 @@ def main():
         top_files = 0 if args.all else args.top
         output_path = generate_overview(
             args.dir, args.format,
+            subfolder=args.folder,
             min_size=min_size,
             top_files=top_files,
         )

@@ -342,10 +342,13 @@ def check_naming_conventions(project: ProjectStructure, config: DoctorConfig) ->
         if not is_snake_case(directory.name):
             violations.append({"path": directory, "type": "directory", "expected": "snake_case"})
             
-    # 2. Code files must be snake_case.py
+    # 2. Code files must be snake_case.py and not contain 'and'
     for source_file in project.source_files:
-        if source_file.suffix == ".py" and not is_snake_case(source_file.stem):
-            violations.append({"path": source_file, "type": "code file", "expected": "snake_case"})
+        if source_file.suffix == ".py":
+            if not is_snake_case(source_file.stem):
+                violations.append({"path": source_file, "type": "code file", "expected": "snake_case"})
+            if "_and_" in source_file.stem.lower():
+                violations.append({"path": source_file, "type": "code file", "expected": "single responsibility (no 'and')"})
             
     # 3. Doc files must be PREFIX_PascalCase_With_Underscores.md
     for doc_file in project.doc_files:

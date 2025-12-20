@@ -95,7 +95,7 @@ WHEN:   Agents spawn for each issue
 THEN:   Each agent gets its own column (up to 3)
 AND:    If >3 agents, tabs appear for switching
 AND:    Agent outputs stream in real-time
-AND:    Repository map (docs/map.md) refreshes after each successful agent
+AND:    Repository map (map.md) refreshes after each successful agent
 ```
 
 ### B6: Streaming Responses

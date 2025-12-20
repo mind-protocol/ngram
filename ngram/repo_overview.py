@@ -668,6 +668,7 @@ def count_docs_structure(target_dir: Path) -> Dict[str, int]:
 
 def generate_repo_overview(
     target_dir: Path,
+    subfolder: Optional[str] = None,
     min_size: int = 500,
     top_files: int = 10,
 ) -> RepoOverview:
@@ -675,6 +676,7 @@ def generate_repo_overview(
 
     Args:
         target_dir: Root directory of the project
+        subfolder: Optional subfolder to map only (relative to target_dir)
         min_size: Minimum file size in chars to include (default 500)
         top_files: Maximum files per directory (default 10, 0 = unlimited)
     """
@@ -682,14 +684,21 @@ def generate_repo_overview(
 
     config = load_doctor_config(target_dir)
 
+    start_path = target_dir
+    if subfolder:
+        start_path = target_dir / subfolder
+        if not start_path.exists():
+            raise FileNotFoundError(f"Folder not found: {subfolder}")
+
     # Build file tree with filtering
     file_tree = build_file_tree(
         target_dir, config,
+        current_path=start_path,
         min_size=min_size,
         top_files=top_files,
     )
     if not file_tree:
-        file_tree = FileInfo(path=target_dir.name, type='dir')
+        file_tree = FileInfo(path=start_path.name, type='dir')
 
     # Get dependencies
     dependencies = get_dependency_info(target_dir)
@@ -703,7 +712,7 @@ def generate_repo_overview(
     stats['modules'] = docs_stats['modules']
 
     return RepoOverview(
-        project_name=target_dir.name,
+        project_name=target_dir.name if not subfolder else f"{target_dir.name}/{subfolder}",
         generated_at=datetime.now().strftime("%Y-%m-%d %H:%M"),
         file_tree=file_tree,
         dependencies=dependencies,
@@ -714,35 +723,45 @@ def generate_repo_overview(
 def generate_and_save(
     target_dir: Path,
     output_format: str = "md",
+    subfolder: Optional[str] = None,
     min_size: int = 500,
     top_files: int = 10,
 ) -> Path:
-    """Generate overview and save to docs/map.{format}.
+    """Generate overview and save to project root as map.{format}.
 
     Args:
         target_dir: Root directory of the project
         output_format: Output format (md, yaml, json)
+        subfolder: Optional subfolder to map only
         min_size: Minimum file size in chars to include (default 500)
         top_files: Maximum files per directory (default 10, 0 = unlimited)
     """
-    overview = generate_repo_overview(target_dir, min_size=min_size, top_files=top_files)
+    overview = generate_repo_overview(
+        target_dir,
+        subfolder=subfolder,
+        min_size=min_size,
+        top_files=top_files
+    )
 
-    # Ensure docs directory exists
-    docs_dir = target_dir / "docs"
-    docs_dir.mkdir(exist_ok=True)
+    # Generate filename (map_subfolder if provided)
+    output_name = "map"
+    if subfolder:
+        # Sanitize subfolder name for filename
+        safe_folder = re.sub(r'[^a-zA-Z0-9_-]', '_', subfolder.strip('/'))
+        output_name = f"map_{safe_folder}"
 
-    # Generate output
+    # Generate output in root directory
     if output_format == "yaml":
         content = format_yaml(overview)
-        output_path = docs_dir / "map.yaml"
+        output_path = target_dir / f"{output_name}.yaml"
     elif output_format == "json":
         content = format_json(overview)
-        output_path = docs_dir / "map.json"
+        output_path = target_dir / f"{output_name}.json"
     else:  # default to markdown
         content = format_markdown(overview)
-        output_path = docs_dir / "map.md"
+        output_path = target_dir / f"{output_name}.md"
 
-    output_path.write_text(content)
+    output_path.write_text(content, encoding='utf-8')
     return output_path
 
 

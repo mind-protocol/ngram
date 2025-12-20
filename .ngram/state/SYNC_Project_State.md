@@ -26,7 +26,13 @@ UPDATED_BY: {AGENT/HUMAN}
 
 ## RECENT CHANGES
 
-### {DATE}: {Summary}
+### 2025-12-20: Fix Gemini agent Pydantic validation errors
+
+- **What:** Corrected the `history` initialization and tool result handling in `ngram/llms/gemini_agent.py`. Replaced the invalid `content` key with `parts` and wrapped tool outputs in `function_response` blocks as required by the `google-genai` SDK.
+- **Why:** To resolve "Extra inputs are not permitted" errors triggered by Pydantic during LLM interactions.
+- **Impact:** Stabilizes the Gemini agent communication loop, preventing crashes during tool-intensive tasks.
+
+### 2025-12-20: Transition from TEST to HEALTH documentation format
 
 - **What:** {description}
 - **Why:** {motivation}

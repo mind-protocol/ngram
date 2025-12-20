@@ -37,6 +37,7 @@ The doctor performs various checks across documentation, code, and project struc
 
 - **Naming Conventions** (NEW)
     - Flags directories and code files not using `snake_case`.
+    - Flags code files containing `and` in their name (suggests multiple responsibilities).
     - Flags doc files not using `PREFIX_PascalCase_With_Underscores.md`.
     - Groups violations into tasks of 10 items for organized refactoring.
 

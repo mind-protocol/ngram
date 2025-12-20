@@ -28,7 +28,7 @@ Run `ngram overview` to generate a comprehensive map:
 - Function definitions and section headers
 - Module dependencies
 
-Output: `docs/map.md` — scan this first to see what exists.
+Output: `map.md` — scan this first to see what exists.
 
 ### Start With State
 

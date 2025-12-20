@@ -145,7 +145,7 @@ Older content archived to: `archive/SYNC_archive_2024-12.md`
 - The protocol module docs were split to keep large files under the line threshold and improve navigation.
 
 ### Suggestions
-- [ ] Re-run `ngram overview` to refresh `docs/map.md` after documentation reshuffles.
+- [ ] Re-run `ngram overview` to refresh `map.md` after documentation reshuffles.
 
 ### Propositions
 - Consider a short "Docs Index" note in `IMPLEMENTATION_Overview.md` if more splits happen.

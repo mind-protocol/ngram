@@ -13,11 +13,11 @@ VERIFIED: 2025-12-18 against commit 6e0062c
 ```
 PATTERNS:        ./PATTERNS_Why_CLI_Over_Copy.md
 BEHAVIORS:       ./BEHAVIORS_CLI_Command_Effects.md
-ALGORITHM:       ./ALGORITHM_CLI_Logic.md
-THIS:            VALIDATION_CLI_Invariants.md (you are here)
+ALGORITHM:       ./ALGORITHM_CLI_Command_Execution_Logic.md
+THIS:            VALIDATION_CLI_Instruction_Invariants.md
 IMPLEMENTATION:  ./IMPLEMENTATION_CLI_Code_Architecture.md
-HEALTH:          ./HEALTH_CLI_Coverage.md
-SYNC:            ./SYNC_CLI_State.md
+HEALTH:          ./HEALTH_CLI_Command_Test_Coverage.md
+SYNC:            ./SYNC_CLI_Development_State.md
 ```
 
 ---

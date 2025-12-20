@@ -12,12 +12,12 @@ VERIFIED: 2025-12-18 against commit 6e0062c
 
 ```
 PATTERNS:        ./PATTERNS_Why_CLI_Over_Copy.md
-THIS:            BEHAVIORS_CLI_Command_Effects.md (you are here)
-ALGORITHM:       ./ALGORITHM_CLI_Logic.md
-VALIDATION:      ./VALIDATION_CLI_Invariants.md
+THIS:            BEHAVIORS_CLI_Command_Effects.md
+ALGORITHM:       ./ALGORITHM_CLI_Command_Execution_Logic.md
+VALIDATION:      ./VALIDATION_CLI_Instruction_Invariants.md
 IMPLEMENTATION:  ./IMPLEMENTATION_CLI_Code_Architecture.md
-HEALTH:          ./HEALTH_CLI_Coverage.md
-SYNC:            ./SYNC_CLI_State.md
+HEALTH:          ./HEALTH_CLI_Command_Test_Coverage.md
+SYNC:            ./SYNC_CLI_Development_State.md
 ```
 
 ---
@@ -33,7 +33,7 @@ THEN:   .ngram/ directory is created with protocol files
 AND:    .ngram/CLAUDE.md is created or updated with protocol bootstrap
 AND:    AGENTS.md is created or updated with the bootstrap plus Codex guidance
 AND:    modules.yaml template is copied to project root
-AND:    Repository map is generated at docs/map.md
+AND:    Repository map is generated at map.md
 ```
 
 ### B2: Init with Force
@@ -126,11 +126,12 @@ AND:    Section headers extracted from markdown files
 AND:    Function/class definitions extracted from code files
 AND:    Local imports extracted (stdlib/npm filtered out)
 AND:    Module dependencies from modules.yaml included
-AND:    Output saved to docs/map.{md|yaml|json}
+AND:    Output saved to map.{md|yaml|json}
 ```
 
 **Options:**
 - `--dir, -d PATH` — Target directory (default: cwd)
+- `--folder, -p NAME` — Subfolder to map only (relative to project root)
 - `--format, -f {md,yaml,json}` — Output format (default: md)
 
 ### B10: Solve Escalations Command

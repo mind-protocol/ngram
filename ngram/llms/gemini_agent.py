@@ -191,8 +191,8 @@ def main():
     
     history = []
     if args.system_prompt:
-        history.append({"role": "user", "content": args.system_prompt})
-        history.append({"role": "model", "content": "OK. I will follow the protocol."})
+        history.append({"role": "user", "parts": [{"text": args.system_prompt}]})
+        history.append({"role": "model", "parts": [{"text": "OK. I will follow the protocol."}]})
 
     try:
         # Start chat
@@ -224,8 +224,10 @@ def main():
                         if args.output_format == "stream-json":
                             print(json.dumps({"type": "tool_result", "name": tool_name, "result": result}), flush=True)
                         
-                        # Send result back to model
-                        response = chat.send_message(result)
+                        # Send result back to model using correct function_response schema
+                        response = chat.send_message(
+                            [{"function_response": {"name": tool_name, "response": result}}]
+                        )
                         break 
             else:
                 break

@@ -27,6 +27,7 @@ class DoctorConfig:
     stale_sync_days: int = 14
     docs_ref_search_chars: int = 2000  # How many chars to search for DOCS: reference
     hook_check_chars: int = 1000  # How many chars to read when checking hooks for docs
+    gemini_model_fallback_status: Dict[str, str] = field(default_factory=dict) # Status of Gemini model fallback per agent
     ignore: List[str] = field(default_factory=lambda: [
         "node_modules/**",
         ".next/**",

@@ -47,13 +47,11 @@ HEALTH is separate from tests because it verifies real system health without cha
 ```
 PATTERNS:        ./PATTERNS_Why_CLI_Over_Copy.md
 BEHAVIORS:       ./BEHAVIORS_CLI_Command_Effects.md
-ALGORITHM:       ./ALGORITHM_CLI_Logic.md
-VALIDATION:      ./VALIDATION_CLI_Invariants.md
+ALGORITHM:       ./ALGORITHM_CLI_Command_Execution_Logic.md
+VALIDATION:      ./VALIDATION_CLI_Instruction_Invariants.md
 IMPLEMENTATION:  ./IMPLEMENTATION_CLI_Code_Architecture.md
-THIS:            HEALTH_CLI_Coverage.md
-SYNC:            ./SYNC_CLI_State.md
-
-IMPL:            ngram/validate.py
+THIS:            HEALTH_CLI_Command_Test_Coverage.md
+SYNC:            ./SYNC_CLI_Development_State.md
 ```
 
 ---

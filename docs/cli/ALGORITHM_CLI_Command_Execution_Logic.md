@@ -13,11 +13,11 @@ VERIFIED: 2025-12-18 against commit 6e0062c
 ```
 PATTERNS:        ./PATTERNS_Why_CLI_Over_Copy.md
 BEHAVIORS:       ./BEHAVIORS_CLI_Command_Effects.md
-THIS:            ALGORITHM_CLI_Logic.md (you are here)
-VALIDATION:      ./VALIDATION_CLI_Invariants.md
+THIS:            ALGORITHM_CLI_Command_Execution_Logic.md
+VALIDATION:      ./VALIDATION_CLI_Instruction_Invariants.md
 IMPLEMENTATION:  ./IMPLEMENTATION_CLI_Code_Architecture.md
-HEALTH:          ./HEALTH_CLI_Coverage.md
-SYNC:            ./SYNC_CLI_State.md
+HEALTH:          ./HEALTH_CLI_Command_Test_Coverage.md
+SYNC:            ./SYNC_CLI_Development_State.md
 ```
 
 ---
@@ -59,7 +59,7 @@ write AGENTS.md (.ngram/CLAUDE.md + CODEX_SYSTEM_PROMPT_ADDITION.md)
 
 ```
 restore preserved learnings
-generate docs/map.md
+generate map.md
 ```
 
 ---

@@ -1,10 +1,10 @@
-# Repository Map: ngram
+# Repository Map: 
 
-*Generated: 2025-12-20 01:40*
+*Generated: 2025-12-20 01:48*
 
 - **Files:** 99
 - **Directories:** 25
-- **Total Size:** 844.9K
+- **Total Size:** 847.4K
 - **Doc Files:** 73
 - **Code Files:** 22
 - **Areas:** 4 (docs/ subfolders)
@@ -15,7 +15,7 @@
 - python: 22
 
 ```
-├── docs/ (270.1K)
+├── docs/ (270.2K)
 │   ├── cli/ (53.1K)
 │   │   ├── ALGORITHM_CLI_Logic.md (8.7K)
 │   │   ├── BEHAVIORS_CLI_Command_Effects.md (4.8K)
@@ -72,8 +72,8 @@
 │   │   ├── SYNC_TUI_State.md (5.1K)
 │   │   ├── SYNC_TUI_State_archive_2025-12.md (3.6K)
 │   │   └── VALIDATION_TUI_Invariants.md (4.7K)
-│   └── map.md (49.4K)
-├── ngram/ (607.0K)
+│   └── map.md (49.5K)
+├── ngram/ (609.2K)
 │   ├── llms/ (10.7K)
 │   │   └── gemini_agent.py (10.7K) →
 │   ├── tui/ (168.3K)
@@ -105,20 +105,20 @@
 │   ├── repo_overview.py (26.4K) →
 │   ├── validate.py (28.3K) →
 │   └── (..21 more files)
-├── templates/ (131.1K)
-│   ├── ngram/ (125.3K)
+├── templates/ (132.5K)
+│   ├── ngram/ (126.7K)
 │   │   ├── agents/ (2.8K)
 │   │   │   └── manager/ (2.8K)
 │   │   │       └── CLAUDE.md (2.8K)
 │   │   ├── state/ (2.1K)
 │   │   │   └── SYNC_Project_State.md (2.1K)
-│   │   ├── templates/ (37.7K)
+│   │   ├── templates/ (38.0K)
 │   │   │   ├── ALGORITHM_TEMPLATE.md (2.3K)
 │   │   │   ├── BEHAVIORS_TEMPLATE.md (2.1K)
 │   │   │   ├── CONCEPT_TEMPLATE.md (1.1K)
 │   │   │   ├── HEALTH_TEMPLATE.md (13.8K)
 │   │   │   ├── IMPLEMENTATION_TEMPLATE.md (8.7K)
-│   │   │   ├── PATTERNS_TEMPLATE.md (2.2K)
+│   │   │   ├── PATTERNS_TEMPLATE.md (2.4K)
 │   │   │   ├── SYNC_TEMPLATE.md (3.1K)
 │   │   │   ├── TOUCHES_TEMPLATE.md (1.6K)
 │   │   │   └── VALIDATION_TEMPLATE.md (2.9K)
@@ -134,14 +134,14 @@
 │   │   │   ├── VIEW_Onboard_Understand_Existing_Codebase.md (5.0K)
 │   │   │   ├── VIEW_Refactor_Improve_Code_Structure.md (5.1K)
 │   │   │   └── (..18 more files)
-│   │   ├── PRINCIPLES.md (7.2K)
+│   │   ├── PRINCIPLES.md (8.2K)
 │   │   └── PROTOCOL.md (10.8K)
 │   ├── CODEX_SYSTEM_PROMPT_ADDITION.md (2.1K)
 │   ├── GEMINI_SYSTEM_PROMPT_ADDITION.md (2.4K)
 │   ├── ngramignore (806)
 │   └── (..1 more files)
 ├── .ngramignore (806)
-├── AGENTS.md (22.4K)
+├── AGENTS.md (23.5K)
 └── README.md (4.5K)
 ```
 
@@ -1044,7 +1044,7 @@
 - `views/VIEW_Specify_Design_Vision_And_Architecture.md`
 
 **Sections:**
-- # Repository Map: ngram
+- # Repository Map:
 
 **Docs:** `docs/llm_agents/PATTERNS_Provider_Specific_LLM_Subprocesses.md`
 
@@ -1564,6 +1564,7 @@
 - ## THE PROBLEM
 - ## THE PATTERN
 - ## PRINCIPLES
+- ## DATA
 - ## DEPENDENCIES
 - ## INSPIRATIONS
 - ## SCOPE
@@ -1752,6 +1753,7 @@
 - ## Communication: Depth Over Brevity
 - ## Quality: Never Degrade
 - ## Experience: User Before Infrastructure
+- ## Feedback Loop: Human-Agent Collaboration
 - ## How These Principles Integrate
 
 **Doc refs:**
@@ -1814,6 +1816,7 @@
 - ## Communication: Depth Over Brevity
 - ## Quality: Never Degrade
 - ## Experience: User Before Infrastructure
+- ## Feedback Loop: Human-Agent Collaboration
 - ## How These Principles Integrate
 - # ngram Framework
 - ## WHY THIS PROTOCOL EXISTS
