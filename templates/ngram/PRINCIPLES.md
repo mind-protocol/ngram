@@ -172,7 +172,7 @@ Agents must not guess when requirements are vague or designs are ambiguous. Sile
 
 **Use markers to bridge the gap.**
 
-- **Escalations** (`@ngram:escalation`): Use when progress is blocked by a missing decision. Provide context, options, and recommendations.
+- **Escalations** (`@ngram&#58;escalation`): Use when progress is blocked by a missing decision. Provide context, options, and recommendations.
 - **Propositions** (`@ngram:proposition`): Use to suggest improvements, refactors, or new features. Explain why the idea matters and its implications.
 
 **Keep humans in the loop.**
