@@ -2,14 +2,14 @@
 
 ```
 LAST_UPDATED: 2025-12-20
-UPDATED_BY: codex (sync escalation markers)
+UPDATED_BY: codex (sync escalation markers, doctor behaviors escalation)
 ```
 
 ---
 
 ## CURRENT STATE
 
-The CLI is in active use while fixes continue to land in the repair subsystem. A SyntaxError in `ngram/repair_core.py` was blocking `ngram --agents` from importing; the function was repaired and retry state initialized. Verification of the CLI run is still pending. Escaped escalation markers in `docs/cli/SYNC_CLI_Development_State.md` to avoid false positive escalation detection. Documented the missing human decisions for the protocol SYNC escalation in `docs/protocol/SYNC_Protocol_Current_State.md`.
+The CLI is in active use while fixes continue to land in the repair subsystem. A SyntaxError in `ngram/repair_core.py` was blocking `ngram --agents` from importing; the function was repaired and retry state initialized. Verification of the CLI run is still pending. Escaped escalation markers in `docs/cli/SYNC_CLI_Development_State.md` to avoid false positive escalation detection. Documented the missing human decisions for the protocol SYNC escalation in `docs/protocol/SYNC_Protocol_Current_State.md`. Recorded the missing human decision for the protocol PATTERNS escalation in the same SYNC file.
 
 ---
 
@@ -78,6 +78,9 @@ Confirm whether you want me to run `ngram --agents codex` now for verification.
 - Completed: Reviewed `AGENTS.md` escalation task; no decisions were provided to implement.
 - Remaining: Resolve the `AGENTS.md` escalation once decisions are supplied and update the CONFLICTS section accordingly.
 - Blocker: Human decisions missing for the escalation marker.
+- Completed: Reviewed `docs/protocol/features/doctor/BEHAVIORS_Project_Health_Doctor.md` escalation task; no decisions or conflicts were present to implement.
+- Remaining: Confirm intended conflict or missing escalation marker for the doctor behaviors doc.
+- Blocker: Human decisions or clarification missing for the escalation marker reference.
 - Completed: Reviewed `docs/cli/ALGORITHM_CLI_Command_Execution_Logic.md` escalation task; no decisions were provided to implement.
 - Remaining: Resolve the CLI algorithm escalation once decisions are supplied and update the CLI SYNC accordingly.
 - Blocker: Human decisions missing for the escalation marker conflict.
@@ -87,6 +90,9 @@ Confirm whether you want me to run `ngram --agents codex` now for verification.
 - Completed: Reviewed `docs/protocol/SYNC_Protocol_Current_State.md` escalation task; no decisions were provided to implement.
 - Remaining: Resolve the protocol SYNC escalation once decisions are supplied and update the protocol SYNC accordingly.
 - Blocker: Human decisions missing for the SYNC escalation task.
+- Completed: Reviewed `docs/protocol/PATTERNS_Bidirectional_Documentation_Chain_For_AI_Agents.md` escalation task; no decisions were provided to implement.
+- Remaining: Resolve the protocol PATTERNS escalation once decisions are supplied and update the protocol SYNC accordingly.
+- Blocker: Human decisions missing for the escalation marker conflict.
 
 ---
 
