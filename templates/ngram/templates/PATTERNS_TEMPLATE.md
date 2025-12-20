@@ -74,6 +74,16 @@ IMPL:            {path/to/main/source/file.py}
 
 ---
 
+## DATA
+
+| Source | Type | Purpose / Description |
+|--------|------|-----------------------|
+| {path/to/data} | FILE | {What this file contains} |
+| {https://url} | URL | {Why this external data matters} |
+| {description} | OTHER | {Other data sources} |
+
+---
+
 ## DEPENDENCIES
 
 | Module | Why We Depend On It |

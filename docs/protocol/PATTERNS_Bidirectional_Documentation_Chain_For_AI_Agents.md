@@ -97,7 +97,7 @@ SYNC answers:
 ### 4. Chain Links Code and Docs
 
 Every module has a documentation chain:
-- PATTERNS (why this shape)
+- PATTERNS (why this shape, plus **DATA** sources)
 - BEHAVIORS (what it does)
 - ALGORITHM (how it works)
 - VALIDATION (how to verify)

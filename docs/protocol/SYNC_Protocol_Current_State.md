@@ -47,6 +47,7 @@ Protocol V1.1 complete. Now includes formal markers for human-agent collaboratio
 - Added protocol implementation documentation and corrected doc-link resolution issues.
 
 **Recent changes (2025-12-19):**
+- Added **DATA** section to `PATTERNS_TEMPLATE.md` to allow modules to list their data sources (files, URLs, other).
 - Split ALGORITHM and IMPLEMENTATION docs into folders for size control and clearer navigation.
 - Compressed legacy sync details into archive notes for long-term reference.
 - Added root overview stubs so validation still sees full chain files.
