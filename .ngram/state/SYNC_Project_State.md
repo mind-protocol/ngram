@@ -78,6 +78,9 @@ Confirm whether you want me to run `ngram --agents codex` now for verification.
 - Completed: Reviewed `AGENTS.md` escalation task; no decisions were provided to implement.
 - Remaining: Resolve the `AGENTS.md` escalation once decisions are supplied and update the CONFLICTS section accordingly.
 - Blocker: Human decisions missing for the escalation marker.
+- Completed: Reviewed `.ngram/PRINCIPLES.md` escalation task; no decisions were provided to implement.
+- Remaining: Resolve the `.ngram/PRINCIPLES.md` escalation once decisions are supplied and update any CONFLICTS section accordingly.
+- Blocker: Human decisions missing for the escalation marker.
 - Completed: Reviewed `docs/protocol/features/doctor/BEHAVIORS_Project_Health_Doctor.md` escalation task; no decisions or conflicts were present to implement.
 - Remaining: Confirm intended conflict or missing escalation marker for the doctor behaviors doc.
 - Blocker: Human decisions or clarification missing for the escalation marker reference.
