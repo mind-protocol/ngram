@@ -2,7 +2,7 @@
 
 ```
 LAST_UPDATED: 2025-12-20
-UPDATED_BY: codex (fix TUI doc links)
+UPDATED_BY: codex (align TUI DOCS headers)
 STATUS: IMPLEMENTED
 ```
 
@@ -61,6 +61,7 @@ Doc maintenance:
 - Implementation overview references now point to `ngram/repair_core.py` and full TUI command paths
 - Manager startup reference uses repo-root `.ngram/CLAUDE.md` and `.ngram/agents/manager/AGENTS.md` paths
 - Structure doc and TUI DOCS headers point to `docs/tui/PATTERNS_TUI_Modular_Interface_Design.md` for core entry points
+- Manager and package DOCS headers now reference `docs/tui/PATTERNS_TUI_Modular_Interface_Design.md`
 - Data flow diagram uses full file paths for command and repair routing
 - Implementation details split into `docs/tui/IMPLEMENTATION_TUI_Code_Architecture/` with an overview entry point
 - Runtime implementation content consolidated into `IMPLEMENTATION_TUI_Code_Architecture_Structure.md` to avoid duplicate docs
