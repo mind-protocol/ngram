@@ -75,3 +75,51 @@ ngram/
 
 ---
 
+## HISTORICAL SNAPSHOT (2024-12 CONDENSED)
+
+### Completed Features
+
+- Two-panel layout (manager left, agents right) with input and status bars.
+- Agent integration with subprocess providers (Claude/Gemini/Codex), streaming output, thinking blocks.
+- Command handling: `/help`, `/repair`, `/doctor`, `/quit`, `/clear`, `/run`, `/issues`.
+- Input history, tab completion, command detection.
+- Conversation history stored in `.ngram/state/conversation_history.json`.
+- Agent panels with headers, status colors, auto-collapse, capped output lines.
+- Repair sessions under `.ngram/repairs/{timestamp}/` with ISSUE.md per agent.
+- Error logging to `.ngram/error_log.txt`.
+- Theme: Paper & Parchment (light) with optional dark toggle.
+
+### Planned Features
+
+- Syntax highlighting for code blocks.
+- `/sync` auto-refresh.
+- `/repair --max N`.
+- Tab layout for >3 agents.
+- Right-click copy support.
+
+### Known Gaps
+
+- Queue processing for >3 issues.
+- Tab layout for >3 agents not implemented.
+
+### Known Issues (Historical)
+
+- None active as of 2025-12-19.
+- Resolved: INCOMPLETE_IMPL false positives in `app.py`, `state.py`, `widgets/*`.
+
+### Handoff Notes (Historical)
+
+- TUI functional with agent integration; theme and performance updates completed.
+- Watch-outs: Textual optional dependency; markup vs Markdown rendering; use chunked stdout.
+
+### Agent Observations (Historical)
+
+- Commands split to keep `commands.py` smaller.
+- Suggestion: Keep doctor-ignore and SYNC notes aligned.
+
+## CHAIN
+
+```
+THIS:            ./SYNC_TUI_State_Archive_2025-12.md
+ARCHIVE_SOURCE:  ./SYNC_Archive_2024-12.md
+```

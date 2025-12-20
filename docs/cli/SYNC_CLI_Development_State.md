@@ -2,7 +2,7 @@
 
 ```
 LAST_UPDATED: 2025-12-20
-UPDATED_BY: codex (escape escalation markers in sync)
+UPDATED_BY: codex (archive consolidation note)
 STATUS: CANONICAL
 ```
 
@@ -71,6 +71,14 @@ No active development at this time.
 - INCOMPLETE_IMPL report for `ngram/doctor_files.py` was already resolved; no code changes needed.
 
 ---
+
+## RECENT CHANGES
+
+### 2025-12-20: Archive consolidation note
+
+- **What:** Clarified the CLI archive scope after consolidating duplicate TUI archive content.
+- **Why:** Prevents confusion between CLI archives and other module archives.
+- **Files:** `docs/cli/archive/SYNC_CLI_State_Archive_2025-12.md`
 
 ## GAPS
 
