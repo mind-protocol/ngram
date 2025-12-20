@@ -2,14 +2,14 @@
 
 ```
 LAST_UPDATED: 2025-12-20
-UPDATED_BY: codex (claude escalation review)
+UPDATED_BY: codex (escaped CLAUDE escalation marker)
 ```
 
 ---
 
 ## CURRENT STATE
 
-The CLI is in active use while fixes continue to land in the repair subsystem. A SyntaxError in `ngram/repair_core.py` was blocking `ngram --agents` from importing; the function was repaired and retry state initialized. Verification of the CLI run is still pending. Escaped escalation markers in `docs/cli/SYNC_CLI_Development_State.md` to avoid false positive escalation detection. Escaped escalation markers in `docs/protocol/SYNC_Protocol_Current_State.md` for the same reason; other escalation tasks still await human decisions. Escaped doctor marker references in `docs/protocol/features/doctor/BEHAVIORS_Project_Health_Doctor.md` to prevent false escalation hits. Escaped the escalation marker token in `.ngram/GEMINI.md` to avoid false escalation detection. Reviewed the AGENTS escalation task; no human decisions were provided, so no conflict updates were made. Reviewed the VIEW_Escalation_How_To_Handle_Vague_Task escalation repair; no human decisions were provided, so no conflict updates were applied. Ran `ngram validate`; it still reports missing VIEW and doc-chain gaps outside this task scope.
+The CLI is in active use while fixes continue to land in the repair subsystem. A SyntaxError in `ngram/repair_core.py` was blocking `ngram --agents` from importing; the function was repaired and retry state initialized. Verification of the CLI run is still pending. Escaped escalation markers in `docs/cli/SYNC_CLI_Development_State.md` to avoid false positive escalation detection. Escaped escalation markers in `docs/protocol/SYNC_Protocol_Current_State.md` for the same reason; other escalation tasks still await human decisions. Escaped doctor marker references in `docs/protocol/features/doctor/BEHAVIORS_Project_Health_Doctor.md` to prevent false escalation hits. Escaped the escalation marker token in `.ngram/GEMINI.md` to avoid false escalation detection. Escaped the escalation marker token in `.ngram/CLAUDE.md` to avoid false escalation detection. Reviewed the AGENTS escalation task; no human decisions were provided, so no conflict updates were made. Reviewed the VIEW_Escalation_How_To_Handle_Vague_Task escalation repair; no human decisions were provided, so no conflict updates were applied. Ran `ngram validate`; it still reports missing VIEW and doc-chain gaps outside this task scope.
 
 ---
 
@@ -81,7 +81,7 @@ Confirm whether you want me to run `ngram --agents codex` now for verification.
 - Completed: Rechecked `.ngram/repairs/2025-12-20_04-01-48/00-ESCALATION-AGENTS/CLAUDE.md`; no conflicts or decisions were present to apply.
 - Remaining: Provide decisions for the escalation marker so the conflict resolution steps can be executed.
 - Blocker: Human decisions missing for the escalation marker.
-- Completed: Reviewed `AGENTS.md` escalation task; no decisions were provided to implement.
+- Completed: Reviewed `AGENTS.md` escalation task (repair: 2025-12-20_04-58-44/17-ESCALATION-01-ESCALATION-ngram-PRINCIPLES-AGENTS); no decisions were provided to implement.
 - Remaining: Resolve the `AGENTS.md` escalation once decisions are supplied and update the CONFLICTS section accordingly.
 - Blocker: Human decisions missing for the escalation marker.
 - Completed: Reviewed `.ngram/PRINCIPLES.md` escalation task; no decisions were provided to implement.
