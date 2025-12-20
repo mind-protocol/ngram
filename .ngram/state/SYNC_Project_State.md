@@ -138,6 +138,19 @@ Check `modules.yaml` (project root) for full manifest.
 **Coverage notes:**
 `modules.yaml` may still be template-only; reconcile in a dedicated task.
 
+---
+
+## Review Observations
+
+### Remarks
+- Review of the reported `.ngram/PRINCIPLES.md` escalation found no commits touching that file; only SYNC updates were made.
+
+### Suggestions
+- [ ] Confirm whether the intended fix was to update `.ngram/PRINCIPLES.md` directly or to record the missing decision in SYNC only.
+
+### Propositions
+- If the escalation requires a doc change, supply the missing decision so the marker can be resolved in `.ngram/PRINCIPLES.md`.
+
 
 ---
 
