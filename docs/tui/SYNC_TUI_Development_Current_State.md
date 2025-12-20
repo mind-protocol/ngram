@@ -2,7 +2,7 @@
 
 ```
 LAST_UPDATED: 2025-12-20
-UPDATED_BY: codex (align TUI DOCS headers)
+UPDATED_BY: codex (verify TUI implementation link)
 STATUS: IMPLEMENTED
 ```
 
@@ -62,6 +62,7 @@ Doc maintenance:
 - Manager startup reference uses repo-root `.ngram/CLAUDE.md` and `.ngram/agents/manager/AGENTS.md` paths
 - Structure doc and TUI DOCS headers point to `docs/tui/PATTERNS_TUI_Modular_Interface_Design.md` for core entry points
 - Manager and package DOCS headers now reference `docs/tui/PATTERNS_TUI_Modular_Interface_Design.md`
+- Verified structure doc references resolve to existing TUI PATTERNS docs
 - Data flow diagram uses full file paths for command and repair routing
 - Implementation details split into `docs/tui/IMPLEMENTATION_TUI_Code_Architecture/` with an overview entry point
 - Runtime implementation content consolidated into `IMPLEMENTATION_TUI_Code_Architecture_Structure.md` to avoid duplicate docs
@@ -70,6 +71,7 @@ Doc maintenance:
 - Re-verified IMPLEMENTATION doc backtick references for STALE_IMPL; all paths resolve
 - Clarified suggestions bar label in the structure doc file list
 - Manager /repair issue lists render as a single block to avoid extra blank lines between items.
+- Consolidated the 2024-12 archive into the 2025-12 canonical archive and left the older file as a reference.
 
 Archived detail:
 Older content archived to: `archive/SYNC_TUI_State_Archive_2025-12.md`
