@@ -2,14 +2,14 @@
 
 ```
 LAST_UPDATED: 2025-12-20
-UPDATED_BY: codex
+UPDATED_BY: codex (sync escalation markers)
 ```
 
 ---
 
 ## CURRENT STATE
 
-The CLI is in active use while fixes continue to land in the repair subsystem. A SyntaxError in `ngram/repair_core.py` was blocking `ngram --agents` from importing; the function was repaired and retry state initialized. Verification of the CLI run is still pending.
+The CLI is in active use while fixes continue to land in the repair subsystem. A SyntaxError in `ngram/repair_core.py` was blocking `ngram --agents` from importing; the function was repaired and retry state initialized. Verification of the CLI run is still pending. Escaped escalation markers in `docs/cli/SYNC_CLI_Development_State.md` to avoid false positive escalation detection.
 
 ---
 
@@ -21,77 +21,6 @@ The CLI is in active use while fixes continue to land in the repair subsystem. A
 - **Status:** completed (needs verification)
 - **Owner:** codex
 - **Context:** Fixed SyntaxError and missing retry state in `spawn_repair_agent_async` that prevented CLI startup.
-
----
-
-## RECENT CHANGES
-
-### 2025-12-20: Escape escalation markers in CLI behaviors
-
-- **What:** Replaced literal `@ngram:escalation` and `@ngram:proposition` tokens with HTML entities in `docs/cli/BEHAVIORS_CLI_Command_Effects.md`.
-- **Why:** Prevent doctor escalation detection from documentation text while keeping intended meaning.
-- **Impact:** CLI behaviors documentation no longer triggers escalation marker scans.
-
-### 2025-12-20: CLI escalation decision gap noted
-
-- **What:** Updated `docs/cli/SYNC_CLI_Development_State.md` to record the missing human decisions for the CLI escalation task.
-- **Why:** The escalation issue cannot be resolved without decisions; the gap is now documented.
-- **Impact:** No conflict resolution applied; task remains blocked on human input.
-
-### 2025-12-20: Escape escalation marker in principles template
-
-- **What:** Replaced the literal `@ngram:escalation` token in `templates/ngram/PRINCIPLES.md` with an HTML entity to prevent doctor escalation detection in documentation.
-- **Why:** The escalation marker was being interpreted as an unresolved escalation despite being explanatory text.
-- **Impact:** Doctor should no longer flag the principles template for an escalation marker.
-
-### 2025-12-20: Escalation resolution for VIEW_Escalation template deferred
-
-- **What:** Reviewed escalation task targeting `templates/ngram/views/VIEW_Escalation_How_To_Handle_Vague_Tasks_Missing_Information_And_Complex_Non-Obvious_Problems.md`.
-- **Why:** The issue requires explicit human decisions before conflicts can be resolved, and none were provided.
-- **Impact:** No doc changes made for this escalation; awaiting human input.
-
-### 2025-12-20: Escalation resolution for AGENTS.md deferred
-
-- **What:** Reviewed escalation task for `AGENTS.md` and confirmed no human decisions were provided.
-- **Why:** The issue requires explicit decisions before conflicts can be resolved.
-- **Impact:** No doc changes made for this escalation; awaiting human input.
-
-### 2025-12-20: CLI algorithm escalation decision still missing
-
-- **What:** Reviewed the escalation task for `docs/cli/ALGORITHM_CLI_Command_Execution_Logic.md` and documented the missing decision in CLI SYNC.
-- **Why:** No human decision was provided to resolve the escalation marker conflict.
-- **Impact:** No changes to the algorithm doc; awaiting decision to proceed.
-
-### 2025-12-20: Fix repair_core async SyntaxError
-
-- **What:** Wrapped `spawn_repair_agent_async` in a proper try/except, initialized retry counters, recorded Gemini fallback state, and imported `DoctorConfig` in `ngram/repair.py`.
-- **Why:** `ngram --agents codex` failed to import due to a mismatched `except` and missing variables.
-- **Impact:** CLI import path should be restored; agent spawning retry state is now defined.
-
-### 2025-12-20: Fix TUI repair agent config wiring
-
-- **What:** Passed DoctorConfig into the TUI `spawn_repair_agent_async` call.
-- **Why:** TUI repair runs failed with "missing 1 required positional argument: config".
-- **Impact:** TUI repair flow should run without the config argument error.
-- **Follow-up:** Stored and reused DoctorConfig for queued agent spawns to avoid NameError in later steps.
-
-### 2025-12-20: Link Cybernetic Studio source into doc chain
-
-- **What:** Added the raw architecture source file to the Cybernetic Studio PATTERNS chain.
-- **Why:** Make the canonical source visible in the documentation chain.
-- **Impact:** Architecture readers can trace back to `data/ARCHITECTURE — Cybernetic Studio.md`.
-
-### 2025-12-20: Resolved BROKEN_IMPL_LINK and STALE_IMPL issues
-
-- **What:** Corrected all `BROKEN_IMPL_LINK` references in `docs/cli/IMPLEMENTATION_CLI_Code_Architecture.md`, `docs/protocol/IMPLEMENTATION_Protocol_System_Architecture.md`, `docs/protocol/IMPLEMENTATION/IMPLEMENTATION_Protocol_File_Structure.md`, and `docs/tui/IMPLEMENTATION_TUI_Code_Architecture/IMPLEMENTATION_TUI_Code_Architecture_Structure.md`.
-- **Why:** To resolve broken links caused by the `ngram/utils.py` to `ngram/core_utils.py` rename and the documentation renames, and to prevent `STALE_IMPL` warnings.
-- **Impact:** The codebase documentation now accurately reflects the file structure and dependencies, improving agent navigation and project health scores.
-
-### 2025-12-20: Fix ModuleNotFoundError and acknowledge documentation renames
-
-- **What:** Pending detail from prior work (not updated here).
-- **Why:** Pending detail from prior work (not updated here).
-- **Impact:** Pending detail from prior work (not updated here).
 
 ---
 
@@ -152,6 +81,9 @@ Confirm whether you want me to run `ngram --agents codex` now for verification.
 - Completed: Reviewed `docs/cli/ALGORITHM_CLI_Command_Execution_Logic.md` escalation task; no decisions were provided to implement.
 - Remaining: Resolve the CLI algorithm escalation once decisions are supplied and update the CLI SYNC accordingly.
 - Blocker: Human decisions missing for the escalation marker conflict.
+- Completed: Reviewed `docs/protocol/BEHAVIORS_Observable_Protocol_Effects.md` escalation task; no decisions were provided to implement.
+- Remaining: Resolve the protocol behaviors escalation once decisions are supplied and update the protocol SYNC accordingly.
+- Blocker: Human decisions missing for the escalation marker conflict.
 
 ---
 
@@ -190,3 +122,10 @@ Check `modules.yaml` (project root) for full manifest.
 
 **Coverage notes:**
 `modules.yaml` may still be template-only; reconcile in a dedicated task.
+
+
+---
+
+## ARCHIVE
+
+Older content archived to: `SYNC_Project_State_archive_2025-12.md`
