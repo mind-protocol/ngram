@@ -117,9 +117,10 @@ Completed the missing Cybernetic Studio doc chain and linked the external async 
 
 **Decisions made:**
 Kept implementation sections conceptual and avoided duplicating the async plan.
+Confirmed the async plan stays in `blood-ledger` as a cross-repo pointer (no mirror in `ngram` docs).
 
 **Needs your input:**
-Confirm whether the async plan should be mirrored into ngram docs or kept as a cross-repo pointer.
+None for this change set.
 
 ---
 
