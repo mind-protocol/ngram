@@ -12,12 +12,13 @@ UPDATED: 2025-12-19
 ## CHAIN
 
 ```
-PATTERNS:        ./PATTERNS_TUI_Design.md
+PATTERNS:        ./PATTERNS_TUI_Modular_Interface_Design.md
 BEHAVIORS:       ./BEHAVIORS_TUI_Interactions.md
-ALGORITHM:       ./ALGORITHM_TUI_Flow.md
-VALIDATION:      ./VALIDATION_TUI_Invariants.md
-HEALTH:          ./HEALTH_TUI_Coverage.md
-SYNC:            ./SYNC_TUI_State.md
+ALGORITHM:       ./ALGORITHM_TUI_Widget_Interaction_Flow.md
+VALIDATION:      ./VALIDATION_TUI_User_Interface_Invariants.md
+THIS:            IMPLEMENTATION_TUI_Code_Architecture.md
+HEALTH:          ./HEALTH_TUI_Component_Test_Coverage.md
+SYNC:            ./SYNC_TUI_Development_Current_State.md
 ```
 
 ---
@@ -32,6 +33,7 @@ Textual-based TUI with a component layout: `NgramApp` composes widgets, `ngram/t
 
 ```
 ngram/tui/app.py            # Main Textual app
+ngram/tui/app_core.py       # Main Textual app implementation
 ngram/tui/commands.py       # Slash command routing
 ngram/tui/commands_agent.py # Manager subprocess helpers
 ngram/tui/state.py          # Session state
@@ -45,8 +47,8 @@ ngram/tui/styles/theme.tcss # Theme
 
 | Entry Point | File:Line | Triggered By |
 |-------------|-----------|--------------|
-| `main()` | `ngram/tui/app.py:479` | `ngram` (no args) via `ngram/cli.py` |
-| `NgramApp.compose()` | `ngram/tui/app.py:74` | Textual mount |
+| `main()` | `ngram/tui/app.py:12` | `ngram` (no args) via `ngram/cli.py` |
+| `NgramApp.compose()` | `ngram/tui/app_core.py:106` | Textual mount |
 | `InputBar.action_submit()` | `ngram/tui/widgets/input_bar.py:60` | User Enter |
 
 ---

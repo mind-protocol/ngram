@@ -10,6 +10,7 @@ UPDATED_BY: codex (rechecked view escalation repair 19; still awaiting decisions
 ## CURRENT STATE
 
 The CLI is in active use while fixes continue to land in the repair subsystem. A SyntaxError in `ngram/repair_core.py` was blocking `ngram --agents` from importing; the function was repaired and retry state initialized. Verification of the CLI run is still pending. Escaped escalation markers in `docs/cli/SYNC_CLI_Development_State.md` to avoid false positive escalation detection. Escaped escalation markers in `docs/protocol/SYNC_Protocol_Current_State.md` for the same reason; other escalation tasks still await human decisions. Escaped doctor marker references in `docs/protocol/features/doctor/BEHAVIORS_Project_Health_Doctor.md` to prevent false escalation hits. Escaped the escalation marker token in `.ngram/GEMINI.md` to avoid false escalation detection. Escaped the escalation marker token in `.ngram/CLAUDE.md` to avoid false escalation detection. Reviewed the AGENTS escalation task; no human decisions were provided, so no conflict updates were made. Reviewed the VIEW_Escalation_How_To_Handle_Vague_Task escalation repair; no human decisions were provided, so no conflict updates were applied. Ran `ngram validate`; it still reports missing VIEW and doc-chain gaps outside this task scope. Completed the Cybernetic Studio architecture doc chain and mapped it in `modules.yaml`. Verified the INCOMPLETE_IMPL report for `ngram/doctor_files.py` was already resolved; no code changes were needed. Implemented case-insensitive issue lookup defaults in `ngram/repair_core.py` to avoid incomplete-impl false positives.
+Refactored the TUI entry point by extracting `NgramApp` into `ngram/tui/app_core.py`, leaving `ngram/tui/app.py` as a small launcher. Ran `ngram validate`; it reports pre-existing VIEW/doc-chain issues outside this refactor.
 
 ---
 
@@ -177,6 +178,7 @@ Check `modules.yaml` (project root) for full manifest.
 
 ### Remarks
 - Escaped the literal escalation marker in `.ngram/CLAUDE.md` to avoid false-positive doctor hits.
+- Extracted `NgramApp` into `ngram/tui/app_core.py` to shrink `ngram/tui/app.py`; app_core still needs further splitting.
 
 ### Suggestions
 - [ ] Re-scan `.ngram/` reference docs for remaining literal escalation markers to prevent repeated scanner triggers.

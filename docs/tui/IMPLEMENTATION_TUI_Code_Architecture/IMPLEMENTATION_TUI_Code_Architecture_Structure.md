@@ -11,12 +11,12 @@ UPDATED: 2025-12-19
 ## CHAIN
 
 ```
-PATTERNS:                ../PATTERNS_TUI_Design.md
+PATTERNS:                ../PATTERNS_TUI_Modular_Interface_Design.md
 BEHAVIORS:               ../BEHAVIORS_TUI_Interactions.md
-ALGORITHM:               ../ALGORITHM_TUI_Flow.md
-VALIDATION:              ../VALIDATION_TUI_Invariants.md
-HEALTH:                  ../HEALTH_TUI_Coverage.md
-SYNC:                    ../SYNC_TUI_State.md
+ALGORITHM:               ../ALGORITHM_TUI_Widget_Interaction_Flow.md
+VALIDATION:              ../VALIDATION_TUI_User_Interface_Invariants.md
+HEALTH:                  ../HEALTH_TUI_Component_Test_Coverage.md
+SYNC:                    ../SYNC_TUI_Development_Current_State.md
 ```
 
 ---
@@ -26,7 +26,8 @@ SYNC:                    ../SYNC_TUI_State.md
 ```
 ngram/tui/                           # TUI package root
 ngram/tui/__init__.py                # Package exports (11L)
-ngram/tui/app.py                     # Main Textual App (814L)
+ngram/tui/app.py                     # TUI entry point (24L)
+ngram/tui/app_core.py                # Main Textual App (955L)
 ngram/tui/state.py                   # Session state management (198L)
 ngram/tui/commands.py                # Slash command handlers (678L)
 ngram/tui/commands_agent.py          # Manager agent subprocess helpers (388L)
@@ -40,8 +41,6 @@ ngram/tui/widgets/status_bar.py      # Top status bar (190L)
 ngram/tui/widgets/suggestions.py     # Command suggestions bar (46L)
 ngram/tui/styles/theme.tcss          # Paper & Parchment theme CSS (337L)
 ngram/tui/styles/theme_light.tcss    # Light theme CSS (383L)
-ngram/cli.py                         # CLI entry point (TUI launched via `ngram`)
-ngram/repair_core.py                 # Shared repair logic (497L)
 ```
 
 Manager startup prefers .ngram/agents/manager/AGENTS.md when present; otherwise it mirrors .ngram/CLAUDE.md into the manager working directory and writes `AGENTS.md` for Codex/Gemini compatibility.
@@ -51,7 +50,8 @@ CHANGES tab header includes change/commit rates computed from recent git history
 
 | File | Lines | Status | Purpose | Key Functions/Classes |
 |------|-------|--------|---------|----------------------|
-| `ngram/tui/app.py` | 814L | EXISTS | Main Textual application | `NgramApp`, `compose()`, `on_mount()`, `main()` |
+| `ngram/tui/app.py` | 24L | OK | TUI entry point | `main()` |
+| `ngram/tui/app_core.py` | 955L | SPLIT | Main Textual application | `NgramApp`, `compose()`, `on_mount()` |
 | `ngram/tui/widgets/manager_panel.py` | 246L | EXISTS | Manager message display | `ManagerPanel`, `add_message()`, `add_thinking()` |
 | `ngram/tui/widgets/agent_panel.py` | 329L | EXISTS | Single agent output | `AgentPanel`, `append_output()` |
 | `ngram/tui/widgets/agent_container.py` | 361L | EXISTS | Multi-agent layout | `AgentContainer`, `add_agent()` |
@@ -63,9 +63,6 @@ CHANGES tab header includes change/commit rates computed from recent git history
 | `ngram/tui/commands_agent.py` | 388L | OK | Manager agent subprocess handling | `_run_agent_message()`, `_detect_commands()` |
 | `ngram/tui/styles/theme.tcss` | 337L | EXISTS | CSS styling | Paper & Parchment theme |
 | `ngram/tui/styles/theme_light.tcss` | 383L | EXISTS | CSS styling | Light theme variants |
-| `ngram/tui/manager.py` | 308L | EXISTS | Manager supervisor | `ManagerSupervisor`, `ClaudePTY`, `DriftWarning` |
-| `ngram/cli.py` | - | EXISTS | CLI entry point | TUI launched via `ngram` (no subcommand) |
-| `ngram/repair_core.py` | 497L | EXISTS | Shared logic | `spawn_repair_agent_async()` |
 
 ---
 
@@ -143,6 +140,9 @@ AgentHandle:
 
 ```
 ngram/tui/app.py
+    └── imports → ngram/tui/app_core.py
+
+ngram/tui/app_core.py
     └── imports → widget modules
     └── imports → ngram/tui/state.py
     └── imports → ngram/tui/commands.py
@@ -263,7 +263,8 @@ IDLE -> RUNNING -> IDLE (complete/error/timeout)
 
 | File | Line | Reference |
 |------|------|-----------|
-| `ngram/tui/app.py` | 1 | DOCS reference to `docs/tui/PATTERNS_TUI_Design.md` |
+| `ngram/tui/app_core.py` | 1 | DOCS reference to `docs/tui/PATTERNS_TUI_Modular_Interface_Design.md` |
+| `ngram/tui/app.py` | 1 | DOCS reference to `docs/tui/PATTERNS_TUI_Modular_Interface_Design.md` |
 | `ngram/tui/state.py` | 1 | DOCS reference to implementation docs |
 
 ### Docs → Code

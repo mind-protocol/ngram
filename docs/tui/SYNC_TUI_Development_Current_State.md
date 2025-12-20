@@ -11,13 +11,13 @@ STATUS: IMPLEMENTED
 ## CHAIN
 
 ```
-PATTERNS:        ./PATTERNS_TUI_Design.md
+PATTERNS:        ./PATTERNS_TUI_Modular_Interface_Design.md
 BEHAVIORS:       ./BEHAVIORS_TUI_Interactions.md
-ALGORITHM:       ./ALGORITHM_TUI_Flow.md
-VALIDATION:      ./VALIDATION_TUI_Invariants.md
+ALGORITHM:       ./ALGORITHM_TUI_Widget_Interaction_Flow.md
+VALIDATION:      ./VALIDATION_TUI_User_Interface_Invariants.md
 IMPLEMENTATION:  ./IMPLEMENTATION_TUI_Code_Architecture.md
-HEALTH:          ./HEALTH_TUI_Coverage.md
-THIS:            SYNC_TUI_State.md (you are here)
+HEALTH:          ./HEALTH_TUI_Component_Test_Coverage.md
+THIS:            SYNC_TUI_Development_Current_State.md (you are here)
 ```
 
 ---
@@ -26,6 +26,12 @@ THIS:            SYNC_TUI_State.md (you are here)
 
 **Status: FUNCTIONAL** — TUI working with agent integration (Claude, Gemini, or Codex).
 Entry point is `ngram` (no subcommand).
+
+Recent fix:
+- Passed DoctorConfig into `spawn_repair_agent_async` from the TUI repair flow to avoid missing-argument errors.
+- Stored the repair DoctorConfig on the app and reused it when spawning queued agents.
+Refactor:
+- Extracted `NgramApp` into `ngram/tui/app_core.py` to shrink `ngram/tui/app.py` (app.py 969L → 24L; app_core.py 955L).
 
 Recent stability work:
 - Conversation history guards (non-positive limits, copy-on-read)
@@ -65,7 +71,7 @@ Doc maintenance:
 - Manager /repair issue lists render as a single block to avoid extra blank lines between items.
 
 Archived detail:
-- Historical feature list, handoffs, and observations moved to `docs/tui/archive/SYNC_archive_2024-12.md`
+Older content archived to: `archive/SYNC_TUI_State_Archive_2025-12.md`
 
 ---
 
@@ -88,6 +94,7 @@ Archived detail:
 
 - Tab layout for >3 agents not fully implemented
 - Agent queue processing (issues beyond first 3) not implemented
+- `ngram/tui/app_core.py` still exceeds the monolith threshold and needs further extraction (suggested: `_start_manager_with_overview`, `on_mount`).
 
 ---
 
@@ -100,9 +107,11 @@ Archived detail:
 - Re-verified `ngram/tui/widgets/status_bar.py` for the current INCOMPLETE_IMPL repair; implementations already present, so no code changes required.
 - Verified `ngram/tui/commands.py` already implements `on_output` and `handle_doctor`; INCOMPLETE_IMPL report was stale.
 - Manager /repair issue lists now render without extra blank lines between items.
+- Extracted `NgramApp` into `ngram/tui/app_core.py` and left `ngram/tui/app.py` as the entry point.
 
 ### Suggestions
 - [ ] Keep doctor-ignore and SYNC notes updated together to avoid drift.
+- [ ] Continue splitting `ngram/tui/app_core.py` (target `_start_manager_with_overview`, `on_mount`).
 
 ### Propositions
 - None

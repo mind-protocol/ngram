@@ -85,8 +85,11 @@ modules:
     docs: "docs/tui/"
     maturity: DESIGNING
     owner: agent
+    internal:
+      - "tui/app_core.py"
     notes: |
       The Textual User Interface for interacting with ngram.
+      `ngram/tui/app_core.py` remains above the monolith threshold; further extraction needed.
 
   tui_widgets:
     code: "ngram/tui/widgets/"
