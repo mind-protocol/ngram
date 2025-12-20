@@ -174,7 +174,7 @@ Agents must not guess when requirements are vague or designs are ambiguous. Sile
 
 **Use markers to bridge the gap.**
 
-- **Escalations** (`@ngram:escalation`): Use when progress is blocked by a missing decision. Provide context, options, and recommendations.
+- **Escalations** (`@ngram&#58;escalation`): Use when progress is blocked by a missing decision. Provide context, options, and recommendations.
 - **Propositions** (`@ngram:proposition`): Use to suggest improvements, refactors, or new features. Explain why the idea matters and its implications.
 
 **Keep humans in the loop.**
@@ -604,9 +604,9 @@ ngram overview          # Generate repo map with file tree, links, definitions
 - Section headers from markdown, function definitions from code
 - Local imports (stdlib/npm filtered out)
 - Module dependencies from modules.yaml
-- Output: `map.{md|yaml|json}`
+- Output: `map.{md|yaml|json}` in root, plus folder-specific maps (e.g., `map_src.md`)
 
-Options: `--dir PATH`, `--format {md,yaml,json}`
+Options: `--dir PATH`, `--format {md,yaml,json}`, `--folder NAME`
 
 
 ---

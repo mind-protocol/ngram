@@ -9,7 +9,7 @@ UPDATED_BY: codex (doctor behaviors escalation)
 
 ## CURRENT STATE
 
-The CLI is in active use while fixes continue to land in the repair subsystem. A SyntaxError in `ngram/repair_core.py` was blocking `ngram --agents` from importing; the function was repaired and retry state initialized. Verification of the CLI run is still pending. Escaped escalation markers in `docs/cli/SYNC_CLI_Development_State.md` to avoid false positive escalation detection. Escaped escalation markers in `docs/protocol/SYNC_Protocol_Current_State.md` for the same reason; other escalation tasks still await human decisions. Escaped doctor marker references in `docs/protocol/features/doctor/BEHAVIORS_Project_Health_Doctor.md` to prevent false escalation hits.
+The CLI is in active use while fixes continue to land in the repair subsystem. A SyntaxError in `ngram/repair_core.py` was blocking `ngram --agents` from importing; the function was repaired and retry state initialized. Verification of the CLI run is still pending. Escaped escalation markers in `docs/cli/SYNC_CLI_Development_State.md` to avoid false positive escalation detection. Escaped escalation markers in `docs/protocol/SYNC_Protocol_Current_State.md` for the same reason; other escalation tasks still await human decisions. Escaped doctor marker references in `docs/protocol/features/doctor/BEHAVIORS_Project_Health_Doctor.md` to prevent false escalation hits. Escaped the escalation marker token in `.ngram/GEMINI.md` to avoid false escalation detection.
 
 ---
 
