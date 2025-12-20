@@ -1,4 +1,4 @@
-# DOCS: docs/tui/PATTERNS_TUI_Design.md
+# DOCS: docs/tui/PATTERNS_TUI_Modular_Interface_Design.md
 """
 Manager supervisor logic for the TUI.
 
