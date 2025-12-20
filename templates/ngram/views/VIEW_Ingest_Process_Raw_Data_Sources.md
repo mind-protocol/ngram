@@ -45,6 +45,18 @@ You need to know what exists so you don't duplicate or contradict.
 
 ## THE WORK
 
+### Phase 0: Source Determination (Human-led)
+
+Before ingestion begins, the human must determine which raw data sources are relevant to the project and place them in `data/`.
+
+**The human identifies:**
+- Which chat logs contain the most important decisions.
+- Which research papers or articles define the domain constraints.
+- Which existing specifications or legacy documentation should be integrated.
+- Which URLs or external data sources are authoritative.
+
+**Action:** The human populates the `data/` directory with these selected items.
+
 ### Phase 1: Survey
 
 Scan `data/` and create an inventory:
