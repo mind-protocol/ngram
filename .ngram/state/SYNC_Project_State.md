@@ -102,6 +102,12 @@ Confirm whether you want me to run `ngram --agents codex` now for verification.
 - Completed: Reviewed `.ngram/CLAUDE.md` escalation task; no decisions were provided to implement.
 - Remaining: Resolve the `.ngram/CLAUDE.md` escalation once decisions are supplied and update any CONFLICTS section accordingly.
 - Blocker: Human decisions missing for the escalation marker conflict.
+- Completed: Reviewed `.ngram/repairs/2025-12-20_04-01-48/02-ESCALATION-views-VIEW_Escalation_How_To_Handle_Vague_Task/CLAUDE.md`; no conflicts or decisions were present to apply.
+- Remaining: Provide decisions for the escalation marker if one is expected for the VIEW escalation doc.
+- Blocker: Human decisions missing for the escalation marker conflict.
+- Completed: Reviewed `templates/ngram/views/VIEW_Escalation_How_To_Handle_Vague_Tasks_Missing_Information_And_Complex_Non-Obvious_Problems.md` escalation task; no decisions were provided to implement.
+- Remaining: Resolve the escalation marker once decisions are supplied and update any CONFLICTS section accordingly.
+- Blocker: Human decisions missing for the escalation marker conflict.
 
 ---
 
