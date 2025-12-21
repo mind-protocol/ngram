@@ -28,12 +28,26 @@ Narrator documentation is current after template alignment, and the module remai
 
 ## RECENT CHANGES
 
+### 2025-12-28: Clarify narrator validation guarantees
+
+- **What:** Added BEHAVIORS GUARANTEED, OBJECTIVES COVERED, PROPERTIES, ERROR CONDITIONS, and HEALTH COVERAGE sections to `docs/agents/narrator/VALIDATION_Narrator.md` while tracking the work in this SYNC doc.
+- **Why:** Address the DOC_TEMPLATE_DRIFT warning for the validation template and give future agents explicit contracts to verify before trusting the narrator output.
+- **Files:** `docs/agents/narrator/VALIDATION_Narrator.md`, `docs/agents/narrator/SYNC_Narrator.md`
+- **Verification:** `ngram validate`
+
 ### 2025-12-27: Expand Narrator sync coverage
 
 - **What:** Added IN PROGRESS, KNOWN ISSUES, HANDOFF: FOR HUMAN, and CONSCIOUSNESS TRACE narratives to the sync doc so every template section stays over the 50-character minimum and the doctor no longer flags missing content.
 - **Why:** DOC_TEMPLATE_DRIFT reported that the sync file lacked those sections and that a couple of blocks were terse, so the module needed richer prose to keep the canonical sync aligned with the template guardrails.
 - **Files:** `docs/agents/narrator/SYNC_Narrator.md`, `.ngram/state/SYNC_Project_State.md`
 - **Verification:** `ngram validate`
+
+### 2025-12-27: Add narrator validation behaviors + objectives
+
+- **What:** Documented the required BEHAVIORS GUARANTEED and OBJECTIVES COVERED sections inside `VALIDATION_Narrator.md`, clarified each invariant's rationale, and kept the page above the template's narrative minimum.
+- **Why:** The DOC_TEMPLATE_DRIFT warning flagged missing behaviors/objectives in the narrator validation doc, so explicitly naming them keeps the contract explicit and provides traceable guarantees for downstream verifiers.
+- **Files:** `docs/agents/narrator/VALIDATION_Narrator.md`, `docs/agents/narrator/SYNC_Narrator.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate` *(still sees unrelated connectome/membrane/CHAIN issues you are already tracking).*
 
 ### 2025-12-27: Complete narrator algorithm template
 

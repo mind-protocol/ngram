@@ -99,6 +99,13 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 
 ## RECENT CHANGES
 
+### 2025-12-28: Expand narrator validation template
+
+- **What:** Added BEHAVIORS GUARANTEED, OBJECTIVES COVERED, PROPERTIES, ERROR CONDITIONS, and HEALTH COVERAGE sections to `docs/agents/narrator/VALIDATION_Narrator.md` and noted the work in `docs/agents/narrator/SYNC_Narrator.md`.
+- **Why:** Resolve the DOC_TEMPLATE_DRIFT warning for the validation file and leave a clear contract for future agents about narrator invariants.
+- **Files:** `docs/agents/narrator/VALIDATION_Narrator.md`, `docs/agents/narrator/SYNC_Narrator.md`
+- **Verification:** `ngram validate`
+
 ### 2025-12-26: Documented narrator implementation runtime behavior
 
 - **What:** Added the missing RUNTIME BEHAVIOR, BIDIRECTIONAL LINKS, and GAPS sections to `docs/agents/narrator/IMPLEMENTATION_Narrator.md`.
