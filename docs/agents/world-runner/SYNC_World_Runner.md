@@ -39,6 +39,13 @@ The World Runner is complete. It operates as an adapter between the Python game 
 - **Why:** The DOC_TEMPLATE_DRIFT warning still flagged this algorithm doc because the original rows were too terse; expanding them satisfies the length requirement while keeping the runner goals explicit.
 - **Impact:** The canonical algorithm now explicitly ties interrupt/completion guarantees to runner behavior, so downstream agents understand the contract each invocation fulfills before touching execution logic.
 
+### 2025-12-31: Complete health template coverage
+
+- **What:** Rebuilt `HEALTH_World_Runner.md` so every template section (purpose, why, objective table, flows, indicators, docks, checkers, indicator narratives, known gaps, and ideas) is present with 50+ character narratives.
+- **Why:** DOC_TEMPLATE_DRIFT flagged the health doc as missing key sections, so this rewrite ensures the World Runner health coverage now matches the template without changing runtime checks.
+- **Files:** `docs/agents/world-runner/HEALTH_World_Runner.md`, `docs/agents/world-runner/SYNC_World_Runner.md`
+- **Verification:** `ngram validate`
+
 ### 2025-12-20: Ngram Framework Refactor
 
 - **What:** Refactored `IMPLEMENTATION_World_Runner_Service_Architecture.md` and updated `TEST_World_Runner_Coverage.md` to the Health format.

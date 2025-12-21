@@ -25,6 +25,8 @@ news. The loop is intentionally short-lived and stateless across calls.
 | Complete long-duration actions cleanly when no player-facing flip occurs by summarizing elapsed time, background world changes, and queued news items for narration. | Run to completion after every tick, convert non-player flips to `WorldChange` records, append `NewsItem`s, and return a completed Injection so the narrator can emit a tidy summary of off-screen evolution. | Prevents runaway loops and gives downstream prose a consistent, aggregated view of every quiet mutation that still matters for world continuity. |
 | Preserve statelessness between invocations while treating the graph as the single source of truth so retries and resumes stay deterministic. | Accept action context, max minutes, and player metadata, re-query the graph each call, and emit fresh `Injection` objects without hidden runner memory, even when orchestrations re-enter the adapter multiple times. | Makes the Runner composable for resumable actions, parallel orchestrations, and deterministic debugging across environments that may re-invoke the adapter several times. |
 
+Each objective feeds directly into the sections below: deterministic cadence becomes the five-minute tick flow, alarm interrupts run through `affects_player`, and every run relies on the graph as the only persisted state so retries stay predictable.
+
 ---
 
 ## DATA STRUCTURES
@@ -92,6 +94,11 @@ def run_world(action, max_minutes, player_context):
     )
 ```
 
+### Implementation notes
+
+- `world_changes` collects every background flip even after an interrupt so the Narrator still learns about the mutations that resolved while the player was handling the event.
+- `news_available` is appended to on each tick so queued beats never vanish, and the `remaining` field marks how much budget is left for the next resumed call.
+
 ---
 
 ## ALGORITHM: affects_player
@@ -117,6 +124,11 @@ def affects_player(flip, player_context, current_tick):
 ```
 
 The function uses location, companions, and urgency checks to avoid unnecessary interrupts while still surfacing alarms that threaten the player directly.
+
+### Strategy
+
+- Favor explicit location and companion overlaps before treating urgency as a fallback so the Runner only interrupts when concrete context exists.
+- Always re-evaluate the player location at the tick boundary so resumed calls remain deterministic even if the player moved during narration.
 
 ---
 

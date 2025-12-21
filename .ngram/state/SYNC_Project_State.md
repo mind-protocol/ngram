@@ -99,6 +99,13 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 
 ## RECENT CHANGES
 
+### 2025-12-31: Expand narrator validation coverage
+
+- **What:** Added PROPERTIES, ERROR CONDITIONS, and HEALTH COVERAGE to `docs/agents/narrator/VALIDATION_Narrator.md` and removed the redundant PROPERTIES/E/HEALTH block near the invariants so the template keeps a single canonical summary.
+- **Why:** DOC_TEMPLATE_DRIFT flagged both the missing sections and the redundant copy, so this entry keeps the narrator validation contract traceable and consistent for future agents.
+- **Files:** `docs/agents/narrator/VALIDATION_Narrator.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate` *(still reporting connectome/health, membrane naming, and CHAIN link warnings outside this scope).*
+
 ### 2025-12-21: Document world-runner implementation template sections
 
 - **What:** Added explicit `LOGIC CHAINS`, `RUNTIME BEHAVIOR`, `CONFIGURATION`, `BIDIRECTIONAL LINKS`, and `GAPS / IDEAS / QUESTIONS` sections to the world-runner implementation document so the DOC_TEMPLATE_DRIFT warning for this path is satisfied.
@@ -126,13 +133,6 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 - **Why:** DOC_TEMPLATE_DRIFT warned that `docs/agents/world-runner/ALGORITHM_World_Runner.md` lacked the required objectives table and function narratives; enriching the doc keeps the chain authoritative while leaving runtime code untouched.
 - **Files:** `docs/agents/world-runner/ALGORITHM_World_Runner.md`, `docs/agents/world-runner/SYNC_World_Runner.md`, `.ngram/state/SYNC_Project_State.md`
 - **Verification:** `ngram validate` *(fails: the pre-existing connectome/health gaps, membrane naming mismatch, and CHAIN warnings already tracked by the doctor)*.
-
-### 2025-12-21: Fill World Runner implementation template sections
-
-- **What:** Added LOGIC CHAINS, RUNTIME BEHAVIOR, CONFIGURATION, BIDIRECTIONAL LINKS, and GAPS / IDEAS / QUESTIONS sections to `docs/agents/world-runner/IMPLEMENTATION_World_Runner_Service_Architecture.md` and recorded the narrative in the world-runner SYNC so the implementation doc now satisfies the template length requirements.
-- **Why:** DOC_TEMPLATE_DRIFT reported those blocks were missing, so enriching the prose keeps the documentation chain canonical while leaving runtime behavior untouched.
-- **Files:** `docs/agents/world-runner/IMPLEMENTATION_World_Runner_Service_Architecture.md`, `docs/agents/world-runner/SYNC_World_Runner.md`, `.ngram/state/SYNC_Project_State.md`
-- **Verification:** `ngram validate` *(fails: the known docs/connectome/health module still lacks PATTERNS/SYNC/docs and multiple CHAIN links remain broken in unrelated areas)*.
 
 ### 2025-12-27: Documented narrator archive metadata
 
