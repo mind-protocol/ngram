@@ -99,12 +99,26 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 
 ## RECENT CHANGES
 
+### 2026-05-01: Document runtime engine validation guarantees (#11)
+
+* **What:** Filled the missing BEHAVIORS GUARANTEED and OBJECTIVES COVERED sections in `docs/connectome/runtime_engine/VALIDATION_Connectome_Runtime_Engine_Invariants_For_Stepper_And_Realtime.md` and recorded the fix inside the runtime engine SYNC so the template now meets DOC_TEMPLATE_DRIFT length and mapping requirements.
+* **Why:** DOC_TEMPLATE_DRIFT #11 flagged the empty behavior and objective blocks, and the new narratives now make it clear which runtime engine controls are guaranteed and why each invariant exists before downstream agents rely on the doc chain.
+* **Files:** `docs/connectome/runtime_engine/VALIDATION_Connectome_Runtime_Engine_Invariants_For_Stepper_And_Realtime.md`, `docs/connectome/runtime_engine/SYNC_Connectome_Runtime_Engine_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
+* **Validation:** `ngram validate` *(fails: pre-existing `docs/connectome/health` chain gaps, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` naming mismatch, and longstanding CHAIN-link warnings remain; no new issues introduced).*
+
 ### 2026-04-18: Expand runtime_engine health documentation (#11)
 
 * **What:** Added the OBJECTIVES COVERAGE table and indicator entries for speed, duration, and autoplay checks so every health signal now describes its validation target, docks, throttling, and forwarding details.
 * **Why:** DOC_TEMPLATE_DRIFT #11 called out the missing objective coverage and indicator narratives for runtime_engine health, and this change completes the template so downstream agents know what each probe guards.
 * **Files:** `docs/connectome/runtime_engine/HEALTH_Connectome_Runtime_Engine_Runtime_Verification_Of_Pacing_And_Order.md`, `docs/connectome/runtime_engine/SYNC_Connectome_Runtime_Engine_Sync_Current_State.md`
 * **Validation:** `ngram validate` *(fails: known connectome/health module chain gaps, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` naming, and longstanding CHAIN link warnings remain; no new failures introduced).*
+
+### 2026-04-18: Add runtime engine behavior objectives (Closes #11)
+
+* **What:** Filled the missing `OBJECTIVES SERVED` section in `docs/connectome/runtime_engine/BEHAVIORS_Connectome_Runtime_Engine_User_Controlled_Traversal_Effects.md` so each behavior now maps to explicit goals with ≥50-character prose that explains the manual stepper and realtime constraints.
+* **Why:** DOC_TEMPLATE_DRIFT #11 flagged the absent objectives section; documenting the goal table keeps downstream agents aligned on how traversal control protects deterministic playback and autplay boundaries.
+* **Files:** `docs/connectome/runtime_engine/BEHAVIORS_Connectome_Runtime_Engine_User_Controlled_Traversal_Effects.md`, `docs/connectome/runtime_engine/SYNC_Connectome_Runtime_Engine_Sync_Current_State.md`
+* **Validation:** `ngram validate` *(still reports the pre-existing `docs/connectome/health` chain gaps and membrane naming issues).*
 
 ### 2026-04-17: Solidify flow canvas sync sections (#11)
 

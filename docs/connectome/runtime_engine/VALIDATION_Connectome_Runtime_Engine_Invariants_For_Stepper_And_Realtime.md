@@ -9,6 +9,22 @@ VERIFIED: 2025-12-20 against ?
 
 ---
 
+## BEHAVIORS GUARANTEED
+
+| Behavior ID | Behavior | Why This Validation Matters |
+|-------------|----------|-----------------------------|
+| B1 | Next in stepper mode increments the ledger cursor by exactly one FlowEvent release so replay gating stays deterministic even when UI jitter occurs. | Validating this prevents double releases or skipped steps that would degrade audit trails and confuse operators about which step actually ran. |
+| B2 | Adjusting the speed slider only changes animation duration defaults and never mutates ledger length, cursor, or event release cadence. | Checking this behavior keeps the authorization boundary clean so speed tweaks cannot accidentally retrigger events or desync the ledger. |
+| B3 | Every release honors the 200ms minimum animation duration clamp so realtime playback never emits bursts shorter than the pacing guarantees. | This validation ensures pacing stays visible and telemetry-aligned, preventing autoplayer bursts that would break sync with downstream probes. |
+
+## OBJECTIVES COVERED
+
+| Objective | Validations | Rationale |
+|-----------|-------------|-----------|
+| Keep the Next button bound to a single deterministic release per press so ledger order and cursor progression remain predictable. | V1, P1 | When this objective holds, auditors and operators can reproduce a script step-by-step without unexpected extra events, matching the deterministic behavior described in the stepper patterns. |
+| Ensure speed controls remain pure duration knobs without modifying authorization or event release logic. | V2 | Validating V2 proves the speed slider cannot sneak in additional FlowEvents, which preserves separation between pacing adjustments and playback control that downstream modules rely on. |
+| Enforce the 200ms minimum duration limit so realtime pacing stays human-legible and avoids invisible bursts that would violate telemetry assumptions. | V3 | The clamp keeps each event durable enough for UI and telemetry consumers to detect, so verifying V3 guarantees autoplayer pacing guardrails are still operational. |
+
 ## CHAIN
 
 ```
@@ -20,6 +36,24 @@ IMPLEMENTATION:  ./IMPLEMENTATION_Connectome_Runtime_Engine_Code_Structure_And_C
 HEALTH:          ./HEALTH_Connectome_Runtime_Engine_Runtime_Verification_Of_Pacing_And_Order.md
 SYNC:            ./SYNC_Connectome_Runtime_Engine_Sync_Current_State.md
 ```
+
+---
+
+## BEHAVIORS GUARANTEED
+
+| Behavior ID | Behavior | Why This Validation Matters |
+|-------------|----------|-----------------------------|
+| B1 | Stepper Next clicks gate the runtime so a single FlowEvent release occurs, then the gate stays closed until the user explicitly advances again. | Guarantees researchers can trace every ledger entry back to an intentional click, preserving determinism and preventing ghost steps from polluting playback logs. |
+| B2 | Speed selection only adjusts animation duration and presentation pacing, never the count or timing of released events when the runtime is in stepper mode. | Ensures temporal fidelity stays separate from authorization decisions, keeping approvals narrowly scoped to Next commands while still letting the UI feel responsive. |
+| B3 | Minimum duration clamping forces each acknowledged release into a visible 200ms+ animation window even when upstream telemetry reports near-zero delays. | Keeps the runtime feeling “real” for observers, so rapid telemetry cannot collapse animations into imperceptible flashes that undermine trust in scenario playback. |
+
+## OBJECTIVES COVERED
+
+| Objective | Validations | Rationale |
+|-----------|-------------|-----------|
+| Keep each Next-driven step deterministic by tying ledger updates to a single click and preserving the replay sequence before the loop continues. | V1, V2, P1 | Prevents analysts from chasing multiple concurrent releases and makes regression tests reliable by ensuring the same script always yields the same FlowEvent ordering. |
+| Block autoplay leaks and unauthorized releases so stepper mode never advances without explicit user consent even when speed controls are touched. | V2, E1, E2 | Forces the runtime to catch all boundary violations, so downstream dashboards and health probes can sound the alarm before autoplay undermines debug storytelling. |
+| Keep perceived playback durations trustworthy by enforcing the minimum animation window regardless of how fast inputs or telemetry arrive. | V3 | Maintains human-scale timing, giving observers a stable pacing window for annotations and explanations even when the engine could render infinitely fast otherwise. |
 
 ---
 

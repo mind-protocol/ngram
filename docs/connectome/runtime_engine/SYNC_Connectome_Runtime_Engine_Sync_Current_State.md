@@ -2,7 +2,7 @@
 
 # runtime_engine — Sync: Current State
 
-LAST_UPDATED: 2025-12-20
+LAST_UPDATED: 2026-04-18
 UPDATED_BY: codex
 STATUS: DESIGNING
 ```
@@ -37,6 +37,15 @@ Stepper runtime engine is implemented with a fixed step script. Next dispatches 
 
 ## RECENT CHANGES
 
+### 2026-05-01: Fill runtime engine validation template (#11)
+
+* **What:** Added the BEHAVIORS GUARANTEED table plus the OBJECTIVES COVERED narrative to the runtime engine validation doc so every template block now exceeds fifty characters and ties the invariants back to user-facing guarantees.
+* **Why:** DOC_TEMPLATE_DRIFT #11 flagged those missing sections, and the new prose makes it explicit which behaviors the invariants defend and why the validation is necessary before downstream agents rely on the runtime engine gating story.
+* **Files:**
+  * `docs/connectome/runtime_engine/VALIDATION_Connectome_Runtime_Engine_Invariants_For_Stepper_And_Realtime.md`
+  * `docs/connectome/runtime_engine/SYNC_Connectome_Runtime_Engine_Sync_Current_State.md`
+* **Validation:** `ngram validate` *(fails: known `docs/connectome/health` module chain gaps, the `docs/engine/membrane/PATTERN_Membrane_Modulation.md` naming convention issue, and existing CHAIN-link warnings remain; no new regressions introduced).*
+
 ### 2025-12-20: Implemented stepper runtime engine
 
 * **What:** Added runtime command dispatch, step release logic, and initialization that sets script total.
@@ -46,6 +55,15 @@ Stepper runtime engine is implemented with a fixed step script. Next dispatches 
   * `app/connectome/lib/minimum_duration_clamp_and_speed_based_default_policy.ts`
   * `app/connectome/lib/step_script_cursor_and_replay_determinism_helpers.ts`
   * `app/connectome/lib/connectome_step_script_sample_sequence.ts`
+
+---
+
+### 2026-04-22: Expand runtime engine behavior template prose (#11)
+
+* **What:** Added the missing `Side Effects` section plus elaborated the `OBJECTIVES SERVED` table, `EDGE CASES`, and `ANTI-BEHAVIORS` narratives so every behavior template block now explains why the manual stepper and realtime traversal guards matter while keeping each passage longer than fifty characters.
+* **Why:** DOC_TEMPLATE_DRIFT #11 flagged the objectives section and other short passages; the new explanations make the behavior contract traceable across inputs, outputs, edge cases, and anti-behavior guards.
+* **Files:** `docs/connectome/runtime_engine/BEHAVIORS_Connectome_Runtime_Engine_User_Controlled_Traversal_Effects.md`, `.ngram/state/SYNC_Project_State.md`
+* **Validation:** `ngram validate` *(fails because `docs/connectome/health` still lacks PATTERNS+BEHAVIORS+ALGORITHM+VALIDATION+HEALTH/SYNC coverage and `docs/engine/membrane/PATTERN_Membrane_Modulation.md` needs the plural naming plus long-standing CHAIN link warnings remain; no new regressions were introduced).*
 
 ---
 
@@ -64,6 +82,25 @@ Stepper runtime engine is implemented with a fixed step script. Next dispatches 
   * `docs/connectome/runtime_engine/HEALTH_Connectome_Runtime_Engine_Runtime_Verification_Of_Pacing_And_Order.md`
   * `docs/connectome/runtime_engine/SYNC_Connectome_Runtime_Engine_Sync_Current_State.md`
 * **Verification:** `ngram validate`
+
+### 2026-04-18: Add runtime engine behavior objectives (Closes #11)
+
+* **What:** Filled the missing `OBJECTIVES SERVED` table in the runtime engine behaviors doc so each behavior now maps to explicit goals with ≥50-character prose that explains why the stepper and realtime domains exist.
+* **Why:** DOC_TEMPLATE_DRIFT #11 flagged the absence of this section; documenting the objectives keeps downstream agents aligned with how traversal control protects deterministic playback and autplay boundaries.
+* **Files:** `docs/connectome/runtime_engine/BEHAVIORS_Connectome_Runtime_Engine_User_Controlled_Traversal_Effects.md`, `docs/connectome/runtime_engine/SYNC_Connectome_Runtime_Engine_Sync_Current_State.md`
+* **Validation:** `ngram validate` (still reports pre-existing `docs/connectome/health` chain gaps and membrane naming issues)
+
+---
+
+### 2026-04-20: Document runtime implementation logic chains (#11)
+
+* **What:** Added LOGIC CHAINS and MODULE DEPENDENCIES sections to the implementation doc so every required structure block lists the runtime flows and external modules with at least fifty-character descriptions.
+* **Why:** DOC_TEMPLATE_DRIFT #11 flagged the implementation template for missing logic chains and dependency guidance; filling those sections keeps the canonical doc chain complete before future agents touch runtime wiring.
+* **Files:**
+  * `docs/connectome/runtime_engine/IMPLEMENTATION_Connectome_Runtime_Engine_Code_Structure_And_Control_Surface.md`
+  * `docs/connectome/runtime_engine/SYNC_Connectome_Runtime_Engine_Sync_Current_State.md`
+  * `.ngram/state/SYNC_Project_State.md`
+* **Validation:** `ngram validate`
 
 ---
 
