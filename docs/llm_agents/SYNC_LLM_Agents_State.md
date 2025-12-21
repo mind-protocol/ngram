@@ -53,7 +53,7 @@ documentation-only updates, and adapter behavior is unchanged.
 
 ## RECENT CHANGES
 
-### 2025-12-25: Filled Gemini algorithm template length requirements
+- ### 2025-12-25: Filled Gemini algorithm template length requirements
 
 - **What:** Added the missing `OBJECTIVES AND BEHAVIORS` section and renamed the algorithm narrative to call out `main()` so every template requirement exceeds 50 characters.
 - **Why:** Close the DOC_TEMPLATE_DRIFT warning pointing at `ALGORITHM_Gemini_Stream_Flow.md` by making objectives explicit and highlighting the primary entrypoint responsible for running the Gemini subprocess.

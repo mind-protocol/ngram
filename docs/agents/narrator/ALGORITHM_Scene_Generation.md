@@ -25,161 +25,226 @@ IMPL:            agents/narrator/CLAUDE.md
 
 ---
 
-## Purpose
+## PURPOSE
 
-Define the minimal, reliable generation flow: how the narrator classifies actions, streams dialogue, queries the graph, invents when needed, and emits the correct output shape.
-
----
-
-## Overview
-
-This algorithm coordinates scene narration with graph-backed truth, keeping a persistent thread while deciding when to synthesize new facts. It emphasizes stream-first delivery, explicit mode classification, and pairing any invented details with mutations so canon stays consistent.
+Define the minimal, reliable generation flow that keeps narration responsive, graph-canonical, and ready to output the shaped payload that downstream tools expect. This write-up clarifies how the narrator classifies actions, streams dialogue, queries the graph for truth, invents when needed, and closes the loop with the schema-aligned response envelope.
 
 ---
 
-## High-Level Flow
+## OVERVIEW
 
-1. Gather scene context and any world injection.
-2. Build prompt from context + instructions.
-3. Call agent with persistent thread (`--continue`).
-4. Stream dialogue immediately.
-5. Query graph mid-stream for facts.
-6. Invent if the graph is sparse and persist as mutations.
-7. Return output in the required schema.
+This algorithm coordinates scene narration with graph-backed truth, balancing stream-first delivery with the need to record invented details. It keeps a persistent thread going so every chunk of dialogue inherits a shared memory while still deciding when to synthesize new facts and mutate the graph so the next round can consume them.
+
+By explicitly tagging the action as either conversational or significant, the narrator avoids overloading lightweight exchanges with expensive SceneTree payloads and only builds the full tree when pacing demands it. Graph queries and invention steps happen in parallel with streaming so latency stays low while the structured output eventually arrives complete.
 
 ---
 
-## Inputs and Outputs
+## OBJECTIVES AND BEHAVIORS
 
-Inputs include the current playthrough context, graph snapshots, and action metadata defined in `INPUT_REFERENCE.md`. Output must conform to the narrator tool schema in `TOOL_REFERENCE.md`, including mode-specific fields like `scene` and optional `time_elapsed`.
-
----
-
-## Two Modes
-
-### Conversational (<5 minutes)
-
-- Stream dialogue chunks.
-- Return `scene: {}` and omit `time_elapsed`.
-- No world tick.
-
-### Significant (>=5 minutes)
-
-- Stream transition dialogue.
-- Return full `SceneTree` and include `time_elapsed`.
-- Triggers world tick and possible world injection next call.
+| Objective | Behaviors Supported | Why This Algorithm Matters |
+|-----------|---------------------|----------------------------|
+| Stream-first narration | `BEH-STREAM-FIRST` | Guarantees the first dialogue chunk reaches the player before heavier graph work, keeping interactions snappy. |
+| Canonical mutation persistence | `BEH-MUTATION-PERSISTENCE` | Ensures every invented detail is recorded so future queries and scenes stay consistent with the narrator’s claims. |
+| Mode-aware payload gating | `BEH-SCENE-TREE` | Adds SceneTrees and `time_elapsed` only during significant actions, preventing unnecessary payload bloat during conversational turns. |
 
 ---
 
-## Data Structures
+## DATA STRUCTURES
 
-- `NarratorOutput`: response envelope containing streamed dialogue and optional `scene` tree payload.
-- `SceneTree`: structured scene graph used when significant actions warrant a full refresh.
-- `ActionClassification`: derived mode label (conversational vs significant) used to branch behavior.
-- `MutationBatch`: list of mutations that persist invented facts back into the graph.
+### NarratorOutput
 
----
+```
+Envelope for the narrator response.
+Fields: dialogue_chunks (ordered list of streamed text), mutation_batch (facts to persist), scene (optional SceneTree or {}), metadata (mode tag, thread id, time_elapsed if significant).
+```
 
-## Core Steps (Algorithm)
+### SceneTree
 
-The core steps intentionally keep narration responsive first, then reconcile with graph truth before returning the structured payload.
+```
+Structured snapshot of the current scene.
+Fields: nodes (characters, locations), edges (relationships or actions), clickables (pre-filled responses), pacing_tags (significant vs conversational cues).
+```
 
-```text
-classify_action(action)
-stream_dialogue_first()
-query_graph_if_needed()
-invent_missing_facts()
-persist_mutations()
-if significant:
-  build_scene_tree()
-  include time_elapsed
-else:
-  scene = {}
-return NarratorOutput
+### ActionClassification
+
+```
+Derived label that picks conversational or significant mode.
+Fields: estimated_duration (seconds), injective_flags (world injection urgency), graph_density (fact density score).
+```
+
+### MutationBatch
+
+```
+Collection of canonical facts created during narration.
+Fields: mutations (list of nodes/edges/attributes), origin_thread (thread id), audit_tags (reason for invention, source action).
 ```
 
 ---
 
-## Algorithm: generate_scene_output
+## ALGORITHM: generate_scene_output
 
-1. Normalize inputs (action, context, graph slice, prior thread state).
-2. Classify action into conversational or significant mode.
-3. Emit first dialogue chunk immediately to satisfy stream-first latency.
-4. Query graph for facts or resolve clickables as needed.
-5. Invent only when graph lacks required facts; collect mutations.
-6. Persist mutations to canon storage before final response.
-7. If significant, build `SceneTree` and include `time_elapsed`.
-8. Return `NarratorOutput` with dialogue stream metadata and payload.
+### Step 1: Normalize and classify context
 
----
+Gather the incoming action, relevant graph slice, thread metadata, and any world injection overrides, then normalize timestamps, resolve click contexts, and push everything through `classify_action`. The resulting `ActionClassification` determines thresholds, pacing tags, and whether the stream will be conversational or significant.
 
-## Rolling Window (Summary)
+### Step 2: Stream while reconciling truth
 
-The narrator pre-generates one layer of clickable responses and generates the next layer in the background as the player clicks. For full details, see `HANDOFF_Rolling_Window_Architecture.md`.
+Emit the first dialogue chunk immediately with `stream_dialogue_first` to honor the stream-first rule, then run `query_graph_if_needed` and `invent_missing_facts` concurrently. Graph queries are scoped to clickables and context nodes; invention only runs when the graph lacks explicit answers and attaches audit metadata for later inspection.
 
----
+```
+if action_classification.estimated_duration >= SIGNIFICANT_THRESHOLD:
+    mode = "significant"
+else:
+    mode = "conversational"
 
-## Thread Continuity (Summary)
+stream_dialogue_first()
+facts = query_graph_if_needed()
+mutations = invent_missing_facts(facts)
+persist_mutations(mutations)
+```
 
-Use a single persistent thread per playthrough. The narrator remembers prior output via `--continue`; summarize early history only if the thread becomes too long.
+### Step 3: Finalize response payload
 
----
-
-## Key Decisions
-
-- Keep a single persistent thread per playthrough to preserve continuity.
-- Stream first, then query or invent, to protect responsiveness.
-- Only include `time_elapsed` and full `SceneTree` for significant actions.
-- Require every invention to have corresponding mutations in canon.
+If the mode is significant, run `build_scene_tree` to materialize the new SceneTree, add `time_elapsed`, and attach clickables for the next layer; otherwise, set `scene = {}` and leave `time_elapsed` empty. Return the assembled `NarratorOutput` containing the dialogue stream metadata, mutation batch, and the optional scene payload so downstream tools receive the expected schema.
 
 ---
 
-## Data Flow
+## KEY DECISIONS
 
-Action input enters classification, prompt assembly, and immediate streaming. Graph queries or click resolution feed into invention checks, which yield a mutation batch persisted to storage. The final structured response merges dialogue, optional `SceneTree`, and timing metadata.
+### D1: Significant payload vs conversational lean
 
----
+```
+IF action_classification.is_significant:
+    scene = build_scene_tree()
+    time_elapsed = action_classification.estimated_duration
+ELSE:
+    scene = {}
+    time_elapsed = None
+```
 
-## Complexity
+Keeping this branch ensures we only emit heavy SceneTrees when the action clearly crosses the significant threshold, preserving responsiveness for quick dialogue.
 
-Classification and prompt assembly are O(1) relative to input size. Graph queries and mutation persistence dominate time, scaling with the number of retrieved facts and mutations, while streaming work scales with emitted dialogue chunks.
+### D2: Invent only when graph truth is missing
 
----
+```
+IF facts.cover_click_targets():
+    mutations = []
+ELSE:
+    mutations = invent_missing_facts()
+```
 
-## Helper Functions
-
-- `classify_action`: determines conversational vs significant mode.
-- `stream_dialogue_first`: emits initial narration chunk without blocking.
-- `query_graph_if_needed`: fetches canonical facts for clickables or context.
-- `invent_missing_facts`: synthesizes details when the graph is sparse.
-- `persist_mutations`: writes new facts back to canon storage.
-- `build_scene_tree`: constructs the structured scene payload for significant actions.
-
----
-
-## Interactions
-
-- Graph layer for canonical facts and mutation persistence.
-- Orchestration layer for thread state and prompt assembly.
-- Frontend stream consumer for immediate dialogue chunks.
-- World tick pipeline triggered after significant actions.
+Abstaining from invention when the graph already covers the clickables protects canon integrity and keeps mutation batches tightly scoped.
 
 ---
 
-## Quality Checks (Minimum)
+## DATA FLOW
+
+```
+Action + Thread Context + Graph Slice
+    ↓
+classify_action + prompt assembly
+    ↓
+stream_dialogue_first (immediate chunk) + query_graph_if_needed
+    ↓
+invent_missing_facts (if needed) → persist_mutations
+    ↓
+build_scene_tree (significant only) + attach time_elapsed
+    ↓
+NarratorOutput (dialogue chunks, mutations, optional scene, metadata)
+```
+
+---
+
+## COMPLEXITY
+
+**Time:** O(G + M) — where G is the number of graph facts fetched and M is the newly invented mutation count, because streaming and classification stay constant-time while queries and persistence scale with graph coverage.
+
+**Space:** O(D + M) — dialogue metadata D and mutation batch size M dominate, especially when multiple invention branches open new clickables.
+
+**Bottlenecks:**
+- Graph queries for clickables: retrieving canonical facts for dozens of nodes can block the stream if the database is slow.
+- Mutation persistence: writing invented facts before the final payload must finish before `NarratorOutput` is returned, so latency here directly delays the last chunk.
+
+---
+
+## HELPER FUNCTIONS
+
+### `classify_action()`
+
+**Purpose:** Map the incoming action to conversational or significant mode.
+
+**Logic:** Normalize timestamps, check `time_elapsed`, evaluate world injection urgency, and return an `ActionClassification` that sets thresholds for streaming, mutation persistence, and SceneTree building.
+
+### `stream_dialogue_first()`
+
+**Purpose:** Deliver the first chunk of text before expensive graph work begins.
+
+**Logic:** Emit the first narrator chunk using cached tone templates, mark it as pending, and signal the frontend stream consumer that the slot is occupied while the rest of the pipeline runs.
+
+### `query_graph_if_needed()`
+
+**Purpose:** Fetch canonical facts for clickables or context nodes referenced by the action.
+
+**Logic:** Use the graph slice (from `graph.json` or FalkorDB) to return facts that cover click targets and check if any new nodes must be consulted.
+
+### `invent_missing_facts()`
+
+**Purpose:** Synthesize details when the graph lacks canonical answers.
+
+**Logic:** Compare clickable requirements to fetched facts, run constrained generation to invent missing pieces, tag each invention with motivation metadata, and emit a `MutationBatch`.
+
+### `persist_mutations()`
+
+**Purpose:** Write invented facts back into canon storage before returning the final response.
+
+**Logic:** Open a transaction, apply each mutation (nodes/edges attributes), record the origin thread, and add auditing metadata so downstream verification knows why the fact exists.
+
+### `build_scene_tree()`
+
+**Purpose:** Construct the `SceneTree` payload for significant actions.
+
+**Logic:** Combine the normalized action, persisted mutations, and clickables into a structured tree with nodes, edges, pacing tags, and references to the latest world injection if present.
+
+---
+
+## INTERACTIONS
+
+| Module | What We Call | What We Get |
+|--------|--------------|-------------|
+| `agents/narrator/CLAUDE.md` | prompt orchestration | stream-started dialogue, thread state |
+| Graph service (FalkorDB via `GraphReadOps`) | fact reads | canonical click facts and context |
+| World tick pipeline | significant action trigger | time advancement + scheduled injections |
+| Frontend stream consumer | open SSE/websocket slot | immediate player-visible chunks |
+
+---
+
+## GAPS / IDEAS / QUESTIONS
+
+- [ ] Evaluate adaptive rolling-window depth when player latency grows above 3 seconds so narration stays ahead of clicks.
+- [ ] Capture richer metadata that distinguishes invented facts from retrieved facts for audit tooling and chaos testing.
+- IDEA: Replace the binary significant/conversational classification with a pacing score so short significant bursts still produce SceneTrees when needed.
+- QUESTION: Should certain high-urgency world injections temporarily suppress SceneTree builds to avoid conflicting pacing signals?
+
+---
+
+## ROLLING WINDOW (SUMMARY)
+
+The narrator pre-generates one layer of clickable responses and background-generates the next layer as the player clicks, keeping the perceived latency low. For the full architectural story, reference `HANDOFF_Rolling_Window_Architecture.md`.
+
+---
+
+## THREAD CONTINUITY (SUMMARY)
+
+Use a single persistent thread per playthrough; `--continue` keeps the narrator tied to earlier output, and only summarize history when thread tokens approach the service limits so the narrative does not regress.
+
+---
+
+## QUALITY CHECKS (MINIMUM)
 
 - Immediate first chunk (stream-first rule).
 - Every invention is paired with a mutation.
-- Clickables appear in text.
-- Mode classification matches time_elapsed rules.
-
----
-
-## Gaps / Ideas / Questions
-
-- How aggressively should rolling-window depth adapt to player latency?
-- What metadata helps audit invented facts versus retrieved facts?
-- Should significant-action thresholds vary by scenario pacing?
+- Clickables surface in the text before the click window closes.
+- Mode classification matches the `time_elapsed` rules.
 
 ---
 

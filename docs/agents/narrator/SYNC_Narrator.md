@@ -2,7 +2,7 @@
 
 ```
 STATUS: CANONICAL
-UPDATED: 2025-12-20
+UPDATED: 2025-12-27
 ```
 
 ## MATURITY
@@ -19,17 +19,23 @@ Narrator documentation is current after template alignment. The module remains s
 
 ## RECENT CHANGES
 
+### 2025-12-27: Complete narrator algorithm template
+
+- **What:** Added the missing objectives table, expanded data structures, listed helper functions, documented key decisions, exposed data flow/complexity, and captured GAPS/IDEAS so `ALGORITHM_Scene_Generation.md` now meets every template requirement.
+- **Why:** DOC_TEMPLATE_DRIFT insisted the algorithm doc lacked depth; fleshing out objectives, pseudo steps, interactions, and gaps prevents downstream agents from guessing how the scene generation flow should operate.
+- **Files:** `docs/agents/narrator/ALGORITHM_Scene_Generation.md`, `docs/agents/narrator/SYNC_Narrator.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate` *(still reports the known connectome/health doc gaps, membrane naming, and CHAIN/link warnings already tracked by the doctor)*
+
 ### 2025-12-20: Ngram Framework Refactor
 
 - **What:** Refactored `IMPLEMENTATION_Narrator.md` and updated `TEST_Narrator.md` to the Health format.
 - **Why:** To align with the new ngram documentation standards and emphasize DATA FLOW AND DOCKING.
 - **Impact:** Narrator module documentation is now compliant; Health checks are anchored to prompt building and agent output.
+### 2025-12-26: Expand Narrator implementation template coverage
 
-### 2025-12-26: Fortified implementation template
-
-- **What:** Added explicit RUNTIME BEHAVIOR, BIDIRECTIONAL LINKS, and GAPS sections to `IMPLEMENTATION_Narrator.md`.
-- **Why:** Close the DOC_TEMPLATE_DRIFT warning so the implementation doc now matches the template and documents the runtime story.
-- **Files:** `docs/agents/narrator/IMPLEMENTATION_Narrator.md`, `docs/agents/narrator/SYNC_Narrator.md`
+- **What:** Added runtime behavior sequencing, fresh bidirectional link tables, and a GAPS/IDEAS/QUESTIONS section so the implementation doc now meets the template length requirements and traces to actual code.
+- **Why:** The DOC_TEMPLATE_DRIFT warning highlighted missing sections, so we filled them with concrete startup, request-cycle, and shutdown behavior plus explicit link tables.
+- **Files:** `docs/agents/narrator/IMPLEMENTATION_Narrator.md`, `.ngram/state/SYNC_Project_State.md`
 - **Verification:** `ngram validate`
 
 ## HANDOFF: FOR AGENTS
