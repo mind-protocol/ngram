@@ -71,6 +71,7 @@ Tracking the flipped node signal source and the unbounded versus 0..1 energy sca
 
 * **What:** Added the missing `OBJECTIVES SERVED` and `INPUTS / OUTPUTS` sections to the BEHAVIORS doc, clarified the energy metrics question, and ensured each block exceeds the 50-character threshold required by DOC_TEMPLATE_DRIFT #11.
 * **Why:** Doctor warnings reported those behaviors sections absent/too short, so enriching them keeps the observable contract canonical before agents rely on the node kit’s clarity/trust guarantees.
+* **Issue:** DOC_TEMPLATE_DRIFT #11 (GitHub issue #11) flagged the behaviors template for missing objectives/I-O narratives, so this entry captures the completion.
 * **Files:** `docs/connectome/node_kit/BEHAVIORS_Connectome_Node_Kit_Visible_Clarity_And_Trust_Effects.md`, this SYNC file
 * **Verification:** `ngram validate` *(fails: pre-existing `docs/connectome/health` gaps, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` naming mismatch, and legacy CHAIN-link warnings)*
 

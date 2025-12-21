@@ -33,6 +33,13 @@ Implemented LogPanel with a “Now” section, ledger list, duration color rules
 
 ## RECENT CHANGES
 
+### 2026-03-28: Complete log panel patterns behavior template
+
+* **What:** Added BEHAVIORS SUPPORTED, BEHAVIORS PREVENTED, and INSPIRATIONS sections with at least 50 characters per template block so the PATTERNS doc now satisfies the DOC_TEMPLATE_DRIFT expectations.
+* **Why:** The doctor flagged those sections as missing or too brief, so the new narrative keeps the log panel’s design rationale tied to observable behaviors and cultural inspiration.
+* **Files:** `docs/connectome/log_panel/PATTERNS_Connectome_Log_Panel_Unified_Explain_And_Copyable_Event_Ledger_View_Patterns.md`
+* **Validation:** `ngram validate` *(fails: existing docs/connectome/health chain gaps, docs/physics naming/link warnings, and long-standing CHAIN issues tracked elsewhere).*
+
 ### 2025-12-20: Applied serif ledger headers and semantic palette badges
 
 * **What:** Updated ledger header typography and badge colors to match the ecological gothic palette and monastic header style.
@@ -82,13 +89,6 @@ Implemented LogPanel with a “Now” section, ledger list, duration color rules
   * `app/connectome/components/connectome_log_trigger_and_calltype_badge_color_tokens.ts`
   * `app/connectome/components/connectome_log_export_buttons_using_state_store_serializers.tsx`
 
-### 2026-03-25: Expanded implementation doc to cover missing template sections
-
-* **What:** Filled the IMPLEMENTATION doc with DESIGN PATTERNS, SCHEMA, FLOW-BY-FLOW, LOGIC CHAINS, MODULE DEPENDENCIES, STATE MANAGEMENT, RUNTIME BEHAVIOR, and CONCURRENCY sections so it now meets DOC_TEMPLATE_DRIFT expectations and mirrors the live component wiring.
-* **Why:** Keep the documentation chain aligned with the component's architecture and provide downstream agents with the missing sections they need before modifying the panel.
-* **Files:**
-  * `docs/connectome/log_panel/IMPLEMENTATION_Connectome_Log_Panel_Component_Structure_And_Serializer_Integration.md`
-
 ---
 
 ## TODO
@@ -109,6 +109,13 @@ pnpm connectome:health log_panel
   * `docs/connectome/log_panel/IMPLEMENTATION_Connectome_Log_Panel_Component_Structure_And_Serializer_Integration.md`
 * **Validation:** `ngram validate` (fails: existing docs/connectome/health chain gaps, docs/physics naming/link warnings, and broken physics/engine/cli CHAIN links unrelated to this module)
 
+### 2026-03-30: Expand log panel health template coverage
+
+* **What:** Added WHY THIS PATTERN, HOW TO USE THIS TEMPLATE, OBJECTIVES COVERAGE, STATUS, DOCK TYPES, and detailed indicator descriptions (value/representation/docks/mechanism/manual run) so the health doc satisfies the DOC_TEMPLATE_DRIFT checklist.
+* **Why:** The doctor flagged missing template sections and too-short HOW TO RUN content; the richer narrative now documents how each indicator ties to VALIDATION V1–V4.
+* **Files:** `docs/connectome/log_panel/HEALTH_Connectome_Log_Panel_Runtime_Verification_Of_Log_Truth_And_Export_Integrity.md`, this SYNC file
+* **Validation:** `ngram validate` (still fails: existing docs/connectome/health chain gaps plus physics naming/CHAIN warnings already tracked by doctor)
+
 ## AGENT OBSERVATIONS
 
 ### Remarks
@@ -116,5 +123,3 @@ pnpm connectome:health log_panel
 
 ### Suggestions
 - [ ] Assign another agent to resolve the `docs/connectome/health` chain gaps and physics naming/link warnings so future validations pass cleanly.
-
----

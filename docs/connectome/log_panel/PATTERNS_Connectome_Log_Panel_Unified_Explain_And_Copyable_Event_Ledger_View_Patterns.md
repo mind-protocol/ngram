@@ -155,6 +155,23 @@ Export must:
 
 ---
 
+## BEHAVIORS SUPPORTED
+
+* The panel always derives both the narrative explanation and ledger rows from `state_store.ledger`, ensuring the “Now” state and export payload never contradict one another.
+* Export actions preserve session boundaries, FlowEvent ids, badges, and deterministic duration colors so audit trails copied as JSONL or text are truthful and reproducible.
+
+## BEHAVIORS PREVENTED
+
+* Drift between the “Now” explanation and ledger history is blocked by rendering every entry directly from the ledger rather than a component-local cache.
+* Silent gaps in trigger, call_type, or duration data are prevented by refusing to render rows that lack the badges required for agent-friendly analysis or the color rules that encode timeliness.
+
+## INSPIRATIONS
+
+* Inspired by analog ledgers and audit trails that keep the source of truth in a single, copyable surface (think expedition field books with labeled badges).
+* The badge-driven color system takes cues from control rooms that highlight latency with warm/cold warnings and keeps the palette consistent with the ecological gothic aesthetic already in the Connectome UI.
+
+---
+
 ## SCOPE
 
 ### In Scope
