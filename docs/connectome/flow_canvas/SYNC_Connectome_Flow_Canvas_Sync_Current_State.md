@@ -136,7 +136,8 @@ Implemented a React Flow-based FlowCanvas with force-directed node layout seeded
 * **What:** Replaced the empty placeholders with detailed `BEHAVIORS SUPPORTED` and `BEHAVIORS PREVENTED` narratives that spell out the pan/zoom camera guarantees, zone context resilience, focus persistence, LOD decluttering, and camera-control protections without falling below the DOC_TEMPLATE_DRIFT length target.
 * **Why:** DOC_TEMPLATE_DRIFT #11 reported the PATTERNS doc lacked observable behavior guidance, so richer wording keeps the upstream design contract aligned with the rest of the flow canvas chain.
 * **Files:** `docs/connectome/flow_canvas/PATTERNS_Connectome_Flow_Canvas_Pannable_Zoomable_Zoned_System_Map_Rendering_Patterns.md`, `docs/connectome/flow_canvas/SYNC_Connectome_Flow_Canvas_Sync_Current_State.md`
-* **Validation:** `ngram validate` *(fails: docs/connectome/health lacks PATTERNS/SYNC/full-chain docs, docs/engine/membrane/PATTERN_Membrane_Modulation.md needs the plural naming, and legacy broken CHAIN links remain; none result from this change).*
+* **Validation:** `ngram validate` *(fails: docs/connectome/health lacks PATTERNS/SYNC/full-chain docs, docs/engine/membrane/PATTERN_Membrane_Modulation.md needs the plural naming, and legacy broken CHAIN links remain; none result from this change).* 
+* **Notes:** The new behavior narratives feed directly into this sync entry so the health and validation docs can trace those guarantees before downstream agents continue the canvas work.
 * **Issues encountered:** `ngram validate` still reports docs/connectome/health lacking PATTERNS/SYNC/full-chain docs, docs/engine/membrane naming needing the plural prefix, and the legacy CHAIN link warnings noted above.
 
 ---

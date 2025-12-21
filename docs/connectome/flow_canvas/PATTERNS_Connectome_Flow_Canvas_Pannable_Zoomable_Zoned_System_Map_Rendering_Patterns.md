@@ -36,6 +36,8 @@ The following behavior statements describe what the canvas must reliably do and 
 * Prevents label overcrowding by decluttering noisy text until users zoom in, avoiding bold reflows that would overwhelm the tracing narrative when thousands of nodes spill into view.
 * Prevents inadvertent layout jumps by only updating camera state via the dedicated controls, so stepper advances never trigger abrupt pan/zoom resets that would tear the spatial memory.
 
+These behavior statements connect back to the health and validation narratives so the monitoring systems know what guarantees to verify when rendering large graphs.
+
 ### Bidirectional Contract
 
 ```

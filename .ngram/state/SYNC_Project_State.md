@@ -135,6 +135,14 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 * **Validation:** `ngram validate` *(fails because docs/connectome/health lacks PATTERNS/BEHAVIORS/ALGORITHM/VALIDATION/IMPLEMENTATION/HEALTH coverage, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` needs the plural PATTERNS prefix, and longstanding CHAIN/link warnings remain; no new failures were introduced).*
 * **Notes:** The doc now mentions the zone layout anchors, force layout seeding, edge label declutter policy, camera transform invariants, and interaction gating so the ALGORITHM story aligns with the implementation references.
 
+### 2026-04-20: Extend runtime engine implementation structure (#11)
+
+* **What:** Added detailed LOGIC CHAINS and MODULE DEPENDENCIES narratives to `docs/connectome/runtime_engine/IMPLEMENTATION_Connectome_Runtime_Engine_Code_Structure_And_Control_Surface.md`, ensuring the implementation template now describes the runtime flows and inter-module inputs with >50-character prose to satisfy DOC_TEMPLATE_DRIFT requirements.
+* **Why:** DOC_TEMPLATE_DRIFT #11 flagged the implementation doc for missing logic chains and dependency guidance; writing these sections keeps the canonical stack aligned before future agents touch the runtime wiring or telemetry adapters.
+* **Files:** `docs/connectome/runtime_engine/IMPLEMENTATION_Connectome_Runtime_Engine_Code_Structure_And_Control_Surface.md`, `docs/connectome/runtime_engine/SYNC_Connectome_Runtime_Engine_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
+* **Validation:** `ngram validate` *(fails: the longstanding `docs/connectome/health` chain gaps, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` naming mismatch, and legacy CHAIN links remain; none are caused by this fix).*
+* **Issues:** `ngram validate` still reports outstanding connectome health doc gaps, the engine membrane PATTERN naming discrepancy, and existing CHAIN link warnings that predate this session.
+
 ### 2026-04-17: Clarify flow canvas algorithm telemetry (#11)
 
 * **What:** Extended the algorithm doc's `OBJECTIVES AND BEHAVIORS`, `render_flow_canvas_frame` summary, KEY DECISIONS, DATA FLOW, HELPER FUNCTIONS, and INTERACTIONS narratives with telemetry, render-commit reporting, and interaction-gating details and logged the addition in the SYNC entry so the template now leaves no required block under fifty characters.
