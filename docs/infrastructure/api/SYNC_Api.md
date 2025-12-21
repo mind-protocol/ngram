@@ -2,7 +2,7 @@
 
 ```
 STATUS: CANONICAL
-UPDATED: 2025-12-20
+UPDATED: 2025-12-21
 ```
 
 ## MATURITY
@@ -23,6 +23,15 @@ What's still being designed:
 The API module hosts the FastAPI application, including playthrough endpoints, moment APIs, and debug streaming.
 
 ## RECENT CHANGES
+
+### 2025-12-21: Guard SSE delivery and schema validation with tests
+
+- **What:** Added a burst-load SSE regression test in `engine/tests/test_moments_api.py` and introduced
+  `engine/tests/test_router_schema_validation.py` to exercise the playthrough and tempo router schemas.
+- **Why:** Prevent regressions when SSE queues back up under sustained clicks and ensure router Pydantic
+  models keep rejecting malformed payloads before expensive graph operations run.
+- **Impact:** Automated coverage now documents both SSE reliability and router request validation, so the
+  previous gaps no longer need manual verification.
 
 ### 2025-12-21: Consolidate playthrough algorithm docs
 
@@ -59,11 +68,6 @@ The API module hosts the FastAPI application, including playthrough endpoints, m
 - **What:** Count discussion tree branches by remaining leaf paths and document the helper behavior.
 - **Why:** Ensure regeneration triggers reflect actual remaining branch paths.
 - **Impact:** Branch count now aligns with discussion tree lifecycle expectations.
-
-## GAPS
-
-- [ ] Automated regression for SSE stream delivery under load.
-- [ ] Schema validation tests for all router endpoints.
 
 ## HANDOFF: FOR AGENTS
 

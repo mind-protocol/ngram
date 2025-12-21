@@ -39,6 +39,66 @@ ngram validate
 
 ---
 
+## MATURITY
+
+**Status:** ARCHIVED
+
+This archived copy is preserved for historical traceability, so the maturity note reflects that no active development is planned for this snapshot.
+
+---
+
+## CURRENT STATE
+
+This file now documents the archived repository map generated on 2025-12-20, including the pointer list, TODO items, and the long-form tree, and it is intentionally static so readers know it is out of the active sync stream.
+
+---
+
+## IN PROGRESS
+
+There is no ongoing work tied to this archive—the sections stay as a read-only record until the main sync file or the generator explicitly requests a new archive entry.
+
+---
+
+## RECENT CHANGES
+
+Archived the entire repository map run from 2025-12-20 to capture the snapshots and drift notes, and added the missing SYNC sections so the archive documents why this snapshot exists.
+
+---
+
+## KNOWN ISSUES
+
+Because this snapshot is frozen at a point in time, it can drift from the current repository layout; rely on the live `docs/SYNC_Project_Repository_Map.md` when structural accuracy matters.
+
+---
+
+## HANDOFF: FOR AGENTS
+
+**Your likely VIEW:** `VIEW_Implement_Write_Or_Modify_Code.md`
+
+**What to do next:** If you need another archive of the map, rerun `ngram overview` and capture both the new tree and sync preface before archiving again.
+
+**Watch out for:** The generator output will overwrite the tree body, so avoid editing the map section directly and only adjust the preface or rerun the generator to refresh the archive.
+
+---
+
+## HANDOFF: FOR HUMAN
+
+**Executive summary:** This archive preserves the December 20, 2025 repository map snapshot and now includes a full set of SYNC sections documenting its status, purpose, and limitations.
+
+**Decisions made:** Added the canonical SYNC sections instead of editing the generated tree body, keeping the archive readable and traceable.
+
+**Needs your input:** Confirm whether future archive runs should follow the same preface/sections pattern or if the generator should automate this step.
+
+---
+
+## CONSCIOUSNESS TRACE
+
+Treating the archive as read-only avoids modifying the generated map output while still satisfying drift checks, so the newly added sections simply explain the scope, maturity, known gaps, and handoff context for anyone reviewing this snapshot.
+
+---
+
+---
+
 # Repository Map: 
 
 *Generated: 2025-12-20 01:48*
@@ -1903,4 +1963,3 @@ ngram validate
 - ## Design Principles
 - ## License
 - ## Contributing
-

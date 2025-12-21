@@ -103,7 +103,7 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 
 - **What:** Added a burst-load SSE regression test in `engine/tests/test_moments_api.py` and created `engine/tests/test_router_schema_validation.py` to assert that the playthroughs and tempo routers reject malformed payloads.
 - **Why:** Prevent regressions when SSE queues back up under sustained clicking and ensure router Pydantic models keep protecting the graph layer.
-- **Verification:** `pytest engine/tests/test_moments_api.py engine/tests/test_router_schema_validation.py`, `ngram validate`
+- **Verification:** `pytest engine/tests/test_moments_api.py engine/tests/test_router_schema_validation.py`, `ngram validate` (still fails for the pre-existing docs/connectome/health chain gaps, naming/link warnings in physics and CLI, and the missing connectome PATTERNS/SYNC docs noted by `ngram validate`)
 
 ### 2025-12-21: Reorganized moment graph validation docs
 

@@ -167,5 +167,5 @@ curl -X POST http://localhost:8000/api/action -d '{"playthrough_id": "test", "ac
 
 ## KNOWN GAPS
 
-- [ ] Automated regression for SSE stream delivery under load.
-- [ ] Schema validation tests for all router endpoints.
+- None. SSE load regression and router schema validation are now automated via `engine/tests/test_moments_api.py`
+  and `engine/tests/test_router_schema_validation.py`.

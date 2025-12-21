@@ -12,6 +12,7 @@ Tests the FastAPI endpoints in engine/infrastructure/api/moments.py:
 Uses TestClient for synchronous tests, httpx for async SSE tests.
 """
 
+import asyncio
 import pytest
 import json
 import sys
@@ -367,9 +368,38 @@ class TestMomentStream:
             for line in response.iter_lines():
                 if line:
                     line_str = line.decode() if isinstance(line, bytes) else line
-                    if line_str.startswith("event:"):
-                        assert "connected" in line_str
-                        break
+                if line_str.startswith("event:"):
+                    assert "connected" in line_str
+                    break
+
+
+@pytest.mark.asyncio
+async def test_sse_broadcast_handles_queue_overload():
+    """Ensure the SSE queue stays functional even when events exceed capacity."""
+    from engine.infrastructure.api.sse_broadcast import (
+        broadcast_moment_event,
+        register_sse_client,
+        unregister_sse_client
+    )
+
+    playthrough_id = "pt_overload"
+    queue = asyncio.Queue(maxsize=5)
+    register_sse_client(playthrough_id, queue)
+
+    try:
+        for i in range(20):
+            broadcast_moment_event(playthrough_id, "load_test", {"seq": i})
+
+        collected = []
+        while True:
+            try:
+                collected.append(queue.get_nowait())
+            except asyncio.QueueEmpty:
+                break
+
+        assert collected, "Burst events were all dropped before reaching the client"
+    finally:
+        unregister_sse_client(playthrough_id, queue)
 
 
 # =============================================================================
