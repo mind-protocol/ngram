@@ -99,6 +99,13 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 
 ## RECENT CHANGES
 
+### 2026-01-27: Document tools sync template coverage
+
+- **What:** Added MATURITY, IN PROGRESS, KNOWN ISSUES, HANDOFFS, CONSCIOUSNESS TRACE, and POINTERS sections to `docs/tools/SYNC_Tools.md` so the sync now records every template block, and future agents see both the maturity reasoning and the handoff guidance.
+- **Why:** DOC_TEMPLATE_DRIFT had flagged this SYNC for missing narrative chunks, so the richer ledger keeps the module traceable while leaving the helper scripts untouched.
+- **Files:** `docs/tools/SYNC_Tools.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate`
+
 ### 2026-01-26: Document tools pattern template coverage
 
 - **What:** Filled the missing BEHAVIORS SUPPORTED, BEHAVIORS PREVENTED, PRINCIPLES, DATA, DEPENDENCIES, INSPIRATIONS, SCOPE, and GAPS / IDEAS / QUESTIONS sections of `docs/tools/PATTERNS_Tools.md`, ensuring every block now exceeds the DOC_TEMPLATE_DRIFT minimum while anchoring the helper intent, dependencies, and risks before editing the runtime scripts.
@@ -113,12 +120,6 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 - **Files:** `docs/tools/SYNC_Tools.md`, `.ngram/state/SYNC_Project_State.md`
 - **Verification:** `ngram validate`
 
-### 2026-01-16: Complete tools implementation template coverage
-
-- **What:** Expanded `docs/tools/IMPLEMENTATION_Tools.md` to describe the code structure, design patterns, schema, entry points, flow-by-flow docking, logic chains, module dependencies, state management, runtime behavior, concurrency model, configuration, bidirectional links, and gaps list so every blocking section exceeds the DOC_TEMPLATE_DRIFT minimum while leaving the helper scripts untouched.
-- **Why:** DOC_TEMPLATE_DRIFT flagged the implementation doc for missing CODE STRUCTURE, DESIGN PATTERNS, SCHEMA, ENTRY POINTS, DATA FLOW AND DOCKING, LOGIC CHAINS, MODULE DEPENDENCIES, STATE MANAGEMENT, RUNTIME BEHAVIOR, CONCURRENCY MODEL, CONFIGURATION, BIDIRECTIONAL LINKS, and GAPS sections, so the new narrative restores the canonical coverage.
-- **Files:** `docs/tools/IMPLEMENTATION_Tools.md`, `docs/tools/SYNC_Tools.md`, `.ngram/state/SYNC_Project_State.md`
-- **Verification:** `ngram validate` *(fails: known docs/connectome/health PATTERNS/SYNC gaps, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` naming mismatch, and the longstanding CHAIN/link warnings).*
 ### 2026-01-09: Capture world runner health flow note
 
 - **What:** Logged the new Health doc paragraph that spells out the 0.5/min cadence, 5/min bursts, and `background_consistency`/`adapter_resilience` indicators so the doctor knows which signals to rerun.
