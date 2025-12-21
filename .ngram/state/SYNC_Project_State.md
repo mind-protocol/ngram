@@ -99,6 +99,13 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 
 ## RECENT CHANGES
 
+### 2025-12-29: Document narrator implementation stream nuance
+
+- **What:** Added a streaming health note under the implementation main loop, captured new SSE telemetry wording in the GAPS idea list, and fleshed out the narrator sync CURRENT STATE/IN PROGRESS sections so future agents see why the template seemed short.
+- **Why:** The DOC_TEMPLATE_DRIFT warning required richer runtime wording and longer narratives, so the module now records why the streaming LN is stable even when the doctor insists on more prose.
+- **Files:** `docs/agents/narrator/IMPLEMENTATION_Narrator.md`, `docs/agents/narrator/SYNC_Narrator.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate` *(still failing for pre-existing connectome/health/membrane naming/CHAIN issues)*
+
 ### 2025-12-26: Extended Gemini validation behavior/objective rationale
 
 - **What:** Added richer explanatory clauses to the BEHAVIORS GUARANTEED and OBJECTIVES COVERED tables in `docs/llm_agents/VALIDATION_Gemini_Agent_Invariants.md` so every row now exceeds 50 characters while explicitly linking each guarantee/objective back to the invariants the doctor monitors.

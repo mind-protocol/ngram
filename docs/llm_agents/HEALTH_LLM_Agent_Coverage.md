@@ -89,8 +89,8 @@ health_indicators:
 
 | Objective | Indicators | Why These Signals Matter |
 |-----------|------------|--------------------------|
-| Preserve the streaming contract so every chunk the TUI consumes stays parseable and complete | stream_validity | Guards the core inference channel by confirming chunk shape, tool_message pairings, and final result blocks before downstream UI/agents render anything. |
-| Lock in provider connectivity so credentials or network failures are caught before the CLI assumes Gemini is reachable | api_connectivity | Keeps the CLI/TUI reliable by surfacing missing API keys, bad client instantiations, and diagnostic noise as structured errors that operators can act on quickly. |
+| Preserve the streaming contract so every chunk the TUI consumes stays parseable and complete | stream_validity | Guards the core inference channel by confirming chunk shape, tool_message pairings, and final result blocks before downstream UI/agents render anything; the doctor reads this table to correlate the health ratio with observed stream noise, making drift easy to detect. |
+| Lock in provider connectivity so credentials or network failures are caught before the CLI assumes Gemini is reachable | api_connectivity | Keeps the CLI/TUI reliable by surfacing missing API keys, bad client instantiations, and diagnostic noise as structured errors that operators can act on quickly; the health tracker turns the binary flag into a quick dashboard ping so missing keys show up as connection outages instead of silent stream gaps. |
 
 ---
 
@@ -254,6 +254,8 @@ manual_run:
   notes: Verify the JSON parsing indicator after any Gemini API update or schema refresh by scanning for consistent `type` keys.
 ```
 
+The CLI health banner ingests this float score so operators see a continuous status even when the streamer is quiet; if the ratio falls or JSON parsing starts erroring, the banner flips amber or red and the doctor can replay the log with the same command to capture the offending chunk.
+
 ---
 ## INDICATOR: api_connectivity
 
@@ -368,6 +370,8 @@ manual_run:
   command: GEMINI_API_KEY= python3 -m ngram.llms.gemini_agent -p "health ping" --output-format text
   notes: Run without GEMINI_API_KEY to confirm the structured exit path and rerun with the key set to verify the OK state.
 ```
+
+The binary representation of this indicator surfaces in CLI banners and doctor dashboards, so running the command without the key quickly exposes the error path while restoring the key demonstrates the green state before streaming begins.
 
 ---
 

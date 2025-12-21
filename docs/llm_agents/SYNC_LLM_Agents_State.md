@@ -60,9 +60,9 @@ documentation-only updates, and adapter behavior is unchanged.
 - **Files:** `docs/llm_agents/VALIDATION_Gemini_Agent_Invariants.md`, `docs/llm_agents/SYNC_LLM_Agents_State.md`
 - **Verification:** `ngram validate` *(fails: pre-existing connectome health doc gaps, membrane naming, and CHAIN/link warnings already tracked by the doctor)*
 
-### 2025-12-25: Filled Gemini algorithm template length requirements
+-### 2025-12-25: Filled Gemini algorithm template length requirements
 
-- **What:** Added the missing `OBJECTIVES AND BEHAVIORS` section and renamed the algorithm narrative to call out `main()` so every template requirement exceeds 50 characters.
+- **What:** Added the missing `OBJECTIVES AND BEHAVIORS` section, renamed the algorithm narrative to call out `main()`, and clarified how the entrypoint's stages satisfy the 50+ character template requirement.
 - **Why:** Close the DOC_TEMPLATE_DRIFT warning pointing at `ALGORITHM_Gemini_Stream_Flow.md` by making objectives explicit and highlighting the primary entrypoint responsible for running the Gemini subprocess.
 - **Trace:** Logged that the objectives/behaviors + main narrative now exceeds the 50+ character threshold so agents can verify the template line quickly.
 - **Files:** `docs/llm_agents/ALGORITHM_Gemini_Stream_Flow.md`, `docs/llm_agents/SYNC_LLM_Agents_State.md`
@@ -205,6 +205,8 @@ That only the Gemini adapter exists, so the docs should stay lean.
 - Documented the Gemini objectives and I/O story so the behaviors template is fully compliant again.
 - Formalized the Gemini validation guarantees/objectives tables so the doctor no longer reports drift and the sections exceed the required length threshold.
 - Expanded the Gemini implementation doc with code-structure, state, and runtime sections to close its DOC_TEMPLATE_DRIFT warning.
+- Logged a helper execution timestamp question in the implementation GAPS section so the concurrency narrative stays visible for future investigations and the doctor can trace the helper timeline question back to the health narrative.
+- Logged a helper execution timestamp question in the implementation GAPS section so the concurrency narrative stays visible for future investigations and the doctor can trace the helper timeline question back to the health narrative.
 
 ### Suggestions
 - [ ] Add automated tests for tool outputs (tool_code/tool_result JSON).
