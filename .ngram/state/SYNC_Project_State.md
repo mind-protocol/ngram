@@ -106,6 +106,20 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 * **Files:** `docs/connectome/log_panel/HEALTH_Connectome_Log_Panel_Runtime_Verification_Of_Log_Truth_And_Export_Integrity.md`, `docs/connectome/log_panel/SYNC_Connectome_Log_Panel_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
 * **Validation:** `ngram validate` *(fails: docs/connectome/health still lacks PATTERNS/SYNC, docs/engine/membrane naming mismatch, and the outstanding CHAIN warnings).* 
 
+### 2026-04-05: Complete flow_canvas validation template sections (#11)
+
+* **What:** Added BEHAVIORS GUARANTEED, OBJECTIVES COVERED, PROPERTIES, and SYNC STATUS blocks to the flow_canvas validation doc and expanded the narratives so every template block now exceeds fifty characters, aligning with DOC_TEMPLATE_DRIFT issue #11.
+* **Why:** Guarantees that the flow_canvas documentation chain now captures the invariant guarantees and verification context required by the validator and keeps the downstream doc consumers from hitting stale templates.
+* **Files:** `docs/connectome/flow_canvas/VALIDATION_Connectome_Flow_Canvas_Invariants_For_Readability_And_Stability.md`, `docs/connectome/flow_canvas/SYNC_Connectome_Flow_Canvas_Sync_Current_State.md`
+* **Validation:** `ngram validate` *(still fails because `docs/connectome/health` lacks PATTERNS/SYNC plus the BEHAVIORS/ALGORITHM/VALIDATION/IMPLEMENTATION chain, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` needs the plural prefix, and numerous CHAIN warnings remain).*
+
+### 2026-04-07: Document flow canvas behavior objectives and I/O (#11)
+
+* **What:** Added the OBJECTIVES SERVED section plus INPUTS / OUTPUTS narrative to `docs/connectome/flow_canvas/BEHAVIORS_Connectome_Flow_Canvas_Readable_Stable_Interaction_Effects.md` so the behavior doc now spells out the canvas goals and data contracts for navigation, focus, and zone rendering.
+* **Why:** DOC_TEMPLATE_DRIFT #11 flagged the missing blocks, and the new prose keeps the canonical flow canvas behavior contract aligned with the rest of the documentation chain.
+* **Files:** `docs/connectome/flow_canvas/BEHAVIORS_Connectome_Flow_Canvas_Readable_Stable_Interaction_Effects.md`, `docs/connectome/flow_canvas/SYNC_Connectome_Flow_Canvas_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
+* **Validation:** `ngram validate` *(fails: docs/connectome/health still lacks PATTERNS/SYNC, docs/engine/membrane naming mismatch, and the existing CHAIN warnings the doctor tracks; no new regressions observed).*
+
 ### 2025-12-21: Log panel behavior doc objectives and I/O added
 
 - **What:** Added OBJECTIVES SERVED plus INPUTS / OUTPUTS coverage to the log panel behavior doc and recorded the update here so downstream agents know the narrative now spells out the canonical goals, store signals, and copy/export outputs for the unified ledger experience.

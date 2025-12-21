@@ -23,6 +23,23 @@ SYNC:            ./SYNC_Connectome_Flow_Canvas_Sync_Current_State.md
 
 ---
 
+## OBJECTIVES SERVED
+
+- Keep the entire Flow Canvas readable and stable even when the graph scales to thousands of nodes so the highlighted step and zone storytelling stay legible without flickering chaos.
+- Anchor navigation cues, zone labeling, and focus pulses to the deterministic layout so the canvas becomes a single source of truth for the Connectome stepper rather than a transient debug view.
+
+## INPUTS / OUTPUTS
+
+### INPUTS
+
+- `state_store.current_graph.nodes` and `.edges`, plus the computed `state_store.zones`, feed the zone renderers, edge shaders, and tooltip data so the canvas always reflects the canonical graph.
+- `state_store.step_cursor`, `state_store.active_focus`, and `state_store.active_edge_ids` supply the stepper focus, glow pulses, and labels that keep navigation consistent with the ledger.
+
+### OUTPUTS
+
+- The canvas produces stable camera transforms, zone layers, and tooltip summaries that downstream overlays reuse to explain active steps, previews, and hover details without re-computing the graph.
+- Panning, zooming, fit-to-view, and focus transitions emit deterministic layout snapshots and camera bounds that instrumentation or recordings can replay for debugging or tutorials.
+
 ## BEHAVIORS
 
 ### B1: Pan/zoom makes dense diagrams inspectable without shrinking labels to noise
@@ -86,7 +103,7 @@ AND:    layout remains stable (no random reflow)
 
 ```
 MUST NOT: nodes move around when stepping (breaks spatial memory)
-INSTEAD: layout is deterministic; focus changes are visual only
+INSTEAD: force layout is computed on graph changes only; stepper focus changes are visual only
 ```
 
 ### A2: Label overlap as default state

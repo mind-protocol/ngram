@@ -69,6 +69,12 @@ Implemented a React Flow-based FlowCanvas with force-directed node layout seeded
 * **Why:** Satisfies DOC_TEMPLATE_DRIFT #11 and keeps the flow canvas documentation chain canonical for the canvas invariants.
 * **Files:** `docs/connectome/flow_canvas/VALIDATION_Connectome_Flow_Canvas_Invariants_For_Readability_And_Stability.md`
 
+### 2026-04-07: Add flow canvas behavior objectives and I/O (#11)
+
+* **What:** Documented OBJECTIVES SERVED plus INPUTS/OUTPUTS details in `BEHAVIORS_Connectome_Flow_Canvas_Readable_Stable_Interaction_Effects.md` so the template now describes the goals and data contracts for the canvas.
+* **Why:** DOC_TEMPLATE_DRIFT #11 highlighted the missing sections, and the new narrative keeps the canonical behavior doc aligned with the rest of the chain.
+* **Files:** `docs/connectome/flow_canvas/BEHAVIORS_Connectome_Flow_Canvas_Readable_Stable_Interaction_Effects.md`
+
 ---
 
 ## TODO
