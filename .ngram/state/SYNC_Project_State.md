@@ -99,6 +99,13 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 
 ## RECENT CHANGES
 
+### 2026-03-28: Complete log panel patterns behavior sections
+
+* **What:** Added BEHAVIORS SUPPORTED, BEHAVIORS PREVENTED, and INSPIRATIONS sections to the connectome log panel PATTERNS doc so each template block meets the DOC_TEMPLATE_DRIFT length requirements and links the design to observable behaviors.
+* **Why:** The doctor flagged these sections as missing/too short; the update keeps the log panel’s design rationale explicit before downstream agents rely on it.
+* **Files:** `docs/connectome/log_panel/PATTERNS_Connectome_Log_Panel_Unified_Explain_And_Copyable_Event_Ledger_View_Patterns.md`, `docs/connectome/log_panel/SYNC_Connectome_Log_Panel_Sync_Current_State.md`
+* **Validation:** `ngram validate` *(fails: known docs/connectome/health chain gaps plus docs/physics naming/link warnings and existing broken CHAIN links already tracked elsewhere).*
+
 ### 2026-03-25: Expand node kit algorithm coverage
 
 - **What:** Rebuilt the node kit ALGORITHM doc so OBJECTIVES AND BEHAVIORS, KEY DECISIONS, DATA FLOW, HELPER FUNCTIONS, and INTERACTIONS now exist with 50+ character narratives, expanded each render step into prose, and documented the helper algorithms for energy mapping and wait progress to complete the template chain flagged by DOC_TEMPLATE_DRIFT #11.
@@ -117,7 +124,7 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 
 - **What:** Added DESIGN PATTERNS, SCHEMA, DATA FLOW AND DOCKING (FLOW-BY-FLOW), LOGIC CHAINS, MODULE DEPENDENCIES, STATE MANAGEMENT, RUNTIME BEHAVIOR, and CONCURRENCY MODEL sections to `docs/connectome/log_panel/IMPLEMENTATION_Connectome_Log_Panel_Component_Structure_And_Serializer_Integration.md` so the file now satisfies the DOC_TEMPLATE_DRIFT requirement for full template coverage.
 - **Why:** The doctor reported this implementation doc as missing the standard sections, so the new prose now explains how the panel ties into the state store, FlowEvent schema, export serializers, and async graph/search helpers.
-- **Files:** `docs/connectome/log_panel/IMPLEMENTATION_Connectome_Log_Panel_Component_Structure_And_Serializer_Integration.md`
+- **Files:** `docs/connectome/log_panel/IMPLEMENTATION_Connectome_Log_Panel_Component_Structure_And_Serializer_Integration.md`, `docs/connectome/log_panel/SYNC_Connectome_Log_Panel_Sync_Current_State.md`
 - **Validation:** `ngram validate` *(fails: the existing `docs/connectome/health` chain gaps, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` naming mismatch, and the long-standing CHAIN-link warnings the doctor already tracks).*
 
 ### 2026-03-23: Document expanded node kit implementation depth

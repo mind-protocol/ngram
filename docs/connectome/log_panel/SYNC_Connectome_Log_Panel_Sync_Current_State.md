@@ -100,26 +100,3 @@ Run:
 ```
 pnpm connectome:health log_panel
 ```
-
-### 2026-03-27: Documented log panel implementation template drift
-
-* **What:** Continued the implementation doc by adding DESIGN PATTERNS, SCHEMA, DATA FLOW AND DOCKING (FLOW-BY-FLOW), LOGIC CHAINS, MODULE DEPENDENCIES, STATE MANAGEMENT, RUNTIME BEHAVIOR, and CONCURRENCY MODEL sections so every template block now has 50+ characters and traces to the existing code.
-* **Why:** Satisfy DOC_TEMPLATE_DRIFT warning and clarify how the log panel wires to the state store, export serializers, and async graph/search helpers.
-* **Files:**
-  * `docs/connectome/log_panel/IMPLEMENTATION_Connectome_Log_Panel_Component_Structure_And_Serializer_Integration.md`
-* **Validation:** `ngram validate` (fails: existing docs/connectome/health chain gaps, docs/physics naming/link warnings, and broken physics/engine/cli CHAIN links unrelated to this module)
-
-### 2026-03-30: Expand log panel health template coverage
-
-* **What:** Added WHY THIS PATTERN, HOW TO USE THIS TEMPLATE, OBJECTIVES COVERAGE, STATUS, DOCK TYPES, and detailed indicator descriptions (value/representation/docks/mechanism/manual run) so the health doc satisfies the DOC_TEMPLATE_DRIFT checklist.
-* **Why:** The doctor flagged missing template sections and too-short HOW TO RUN content; the richer narrative now documents how each indicator ties to VALIDATION V1–V4.
-* **Files:** `docs/connectome/log_panel/HEALTH_Connectome_Log_Panel_Runtime_Verification_Of_Log_Truth_And_Export_Integrity.md`, this SYNC file
-* **Validation:** `ngram validate` (still fails: existing docs/connectome/health chain gaps plus physics naming/CHAIN warnings already tracked by doctor)
-
-## AGENT OBSERVATIONS
-
-### Remarks
-- The implementation doc now records every required section, but the landing page still inherits the pre-existing `ngram validate` failures for `docs/connectome/health` and `docs/physics` CHAIN naming issues.
-
-### Suggestions
-- [ ] Assign another agent to resolve the `docs/connectome/health` chain gaps and physics naming/link warnings so future validations pass cleanly.
