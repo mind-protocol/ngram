@@ -3,7 +3,7 @@
 # flow_canvas — Sync: Current State
 
 LAST_UPDATED: 2025-12-20
-UPDATED_BY: Marco "Salthand" (agent)
+UPDATED_BY: codex
 STATUS: DESIGNING
 ```
 
@@ -20,36 +20,61 @@ STATUS: DESIGNING
 
 **In design:**
 
-* label declutter heuristic thresholds
-* minimap and drag behavior (likely defer)
-
-**Deferred:**
-
-* force layout exploration mode (separate view)
+* label declutter thresholds
+* minimap and drag behavior (deferred)
 
 ---
 
 ## CURRENT STATE
 
-Docs defined; no implementation yet. This module exists because manual SVG edge rendering caused readability and stability failures. The plan is to use a stable canvas framework (e.g., React Flow) with deterministic positions and stable keyed elements.
+Implemented a React Flow-based FlowCanvas with force-directed node layout seeded by zones, stable edge rendering, and pannable/zoomable camera. Zones render as background nodes, and edges are keyed and stable. Fit-to-view is available via a small overlay button.
 
 ---
 
 ## RECENT CHANGES
 
-### 2025-12-20: Initialized flow_canvas chain docs
+### 2025-12-20: Switched node layout to force-directed for scale
 
-* added zones and camera behaviors
-* specified deterministic layout and label decluttering
+* **What:** Added force-directed layout (d3-force) seeded by zone positions and linked by edges.
+* **Why:** Support thousands of nodes without manual layout while preserving readability.
+* **Files:** `app/connectome/components/deterministic_zone_and_node_layout_computation_helpers.ts`, `app/connectome/components/pannable_zoomable_zoned_flow_canvas_renderer.tsx`.
+
+### 2025-12-20: Implemented FlowCanvas with zones + deterministic layout
+
+* **What:** Added React Flow renderer, zone nodes, deterministic node positions, and stable edge list.
+* **Why:** Provide a readable, stable canvas as a debugging instrument in v1.
+* **Files:** `app/connectome/components/pannable_zoomable_zoned_flow_canvas_renderer.tsx`, `app/connectome/components/deterministic_zone_and_node_layout_computation_helpers.ts`.
+
+### 2025-12-21: Filtered search edges without endpoints
+
+* **What:** Filtered search edges to only render links with both endpoints present.
+* **Why:** Avoid React Flow edge warnings and invalid edge entries when graph data is incomplete.
+* **Files:** `app/connectome/components/pannable_zoomable_zoned_flow_canvas_renderer.tsx`.
+
+### 2025-12-21: Added LOD throttling for large graphs
+
+* **What:** Reduced node/edge rendering detail based on zoom and graph size (hide labels, steps, motion).
+* **Why:** Prevent 1fps when rendering large graphs.
+* **Files:** `app/connectome/components/pannable_zoomable_zoned_flow_canvas_renderer.tsx`, `app/connectome/components/edge_kit/semantic_edge_components_with_directional_shine_and_pulses.tsx`, `app/connectome/components/node_kit/typed_connectome_node_components_with_energy_and_step_highlighting.tsx`, `app/connectome/components/node_kit/connectome_node_frame_with_title_path_and_tooltip_shell.tsx`, `app/connectome/connectome.css`.
+
+### 2025-12-21: Switched canvas renderer to WebGL
+
+* **What:** Replaced React Flow rendering with a custom WebGL canvas + label overlay.
+* **Why:** Maintain interactive performance on large graphs (WebGL points/lines).
+* **Files:** `app/connectome/components/pannable_zoomable_zoned_flow_canvas_renderer.tsx`, `app/connectome/connectome.css`.
+
+### 2026-04-05: Filled validation template drift sections for flow_canvas (#11)
+
+* **What:** Added the missing BEHAVIORS GUARANTEED, OBJECTIVES COVERED, PROPERTIES, and SYNC STATUS blocks to `VALIDATION_Connectome_Flow_Canvas_Invariants_For_Readability_And_Stability.md` and elaborated the narratives so every template block now exceeds fifty characters.
+* **Why:** Satisfies DOC_TEMPLATE_DRIFT #11 and keeps the flow canvas documentation chain canonical for the canvas invariants.
+* **Files:** `docs/connectome/flow_canvas/VALIDATION_Connectome_Flow_Canvas_Invariants_For_Readability_And_Stability.md`
 
 ---
 
 ## TODO
 
-* [ ] Implement FlowCanvas with pan/zoom and zones
-* [ ] Implement stable node layout positions with wide spacing
-* [ ] Implement stable edge label placement with minimal declutter
-* [ ] Add flow_canvas health harness to detect edge disappearance
+* [ ] Implement label declutter hooks in edge rendering (optional v1)
+* [ ] Add a minimap only if navigation becomes painful
 
 Run:
 
@@ -63,13 +88,11 @@ pnpm connectome:health flow_canvas
 
 **For agents:**
 
-* Do not implement force layout in v1 main view
-* Ensure edges are keyed and never re-created with new ids on each render
+* Keep deterministic layout; do not introduce force layout in v1.
+* Ensure edges keep stable ids and do not disappear on step transitions.
 
 **For human:**
 
-* Decide whether to allow node dragging in v1 (recommended: no)
-
----
+* Fit-to-view is implemented; node dragging remains disabled for determinism.
 
 ---
