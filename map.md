@@ -1,18 +1,67 @@
 # Repository Map: ngram
 
-*Generated: 2025-12-20 17:12*
+*Generated: 2025-12-21 11:26*
 
-- **Files:** 285
-- **Directories:** 73
-- **Total Size:** 3.0M
-- **Doc Files:** 209
-- **Code Files:** 71
-- **Areas:** 11 (docs/ subfolders)
-- **Modules:** 23 (subfolders in areas)
-- **DOCS Links:** 42 (0.59 avg per code file)
+- **Files:** 489
+- **Directories:** 115
+- **Total Size:** 3.9M
+- **Doc Files:** 371
+- **Code Files:** 107
+- **Areas:** 13 (docs/ subfolders)
+- **Modules:** 39 (subfolders in areas)
+- **DOCS Links:** 68 (0.64 avg per code file)
 
-- markdown: 209
-- python: 71
+- markdown: 371
+- python: 80
+- tsx: 13
+- typescript: 11
+- css: 2
+- shell: 1
+
+```mermaid
+graph TD
+    cli_core[cli_core]
+    cli_prompt[cli_prompt]
+    core_utils[core_utils]
+    protocol_doctor[protocol_doctor]
+    llm_agents[llm_agents]
+    tui[tui]
+    engine_models[engine_models]
+    engine_moments[engine_moments]
+    engine_moment_graph[engine_moment_graph]
+    engine_physics[engine_physics]
+    engine_physics_graph[engine_physics_graph]
+    engine_api[engine_api]
+    engine_scene_memory[engine_scene_memory]
+    schema_link_axes[schema_link_axes]
+    engine_membrane[engine_membrane]
+    infrastructure_tempo[infrastructure_tempo]
+    engine_root[engine_root]
+    tools[tools]
+    connectome_frontend[connectome_frontend]
+```
+
+| Module | Code | Docs | Lines | Files | Dependencies |
+|--------|------|------|-------|-------|--------------|
+| cli_core | `ngram/**` | `docs/cli/core/` | 15307 | 54 | - |
+| cli_prompt | `ngram/prompt.py` | `docs/cli/prompt/` | 72 | 1 | - |
+| core_utils | `ngram/core_utils.py` | `docs/core_utils/` | 99 | 1 | - |
+| protocol_doctor | `ngram/doctor.py` | `docs/protocol/doctor/` | 229 | 1 | - |
+| llm_agents | `ngram/llms/**` | `docs/llm_agents/` | 216 | 1 | - |
+| tui | `ngram/tui/**` | `docs/tui/` | 3415 | 15 | - |
+| engine_models | `engine/models/**` | `docs/engine/models/` | 849 | 4 | - |
+| engine_moments | `engine/moments/**` | `docs/engine/moments/` | 25 | 1 | - |
+| engine_moment_graph | `engine/moment_graph/**` | `docs/engine/moment-graph-engine/` | 806 | 4 | - |
+| engine_physics | `engine/physics/**` | `docs/physics/` | 5528 | 20 | - |
+| engine_physics_graph | `engine/physics/graph/**` | `docs/physics/graph/` | 4708 | 14 | - |
+| engine_api | `engine/api/**` | `docs/infrastructure/api/` | 0 | 0 | - |
+| engine_scene_memory | `engine/infrastructure/memory/**` | `docs/infrastructure/scene-memory/` | 512 | 2 | - |
+| schema_link_axes | `docs/schema/link-axes/**` | `docs/schema/link-axes/` | 0 | 0 | - |
+| engine_membrane | `engine/membrane/**` | `docs/engine/membrane/` | 91 | 5 | - |
+| infrastructure_tempo | `engine/infrastructure/tempo/**` | `docs/infrastructure/tempo/` | 49 | 2 | - |
+| engine_root | `engine/**` | `docs/engine/` | 15423 | 66 | - |
+| tools | `tools/**` | `docs/tools/` | 412 | 2 | - |
+| connectome_frontend | `app/**` | `docs/connectome/` | 3386 | 42 | - |
 
 ```
 ├── agents/ (37.8K)
@@ -20,172 +69,370 @@
 │   │   └── CLAUDE.md (9.8K)
 │   └── world_runner/ (28.0K)
 │       └── CLAUDE.md (28.0K)
-├── docs/ (1.4M)
-│   ├── agents/ (118.5K)
-│   │   ├── narrator/ (60.9K)
+├── app/ (92.9K)
+│   ├── api/ (7.3K)
+│   │   ├── connectome/ (6.2K)
+│   │   │   ├── graph/ (1.7K)
+│   │   │   │   └── route.ts (1.7K)
+│   │   │   ├── graphs/ (1.6K)
+│   │   │   │   └── route.ts (1.6K)
+│   │   │   └── search/ (3.0K)
+│   │   │       └── route.ts (3.0K)
+│   │   └── sse/ (1.1K)
+│   │       └── route.ts (1.1K)
+│   ├── connectome/ (83.0K)
+│   │   ├── components/ (68.8K)
+│   │   │   ├── edge_kit/ (8.5K)
+│   │   │   │   ├── connectome_edge_label_renderer_with_halo_and_zoom_policy.tsx (937) →
+│   │   │   │   ├── connectome_edge_style_tokens_for_trigger_and_calltype_mapping.ts (907) →
+│   │   │   │   ├── connectome_node_boundary_intersection_geometry_helpers.ts (961) →
+│   │   │   │   ├── semantic_edge_components_with_directional_shine_and_pulses.tsx (4.9K) →
+│   │   │   │   └── (..2 more files)
+│   │   │   ├── node_kit/ (14.1K)
+│   │   │   │   ├── connectome_energy_badge_bucketed_glow_and_value_formatter.tsx (811) →
+│   │   │   │   ├── connectome_node_background_theme_tokens_by_type_and_language.ts (1.3K) →
+│   │   │   │   ├── connectome_node_frame_with_title_path_and_tooltip_shell.tsx (1.2K) →
+│   │   │   │   ├── connectome_node_step_list_and_active_step_highlighter.tsx (1.3K) →
+│   │   │   │   ├── connectome_player_wait_progress_bar_with_four_second_cap.tsx (2.0K) →
+│   │   │   │   ├── connectome_tick_cron_circular_progress_ring_with_speed_label.tsx (2.4K) →
+│   │   │   │   └── typed_connectome_node_components_with_energy_and_step_highlighting.tsx (5.1K) →
+│   │   │   ├── connectome_health_panel.tsx (3.9K) →
+│   │   │   ├── connectome_log_duration_formatting_and_threshold_color_rules.ts (808) →
+│   │   │   ├── connectome_log_export_buttons_using_state_store_serializers.tsx (1.3K) →
+│   │   │   ├── connectome_log_trigger_and_calltype_badge_color_tokens.ts (1.1K) →
+│   │   │   ├── connectome_page_shell_route_layout_and_control_surface.tsx (4.4K) →
+│   │   │   ├── deterministic_zone_and_node_layout_computation_helpers.ts (3.4K) →
+│   │   │   ├── edge_label_declutter_and_visibility_policy_helpers.ts (898) →
+│   │   │   ├── pannable_zoomable_zoned_flow_canvas_renderer.tsx (18.0K) →
+│   │   │   └── unified_now_and_copyable_ledger_log_panel.tsx (12.6K) →
+│   │   ├── connectome.css (13.9K)
+│   │   └── (..1 more files)
+│   ├── ngram/ (190)
+│   │   └── (..1 more files)
+│   ├── globals.css (1.9K)
+│   └── (..2 more files)
+├── docs/ (1.9M)
+│   ├── agents/ (120.6K)
+│   │   ├── narrator/ (61.8K)
 │   │   │   ├── archive/ (14.8K)
 │   │   │   │   └── SYNC_archive_2024-12.md (14.8K)
 │   │   │   ├── ALGORITHM_Scene_Generation.md (5.9K)
 │   │   │   ├── BEHAVIORS_Narrator.md (4.2K)
 │   │   │   ├── HEALTH_Narrator.md (3.4K)
-│   │   │   ├── IMPLEMENTATION_Narrator.md (5.7K)
+│   │   │   ├── IMPLEMENTATION_Narrator.md (5.8K)
 │   │   │   ├── PATTERNS_Narrator.md (4.6K)
 │   │   │   ├── SYNC_Narrator.md (1.7K)
 │   │   │   ├── SYNC_Narrator_archive_2025-12.md (8.4K)
 │   │   │   ├── TEMPLATE_Player_Notes.md (1.8K)
 │   │   │   ├── TOOL_REFERENCE.md (3.2K)
 │   │   │   ├── VALIDATION_Narrator.md (3.6K)
-│   │   │   └── (..3 more files)
-│   │   └── world-runner/ (57.6K)
+│   │   │   └── (..4 more files)
+│   │   └── world-runner/ (58.9K)
 │   │       ├── archive/ (19.2K)
 │   │       │   └── SYNC_archive_2024-12.md (19.2K)
 │   │       ├── ALGORITHM_World_Runner.md (6.5K)
 │   │       ├── BEHAVIORS_World_Runner.md (6.1K)
 │   │       ├── IMPLEMENTATION_World_Runner_Service_Architecture.md (4.9K)
 │   │       ├── INPUT_REFERENCE.md (1.8K)
+│   │       ├── OBJECTIFS_World_Runner_Goals.md (726)
 │   │       ├── PATTERNS_World_Runner.md (5.4K)
 │   │       ├── SYNC_World_Runner.md (1.8K)
 │   │       ├── TEST_World_Runner_Coverage.md (3.5K)
 │   │       ├── TOOL_REFERENCE.md (4.3K)
-│   │       └── VALIDATION_World_Runner_Invariants.md (3.8K)
-│   ├── architecture/ (55.0K)
-│   │   └── cybernetic_studio_architecture/ (55.0K)
+│   │       ├── VALIDATION_World_Runner_Invariants.md (3.8K)
+│   │       └── (..1 more files)
+│   ├── architecture/ (55.8K)
+│   │   └── cybernetic_studio_architecture/ (55.8K)
 │   │       ├── ALGORITHM_Cybernetic_Studio_Process_Flow.md (4.4K)
 │   │       ├── BEHAVIORS_Cybernetic_Studio_System_Behaviors.md (7.4K)
 │   │       ├── HEALTH_Cybernetic_Studio_Health_Checks.md (7.5K)
 │   │       ├── IMPLEMENTATION_Cybernetic_Studio_Code_Structure.md (8.4K)
+│   │       ├── OBJECTIFS_Cybernetic_Studio_Architecture_Goals.md (798)
 │   │       ├── PATTERNS_Cybernetic_Studio_Architecture.md (16.1K)
 │   │       ├── SYNC_Cybernetic_Studio_Architecture_State.md (6.2K)
 │   │       └── VALIDATION_Cybernetic_Studio_Architectural_Invariants.md (5.0K)
-│   ├── cli/ (133.5K)
-│   │   ├── archive/ (6.3K)
-│   │   │   ├── SYNC_CLI_Development_State_archive_2025-12.md (2.1K)
-│   │   │   ├── SYNC_CLI_State_Archive_2025-12.md (2.8K)
-│   │   │   └── SYNC_archive_2024-12.md (1.3K)
-│   │   ├── core/ (68.2K)
-│   │   │   ├── ALGORITHM_CLI_Command_Execution_Logic/ (11.7K)
-│   │   │   │   ├── ALGORITHM_Doctor_And_Repair.md (3.9K)
-│   │   │   │   ├── ALGORITHM_Init_And_Validate.md (1.5K)
-│   │   │   │   ├── ALGORITHM_Markers_And_Support.md (1.6K)
-│   │   │   │   ├── ALGORITHM_Overview.md (1.7K)
-│   │   │   │   └── ALGORITHM_Refactor_Command.md (3.1K)
-│   │   │   ├── IMPLEMENTATION_CLI_Code_Architecture/ (24.1K)
-│   │   │   │   ├── IMPLEMENTATION_Code_Structure.md (8.0K)
-│   │   │   │   ├── IMPLEMENTATION_Overview.md (6.0K)
-│   │   │   │   ├── IMPLEMENTATION_Runtime_And_Dependencies.md (5.5K)
-│   │   │   │   └── IMPLEMENTATION_Schema.md (4.6K)
-│   │   │   ├── BEHAVIORS_CLI_Command_Effects.md (7.2K)
+│   ├── cli/ (137.0K)
+│   │   ├── archive/ (5.4K)
+│   │   │   ├── SYNC_CLI_Development_State_archive_2025-12.md (581)
+│   │   │   ├── SYNC_CLI_State_Archive_2025-12.md (4.3K)
+│   │   │   └── (..1 more files)
+│   │   ├── core/ (68.4K)
+│   │   │   ├── ALGORITHM_CLI_Command_Execution_Logic/ (8.0K)
+│   │   │   │   └── ALGORITHM_Overview.md (8.0K)
+│   │   │   ├── IMPLEMENTATION_CLI_Code_Architecture/ (24.3K)
+│   │   │   │   ├── overview/ (6.1K)
+│   │   │   │   │   └── IMPLEMENTATION_Overview.md (6.1K)
+│   │   │   │   ├── runtime/ (5.7K)
+│   │   │   │   │   └── IMPLEMENTATION_Runtime_And_Dependencies.md (5.7K)
+│   │   │   │   ├── schema/ (4.6K)
+│   │   │   │   │   └── IMPLEMENTATION_Schema.md (4.6K)
+│   │   │   │   └── structure/ (7.9K)
+│   │   │   │       └── IMPLEMENTATION_Code_Structure.md (7.9K)
+│   │   │   ├── BEHAVIORS_CLI_Command_Effects.md (7.6K)
 │   │   │   ├── HEALTH_CLI_Command_Test_Coverage.md (6.7K)
-│   │   │   ├── PATTERNS_Why_CLI_Over_Copy.md (5.8K)
-│   │   │   ├── SYNC_CLI_Development_State.md (7.1K)
+│   │   │   ├── PATTERNS_Why_CLI_Over_Copy.md (5.9K)
+│   │   │   ├── SYNC_CLI_Development_State.md (10.3K)
 │   │   │   └── VALIDATION_CLI_Instruction_Invariants.md (5.6K)
-│   │   ├── prompt/ (39.4K)
+│   │   ├── prompt/ (39.5K)
 │   │   │   ├── ALGORITHM_Prompt_Bootstrap_Prompt_Construction.md (4.4K)
 │   │   │   ├── BEHAVIORS_Prompt_Command_Output_and_Flow.md (3.5K)
 │   │   │   ├── HEALTH_Prompt_Runtime_Verification.md (6.8K)
-│   │   │   ├── IMPLEMENTATION_Prompt_Code_Architecture.md (7.8K)
+│   │   │   ├── IMPLEMENTATION_Prompt_Code_Architecture.md (7.7K)
 │   │   │   ├── PATTERNS_Prompt_Command_Workflow_Design.md (4.7K)
-│   │   │   ├── SYNC_Prompt_Command_State.md (7.5K)
+│   │   │   ├── SYNC_Prompt_Command_State.md (7.7K)
 │   │   │   └── VALIDATION_Prompt_Bootstrap_Invariants.md (4.7K)
-│   │   ├── ALGORITHM_CLI_Command_Execution_Logic.md (4.7K)
+│   │   ├── ALGORITHM_CLI_Command_Execution_Logic.md (4.6K)
+│   │   ├── BEHAVIORS_CLI_Module_Command_Surface_Effects.md (770)
+│   │   ├── HEALTH_CLI_Module_Verification.md (602)
 │   │   ├── IMPLEMENTATION_CLI_Code_Architecture.md (13.3K)
-│   │   └── modules.md (1.7K)
-│   ├── core_utils/ (33.0K)
+│   │   ├── OBJECTIFS_Cli_Goals.md (690)
+│   │   ├── PATTERNS_CLI_Module_Overview_And_Scope.md (1.0K)
+│   │   ├── VALIDATION_CLI_Module_Invariants.md (732)
+│   │   ├── modules.md (1.8K)
+│   │   └── (..1 more files)
+│   ├── concepts/ (1.3K)
+│   │   └── tempo-controller/ (1.3K)
+│   │       └── CONCEPT_Tempo_Controller.md (1.3K)
+│   ├── connectome/ (279.9K)
+│   │   ├── edge_kit/ (27.9K)
+│   │   │   ├── ALGORITHM_Connectome_Edge_Kit_Edge_Rendering_Pulse_Shine_And_Label_Placement_Rules.md (4.0K)
+│   │   │   ├── BEHAVIORS_Connectome_Edge_Kit_Readable_Directional_And_Truthful_Link_Effects.md (2.8K)
+│   │   │   ├── HEALTH_Connectome_Edge_Kit_Runtime_Verification_Of_Link_Visibility_And_Semantic_Styling.md (3.0K)
+│   │   │   ├── IMPLEMENTATION_Connectome_Edge_Kit_Component_Map_And_Render_Tokens.md (4.9K)
+│   │   │   ├── OBJECTIFS_Edge_Kit_Goals.md (710)
+│   │   │   ├── PATTERNS_Connectome_Edge_Kit_Color_Coded_Trigger_Typed_Directional_Link_Styling_Patterns.md (5.4K)
+│   │   │   ├── SYNC_Connectome_Edge_Kit_Sync_Current_State.md (4.3K)
+│   │   │   └── VALIDATION_Connectome_Edge_Kit_Invariants_For_Color_Dash_And_Pulse_Truth.md (2.7K)
+│   │   ├── event_model/ (43.8K)
+│   │   │   ├── ALGORITHM_Connectome_Event_Normalization_And_Rendering_Event_Synthesis.md (6.3K)
+│   │   │   ├── BEHAVIORS_Connectome_Event_Model_Observable_Event_Stream_Effects.md (4.9K)
+│   │   │   ├── HEALTH_Connectome_Event_Model_Runtime_Verification_And_Signal_Coverage.md (8.3K)
+│   │   │   ├── IMPLEMENTATION_Connectome_Event_Model_Code_Architecture_And_Schema.md (10.8K)
+│   │   │   ├── OBJECTIFS_Event_Model_Goals.md (722)
+│   │   │   ├── PATTERNS_Connectome_Event_Model_Contract_And_Normalization_Patterns.md (6.2K)
+│   │   │   ├── SYNC_Connectome_Event_Model_Sync_Current_State.md (1.6K)
+│   │   │   └── VALIDATION_Connectome_Event_Model_Invariants_And_Error_Conditions.md (4.9K)
+│   │   ├── flow_canvas/ (28.0K)
+│   │   │   ├── ALGORITHM_Connectome_Flow_Canvas_Layout_Zones_And_Edge_Label_Decluttering.md (3.5K)
+│   │   │   ├── BEHAVIORS_Connectome_Flow_Canvas_Readable_Stable_Interaction_Effects.md (2.8K)
+│   │   │   ├── HEALTH_Connectome_Flow_Canvas_Runtime_Verification_Of_Render_Stability_And_Perf_Budgets.md (3.5K)
+│   │   │   ├── IMPLEMENTATION_Connectome_Flow_Canvas_Code_Structure_With_React_Flow_And_Zones.md (3.9K)
+│   │   │   ├── OBJECTIFS_Flow_Canvas_Goals.md (722)
+│   │   │   ├── PATTERNS_Connectome_Flow_Canvas_Pannable_Zoomable_Zoned_System_Map_Rendering_Patterns.md (7.5K)
+│   │   │   ├── SYNC_Connectome_Flow_Canvas_Sync_Current_State.md (3.3K)
+│   │   │   └── VALIDATION_Connectome_Flow_Canvas_Invariants_For_Readability_And_Stability.md (2.8K)
+│   │   ├── health/ (9.1K)
+│   │   │   ├── CONNECTOME_HEALTH_PAYLOAD.md (965)
+│   │   │   ├── HEALTH_Connectome_Live_Signals.md (6.0K)
+│   │   │   ├── INTEGRATION_NOTES.md (1.3K)
+│   │   │   └── OBJECTIFS_Connectome_Health.md (836)
+│   │   ├── log_panel/ (24.8K)
+│   │   │   ├── ALGORITHM_Connectome_Log_Panel_Log_Rendering_Duration_Coloring_And_Export.md (3.5K)
+│   │   │   ├── BEHAVIORS_Connectome_Log_Panel_Step_Clarity_And_Copyable_Audit_Trail_Effects.md (2.9K)
+│   │   │   ├── HEALTH_Connectome_Log_Panel_Runtime_Verification_Of_Log_Truth_And_Export_Integrity.md (2.9K)
+│   │   │   ├── IMPLEMENTATION_Connectome_Log_Panel_Component_Structure_And_Serializer_Integration.md (3.6K)
+│   │   │   ├── OBJECTIFS_Log_Panel_Goals.md (714)
+│   │   │   ├── PATTERNS_Connectome_Log_Panel_Unified_Explain_And_Copyable_Event_Ledger_View_Patterns.md (5.0K)
+│   │   │   ├── SYNC_Connectome_Log_Panel_Sync_Current_State.md (3.6K)
+│   │   │   └── VALIDATION_Connectome_Log_Panel_Invariants_For_Truthful_Durations_And_Stable_Export.md (2.6K)
+│   │   ├── node_kit/ (31.3K)
+│   │   │   ├── ALGORITHM_Connectome_Node_Kit_Node_Rendering_Spec_And_Energy_Glow_Mapping.md (4.1K)
+│   │   │   ├── BEHAVIORS_Connectome_Node_Kit_Visible_Clarity_And_Trust_Effects.md (3.3K)
+│   │   │   ├── HEALTH_Connectome_Node_Kit_Runtime_Verification_Of_Node_State_And_Visual_Signal_Truth.md (3.4K)
+│   │   │   ├── IMPLEMENTATION_Connectome_Node_Kit_Component_Map_And_Styling_Tokens.md (6.7K)
+│   │   │   ├── OBJECTIFS_Node_Kit_Goals.md (710)
+│   │   │   ├── PATTERNS_Connectome_Node_Kit_Typed_Language_Coded_Energy_Aware_Node_Rendering_Patterns.md (5.7K)
+│   │   │   ├── SYNC_Connectome_Node_Kit_Sync_Current_State.md (4.3K)
+│   │   │   └── VALIDATION_Connectome_Node_Kit_Invariants_For_Node_Readability_And_State_Reflection.md (3.0K)
+│   │   ├── page_shell/ (13.5K)
+│   │   │   ├── ALGORITHM_Connectome_Page_Shell_Control_Dispatch_And_Layout_Composition.md (1.0K)
+│   │   │   ├── BEHAVIORS_Connectome_Page_Shell_Stable_Workflow_And_Mode_Control_Effects.md (1.1K)
+│   │   │   ├── HEALTH_Connectome_Page_Shell_Runtime_Verification_Of_Control_Semantics_And_Mode_Gating.md (1.1K)
+│   │   │   ├── IMPLEMENTATION_Connectome_Page_Shell_Nextjs_Route_And_Component_Wiring.md (1.0K)
+│   │   │   ├── OBJECTIFS_Page_Shell_Goals.md (718)
+│   │   │   ├── PATTERNS_Connectome_Page_Shell_Route_Composition_And_User_Control_Surface_Patterns.md (5.5K)
+│   │   │   ├── SYNC_Connectome_Page_Shell_Sync_Current_State.md (2.1K)
+│   │   │   └── VALIDATION_Connectome_Page_Shell_Invariants_For_Control_Correctness_And_No_Drift.md (1.1K)
+│   │   ├── runtime_engine/ (38.3K)
+│   │   │   ├── ALGORITHM_Connectome_Runtime_Engine_Step_Release_And_Realtime_Scheduling.md (4.4K)
+│   │   │   ├── BEHAVIORS_Connectome_Runtime_Engine_User_Controlled_Traversal_Effects.md (4.6K)
+│   │   │   ├── HEALTH_Connectome_Runtime_Engine_Runtime_Verification_Of_Pacing_And_Order.md (7.3K)
+│   │   │   ├── IMPLEMENTATION_Connectome_Runtime_Engine_Code_Structure_And_Control_Surface.md (5.7K)
+│   │   │   ├── OBJECTIFS_Runtime_Engine_Goals.md (734)
+│   │   │   ├── PATTERNS_Connectome_Runtime_Engine_Stepper_And_Realtime_Traversal_Control_Patterns.md (10.7K)
+│   │   │   ├── SYNC_Connectome_Runtime_Engine_Sync_Current_State.md (1.5K)
+│   │   │   └── VALIDATION_Connectome_Runtime_Engine_Invariants_For_Stepper_And_Realtime.md (3.3K)
+│   │   ├── state_store/ (28.8K)
+│   │   │   ├── ALGORITHM_Connectome_State_Store_Atomic_Commits_For_Step_Releases_And_Realtime.md (4.0K)
+│   │   │   ├── BEHAVIORS_Connectome_State_Store_Observable_State_Consistency_Effects.md (3.3K)
+│   │   │   ├── HEALTH_Connectome_State_Store_Runtime_Verification_Of_Ledger_And_Timer_Correctness.md (4.1K)
+│   │   │   ├── IMPLEMENTATION_Connectome_State_Store_Code_Structure_And_Zustand_Actions.md (4.3K)
+│   │   │   ├── OBJECTIFS_State_Store_Goals.md (722)
+│   │   │   ├── PATTERNS_Connectome_State_Store_Single_Source_Of_Truth_For_Events_Focus_And_Timers.md (7.4K)
+│   │   │   ├── SYNC_Connectome_State_Store_Sync_Current_State.md (1.5K)
+│   │   │   └── VALIDATION_Connectome_State_Store_Invariants_For_Ledger_Ordering_And_Focus.md (3.5K)
+│   │   ├── telemetry_adapter/ (24.8K)
+│   │   │   ├── ALGORITHM_Connectome_Telemetry_Adapter_Sse_Subscription_Event_Parsing_And_Raw_Event_Emission.md (3.4K)
+│   │   │   ├── BEHAVIORS_Connectome_Telemetry_Adapter_Realtime_Ingestion_Buffering_And_Backpressure_Effects.md (3.1K)
+│   │   │   ├── HEALTH_Connectome_Telemetry_Adapter_Runtime_Verification_Of_Stream_Integrity_And_Buffer_Bounds.md (3.8K)
+│   │   │   ├── IMPLEMENTATION_Connectome_Telemetry_Adapter_Code_Structure_For_Sse_And_Snapshot_Docking.md (4.2K)
+│   │   │   ├── OBJECTIFS_Telemetry_Adapter_Goals.md (746)
+│   │   │   ├── PATTERNS_Connectome_Telemetry_Adapter_Sse_To_FlowEvent_Normalization_Docking_Patterns.md (5.1K)
+│   │   │   ├── SYNC_Connectome_Telemetry_Adapter_Sync_Current_State.md (1.4K)
+│   │   │   └── VALIDATION_Connectome_Telemetry_Adapter_Invariants_For_No_Dropped_Events_And_Stable_Order.md (3.1K)
+│   │   └── VISUAL_STYLEGUIDE_Connectome.md (9.7K)
+│   ├── core_utils/ (34.0K)
 │   │   ├── ALGORITHM_Template_Path_Resolution_And_Doc_Discovery.md (3.9K)
 │   │   ├── BEHAVIORS_Core_Utils_Helper_Effects.md (3.6K)
 │   │   ├── HEALTH_Core_Utils_Verification.md (7.4K)
 │   │   ├── IMPLEMENTATION_Core_Utils_Code_Architecture.md (8.3K)
+│   │   ├── OBJECTIFS_Core_Utils_Goals.md (718)
 │   │   ├── PATTERNS_Core_Utils_Functions.md (2.2K)
-│   │   ├── SYNC_Core_Utils_State.md (4.1K)
+│   │   ├── SYNC_Core_Utils_State.md (4.3K)
 │   │   └── VALIDATION_Core_Utils_Invariants.md (3.6K)
-│   ├── engine/ (75.0K)
-│   │   ├── models/ (41.6K)
+│   ├── engine/ (121.0K)
+│   │   ├── membrane/ (32.0K)
+│   │   │   ├── ALGORITHM_Membrane_Modulation.md (4.3K)
+│   │   │   ├── BEHAVIORS_Membrane_Modulation.md (4.5K)
+│   │   │   ├── HEALTH_Membrane_Modulation.md (2.7K)
+│   │   │   ├── IMPLEMENTATION_Membrane_Modulation.md (2.5K)
+│   │   │   ├── PATTERNS_Membrane_Scoping.md (4.1K)
+│   │   │   ├── PATTERNS_No_Magic_Constants_Dynamic_Modulation_Functions.md (3.2K)
+│   │   │   ├── PATTERN_Membrane_Modulation.md (5.1K)
+│   │   │   ├── SYNC_Membrane_Modulation.md (2.3K)
+│   │   │   └── VALIDATION_Membrane_Modulation.md (3.3K)
+│   │   ├── models/ (42.0K)
 │   │   │   ├── ALGORITHM_Models.md (6.0K)
 │   │   │   ├── BEHAVIORS_Models.md (4.0K)
 │   │   │   ├── HEALTH_Models.md (4.4K)
-│   │   │   ├── IMPLEMENTATION_Models.md (10.6K)
+│   │   │   ├── IMPLEMENTATION_Models.md (10.8K)
 │   │   │   ├── PATTERNS_Models.md (6.7K)
-│   │   │   ├── SYNC_Models.md (4.9K)
+│   │   │   ├── SYNC_Models.md (5.1K)
 │   │   │   └── VALIDATION_Models.md (5.1K)
-│   │   ├── moment-graph-engine/ (21.5K)
+│   │   ├── moment-graph-engine/ (29.0K)
 │   │   │   ├── ALGORITHM_Click_Wait_Surfacing.md (3.1K)
 │   │   │   ├── BEHAVIORS_Traversal_And_Surfacing.md (2.4K)
 │   │   │   ├── IMPLEMENTATION_Moment_Graph_Runtime_Layout.md (2.4K)
 │   │   │   ├── PATTERNS_Instant_Traversal_Moment_Graph.md (3.7K)
-│   │   │   ├── SYNC_Moment_Graph_Engine.md (6.0K)
+│   │   │   ├── SYNC_Moment_Graph_Engine.md (7.1K)
 │   │   │   ├── TEST_Moment_Graph_Runtime_Coverage.md (1.8K)
-│   │   │   └── VALIDATION_Moment_Traversal_Invariants.md (2.2K)
-│   │   └── moments/ (11.8K)
-│   │       ├── ALGORITHM_Moment_Graph_Operations.md (1.3K)
-│   │       ├── BEHAVIORS_Moment_Lifecycle.md (1.4K)
-│   │       ├── IMPLEMENTATION_Moment_Graph_Stub.md (868)
-│   │       ├── PATTERNS_Moments.md (3.7K)
-│   │       ├── SYNC_Moments.md (2.1K)
-│   │       ├── TEST_Moment_Graph_Coverage.md (1.3K)
-│   │       └── VALIDATION_Moment_Graph_Invariants.md (1.1K)
-│   ├── infrastructure/ (116.6K)
-│   │   ├── api/ (61.0K)
+│   │   │   ├── VALIDATION_Moment_Traversal_Invariants.md (2.2K)
+│   │   │   ├── VALIDATION_Player_DMZ.md (2.4K)
+│   │   │   ├── VALIDATION_Simultaneity_Contradiction.md (1.8K)
+│   │   │   └── VALIDATION_Void_Tension.md (2.3K)
+│   │   ├── moments/ (11.8K)
+│   │   │   ├── ALGORITHM_Moment_Graph_Operations.md (1.3K)
+│   │   │   ├── BEHAVIORS_Moment_Lifecycle.md (1.4K)
+│   │   │   ├── IMPLEMENTATION_Moment_Graph_Stub.md (868)
+│   │   │   ├── PATTERNS_Moments.md (3.7K)
+│   │   │   ├── SYNC_Moments.md (2.1K)
+│   │   │   ├── TEST_Moment_Graph_Coverage.md (1.3K)
+│   │   │   └── VALIDATION_Moment_Graph_Invariants.md (1.1K)
+│   │   ├── ALGORITHM_Engine.md (687)
+│   │   ├── BEHAVIORS_Engine.md (865)
+│   │   ├── HEALTH_Engine.md (515)
+│   │   ├── IMPLEMENTATION_Engine.md (848)
+│   │   ├── OBJECTIFS_Engine_Goals.md (702)
+│   │   ├── PATTERNS_Engine.md (1.1K)
+│   │   ├── SYNC_Engine.md (772)
+│   │   └── VALIDATION_Engine.md (666)
+│   ├── infrastructure/ (149.8K)
+│   │   ├── api/ (61.9K)
 │   │   │   ├── ALGORITHM_Api.md (19.8K)
 │   │   │   ├── ALGORITHM_Playthrough_Creation.md (5.8K)
 │   │   │   ├── BEHAVIORS_Api.md (2.1K)
 │   │   │   ├── HEALTH_Api.md (3.7K)
 │   │   │   ├── IMPLEMENTATION_Api.md (7.8K)
+│   │   │   ├── OBJECTIFS_Api_Goals.md (690)
 │   │   │   ├── PATTERNS_Api.md (2.8K)
-│   │   │   ├── SYNC_Api.md (2.8K)
+│   │   │   ├── SYNC_Api.md (3.0K)
 │   │   │   ├── SYNC_Api_archive_2025-12.md (13.9K)
 │   │   │   └── VALIDATION_Api.md (2.3K)
-│   │   └── scene-memory/ (55.6K)
-│   │       ├── archive/ (2.5K)
-│   │       │   └── SYNC_archive_2024-12.md (2.5K)
-│   │       ├── ALGORITHM_Scene_Memory.md (8.5K)
-│   │       ├── BEHAVIORS_Scene_Memory.md (5.0K)
-│   │       ├── IMPLEMENTATION_Scene_Memory.md (5.5K)
-│   │       ├── PATTERNS_Scene_Memory.md (4.7K)
-│   │       ├── SYNC_Scene_Memory.md (10.2K)
-│   │       ├── SYNC_Scene_Memory_archive_2025-12.md (10.8K)
-│   │       ├── TEST_Scene_Memory.md (3.3K)
-│   │       └── VALIDATION_Scene_Memory.md (5.2K)
-│   ├── llm_agents/ (33.2K)
+│   │   ├── scene-memory/ (57.0K)
+│   │   │   ├── archive/ (2.5K)
+│   │   │   │   └── SYNC_archive_2024-12.md (2.5K)
+│   │   │   ├── ALGORITHM_Scene_Memory.md (8.5K)
+│   │   │   ├── BEHAVIORS_Scene_Memory.md (5.0K)
+│   │   │   ├── HEALTH_Scene_Memory.md (518)
+│   │   │   ├── IMPLEMENTATION_Scene_Memory.md (5.5K)
+│   │   │   ├── OBJECTIFS_Scene_Memory_Goals.md (726)
+│   │   │   ├── PATTERNS_Scene_Memory.md (4.7K)
+│   │   │   ├── SYNC_Scene_Memory.md (6.0K)
+│   │   │   ├── SYNC_Scene_Memory_archive_2025-12.md (15.2K)
+│   │   │   ├── TEST_Scene_Memory.md (3.3K)
+│   │   │   └── VALIDATION_Scene_Memory.md (5.2K)
+│   │   ├── tempo/ (27.7K)
+│   │   │   ├── ALGORITHM_Tempo_Controller.md (3.1K)
+│   │   │   ├── BEHAVIORS_Tempo.md (2.9K)
+│   │   │   ├── HEALTH_Tempo.md (4.8K)
+│   │   │   ├── IMPLEMENTATION_Tempo.md (7.0K)
+│   │   │   ├── OBJECTIFS_Tempo_Goals.md (698)
+│   │   │   ├── PATTERNS_Tempo.md (3.3K)
+│   │   │   ├── SYNC_Tempo.md (3.3K)
+│   │   │   └── VALIDATION_Tempo.md (2.6K)
+│   │   └── wsl-autostart.md (3.2K)
+│   ├── llm_agents/ (33.9K)
 │   │   ├── ALGORITHM_Gemini_Stream_Flow.md (4.1K)
 │   │   ├── BEHAVIORS_Gemini_Agent_Output.md (4.1K)
 │   │   ├── HEALTH_LLM_Agent_Coverage.md (5.2K)
 │   │   ├── IMPLEMENTATION_LLM_Agent_Code_Architecture.md (1.9K)
+│   │   ├── OBJECTIFS_Llm_Agents_Goals.md (718)
 │   │   ├── PATTERNS_Provider_Specific_LLM_Subprocesses.md (4.4K)
 │   │   ├── SYNC_LLM_Agents_State.md (4.6K)
 │   │   ├── SYNC_LLM_Agents_State_archive_2025-12.md (5.0K)
 │   │   └── VALIDATION_Gemini_Agent_Invariants.md (3.8K)
-│   ├── physics/ (341.1K)
-│   │   ├── graph/ (113.9K)
+│   ├── physics/ (349.4K)
+│   │   ├── algorithms/ (105.7K)
+│   │   │   ├── ALGORITHM_Physics_Energy_Flow_Sources_Sinks_And_Moment_Dynamics.md (985)
+│   │   │   ├── ALGORITHM_Physics_Energy_Mechanics_And_Link_Semantics.md (100.5K)
+│   │   │   ├── ALGORITHM_Physics_Handler_And_Input_Processing_Flows.md (915)
+│   │   │   ├── ALGORITHM_Physics_Mechanisms.md (1.4K)
+│   │   │   ├── ALGORITHM_Physics_Speed_Control_And_Display_Filtering.md (898)
+│   │   │   └── ALGORITHM_Physics_Tick_Cycle_Gating_Flips_And_Dispatch.md (932)
+│   │   ├── attention/ (21.9K)
+│   │   │   ├── ALGORITHM_Attention_Energy_Split.md (1.3K)
+│   │   │   ├── BEHAVIORS_Attention_Split_And_Interrupts.md (3.9K)
+│   │   │   ├── IMPLEMENTATION_Attention_Energy_Split.md (1.1K)
+│   │   │   ├── PATTERNS_Attention_Energy_Split.md (6.0K)
+│   │   │   ├── SYNC_Attention_Energy_Split.md (986)
+│   │   │   ├── VALIDATION_Attention_Split_And_Interrupts.md (8.2K)
+│   │   │   └── (..1 more files)
+│   │   ├── graph/ (116.9K)
 │   │   │   ├── archive/ (18.2K)
 │   │   │   │   └── ALGORITHM_Energy_Flow_archived_2025-12-20.md (18.2K)
 │   │   │   ├── BEHAVIORS_Graph.md (8.8K)
 │   │   │   ├── PATTERNS_Graph.md (5.1K)
-│   │   │   ├── SYNC_Graph.md (6.9K)
-│   │   │   ├── SYNC_Graph_archive_2025-12.md (30.8K)
+│   │   │   ├── SYNC_Graph.md (8.5K)
+│   │   │   ├── SYNC_Graph_archive_2025-12.md (32.2K)
 │   │   │   └── VALIDATION_Living_Graph.md (44.1K)
-│   │   ├── ALGORITHM_Physics.md (141.5K)
+│   │   ├── mechanisms/ (9.0K)
+│   │   │   ├── MECHANISMS_Attention_Energy_Split.md (4.3K)
+│   │   │   ├── MECHANISMS_Contradiction_Pressure.md (2.5K)
+│   │   │   └── MECHANISMS_Primes_Lag_Decay.md (2.2K)
+│   │   ├── ALGORITHM_Physics.md (4.4K)
 │   │   ├── API_Physics.md (6.9K)
-│   │   ├── BEHAVIORS_Physics.md (13.4K)
+│   │   ├── BEHAVIORS_Physics.md (13.9K)
 │   │   ├── HEALTH_Physics.md (4.7K)
-│   │   ├── IMPLEMENTATION_Physics.md (10.4K)
+│   │   ├── IMPLEMENTATION_Physics.md (11.5K)
+│   │   ├── OBJECTIFS_Physics_Goals.md (706)
 │   │   ├── PATTERNS_Physics.md (9.3K)
-│   │   ├── SYNC_Physics.md (4.6K)
+│   │   ├── SYNC_Physics.md (8.3K)
 │   │   ├── SYNC_Physics_archive_2025-12.md (17.8K)
 │   │   └── VALIDATION_Physics.md (18.5K)
-│   ├── protocol/ (103.9K)
+│   ├── protocol/ (105.1K)
 │   │   ├── ALGORITHM/ (2.5K)
 │   │   │   └── ALGORITHM_Protocol_Process_Flow.md (2.5K)
 │   │   ├── IMPLEMENTATION/ (5.5K)
 │   │   │   └── IMPLEMENTATION_Protocol_File_Structure.md (5.5K)
 │   │   ├── archive/ (839)
 │   │   │   └── SYNC_Archive_2024-12.md (839)
-│   │   ├── doctor/ (53.6K)
+│   │   ├── doctor/ (54.0K)
 │   │   │   ├── ALGORITHM_Project_Health_Doctor.md (17.3K)
 │   │   │   ├── BEHAVIORS_Project_Health_Doctor.md (9.3K)
 │   │   │   ├── HEALTH_Project_Health_Doctor.md (5.0K)
 │   │   │   ├── IMPLEMENTATION_Project_Health_Doctor.md (5.6K)
 │   │   │   ├── PATTERNS_Project_Health_Doctor.md (4.0K)
-│   │   │   ├── SYNC_Project_Health_Doctor.md (7.2K)
+│   │   │   ├── SYNC_Project_Health_Doctor.md (7.7K)
 │   │   │   └── VALIDATION_Project_Health_Doctor.md (5.2K)
 │   │   ├── features/ (9.4K)
 │   │   │   ├── BEHAVIORS_Agent_Trace_Logging.md (3.7K)
@@ -195,10 +442,11 @@
 │   │   ├── BEHAVIORS_Observable_Protocol_Effects.md (6.7K)
 │   │   ├── HEALTH_Protocol_Verification.md (5.6K)
 │   │   ├── IMPLEMENTATION_Protocol_System_Architecture.md (697)
+│   │   ├── OBJECTIFS_Protocol_Goals.md (710)
 │   │   ├── PATTERNS_Bidirectional_Documentation_Chain_For_AI_Agents.md (5.0K)
 │   │   ├── SYNC_Protocol_Current_State.md (7.9K)
 │   │   └── VALIDATION_Protocol_Invariants.md (5.7K)
-│   ├── schema/ (60.0K)
+│   ├── schema/ (89.7K)
 │   │   ├── SCHEMA/ (6.6K)
 │   │   │   ├── SCHEMA_Links.md (1.6K)
 │   │   │   ├── SCHEMA_Nodes.md (2.9K)
@@ -213,14 +461,35 @@
 │   │   │   ├── PATTERNS_Graph_Health_Validation.md (3.7K)
 │   │   │   ├── SYNC_Graph_Health.md (3.9K)
 │   │   │   └── SYNC_Graph_Health_archive_2025-12.md (4.0K)
+│   │   ├── link-axes/ (25.1K)
+│   │   │   ├── BEHAVIORS_Link_Axes.md (1.9K)
+│   │   │   ├── PATTERNS_Link_Axes_Not_Types.md (2.6K)
+│   │   │   ├── SCHEMA_Link_Axes.md (14.7K)
+│   │   │   ├── SYNC_Link_Axes.md (2.8K)
+│   │   │   └── VALIDATION_Link_Axes.md (3.0K)
 │   │   ├── models/ (30.3K)
 │   │   │   ├── PATTERNS_Pydantic_Schema_Models.md (3.2K)
 │   │   │   ├── SYNC_Schema_Models.md (2.7K)
 │   │   │   └── SYNC_Schema_Models_archive_2025-12.md (24.4K)
+│   │   ├── ALGORITHM_Schema_Module_Doc_Routing.md (678)
+│   │   ├── BEHAVIORS_Schema_Module_Observable_Schema_Effects.md (689)
+│   │   ├── HEALTH_Schema_Module_Verification.md (605)
+│   │   ├── IMPLEMENTATION_Schema_Module_Doc_Structure.md (639)
+│   │   ├── OBJECTIFS_Schema_Goals.md (702)
+│   │   ├── PATTERNS_Schema_Module_Overview_And_Ownership.md (681)
 │   │   ├── SCHEMA_Code.md (4.5K)
-│   │   ├── VALIDATION_Graph.md (3.0K)
+│   │   ├── SYNC_Schema_Module_Current_State.md (520)
+│   │   ├── VALIDATION_Graph.md (3.1K)
 │   │   └── (..2 more files)
-│   ├── tui/ (57.7K)
+│   ├── tools/ (5.7K)
+│   │   ├── ALGORITHM_Tools.md (534)
+│   │   ├── BEHAVIORS_Tools.md (717)
+│   │   ├── HEALTH_Tools.md (539)
+│   │   ├── OBJECTIFS_Tools_Goals.md (698)
+│   │   ├── PATTERNS_Tools.md (710)
+│   │   ├── SYNC_Tools.md (1.5K)
+│   │   └── (..2 more files)
+│   ├── tui/ (58.4K)
 │   │   ├── IMPLEMENTATION_TUI_Code_Architecture/ (9.9K)
 │   │   │   └── IMPLEMENTATION_TUI_Code_Architecture_Structure.md (9.9K)
 │   │   ├── archive/ (8.0K)
@@ -231,85 +500,100 @@
 │   │   ├── BEHAVIORS_TUI_Interactions.md (6.9K)
 │   │   ├── HEALTH_TUI_Component_Test_Coverage.md (6.1K)
 │   │   ├── IMPLEMENTATION_TUI_Code_Architecture.md (3.8K)
+│   │   ├── OBJECTIFS_Tui_Goals.md (690)
 │   │   ├── PATTERNS_TUI_Modular_Interface_Design.md (5.1K)
 │   │   ├── SYNC_TUI_Development_Current_State.md (6.9K)
 │   │   └── VALIDATION_TUI_User_Interface_Invariants.md (4.8K)
 │   ├── SYNC_Project_Repository_Map.md (5.5K)
 │   ├── SYNC_Project_Repository_Map_archive_2025-12.md (50.4K)
-│   └── map.md (206.0K)
-├── engine/ (668.4K)
-│   ├── graph/ (119.2K)
-│   │   └── health/ (119.2K)
+│   └── map.md (304.8K)
+├── engine/ (699.2K)
+│   ├── graph/ (119.4K)
+│   │   └── health/ (119.4K)
 │   │       ├── README.md (3.4K)
 │   │       ├── check_health.py (14.1K) →
-│   │       ├── example_queries.cypher (18.1K)
-│   │       ├── lint_terminology.py (14.9K)
+│   │       ├── example_queries.cypher (18.2K)
+│   │       ├── lint_terminology.py (14.9K) →
 │   │       ├── query_outputs.md (23.3K)
 │   │       ├── query_results.md (16.2K)
 │   │       └── test_schema.py (29.3K)
-│   ├── infrastructure/ (146.2K)
-│   │   ├── api/ (79.0K)
+│   ├── infrastructure/ (149.5K)
+│   │   ├── api/ (79.1K)
 │   │   │   ├── app.py (27.6K) →
 │   │   │   ├── moments.py (17.7K)
-│   │   │   ├── playthroughs.py (24.1K)
-│   │   │   ├── sse_broadcast.py (2.8K)
+│   │   │   ├── playthroughs.py (24.2K) →
+│   │   │   ├── sse_broadcast.py (2.8K) →
 │   │   │   ├── tempo.py (6.7K) →
 │   │   │   └── (..1 more files)
-│   │   ├── embeddings/ (6.0K)
+│   │   ├── canon/ (265)
+│   │   │   └── (..2 more files)
+│   │   ├── embeddings/ (7.2K)
 │   │   │   ├── __init__.py (501) →
-│   │   │   └── service.py (5.5K) →
+│   │   │   └── service.py (6.7K) →
 │   │   ├── memory/ (19.6K)
 │   │   │   ├── moment_processor.py (19.4K) →
 │   │   │   └── (..1 more files)
-│   │   └── orchestration/ (41.6K)
-│   │       ├── __init__.py (522)
-│   │       ├── agent_cli.py (6.2K)
-│   │       ├── narrator.py (6.6K) →
-│   │       ├── orchestrator.py (19.5K)
-│   │       └── world_runner.py (8.8K) →
+│   │   ├── orchestration/ (41.6K)
+│   │   │   ├── __init__.py (522)
+│   │   │   ├── agent_cli.py (6.2K)
+│   │   │   ├── narrator.py (6.6K) →
+│   │   │   ├── orchestrator.py (19.5K)
+│   │   │   └── world_runner.py (8.8K) →
+│   │   └── tempo/ (1.7K)
+│   │       ├── tempo_controller.py (1.6K)
+│   │       └── (..1 more files)
+│   ├── membrane/ (3.3K)
+│   │   ├── __init__.py (517)
+│   │   ├── functions.py (1.3K)
+│   │   ├── provider.py (665)
+│   │   └── (..2 more files)
 │   ├── models/ (32.7K)
 │   │   ├── __init__.py (2.2K) →
 │   │   ├── base.py (12.3K)
 │   │   ├── links.py (7.2K)
 │   │   └── nodes.py (11.0K) →
-│   ├── moment_graph/ (30.7K)
+│   ├── moment_graph/ (30.9K)
 │   │   ├── __init__.py (541) →
-│   │   ├── queries.py (15.7K)
+│   │   ├── queries.py (15.8K) →
 │   │   ├── surface.py (6.8K)
-│   │   └── traversal.py (7.7K)
+│   │   └── traversal.py (7.7K) →
 │   ├── moments/ (896)
 │   │   └── __init__.py (896) →
-│   ├── physics/ (203.4K)
-│   │   ├── graph/ (180.6K)
-│   │   │   ├── graph_ops.py (28.6K) →
+│   ├── physics/ (223.7K)
+│   │   ├── graph/ (192.1K)
+│   │   │   ├── graph_ops.py (28.7K) →
 │   │   │   ├── graph_ops_apply.py (30.4K)
-│   │   │   ├── graph_ops_events.py (2.0K)
 │   │   │   ├── graph_ops_image.py (5.0K)
 │   │   │   ├── graph_ops_links.py (19.9K)
 │   │   │   ├── graph_ops_moments.py (20.0K)
+│   │   │   ├── graph_ops_read_only_interface.py (8.9K) →
 │   │   │   ├── graph_queries.py (30.4K)
 │   │   │   ├── graph_queries_moments.py (19.3K) →
 │   │   │   ├── graph_queries_search.py (12.9K) →
-│   │   │   ├── graph_query_utils.py (8.7K) →
-│   │   │   └── (..2 more files)
+│   │   │   ├── graph_query_utils.py (9.1K) →
+│   │   │   └── (..4 more files)
+│   │   ├── attention_split_sink_mass_distribution_mechanism.py (4.1K)
 │   │   ├── constants.py (3.7K)
+│   │   ├── contradiction_pressure_from_negative_polarity_mechanism.py (2.3K)
+│   │   ├── primes_lag_and_half_life_decay_mechanism.py (2.4K)
 │   │   ├── tick.py (18.6K) →
 │   │   └── (..1 more files)
 │   ├── scripts/ (3.6K)
 │   │   └── inject_to_narrator.py (3.6K) →
-│   ├── tests/ (123.0K)
+│   ├── tests/ (126.6K)
 │   │   ├── test_e2e_moment_graph.py (16.7K)
 │   │   ├── test_moment.py (10.7K)
 │   │   ├── test_moment_graph.py (33.3K)
 │   │   ├── test_moment_lifecycle.py (11.5K)
 │   │   ├── test_moments_api.py (15.6K)
 │   │   ├── test_narrator_integration.py (16.5K)
+│   │   ├── test_physics_mechanisms.py (3.6K)
 │   │   └── test_spec_consistency.py (18.7K)
 │   └── init_db.py (8.7K)
-├── ngram/ (639.2K)
+├── ngram/ (669.7K)
 │   ├── llms/ (11.0K)
 │   │   └── gemini_agent.py (11.0K) →
-│   ├── tui/ (168.6K)
+│   ├── tui/ (169.1K)
 │   │   ├── styles/ (18.7K)
 │   │   │   ├── theme.tcss (9.2K)
 │   │   │   └── theme_light.tcss (9.6K)
@@ -321,42 +605,56 @@
 │   │   │   ├── status_bar.py (7.0K) →
 │   │   │   ├── suggestions.py (1.2K) →
 │   │   │   └── (..1 more files)
-│   │   ├── app.py (548) →
-│   │   ├── app_core.py (29.1K) →
+│   │   ├── app.py (547) →
+│   │   ├── app_core.py (29.6K) →
 │   │   ├── app_manager.py (11.0K) →
 │   │   ├── commands.py (29.5K) →
 │   │   ├── commands_agent.py (18.4K) →
 │   │   ├── manager.py (9.9K) →
 │   │   ├── state.py (6.6K) →
 │   │   └── (..1 more files)
-│   ├── context.py (18.2K) →
+│   ├── cli.py (20.5K) →
 │   ├── doctor_checks_content.py (21.0K) →
+│   ├── doctor_checks_docs.py (19.2K) →
 │   ├── doctor_files.py (23.3K) →
 │   ├── doctor_report.py (24.1K)
 │   ├── repair.py (25.0K) →
 │   ├── repair_core.py (30.0K) →
 │   ├── repair_instructions.py (27.6K) →
-│   ├── repair_instructions_docs.py (18.6K) →
 │   ├── repo_overview.py (28.5K) →
-│   ├── validate.py (28.3K) →
-│   └── (..27 more files)
-├── templates/ (135.6K)
-│   ├── ngram/ (129.8K)
+│   ├── validate.py (29.4K) →
+│   └── (..28 more files)
+├── templates/ (152.5K)
+│   ├── ngram/ (145.6K)
 │   │   ├── agents/ (2.8K)
 │   │   │   └── manager/ (2.8K)
 │   │   │       └── CLAUDE.md (2.8K)
-│   │   ├── state/ (2.1K)
-│   │   │   └── SYNC_Project_State.md (2.1K)
-│   │   ├── templates/ (38.0K)
-│   │   │   ├── ALGORITHM_TEMPLATE.md (2.3K)
-│   │   │   ├── BEHAVIORS_TEMPLATE.md (2.1K)
+│   │   ├── skills/ (13.0K)
+│   │   │   ├── SKILL_Create_Module_Documentation_Chain_From_Templates_And_Seed_Todos.md (1.4K)
+│   │   │   ├── SKILL_Debug_Investigate_And_Fix_Issues_With_Evidence_First.md (1.1K)
+│   │   │   ├── SKILL_Define_And_Verify_Health_Signals_Mapped_To_Validation_Invariants.md (1.3K)
+│   │   │   ├── SKILL_Extend_Add_Features_To_Existing_Systems_With_Canon_Constraints.md (1.1K)
+│   │   │   ├── SKILL_Implement_Write_Or_Modify_Code_With_Doc_Chain_Coupling.md (1.2K)
+│   │   │   ├── SKILL_Ingest_Raw_Data_Sources_And_Route_To_Modules.md (1.3K)
+│   │   │   ├── SKILL_Onboard_Understand_Existing_Module_Codebase_And_Confirm_Canon.md (1.1K)
+│   │   │   ├── SKILL_Orchestrate_Feature_Integration_Pipeline_Orchestrator_And_Progress_Router.md (1.4K)
+│   │   │   ├── SKILL_Review_Evaluate_Changes_And_Produce_Auditable_Report.md (1.1K)
+│   │   │   ├── SKILL_Update_Module_Sync_State_And_Record_Markers.md (1.1K)
+│   │   │   └── (..1 more files)
+│   │   ├── state/ (2.3K)
+│   │   │   ├── SYNC_Project_State.md (2.1K)
+│   │   │   └── (..1 more files)
+│   │   ├── templates/ (40.5K)
+│   │   │   ├── ALGORITHM_TEMPLATE.md (2.6K)
+│   │   │   ├── BEHAVIORS_TEMPLATE.md (2.5K)
 │   │   │   ├── CONCEPT_TEMPLATE.md (1.1K)
-│   │   │   ├── HEALTH_TEMPLATE.md (13.8K)
-│   │   │   ├── IMPLEMENTATION_TEMPLATE.md (8.7K)
-│   │   │   ├── PATTERNS_TEMPLATE.md (2.4K)
+│   │   │   ├── HEALTH_TEMPLATE.md (14.1K)
+│   │   │   ├── IMPLEMENTATION_TEMPLATE.md (8.8K)
+│   │   │   ├── OBJECTIFS_TEMPLATE.md (544)
+│   │   │   ├── PATTERNS_TEMPLATE.md (2.8K)
 │   │   │   ├── SYNC_TEMPLATE.md (3.1K)
 │   │   │   ├── TOUCHES_TEMPLATE.md (1.6K)
-│   │   │   └── VALIDATION_TEMPLATE.md (2.9K)
+│   │   │   └── VALIDATION_TEMPLATE.md (3.4K)
 │   │   ├── views/ (66.4K)
 │   │   │   ├── VIEW_Analyze_Structural_Analysis.md (4.1K)
 │   │   │   ├── VIEW_Debug_Investigate_And_Fix_Issues.md (3.7K)
@@ -370,21 +668,33 @@
 │   │   │   ├── VIEW_Refactor_Improve_Code_Structure.md (5.1K)
 │   │   │   └── (..18 more files)
 │   │   ├── PRINCIPLES.md (8.4K)
-│   │   └── PROTOCOL.md (12.1K)
-│   ├── CODEX_SYSTEM_PROMPT_ADDITION.md (2.1K)
+│   │   └── PROTOCOL.md (12.2K)
+│   ├── CODEX_SYSTEM_PROMPT_ADDITION.md (3.2K)
 │   ├── GEMINI_SYSTEM_PROMPT_ADDITION.md (2.4K)
 │   ├── ngramignore (839)
 │   └── (..1 more files)
-├── tools/ (13.7K)
+├── tools/ (22.1K)
+│   ├── systemd/ (3.3K)
+│   │   └── user/ (3.3K)
+│   │       ├── blood-fe.service (581)
+│   │       ├── falkor-mcp.service (657)
+│   │       ├── ngram-be.service (501)
+│   │       ├── ngram-fe.service (670)
+│   │       ├── ngrok-falkor.service (552)
+│   │       └── (..1 more files)
+│   ├── connectome_doc_bundle_splitter_and_fence_rewriter.py (2.8K)
+│   ├── run_stack.sh (2.3K)
 │   └── stream_dialogue.py (13.7K) →
 ├── .ngramignore (839)
-├── AGENTS.md (24.9K)
+├── AGENTS.md (26.0K)
 ├── CLAUDE.md (4.0K)
-├── README.md (4.5K)
-├── map.md (201.2K)
-├── map_docs.md (58.2K)
-├── map_docs_cli.md (12.3K)
-└── map_docs_protocol.md (9.5K)
+├── README.md (4.7K)
+├── map.md (304.8K)
+├── map_app.md (11.3K)
+├── map_docs.md (148.0K)
+├── map_docs_cli.md (12.5K)
+├── map_docs_protocol.md (9.5K)
+└── tsconfig.tsbuildinfo (75.0K)
 ```
 
 **Code refs:**
@@ -454,6 +764,163 @@
 - ## Tensions
 - ## Modifiers
 - ## Moment Links
+
+**Definitions:**
+- `runGraphFetch()`
+- `GET()`
+
+**Definitions:**
+- `runListGraphs()`
+- `GET()`
+
+**Definitions:**
+- `runSearchWithPython()`
+- `runSearch()`
+- `GET()`
+
+**Definitions:**
+- `formatEvent()`
+- `GET()`
+
+**Docs:** `docs/connectome/edge_kit/IMPLEMENTATION_Connectome_Edge_Kit_Component_Map_And_Render_Tokens.md`
+
+**Docs:** `docs/connectome/edge_kit/IMPLEMENTATION_Connectome_Edge_Kit_Component_Map_And_Render_Tokens.md`
+
+**Definitions:**
+- `dash_for_trigger()`
+- `color_for_call_type()`
+- `trigger_label()`
+
+**Docs:** `docs/connectome/edge_kit/IMPLEMENTATION_Connectome_Edge_Kit_Component_Map_And_Render_Tokens.md`
+
+**Definitions:**
+- `clamp()`
+- `intersect_line_with_rect()`
+
+**Docs:** `docs/connectome/edge_kit/IMPLEMENTATION_Connectome_Edge_Kit_Component_Map_And_Render_Tokens.md`
+
+**Definitions:**
+- `EdgeComponent()`
+- `strokeWidth()`
+
+**Docs:** `docs/connectome/node_kit/IMPLEMENTATION_Connectome_Node_Kit_Component_Map_And_Styling_Tokens.md`
+
+**Definitions:**
+- `bucket_for_energy()`
+
+**Docs:** `docs/connectome/node_kit/IMPLEMENTATION_Connectome_Node_Kit_Component_Map_And_Styling_Tokens.md`
+
+**Definitions:**
+- `theme_for_node()`
+- `title_color_for_node()`
+
+**Docs:** `docs/connectome/node_kit/IMPLEMENTATION_Connectome_Node_Kit_Component_Map_And_Styling_Tokens.md`
+
+**Docs:** `docs/connectome/node_kit/IMPLEMENTATION_Connectome_Node_Kit_Component_Map_And_Styling_Tokens.md`
+
+**Definitions:**
+- `color_for_call_type()`
+
+**Docs:** `docs/connectome/node_kit/IMPLEMENTATION_Connectome_Node_Kit_Component_Map_And_Styling_Tokens.md`
+
+**Definitions:**
+- `color_for_seconds()`
+
+**Docs:** `docs/connectome/node_kit/IMPLEMENTATION_Connectome_Node_Kit_Component_Map_And_Styling_Tokens.md`
+
+**Definitions:**
+- `color_for_speed()`
+- `elapsed()`
+
+**Docs:** `docs/connectome/node_kit/IMPLEMENTATION_Connectome_Node_Kit_Component_Map_And_Styling_Tokens.md`
+
+**Definitions:**
+- `build_node_tooltip()`
+- `BaseNode()`
+- `renderHint()`
+- `PlayerNode()`
+- `renderHint()`
+- `handleClick()`
+- `handleKeyDown()`
+- `TickCronNode()`
+- `renderHint()`
+
+**Docs:** `docs/connectome/health/HEALTH_Connectome_Live_Signals.md`
+
+**Definitions:**
+- `status_label()`
+
+**Docs:** `docs/connectome/log_panel/IMPLEMENTATION_Connectome_Log_Panel_Component_Structure_And_Serializer_Integration.md`
+
+**Definitions:**
+- `duration_text()`
+- `duration_class()`
+
+**Docs:** `docs/connectome/log_panel/IMPLEMENTATION_Connectome_Log_Panel_Component_Structure_And_Serializer_Integration.md`
+
+**Definitions:**
+- `copy_to_clipboard()`
+- `handleCopyJsonl()`
+- `handleCopyText()`
+
+**Docs:** `docs/connectome/log_panel/IMPLEMENTATION_Connectome_Log_Panel_Component_Structure_And_Serializer_Integration.md`
+
+**Definitions:**
+- `trigger_badge_class()`
+- `call_type_badge_class()`
+
+**Docs:** `docs/connectome/page_shell/PATTERNS_Connectome_Page_Shell_Route_Composition_And_User_Control_Surface_Patterns.md`
+
+**Definitions:**
+- `connect()`
+- `handleNext()`
+- `handleRestart()`
+- `handleSpeedChange()`
+- `handleModeChange()`
+
+**Docs:** `docs/connectome/flow_canvas/IMPLEMENTATION_Connectome_Flow_Canvas_Code_Structure_With_React_Flow_And_Zones.md`
+
+**Definitions:**
+- `compute_zones()`
+- `compute_node_positions()`
+
+**Docs:** `docs/connectome/flow_canvas/IMPLEMENTATION_Connectome_Flow_Canvas_Code_Structure_With_React_Flow_And_Zones.md`
+
+**Definitions:**
+- `compute_label_anchors()`
+
+**Docs:** `docs/connectome/flow_canvas/IMPLEMENTATION_Connectome_Flow_Canvas_Code_Structure_With_React_Flow_And_Zones.md`
+
+**Definitions:**
+- `hex_to_rgb()`
+- `build_shader()`
+- `build_program()`
+- `CanvasInner()`
+- `searchNodes()`
+- `searchEdges()`
+- `searchEdges()`
+- `render()`
+- `sx()`
+- `sy()`
+- `handleWheel()`
+- `handleMouseDown()`
+- `handleMouseMove()`
+- `handleMouseUp()`
+- `worldX()`
+- `worldY()`
+
+**Docs:** `docs/connectome/log_panel/IMPLEMENTATION_Connectome_Log_Panel_Component_Structure_And_Serializer_Integration.md`
+
+**Definitions:**
+- `node_label()`
+- `node_class()`
+- `call_type_detail()`
+- `trigger_detail()`
+- `loadGraphs()`
+- `loadGraph()`
+- `handleSearch()`
+- `nodeIds()`
+- `edgeIds()`
 
 **Doc refs:**
 - `agents/narrator/CLAUDE.md`
@@ -542,8 +1009,7 @@
 **Code refs:**
 - `engine/infrastructure/orchestration/agent_cli.py`
 - `engine/infrastructure/orchestration/narrator.py`
-- `narrator.py`
-- `stream_dialogue.py`
+- `tools/stream_dialogue.py`
 
 **Doc refs:**
 - `agents/narrator/CLAUDE.md`
@@ -754,6 +1220,13 @@
 - ## Processing Guidance (Short)
 - ## CHAIN
 
+**Sections:**
+- # OBJECTIFS — World-Runner
+- ## PRIMARY OBJECTIVES (ranked)
+- ## NON-OBJECTIVES
+- ## TRADEOFFS (canonical decisions)
+- ## SUCCESS SIGNALS (observable)
+
 **Code refs:**
 - `engine/infrastructure/orchestration/world_runner.py`
 - `engine/physics/graph/graph_ops.py`
@@ -878,6 +1351,13 @@
 - ## BIDIRECTIONAL LINKS
 - ## GAPS / IDEAS / QUESTIONS
 
+**Sections:**
+- # OBJECTIFS — Cybernetic Studio Architecture
+- ## PRIMARY OBJECTIVES (ranked)
+- ## NON-OBJECTIVES
+- ## TRADEOFFS (canonical decisions)
+- ## SUCCESS SIGNALS (observable)
+
 **Code refs:**
 - `ngram/doctor_checks.py`
 
@@ -937,29 +1417,17 @@
 - ## SYNC STATUS
 - ## GAPS / IDEAS / QUESTIONS
 
-**Code refs:**
-- `ngram/repair_core.py`
-
 **Doc refs:**
 - `docs/cli/archive/SYNC_CLI_State_Archive_2025-12.md`
-- `docs/cli/core/SYNC_CLI_Development_State.md`
 
 **Sections:**
 - # Archived: SYNC_CLI_Development_State.md
-- ## MATURITY
-- ## CURRENT STATE
-- ## IN PROGRESS
-- ## RECENT CHANGES (ARCHIVED)
-- ## KNOWN ISSUES
-- ## HANDOFF: FOR AGENTS
-- ## HANDOFF: FOR HUMAN
-- ## TODO
-- ## CONSCIOUSNESS TRACE
-- ## POINTERS
-- ## AGENT OBSERVATIONS (CONDENSED)
+- ## STATUS
+- ## CHAIN
 
 **Code refs:**
 - `ngram/doctor_checks.py`
+- `ngram/repair_core.py`
 
 **Doc refs:**
 - `docs/cli/core/SYNC_CLI_Development_State.md`
@@ -971,6 +1439,7 @@
 - ## RECENT CHANGES (ARCHIVED)
 - ## NOTES
 - ## RELATED ARCHIVES
+- ## MERGED SNAPSHOTS
 - ## CHAIN
 - ## CURRENT STATE
 - ## IN PROGRESS
@@ -980,63 +1449,117 @@
 - ## TODO
 - ## CONSCIOUSNESS TRACE
 - ## POINTERS
-
-**Doc refs:**
-- `docs/cli/archive/SYNC_CLI_State_Archive_2025-12.md`
-- `docs/cli/core/SYNC_CLI_Development_State.md`
-
-**Sections:**
-- # CLI Archive: Pre-2025 Summary
-- ## MATURITY
-- ## CURRENT STATE
-- ## IN PROGRESS
-- ## RECENT CHANGES (ARCHIVED)
-- ## KNOWN ISSUES
-- ## HANDOFF: FOR AGENTS
-- ## HANDOFF: FOR HUMAN
-- ## TODO
-- ## CONSCIOUSNESS TRACE
-- ## POINTERS
-
-**Sections:**
-- # ngram Framework CLI — Algorithm: Doctor and Repair
-- ## CONTEXT
-- ## ALGORITHM: Doctor Command
-- ## ALGORITHM: Repair Command
-- # AGENTS.md = .ngram/CLAUDE.md + templates/CODEX_SYSTEM_PROMPT_ADDITION.md
-- ## KEY DECISIONS
-- # Safe fixes that only touch references
-- # Also create/update documentation content
-- # Also make code changes
-
-**Sections:**
-- # ngram Framework CLI — Algorithm: Init and Validate
-- ## CONTEXT
-- ## ALGORITHM: Init Command
-- ## ALGORITHM: Validate Command
-
-**Sections:**
-- # ngram Framework CLI — Algorithm: Marker Scans and Support Utilities
-- ## CONTEXT
-- ## ALGORITHM: Solve Markers Command
-- ## HELPER FUNCTIONS
-- ## INTERACTIONS (HIGH-LEVEL)
 
 **Sections:**
 - # ngram Framework CLI — Algorithm: Command Processing Logic (Overview)
 - ## CHAIN
 - ## OVERVIEW
+- ## COMMAND ALGORITHMS
 - ## DATA STRUCTURES
 - ## DATA FLOW (SUMMARY)
 - ## PERFORMANCE NOTES
 
+**Code refs:**
+- `ngram/cli.py`
+- `ngram/core_utils.py`
+- `ngram/doctor.py`
+- `ngram/doctor_checks.py`
+- `ngram/doctor_checks_content.py`
+- `ngram/doctor_checks_docs.py`
+- `ngram/doctor_checks_naming.py`
+- `ngram/doctor_checks_quality.py`
+- `ngram/doctor_checks_sync.py`
+- `ngram/doctor_files.py`
+- `ngram/refactor.py`
+- `ngram/repair.py`
+- `ngram/repair_core.py`
+- `ngram/repair_escalation_interactive.py`
+- `ngram/repair_instructions.py`
+- `ngram/repair_instructions_docs.py`
+- `ngram/repair_report.py`
+- `ngram/repo_overview.py`
+- `ngram/repo_overview_formatters.py`
+- `ngram/solve_escalations.py`
+- `ngram/validate.py`
+
+**Doc refs:**
+- `docs/cli/archive/SYNC_archive_2024-12.md`
+- `docs/cli/core/PATTERNS_Why_CLI_Over_Copy.md`
+
 **Sections:**
-- # ngram Framework CLI — Algorithm: Refactor Command
+- # ngram Framework CLI — Implementation: Code Architecture and Structure (Overview)
 - ## CHAIN
-- ## PURPOSE
-- ## STEPS
-- ## DOCS INTEGRATION
-- ## GAPS / IDEAS
+- ## OVERVIEW
+- ## DESIGN PATTERNS
+- ## SUBSYSTEM IMPLEMENTATIONS
+- ## BIDIRECTIONAL LINKS (ENTRY)
+- ## CODE STRUCTURE
+- ## SCHEMA
+- ## ENTRY POINTS
+- ## DATA FLOW AND DOCKING (FLOW-BY-FLOW)
+- ## LOGIC CHAINS
+- ## MODULE DEPENDENCIES
+- ## STATE MANAGEMENT
+- ## RUNTIME BEHAVIOR
+- ## CONCURRENCY MODEL
+- ## CONFIGURATION
+- ## BIDIRECTIONAL LINKS
+- ## GAPS / IDEAS / QUESTIONS
+- ## GAPS (ACTIVE)
+- ## ARCHIVE POINTER
+
+**Code refs:**
+- `ngram/agent_cli.py`
+- `ngram/cli.py`
+- `ngram/doctor.py`
+- `ngram/doctor_report.py`
+- `ngram/init_cmd.py`
+- `ngram/repair.py`
+- `ngram/repair_report.py`
+
+**Sections:**
+- # ngram Framework CLI — Implementation: Runtime and Dependencies
+- ## CHAIN
+- ## CONTEXT
+- ## CODE STRUCTURE
+- ## DESIGN PATTERNS
+- ## SCHEMA
+- ## ENTRY POINTS
+- ## DATA FLOW AND DOCKING (FLOW-BY-FLOW)
+- ## LOGIC CHAINS
+- ## MODULE DEPENDENCIES
+- ## STATE MANAGEMENT
+- ## RUNTIME BEHAVIOR
+- ## CONCURRENCY MODEL
+- ## CONFIGURATION
+- ## BIDIRECTIONAL LINKS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Code refs:**
+- `ngram/cli.py`
+- `ngram/doctor.py`
+- `ngram/doctor_report.py`
+- `ngram/repair.py`
+- `ngram/repair_report.py`
+- `ngram/validate.py`
+
+**Sections:**
+- # ngram Framework CLI — Implementation: Schema Definitions for CLI Flows
+- ## CHAIN
+- ## CONTEXT
+- ## CODE STRUCTURE
+- ## DESIGN PATTERNS
+- ## SCHEMA
+- ## ENTRY POINTS
+- ## DATA FLOW AND DOCKING (FLOW-BY-FLOW)
+- ## LOGIC CHAINS
+- ## MODULE DEPENDENCIES
+- ## STATE MANAGEMENT
+- ## RUNTIME BEHAVIOR
+- ## CONCURRENCY MODEL
+- ## CONFIGURATION
+- ## BIDIRECTIONAL LINKS
+- ## GAPS / IDEAS / QUESTIONS
 
 **Code refs:**
 - `ngram/agent_cli.py`
@@ -1092,111 +1615,6 @@
 - ## BIDIRECTIONAL LINKS
 - ## FILE RESPONSIBILITIES
 
-**Code refs:**
-- `ngram/cli.py`
-- `ngram/core_utils.py`
-- `ngram/doctor.py`
-- `ngram/doctor_checks.py`
-- `ngram/doctor_checks_content.py`
-- `ngram/doctor_checks_docs.py`
-- `ngram/doctor_checks_naming.py`
-- `ngram/doctor_checks_quality.py`
-- `ngram/doctor_checks_sync.py`
-- `ngram/doctor_files.py`
-- `ngram/refactor.py`
-- `ngram/repair.py`
-- `ngram/repair_core.py`
-- `ngram/repair_escalation_interactive.py`
-- `ngram/repair_instructions.py`
-- `ngram/repair_instructions_docs.py`
-- `ngram/repair_report.py`
-- `ngram/repo_overview.py`
-- `ngram/repo_overview_formatters.py`
-- `ngram/solve_escalations.py`
-- `ngram/validate.py`
-
-**Doc refs:**
-- `docs/cli/core/PATTERNS_Why_CLI_Over_Copy.md`
-
-**Sections:**
-- # ngram Framework CLI — Implementation: Code Architecture and Structure (Overview)
-- ## CHAIN
-- ## OVERVIEW
-- ## DESIGN PATTERNS
-- ## SUBSYSTEM IMPLEMENTATIONS
-- ## BIDIRECTIONAL LINKS (ENTRY)
-- ## CODE STRUCTURE
-- ## SCHEMA
-- ## ENTRY POINTS
-- ## DATA FLOW AND DOCKING (FLOW-BY-FLOW)
-- ## LOGIC CHAINS
-- ## MODULE DEPENDENCIES
-- ## STATE MANAGEMENT
-- ## RUNTIME BEHAVIOR
-- ## CONCURRENCY MODEL
-- ## CONFIGURATION
-- ## BIDIRECTIONAL LINKS
-- ## GAPS / IDEAS / QUESTIONS
-- ## GAPS (ACTIVE)
-- ## ARCHIVE POINTER
-
-**Code refs:**
-- `cli.py`
-- `doctor_report.py`
-- `ngram/agent_cli.py`
-- `ngram/cli.py`
-- `ngram/doctor.py`
-- `ngram/doctor_report.py`
-- `ngram/repair.py`
-- `ngram/repair_report.py`
-
-**Sections:**
-- # ngram Framework CLI — Implementation: Runtime and Dependencies
-- ## CHAIN
-- ## CONTEXT
-- ## CODE STRUCTURE
-- ## DESIGN PATTERNS
-- ## SCHEMA
-- ## ENTRY POINTS
-- ## DATA FLOW AND DOCKING (FLOW-BY-FLOW)
-- ## LOGIC CHAINS
-- ## MODULE DEPENDENCIES
-- ## STATE MANAGEMENT
-- ## RUNTIME BEHAVIOR
-- ## CONCURRENCY MODEL
-- ## CONFIGURATION
-- ## BIDIRECTIONAL LINKS
-- ## GAPS / IDEAS / QUESTIONS
-
-**Code refs:**
-- `ngram/cli.py`
-- `ngram/doctor.py`
-- `ngram/doctor_report.py`
-- `ngram/repair.py`
-- `ngram/repair_report.py`
-- `ngram/validate.py`
-
-**Doc refs:**
-- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Code_Structure.md`
-
-**Sections:**
-- # ngram Framework CLI — Implementation: Schema Definitions for CLI Flows
-- ## CHAIN
-- ## CONTEXT
-- ## CODE STRUCTURE
-- ## DESIGN PATTERNS
-- ## SCHEMA
-- ## ENTRY POINTS
-- ## DATA FLOW AND DOCKING (FLOW-BY-FLOW)
-- ## LOGIC CHAINS
-- ## MODULE DEPENDENCIES
-- ## STATE MANAGEMENT
-- ## RUNTIME BEHAVIOR
-- ## CONCURRENCY MODEL
-- ## CONFIGURATION
-- ## BIDIRECTIONAL LINKS
-- ## GAPS / IDEAS / QUESTIONS
-
 **Doc refs:**
 - `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md`
 - `docs/cli/core/HEALTH_CLI_Command_Test_Coverage.md`
@@ -1239,6 +1657,7 @@
 - `agent_cli.py`
 - `ngram/core_utils.py`
 - `ngram/doctor_files.py`
+- `ngram/github.py`
 - `ngram/repair_core.py`
 - `ngram/repair_escalation_interactive.py`
 - `ngram/repair_instructions.py`
@@ -1262,8 +1681,13 @@
 - ## GAPS / IDEAS / QUESTIONS
 
 **Code refs:**
+- `ngram/agent_cli.py`
+- `ngram/cli.py`
 - `ngram/doctor_checks_content.py`
+- `ngram/doctor_checks_docs.py`
+- `ngram/doctor_checks_stub.py`
 - `ngram/doctor_files.py`
+- `ngram/init_cmd.py`
 - `ngram/prompt.py`
 - `ngram/refactor.py`
 - `ngram/repair_core.py`
@@ -1273,17 +1697,20 @@
 **Doc refs:**
 - `archive/SYNC_CLI_Development_State_archive_2025-12.md`
 - `docs/cli/ALGORITHM_CLI_Command_Execution_Logic.md`
-- `docs/cli/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md`
-- `docs/cli/SYNC_CLI_State.md`
 - `docs/cli/archive/SYNC_CLI_Development_State_archive_2025-12.md`
 - `docs/cli/archive/SYNC_CLI_State_Archive_2025-12.md`
-- `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Markers_And_Support.md`
 - `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md`
-- `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Refactor_Command.md`
 - `docs/cli/core/BEHAVIORS_CLI_Command_Effects.md`
-- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/overview/IMPLEMENTATION_Overview.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/runtime/IMPLEMENTATION_Runtime_And_Dependencies.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/schema/IMPLEMENTATION_Schema.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/structure/IMPLEMENTATION_Code_Structure.md`
+- `docs/cli/core/PATTERNS_Why_CLI_Over_Copy.md`
 - `docs/cli/core/SYNC_CLI_Development_State.md`
 - `docs/cli/core/VALIDATION_CLI_Instruction_Invariants.md`
+- `docs/protocol/doctor/SYNC_Project_Health_Doctor.md`
+- `docs/tui/ALGORITHM_TUI_Widget_Interaction_Flow.md`
+- `docs/tui/PATTERNS_TUI_Modular_Interface_Design.md`
 
 **Sections:**
 - # ngram Framework CLI — Sync: Current State
@@ -1385,8 +1812,6 @@
 
 **Doc refs:**
 - `docs/cli/prompt/ALGORITHM_Prompt_Bootstrap_Prompt_Construction.md`
-- `ngram/state/SYNC_Project_Health.md`
-- `ngram/state/SYNC_Prompt_Command_State.md`
 
 **Sections:**
 - # CLI Prompt — Implementation: Code architecture and docking
@@ -1484,6 +1909,16 @@
 - ## INTERACTIONS
 - ## GAPS / IDEAS / QUESTIONS
 
+**Sections:**
+- # ngram Framework CLI — Behaviors: Command Surface Effects
+- ## CHAIN
+- ## BEHAVIORS
+
+**Sections:**
+- # ngram Framework CLI — Health: Verification Checklist
+- ## CHAIN
+- ## CHECKS
+
 **Code refs:**
 - `ngram/cli.py`
 - `ngram/context.py`
@@ -1498,7 +1933,9 @@
 - `ngram/repair_core.py`
 
 **Doc refs:**
-- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Code_Structure.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/overview/IMPLEMENTATION_Overview.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/structure/IMPLEMENTATION_Code_Structure.md`
+- `docs/cli/core/PATTERNS_Why_CLI_Over_Copy.md`
 
 **Sections:**
 - # ngram Framework CLI — Implementation: Code Architecture and Structure
@@ -1517,12 +1954,29 @@
 - ## BIDIRECTIONAL LINKS
 - ## GAPS / IDEAS / QUESTIONS
 
+**Sections:**
+- # OBJECTIFS — Cli
+- ## PRIMARY OBJECTIVES (ranked)
+- ## NON-OBJECTIVES
+- ## TRADEOFFS (canonical decisions)
+- ## SUCCESS SIGNALS (observable)
+
+**Sections:**
+- # ngram Framework CLI — Patterns: Command Surface Overview and Scope
+- ## CHAIN
+- ## PURPOSE
+- ## SCOPE
+
+**Sections:**
+- # ngram Framework CLI — Validation: Command Invariants
+- ## CHAIN
+- ## INVARIANTS
+
 **Doc refs:**
 - `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md`
-- `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Refactor_Command.md`
 - `docs/cli/core/BEHAVIORS_CLI_Command_Effects.md`
 - `docs/cli/core/HEALTH_CLI_Command_Test_Coverage.md`
-- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/overview/IMPLEMENTATION_Overview.md`
 - `docs/cli/core/PATTERNS_Why_CLI_Over_Copy.md`
 - `docs/cli/core/SYNC_CLI_Development_State.md`
 - `docs/cli/core/VALIDATION_CLI_Instruction_Invariants.md`
@@ -1533,6 +1987,879 @@
 
 **Sections:**
 - # CLI Modules
+
+**Doc refs:**
+- `docs/infrastructure/tempo/ALGORITHM_Tempo_Controller.md`
+- `docs/infrastructure/tempo/IMPLEMENTATION_Tempo.md`
+- `docs/infrastructure/tempo/PATTERNS_Tempo.md`
+
+**Sections:**
+- # CONCEPT: Tempo Controller — The Main Loop That Paces Reality
+- ## WHAT IT IS
+- ## WHY IT EXISTS
+- ## KEY PROPERTIES
+- ## RELATIONSHIPS TO OTHER CONCEPTS
+- ## THE CORE INSIGHT
+- ## COMMON MISUNDERSTANDINGS
+- ## SEE ALSO
+
+**Sections:**
+- # edge_kit — Algorithm: Rendering, Pulses, Directional Shine, and Label Rules
+- ## CHAIN
+- ## OVERVIEW
+- ## DATA STRUCTURES
+- ## ALGORITHM: `style_for_edge(edge)`
+- ## ALGORITHM: `compute_label_style(edge)`
+- ## ALGORITHM: `compute_pulse_duration_ms(edge, declared_duration_ms, speed)`
+- ## ALGORITHM: `compute_pulse_path_clamped_to_node_bounds(edge, geometry)`
+- ## ALGORITHM: directional shine animation
+- ## ALGORITHM: energy magnitude mapping → pulse visuals
+- ## COMPLEXITY
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # edge_kit — Behaviors: Readable, Directional, Truthful Link Effects
+- ## CHAIN
+- ## BEHAVIORS
+- ## ANTI-BEHAVIORS
+- ## EDGE CASES
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # edge_kit — Health: Link Visibility and Semantic Styling Verification
+- ## PURPOSE OF THIS FILE
+- ## CHAIN
+- ## FLOWS ANALYSIS (TRIGGERS + FREQUENCY)
+- ## HEALTH INDICATORS SELECTED
+- ## CHECKER INDEX
+- ## HOW TO RUN
+- ## KNOWN GAPS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Code refs:**
+- `app/connectome/components/edge_kit/connectome_edge_directional_shine_animation_helpers.ts`
+- `app/connectome/components/edge_kit/connectome_edge_label_renderer_with_halo_and_zoom_policy.ts`
+- `app/connectome/components/edge_kit/connectome_edge_label_renderer_with_halo_and_zoom_policy.tsx`
+- `app/connectome/components/edge_kit/connectome_edge_pulse_particle_animation_and_boundary_clamp_helpers.ts`
+- `app/connectome/components/edge_kit/connectome_edge_style_tokens_for_trigger_and_calltype_mapping.ts`
+- `app/connectome/components/edge_kit/connectome_node_boundary_intersection_geometry_helpers.ts`
+- `app/connectome/components/edge_kit/semantic_edge_components_with_directional_shine_and_pulses.ts`
+- `app/connectome/components/edge_kit/semantic_edge_components_with_directional_shine_and_pulses.tsx`
+
+**Sections:**
+- # edge_kit — Implementation: Component Map and Render Tokens
+- ## CHAIN
+- ## CODE STRUCTURE
+- ## RENDER TOKENS (V1)
+- ## ENTRY POINTS
+- ## DATA FLOW AND DOCKING
+- ## CONFIGURATION
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # OBJECTIFS — Edge Kit
+- ## PRIMARY OBJECTIVES (ranked)
+- ## NON-OBJECTIVES
+- ## TRADEOFFS (canonical decisions)
+- ## SUCCESS SIGNALS (observable)
+
+**Sections:**
+- # edge_kit — Patterns: Color-Coded, Trigger-Typed, Directional Edge Styling
+- ## CHAIN
+- ## THE PROBLEM
+- ## THE PATTERN
+- ## PRINCIPLES
+- ## EDGE TYPES (V1)
+- ## DEPENDENCIES
+- ## SCOPE
+- ## GAPS / IDEAS / QUESTIONS
+
+**Code refs:**
+- `app/connectome/components/edge_kit/connectome_edge_directional_shine_animation_helpers.ts`
+- `app/connectome/components/edge_kit/connectome_edge_label_renderer_with_halo_and_zoom_policy.tsx`
+- `app/connectome/components/edge_kit/connectome_edge_pulse_particle_animation_and_boundary_clamp_helpers.ts`
+- `app/connectome/components/edge_kit/connectome_edge_style_tokens_for_trigger_and_calltype_mapping.ts`
+- `app/connectome/components/edge_kit/connectome_node_boundary_intersection_geometry_helpers.ts`
+- `app/connectome/components/edge_kit/semantic_edge_components_with_directional_shine_and_pulses.tsx`
+- `app/connectome/components/pannable_zoomable_zoned_flow_canvas_renderer.tsx`
+
+**Sections:**
+- # edge_kit — Sync: Current State
+- ## MATURITY
+- ## CURRENT STATE
+- ## RECENT CHANGES
+- ## TODO
+
+**Sections:**
+- # edge_kit — Validation: Invariants for Color, Dash, Direction, and Pulse Truth
+- ## CHAIN
+- ## INVARIANTS
+- ## ERROR CONDITIONS
+- ## HEALTH COVERAGE
+- ## VERIFICATION PROCEDURE
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # event_model — Algorithm: Normalizing Inputs into FlowEvents
+- ## CHAIN
+- ## OVERVIEW
+- ## DATA STRUCTURES
+- ## ALGORITHM: `normalize_flow_event(raw_input)`
+- ## KEY DECISIONS
+- ## DATA FLOW
+- ## COMPLEXITY
+- ## HELPER FUNCTIONS
+- ## INTERACTIONS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # event_model — Behaviors: Observable Effects of the FlowEvent Contract
+- ## CHAIN
+- ## BEHAVIORS
+- ## INPUTS / OUTPUTS
+- ## EDGE CASES
+- ## ANTI-BEHAVIORS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # event_model — Health: Verification Mechanics and Coverage
+- ## PURPOSE OF THIS FILE
+- ## WHY THIS PATTERN
+- ## CHAIN
+- ## FLOWS ANALYSIS (TRIGGERS + FREQUENCY)
+- ## HEALTH INDICATORS SELECTED
+- ## STATUS (RESULT INDICATOR)
+- ## DOCK TYPES (COMPLETE LIST)
+- ## CHECKER INDEX
+- ## INDICATOR: event_schema_conformance
+- ## HOW TO RUN
+- # Run all health checks for this module
+- # Run a specific checker
+- ## KNOWN GAPS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # event_model — Implementation: Code Architecture and Structure
+- ## CHAIN
+- ## CODE STRUCTURE
+- ## DESIGN PATTERNS
+- ## SCHEMA
+- ## ENTRY POINTS
+- ## DATA FLOW AND DOCKING (FLOW-BY-FLOW)
+- ## LOGIC CHAINS
+- ## MODULE DEPENDENCIES
+- ## STATE MANAGEMENT
+- ## RUNTIME BEHAVIOR
+- ## CONCURRENCY MODEL
+- ## CONFIGURATION
+- ## BIDIRECTIONAL LINKS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # OBJECTIFS — Event Model
+- ## PRIMARY OBJECTIVES (ranked)
+- ## NON-OBJECTIVES
+- ## TRADEOFFS (canonical decisions)
+- ## SUCCESS SIGNALS (observable)
+
+**Sections:**
+- # event_model — Patterns: Contract-First Event Stream for Stepper + Realtime
+- ## CHAIN
+- ## THE PROBLEM
+- ## THE PATTERN
+- ## PRINCIPLES
+- ## DATA
+- ## DEPENDENCIES
+- ## INSPIRATIONS
+- ## SCOPE
+- ## GAPS / IDEAS / QUESTIONS
+
+**Code refs:**
+- `app/connectome/lib/flow_event_duration_bucket_color_classifier.ts`
+- `app/connectome/lib/flow_event_schema_and_normalization_contract.ts`
+- `app/connectome/lib/flow_event_trigger_and_calltype_inference_rules.ts`
+
+**Sections:**
+- # event_model — Sync: Current State
+- ## MATURITY
+- ## CURRENT STATE
+- ## RECENT CHANGES
+- ## KNOWN ISSUES
+- ## TODO
+
+**Sections:**
+- # event_model — Validation: Invariants for FlowEvent Correctness
+- ## CHAIN
+- ## INVARIANTS
+- ## PROPERTIES
+- ## ERROR CONDITIONS
+- ## HEALTH COVERAGE
+- ## VERIFICATION PROCEDURE
+- # Run health checks (module scoped)
+- ## SYNC STATUS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # flow_canvas — Algorithm: Zones, Layout, and Label Decluttering
+- ## CHAIN
+- ## OVERVIEW
+- ## DATA STRUCTURES
+- ## ALGORITHM: `compute_zone_layout(viewport)`
+- ## ALGORITHM: `place_nodes_with_force_layout(nodes, edges, zones)`
+- ## ALGORITHM: `route_edges_and_place_labels(edges, node_layouts)`
+- ## ALGORITHM: `apply_camera_transform(camera, world_coords)`
+- ## COMPLEXITY
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # flow_canvas — Behaviors: Readability, Stability, and Navigation Effects
+- ## CHAIN
+- ## BEHAVIORS
+- ## EDGE CASES
+- ## ANTI-BEHAVIORS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # flow_canvas — Health: Render Stability and Performance Budget Checks
+- ## PURPOSE OF THIS FILE
+- ## CHAIN
+- ## FLOWS ANALYSIS (TRIGGERS + FREQUENCY)
+- ## HEALTH INDICATORS SELECTED
+- ## CHECKER INDEX
+- ## HOW TO RUN
+- ## KNOWN GAPS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Code refs:**
+- `app/connectome/components/deterministic_zone_and_node_layout_computation_helpers.ts`
+- `app/connectome/components/edge_label_declutter_and_visibility_policy_helpers.ts`
+- `app/connectome/components/pannable_zoomable_zoned_flow_canvas_renderer.ts`
+- `app/connectome/components/pannable_zoomable_zoned_flow_canvas_renderer.tsx`
+
+**Sections:**
+- # flow_canvas — Implementation: Code Architecture and Structure
+- ## CHAIN
+- ## CODE STRUCTURE
+- ## DESIGN PATTERNS
+- ## ENTRY POINTS
+- ## DATA FLOW AND DOCKING
+- ## CONFIGURATION
+- ## BIDIRECTIONAL LINKS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # OBJECTIFS — Flow Canvas
+- ## PRIMARY OBJECTIVES (ranked)
+- ## NON-OBJECTIVES
+- ## TRADEOFFS (canonical decisions)
+- ## SUCCESS SIGNALS (observable)
+
+**Sections:**
+- # flow_canvas — Patterns: Pannable/Zoomable Zoned Map with Stable Edge Readability
+- ## CHAIN
+- ## THE PROBLEM
+- ## THE PATTERN
+- ## PRINCIPLES
+- ## DATA
+- ## DEPENDENCIES
+- ## INSPIRATIONS
+- ## SCOPE
+- ## PATTERNS USED (SUB-PATTERNS)
+- ## ENTRY POINTS
+- ## DATA FLOW AND DOCKING (FLOW-BY-FLOW)
+- ## GAPS / IDEAS / QUESTIONS
+
+**Code refs:**
+- `app/connectome/components/deterministic_zone_and_node_layout_computation_helpers.ts`
+- `app/connectome/components/edge_kit/semantic_edge_components_with_directional_shine_and_pulses.tsx`
+- `app/connectome/components/node_kit/connectome_node_frame_with_title_path_and_tooltip_shell.tsx`
+- `app/connectome/components/node_kit/typed_connectome_node_components_with_energy_and_step_highlighting.tsx`
+- `app/connectome/components/pannable_zoomable_zoned_flow_canvas_renderer.tsx`
+
+**Sections:**
+- # flow_canvas — Sync: Current State
+- ## MATURITY
+- ## CURRENT STATE
+- ## RECENT CHANGES
+- ## TODO
+- ## HANDOFF
+
+**Sections:**
+- # flow_canvas — Validation: Invariants for Readability and Render Stability
+- ## CHAIN
+- ## INVARIANTS
+- ## ERROR CONDITIONS
+- ## HEALTH COVERAGE
+- ## VERIFICATION PROCEDURE
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # Connectome Health SSE Payload (v0)
+
+**Sections:**
+- # Moment Graph Engine — HEALTH: Connectome Live Signals
+- ## PURPOSE
+- ## CHAIN
+- ## FLOWS ANALYSIS (TRIGGERS + FREQUENCY)
+- ## HEALTH INDICATORS SELECTED
+- ## STATUS (RESULT INDICATOR)
+- ## INDICATOR: query_write_attempts
+- ## INDICATOR: interrupt_reason_stream
+- ## INDICATOR: attention_sink_stats
+- ## INDICATOR: focus_reconfig_rate
+- ## INDICATOR: contradiction_pressure
+- ## INDICATOR: async_epoch_mismatch
+- ## INDICATOR: dmz_violation_attempts
+- ## HOW TO RUN (MANUAL)
+- ## DISPLAY (CONNECTOME PAGE)
+
+**Sections:**
+- # Integration Notes — Connectome Health (v0)
+- ## Backend wiring (minimal)
+- ## Frontend wiring (minimal)
+
+**Sections:**
+- # OBJECTIFS — Connectome Health
+- ## PRIMARY OBJECTIVES (ranked)
+- ## NON-OBJECTIVES
+- ## TRADEOFFS (canonical decisions)
+- ## SUCCESS SIGNALS (observable)
+
+**Sections:**
+- # log_panel — Algorithm: Rendering, Duration Coloring, Trigger Badges, and Export
+- ## CHAIN
+- ## OVERVIEW
+- ## ALGORITHM: `render_now_section(store_state)`
+- ## ALGORITHM: `render_ledger_list(store_state)`
+- ## ALGORITHM: duration formatting and coloring
+- ## ALGORITHM: export
+- ## COMPLEXITY
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # log_panel — Behaviors: Step Clarity and Copyable Audit Trail
+- ## CHAIN
+- ## BEHAVIORS
+- ## ANTI-BEHAVIORS
+- ## EDGE CASES
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # log_panel — Health: Verification of Log Truth and Export Integrity
+- ## PURPOSE OF THIS FILE
+- ## CHAIN
+- ## FLOWS ANALYSIS (TRIGGERS + FREQUENCY)
+- ## HEALTH INDICATORS SELECTED
+- ## CHECKER INDEX
+- ## HOW TO RUN
+- ## KNOWN GAPS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Code refs:**
+- `app/connectome/components/connectome_log_duration_formatting_and_threshold_color_rules.ts`
+- `app/connectome/components/connectome_log_export_buttons_using_state_store_serializers.ts`
+- `app/connectome/components/connectome_log_export_buttons_using_state_store_serializers.tsx`
+- `app/connectome/components/connectome_log_trigger_and_calltype_badge_color_tokens.ts`
+- `app/connectome/components/unified_now_and_copyable_ledger_log_panel.ts`
+- `app/connectome/components/unified_now_and_copyable_ledger_log_panel.tsx`
+
+**Sections:**
+- # log_panel — Implementation: Component Structure and Serializer Integration
+- ## CHAIN
+- ## CODE STRUCTURE
+- ## ENTRY POINTS
+- ## DATA FLOW
+- ## CONFIGURATION
+- ## BIDIRECTIONAL LINKS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # OBJECTIFS — Log Panel
+- ## PRIMARY OBJECTIVES (ranked)
+- ## NON-OBJECTIVES
+- ## TRADEOFFS (canonical decisions)
+- ## SUCCESS SIGNALS (observable)
+
+**Sections:**
+- # log_panel — Patterns: Unified Explain + Copyable Event Ledger View
+- ## CHAIN
+- ## THE PROBLEM
+- ## THE PATTERN
+- ## PRINCIPLES
+- ## DATA
+- ## DEPENDENCIES
+- ## SCOPE
+- ## GAPS / IDEAS / QUESTIONS
+
+**Code refs:**
+- `app/api/connectome/graph/route.ts`
+- `app/api/connectome/graphs/route.ts`
+- `app/api/connectome/search/route.ts`
+- `app/connectome/components/connectome_log_duration_formatting_and_threshold_color_rules.ts`
+- `app/connectome/components/connectome_log_export_buttons_using_state_store_serializers.tsx`
+- `app/connectome/components/connectome_log_trigger_and_calltype_badge_color_tokens.ts`
+- `app/connectome/components/unified_now_and_copyable_ledger_log_panel.tsx`
+
+**Sections:**
+- # log_panel — Sync: Current State
+- ## MATURITY
+- ## CURRENT STATE
+- ## RECENT CHANGES
+- ## TODO
+
+**Sections:**
+- # log_panel — Validation: Invariants for Truthful Durations and Stable Export
+- ## CHAIN
+- ## INVARIANTS
+- ## ERROR CONDITIONS
+- ## HEALTH COVERAGE
+- ## VERIFICATION PROCEDURE
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # node_kit — Algorithm: Node Rendering Spec and Energy Glow Mapping
+- ## CHAIN
+- ## OVERVIEW
+- ## DATA STRUCTURES
+- ## ALGORITHM: `render_node(view_model, store_state)`
+- ## ALGORITHM: `map_energy_to_color(energy)`
+- ## ALGORITHM: wait progress display (PlayerNode)
+- ## COMPLEXITY
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # node_kit — Behaviors: Visible Clarity and Trust Effects
+- ## CHAIN
+- ## BEHAVIORS
+- ## ANTI-BEHAVIORS
+- ## EDGE CASES
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # node_kit — Health: Runtime Verification of Node Signal Truthfulness
+- ## PURPOSE OF THIS FILE
+- ## CHAIN
+- ## FLOWS ANALYSIS (TRIGGERS + FREQUENCY)
+- ## HEALTH INDICATORS SELECTED
+- ## CHECKER INDEX
+- ## HOW TO RUN
+- ## KNOWN GAPS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Code refs:**
+- `app/connectome/components/node_kit/connectome_energy_badge_bucketed_glow_and_value_formatter.ts`
+- `app/connectome/components/node_kit/connectome_energy_badge_bucketed_glow_and_value_formatter.tsx`
+- `app/connectome/components/node_kit/connectome_node_background_theme_tokens_by_type_and_language.ts`
+- `app/connectome/components/node_kit/connectome_node_frame_with_title_path_and_tooltip_shell.ts`
+- `app/connectome/components/node_kit/connectome_node_frame_with_title_path_and_tooltip_shell.tsx`
+- `app/connectome/components/node_kit/connectome_node_step_list_and_active_step_highlighter.ts`
+- `app/connectome/components/node_kit/connectome_node_step_list_and_active_step_highlighter.tsx`
+- `app/connectome/components/node_kit/connectome_player_wait_progress_bar_with_four_second_cap.ts`
+- `app/connectome/components/node_kit/connectome_player_wait_progress_bar_with_four_second_cap.tsx`
+- `app/connectome/components/node_kit/connectome_tick_cron_circular_progress_ring_with_speed_label.ts`
+- `app/connectome/components/node_kit/connectome_tick_cron_circular_progress_ring_with_speed_label.tsx`
+- `app/connectome/components/node_kit/typed_connectome_node_components_with_energy_and_step_highlighting.ts`
+- `app/connectome/components/node_kit/typed_connectome_node_components_with_energy_and_step_highlighting.tsx`
+
+**Sections:**
+- # node_kit — Implementation: Component Map and Styling Tokens
+- ## CHAIN
+- ## CODE STRUCTURE
+- ## STYLING TOKENS (V1)
+- ## ENTRY POINTS
+- ## DATA FLOW AND DOCKING
+- ## CONFIGURATION
+- ## BIDIRECTIONAL LINKS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # OBJECTIFS — Node Kit
+- ## PRIMARY OBJECTIVES (ranked)
+- ## NON-OBJECTIVES
+- ## TRADEOFFS (canonical decisions)
+- ## SUCCESS SIGNALS (observable)
+
+**Sections:**
+- # node_kit — Patterns: Typed, Language-Coded, Energy-Aware Node Rendering
+- ## CHAIN
+- ## THE PROBLEM
+- ## THE PATTERN
+- ## PRINCIPLES
+- ## NODE TYPES (V1)
+- ## DEPENDENCIES
+- ## SCOPE
+- ## GAPS / IDEAS / QUESTIONS
+
+**Code refs:**
+- `app/connectome/components/node_kit/connectome_energy_badge_bucketed_glow_and_value_formatter.tsx`
+- `app/connectome/components/node_kit/connectome_node_background_theme_tokens_by_type_and_language.ts`
+- `app/connectome/components/node_kit/connectome_node_frame_with_title_path_and_tooltip_shell.tsx`
+- `app/connectome/components/node_kit/connectome_node_step_list_and_active_step_highlighter.tsx`
+- `app/connectome/components/node_kit/connectome_player_wait_progress_bar_with_four_second_cap.tsx`
+- `app/connectome/components/node_kit/connectome_tick_cron_circular_progress_ring_with_speed_label.tsx`
+- `app/connectome/components/node_kit/typed_connectome_node_components_with_energy_and_step_highlighting.tsx`
+
+**Sections:**
+- # node_kit — Sync: Current State
+- ## MATURITY
+- ## CURRENT STATE
+- ## RECENT CHANGES
+- ## TODO
+
+**Sections:**
+- # node_kit — Validation: Invariants for Readability and Correct State Reflection
+- ## CHAIN
+- ## INVARIANTS
+- ## ERROR CONDITIONS
+- ## HEALTH COVERAGE
+- ## VERIFICATION PROCEDURE
+- ## SYNC STATUS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # page_shell — Algorithm: Control Dispatch and Layout Composition
+- ## CHAIN
+- ## NOTES
+
+**Sections:**
+- # page_shell — Behaviors: Stable Workflow and Mode Control Effects
+- ## CHAIN
+- ## NOTES
+
+**Sections:**
+- # page_shell — Health: Runtime Verification of Control Semantics and Mode Gating
+- ## CHAIN
+- ## NOTES
+
+**Sections:**
+- # page_shell — Implementation: Next.js Route and Component Wiring
+- ## CHAIN
+- ## NOTES
+
+**Sections:**
+- # OBJECTIFS — Page Shell
+- ## PRIMARY OBJECTIVES (ranked)
+- ## NON-OBJECTIVES
+- ## TRADEOFFS (canonical decisions)
+- ## SUCCESS SIGNALS (observable)
+
+**Code refs:**
+- `app/connectome/components/connectome_page_shell_route_layout_and_control_surface.ts`
+
+**Sections:**
+- # page_shell — Patterns: Route Composition and User Control Surface
+- ## CHAIN
+- ## THE PROBLEM
+- ## THE PATTERN
+- ## PRINCIPLES
+- ## DATA
+- ## DEPENDENCIES
+- ## INSPIRATIONS
+- ## SCOPE
+- ## GAPS / IDEAS / QUESTIONS
+
+**Code refs:**
+- `app/connectome/components/connectome_page_shell_route_layout_and_control_surface.tsx`
+- `app/connectome/page.tsx`
+
+**Sections:**
+- # page_shell — Sync: Current State
+- ## MATURITY
+- ## CURRENT STATE
+- ## RECENT CHANGES
+- ## TODO
+- ## HANDOFF
+
+**Sections:**
+- # page_shell — Validation: Invariants for Control Correctness and No Drift
+- ## CHAIN
+- ## NOTES
+
+**Sections:**
+- # runtime_engine — Algorithm: Step Release Gate and Realtime Scheduling
+- ## CHAIN
+- ## OVERVIEW
+- ## DATA STRUCTURES
+- ## ALGORITHM: `release_next_step()`
+- ## ALGORITHM: `dispatch_runtime_command(cmd)`
+- ## KEY DECISIONS
+- ## DATA FLOW
+- ## COMPLEXITY
+- ## HELPER FUNCTIONS
+- ## INTERACTIONS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # runtime_engine — Behaviors: User-Controlled Traversal and Playback Effects
+- ## CHAIN
+- ## BEHAVIORS
+- ## INPUTS / OUTPUTS
+- ## EDGE CASES
+- ## ANTI-BEHAVIORS
+- ## STATE MANAGEMENT
+- ## RUNTIME BEHAVIOR
+- ## CONCURRENCY MODEL
+- ## CONFIGURATION
+- ## BIDIRECTIONAL LINKS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # runtime_engine — Health: Verification Mechanics and Coverage
+- ## PURPOSE OF THIS FILE
+- ## WHY THIS PATTERN
+- ## HOW TO USE THIS TEMPLATE
+- ## CHAIN
+- ## FLOWS ANALYSIS (TRIGGERS + FREQUENCY)
+- ## HEALTH INDICATORS SELECTED
+- ## STATUS (RESULT INDICATOR)
+- ## DOCK TYPES (COMPLETE LIST)
+- ## CHECKER INDEX
+- ## INDICATOR: runtime_stepper_single_step_integrity
+- ## HOW TO RUN
+- ## KNOWN GAPS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # runtime_engine — Implementation: Code Architecture and Structure
+- ## CHAIN
+- ## CODE STRUCTURE
+- ## DESIGN PATTERNS
+- ## SCHEMA
+- ## ENTRY POINTS
+- ## DATA FLOW AND DOCKING (FLOW-BY-FLOW)
+- ## STATE MANAGEMENT
+- ## RUNTIME BEHAVIOR
+- ## CONCURRENCY MODEL
+- ## CONFIGURATION
+- ## BIDIRECTIONAL LINKS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # OBJECTIFS — Runtime Engine
+- ## PRIMARY OBJECTIVES (ranked)
+- ## NON-OBJECTIVES
+- ## TRADEOFFS (canonical decisions)
+- ## SUCCESS SIGNALS (observable)
+
+**Sections:**
+- # runtime_engine — Patterns: Stepper-Gated Traversal and Realtime Playback Control
+- ## CHAIN
+- ## THE PROBLEM
+- ## THE PATTERN
+- ## PRINCIPLES
+- ## DATA
+- ## DEPENDENCIES
+- ## INSPIRATIONS
+- ## SCOPE
+- ## DATA STRUCTURES
+- ## ENTRY POINTS
+- ## DATA FLOW AND DOCKING (FLOW-BY-FLOW)
+- ## LOGIC CHAINS
+- ## MODULE DEPENDENCIES
+- ## STATE MANAGEMENT
+- ## RUNTIME BEHAVIOR
+- ## CONCURRENCY MODEL
+- ## CONFIGURATION
+- ## BIDIRECTIONAL LINKS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Code refs:**
+- `app/connectome/lib/connectome_step_script_sample_sequence.ts`
+- `app/connectome/lib/minimum_duration_clamp_and_speed_based_default_policy.ts`
+- `app/connectome/lib/next_step_gate_and_realtime_playback_runtime_engine.ts`
+- `app/connectome/lib/step_script_cursor_and_replay_determinism_helpers.ts`
+
+**Sections:**
+- # runtime_engine — Sync: Current State
+- ## MATURITY
+- ## CURRENT STATE
+- ## RECENT CHANGES
+- ## TODO
+
+**Sections:**
+- # runtime_engine — Validation: Invariants for Stepper Gating and Realtime Playback
+- ## CHAIN
+- ## INVARIANTS
+- ## PROPERTIES
+- ## ERROR CONDITIONS
+- ## HEALTH COVERAGE
+- ## VERIFICATION PROCEDURE
+- # Run tests
+- # Run with coverage
+- ## SYNC STATUS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # state_store — Algorithm: Atomic Commits for Releases, Focus, and Timers
+- ## CHAIN
+- ## OVERVIEW
+- ## DATA STRUCTURES
+- ## ALGORITHM: `commit_step_release_append_event_and_set_focus_and_explanation(release)`
+- ## ALGORITHM: `restart_session_clear_or_boundary()`
+- ## ALGORITHM: `append_realtime_event_and_update_focus_if_needed(event)` (deferred)
+- ## ALGORITHM: wait progress computation (selector)
+- ## COMPLEXITY
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # state_store — Behaviors: Observable Effects of a Single Canonical Store
+- ## CHAIN
+- ## BEHAVIORS
+- ## EDGE CASES
+- ## ANTI-BEHAVIORS
+- ## INPUTS / OUTPUTS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # state_store — Health: Verification Mechanics and Coverage
+- ## PURPOSE OF THIS FILE
+- ## CHAIN
+- ## FLOWS ANALYSIS (TRIGGERS + FREQUENCY)
+- ## HEALTH INDICATORS SELECTED
+- ## CHECKER INDEX
+- ## HOW TO RUN
+- ## KNOWN GAPS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # state_store — Implementation: Code Architecture and Structure
+- ## CHAIN
+- ## CODE STRUCTURE
+- ## DESIGN PATTERNS
+- ## ENTRY POINTS
+- ## DATA FLOW AND DOCKING
+- ## STATE MANAGEMENT
+- ## CONFIGURATION
+- ## BIDIRECTIONAL LINKS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # OBJECTIFS — State Store
+- ## PRIMARY OBJECTIVES (ranked)
+- ## NON-OBJECTIVES
+- ## TRADEOFFS (canonical decisions)
+- ## SUCCESS SIGNALS (observable)
+
+**Sections:**
+- # state_store — Patterns: Single Source of Truth for Ledger, Focus, and Timers
+- ## CHAIN
+- ## THE PROBLEM
+- ## THE PATTERN
+- ## PRINCIPLES
+- ## DATA
+- ## DEPENDENCIES
+- ## INSPIRATIONS
+- ## SCOPE
+- ## ENTRY POINTS (ACTIONS)
+- ## DATA FLOW AND DOCKING (FLOW-BY-FLOW)
+- ## GAPS / IDEAS / QUESTIONS
+
+**Code refs:**
+- `app/connectome/lib/connectome_export_jsonl_and_text_log_serializer.ts`
+- `app/connectome/lib/connectome_session_boundary_and_restart_policy_controller.ts`
+- `app/connectome/lib/connectome_wait_timer_progress_and_tick_display_signal_selectors.ts`
+- `app/connectome/lib/zustand_connectome_state_store_with_atomic_commit_actions.ts`
+
+**Sections:**
+- # state_store — Sync: Current State
+- ## MATURITY
+- ## CURRENT STATE
+- ## RECENT CHANGES
+- ## TODO
+
+**Sections:**
+- # state_store — Validation: Invariants for Ledger, Focus, and Timers
+- ## CHAIN
+- ## INVARIANTS
+- ## PROPERTIES
+- ## ERROR CONDITIONS
+- ## HEALTH COVERAGE
+- ## VERIFICATION PROCEDURE
+- ## SYNC STATUS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # telemetry_adapter — Algorithm: SSE Subscribe, Parse, Envelope, Emit
+- ## CHAIN
+- ## DATA STRUCTURES
+- ## ALGORITHM: `connect_to_sse_stream(stream_config)`
+- ## ALGORITHM: `on_sse_message(frame) → RawTelemetryEnvelope`
+- ## ALGORITHM: local pause buffering gate (owned jointly with runtime_engine)
+- ## ALGORITHM: rate estimation (health signal)
+- ## COMPLEXITY
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # telemetry_adapter — Behaviors: Realtime Ingestion, Buffering, and Backpressure Effects
+- ## CHAIN
+- ## BEHAVIORS
+- ## ANTI-BEHAVIORS
+- ## EDGE CASES
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # telemetry_adapter — Health: Stream Integrity, Parse Errors, Rate, and Buffer Bounds
+- ## PURPOSE OF THIS FILE
+- ## CHAIN
+- ## FLOWS ANALYSIS (TRIGGERS + FREQUENCY)
+- ## HEALTH INDICATORS SELECTED
+- ## CHECKER INDEX
+- ## HOW TO RUN
+- ## KNOWN GAPS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # telemetry_adapter — Implementation: Code Architecture and Structure
+- ## CHAIN
+- ## CODE STRUCTURE
+- ## ENTRY POINTS
+- ## DATA FLOW AND DOCKING
+- ## CONFIGURATION
+- ## BIDIRECTIONAL LINKS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # OBJECTIFS — Telemetry Adapter
+- ## PRIMARY OBJECTIVES (ranked)
+- ## NON-OBJECTIVES
+- ## TRADEOFFS (canonical decisions)
+- ## SUCCESS SIGNALS (observable)
+
+**Sections:**
+- # telemetry_adapter — Patterns: SSE-to-FlowEvent Docking for Realtime Connectome Playback
+- ## CHAIN
+- ## THE PROBLEM
+- ## THE PATTERN
+- ## PRINCIPLES
+- ## DATA
+- ## DEPENDENCIES
+- ## INSPIRATIONS
+- ## SCOPE
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # telemetry_adapter — Sync: Current State
+- ## MATURITY
+- ## CURRENT STATE
+- ## TODO
+
+**Sections:**
+- # telemetry_adapter — Validation: Invariants for Stream Integrity, Ordering, and No Silent Drops
+- ## CHAIN
+- ## INVARIANTS
+- ## ERROR CONDITIONS
+- ## HEALTH COVERAGE
+- ## VERIFICATION PROCEDURE
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # VISUAL STYLE GUIDE: The Connectome
+- ## Introduction: A Declaration of Intent
+- ## 1. Aesthetic Manifesto: Physics Over Psychology
+- ## 2. Color Palette: The Substance of the System
+- ## 3. Typography & Iconography: The Written Record
+- ## 4. Component Styling: Nodes, Edges, and the Ledger
+- ## 5. Motion Physics: Weight, Friction, and Consequence
 
 **Code refs:**
 - `ngram/core_utils.py`
@@ -1582,6 +2909,9 @@
 **Code refs:**
 - `ngram/core_utils.py`
 
+**Doc refs:**
+- `docs/core_utils/PATTERNS_Core_Utils_Functions.md`
+
 **Sections:**
 - # Core Utils — Implementation: Code Architecture and Structure
 - ## CHAIN
@@ -1597,6 +2927,13 @@
 - ## CONFIGURATION
 - ## BIDIRECTIONAL LINKS
 - ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # OBJECTIFS — Core Utils
+- ## PRIMARY OBJECTIVES (ranked)
+- ## NON-OBJECTIVES
+- ## TRADEOFFS (canonical decisions)
+- ## SUCCESS SIGNALS (observable)
 
 **Code refs:**
 - `ngram/core_utils.py`
@@ -1655,6 +2992,153 @@
 - ## GAPS / IDEAS / QUESTIONS
 
 **Code refs:**
+- `engine/membrane/functions.py`
+- `engine/membrane/provider.py`
+- `engine/moment_graph/queries.py`
+- `engine/moment_graph/surface.py`
+- `engine/moment_graph/traversal.py`
+
+**Sections:**
+- # Engine — Algorithm: Membrane Modulation Frame
+- ## CHAIN
+- ## OVERVIEW
+- ## DATA STRUCTURES
+- ## ALGORITHM: compute_modulation_frame
+- ## KEY DECISIONS
+- ## DATA FLOW
+- ## COMPLEXITY
+- ## HELPER FUNCTIONS
+- ## INTERACTIONS
+- ## GAPS / IDEAS / QUESTIONS
+- ## COMPUTE SKELETON (V0)
+
+**Code refs:**
+- `engine/physics/tick.py`
+
+**Sections:**
+- # Engine — Behaviors: Membrane Modulation Effects
+- ## CHAIN
+- ## BEHAVIORS
+- ## INPUTS / OUTPUTS
+- ## EDGE CASES
+- ## ANTI-BEHAVIORS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Code refs:**
+- `engine/membrane/health_check.py`
+
+**Sections:**
+- # Membrane Modulation — Health: Verification Mechanics and Coverage
+- ## PURPOSE OF THIS FILE
+- ## WHY THIS PATTERN
+- ## CHAIN
+- ## FLOWS ANALYSIS (TRIGGERS + FREQUENCY)
+- ## HEALTH INDICATORS SELECTED
+- ## STATUS (RESULT INDICATOR)
+- ## CHECKER INDEX
+- ## KNOWN GAPS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Code refs:**
+- `engine/moment_graph/queries.py`
+- `engine/moment_graph/surface.py`
+- `engine/moment_graph/traversal.py`
+
+**Sections:**
+- # Engine — Implementation: Membrane Modulation (Scoping + Hooks)
+- ## CHAIN
+- ## OVERVIEW
+- ## CODE STRUCTURE (PLANNED)
+- ## ENTRY POINTS (PLANNED)
+- ## RESPONSIBILITIES
+- ## DATA FLOW (PLANNED)
+- ## GAPS / IDEAS / QUESTIONS
+
+**Code refs:**
+- `engine/moment_graph/queries.py`
+- `engine/moment_graph/surface.py`
+
+**Doc refs:**
+- `docs/physics/PATTERNS_Physics.md`
+
+**Sections:**
+- # Engine — Patterns: Membrane Scoping (Per-Place Modulation)
+- ## CHAIN
+- ## THE PROBLEM
+- ## THE PATTERN
+- ## PRINCIPLES
+- ## DATA
+- ## DEPENDENCIES
+- ## INSPIRATIONS
+- ## SCOPE
+- ## GAPS / IDEAS / QUESTIONS
+
+**Code refs:**
+- `engine/membrane/functions.py`
+- `engine/physics/tick.py`
+
+**Sections:**
+- # Engine — Patterns: No Magic Constants (Dynamic Modulation Functions)
+- ## CHAIN
+- ## THE PROBLEM
+- ## THE PATTERN
+- ## PRINCIPLES
+- ## DATA
+- ## DEPENDENCIES
+- ## INSPIRATIONS
+- ## SCOPE
+- ## GAPS / IDEAS / QUESTIONS
+
+**Code refs:**
+- `engine/physics/tick.py`
+
+**Doc refs:**
+- `docs/engine/moments/PATTERNS_Moments.md`
+- `docs/physics/PATTERNS_Physics.md`
+
+**Sections:**
+- # Engine — Patterns: Membrane Modulation (Pre-Runtime Field Shaping)
+- ## CHAIN
+- ## THE PROBLEM
+- ## THE PATTERN
+- ## PRINCIPLES
+- ## DATA
+- ## DEPENDENCIES
+- ## INSPIRATIONS
+- ## SCOPE
+- ## GAPS / IDEAS / QUESTIONS
+
+**Doc refs:**
+- `docs/engine/membrane/BEHAVIORS_Membrane_Modulation.md`
+- `docs/engine/membrane/PATTERNS_Membrane_Scoping.md`
+- `docs/engine/membrane/PATTERN_Membrane_Modulation.md`
+
+**Sections:**
+- # Membrane Modulation — Sync: Current State
+- ## MATURITY
+- ## CURRENT STATE
+- ## RECENT CHANGES
+- ## IN PROGRESS
+- ## TODO
+- ## POINTERS
+
+**Code refs:**
+- `engine/moment_graph/queries.py`
+- `engine/moment_graph/surface.py`
+- `engine/physics/tick.py`
+
+**Sections:**
+- # Engine — Validation: Membrane Modulation Invariants
+- ## CHAIN
+- ## INVARIANTS
+- ## PROPERTIES
+- ## ERROR CONDITIONS
+- ## HEALTH COVERAGE
+- ## VERIFICATION PROCEDURE
+- # No automated tests yet
+- ## GAPS / IDEAS / QUESTIONS
+
+**Code refs:**
 - `engine/infrastructure/embeddings/service.py`
 
 **Sections:**
@@ -1692,14 +3176,10 @@
 - ## GAPS / IDEAS / QUESTIONS
 
 **Code refs:**
-- `__init__.py`
-- `base.py`
 - `engine/models/__init__.py`
 - `engine/models/base.py`
+- `engine/models/links.py`
 - `engine/models/nodes.py`
-- `links.py`
-- `nodes.py`
-- `tensions.py`
 
 **Doc refs:**
 - `docs/engine/models/PATTERNS_Models.md`
@@ -1832,6 +3312,9 @@
 - `engine/moment_graph/surface.py`
 - `engine/moment_graph/traversal.py`
 
+**Doc refs:**
+- `docs/physics/attention/VALIDATION_Attention_Split_And_Interrupts.md`
+
 **Sections:**
 - # Moment Graph Engine — Sync: Current State
 - ## CHAIN
@@ -1865,6 +3348,40 @@
 - ## INVARIANTS
 - ## PERFORMANCE EXPECTATIONS
 - ## FAILURE MODES TO WATCH
+
+**Sections:**
+- # Moment Graph Engine — Validation: Player DMZ Invariants (Stub)
+- ## CHAIN
+- ## BEHAVIORS GUARANTEED
+- ## INVARIANTS
+- ## PROPERTIES
+- ## ERROR CONDITIONS
+- ## HEALTH COVERAGE
+- ## VERIFICATION PROCEDURE
+- ## SYNC STATUS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # Moment Graph Engine — Validation: Simultaneity + CONTRADICTS (Stub)
+- ## CHAIN
+- ## BEHAVIORS GUARANTEED
+- ## INVARIANTS
+- ## PROPERTIES
+- ## ERROR CONDITIONS
+- ## VERIFICATION PROCEDURE
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # Moment Graph Engine — Validation: Void Tension (Stub)
+- ## CHAIN
+- ## BEHAVIORS GUARANTEED
+- ## INVARIANTS
+- ## PROPERTIES
+- ## ERROR CONDITIONS
+- ## HEALTH COVERAGE
+- ## VERIFICATION PROCEDURE
+- ## SYNC STATUS
+- ## GAPS / IDEAS / QUESTIONS
 
 **Code refs:**
 - `engine/moments/__init__.py`
@@ -1957,6 +3474,52 @@
 - ## INVARIANTS
 - ## VERIFICATION NOTES
 
+**Sections:**
+- # Engine — Algorithm: High-Level Flow
+- ## CHAIN
+- ## HIGH-LEVEL FLOW
+
+**Sections:**
+- # Engine — Behaviors: Runtime Effects
+- ## CHAIN
+- ## BEHAVIORS
+
+**Sections:**
+- # Engine — Health: Verification
+- ## CHAIN
+- ## HEALTH CHECKS
+
+**Sections:**
+- # Engine — Implementation: Code Mapping
+- ## CHAIN
+- ## CODE LOCATIONS
+- ## NOTES
+
+**Sections:**
+- # OBJECTIFS — Engine
+- ## PRIMARY OBJECTIVES (ranked)
+- ## NON-OBJECTIVES
+- ## TRADEOFFS (canonical decisions)
+- ## SUCCESS SIGNALS (observable)
+
+**Sections:**
+- # Engine — Patterns: Runtime Ownership And Boundaries
+- ## CHAIN
+- ## THE PROBLEM
+- ## THE PATTERN
+- ## PRINCIPLES
+
+**Sections:**
+- # Engine — Sync: Current State
+- ## CHAIN
+- ## CURRENT STATE
+- ## TODO
+
+**Sections:**
+- # Engine — Validation: Invariants
+- ## CHAIN
+- ## INVARIANTS
+
 **Code refs:**
 - `engine/infrastructure/api/playthroughs.py`
 - `engine/init_db.py`
@@ -2030,18 +3593,6 @@
 - # Verify Action Loop
 - ## KNOWN GAPS
 
-**Code refs:**
-- `app.py`
-- `engine/infrastructure/api/app.py`
-- `engine/infrastructure/api/moments.py`
-- `engine/infrastructure/api/playthroughs.py`
-- `engine/infrastructure/api/sse_broadcast.py`
-- `engine/infrastructure/api/tempo.py`
-- `moments.py`
-- `playthroughs.py`
-- `sse_broadcast.py`
-- `views.py`
-
 **Sections:**
 - # API — Implementation: Code Architecture and Structure
 - ## CHAIN
@@ -2058,6 +3609,13 @@
 - ## CONFIGURATION
 - ## BIDIRECTIONAL LINKS
 - ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # OBJECTIFS — Api
+- ## PRIMARY OBJECTIVES (ranked)
+- ## NON-OBJECTIVES
+- ## TRADEOFFS (canonical decisions)
+- ## SUCCESS SIGNALS (observable)
 
 **Sections:**
 - # API — Patterns
@@ -2163,6 +3721,11 @@
 - ## LEGACY EDGE CASES
 - ## NEXT IN CHAIN
 
+**Sections:**
+- # Scene Memory — Health: Verification Checklist
+- ## CHAIN
+- ## CHECKS
+
 **Code refs:**
 - `engine/infrastructure/memory/__init__.py`
 - `engine/infrastructure/memory/moment_processor.py`
@@ -2178,6 +3741,13 @@
 - ## MODULE DEPENDENCIES
 - ## BIDIRECTIONAL LINKS
 - ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # OBJECTIFS — Scene-Memory
+- ## PRIMARY OBJECTIVES (ranked)
+- ## NON-OBJECTIVES
+- ## TRADEOFFS (canonical decisions)
+- ## SUCCESS SIGNALS (observable)
 
 **Sections:**
 - # Scene Memory System — Pattern (Legacy)
@@ -2199,7 +3769,6 @@
 
 **Sections:**
 - # Scene Memory System — Sync
-- ## DOCUMENT CHAIN
 - ## ARCHITECTURE EVOLUTION
 - ## IMPLEMENTATION STATUS
 - ## MATURITY
@@ -2211,10 +3780,9 @@
 - ## TODO
 - ## CONSCIOUSNESS TRACE
 - ## POINTERS
-- ## REPAIR LOG (2025-12-19)
 - ## REPAIR LOG (2025-12-20)
 - ## OPEN QUESTIONS
-- ## Agent Observations
+- ## ARCHIVE
 
 **Code refs:**
 - `engine/infrastructure/memory/__init__.py`
@@ -2246,6 +3814,10 @@
 - ## CHANGELOG
 - # Archived: SYNC_Scene_Memory.md
 - ## RECENT CHANGES
+- # Archived: SYNC_Scene_Memory.md
+- ## DOCUMENT CHAIN
+- ## REPAIR LOG (2025-12-19)
+- ## Agent Observations
 
 **Code refs:**
 - `engine/tests/test_e2e_moment_graph.py`
@@ -2281,6 +3853,151 @@
 - ## VERIFICATION PROCEDURE
 - ## GAPS / IDEAS / QUESTIONS
 - ## NEXT IN CHAIN
+
+**Code refs:**
+- `engine/infrastructure/tempo/tempo_controller.py`
+- `engine/physics/tick.py`
+
+**Sections:**
+- # Tempo Controller — Algorithm: Tick Loop and Pacing
+- ## CHAIN
+- ## OVERVIEW
+- ## DATA STRUCTURES
+- ## ALGORITHM: run
+- ## KEY DECISIONS
+- ## DATA FLOW
+- ## COMPLEXITY
+- ## HELPER FUNCTIONS
+- ## INTERACTIONS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Code refs:**
+- `engine/infrastructure/tempo/tempo_controller.py`
+
+**Sections:**
+- # Tempo Controller — Behaviors: Observable Pacing Effects
+- ## CHAIN
+- ## BEHAVIORS
+- ## INPUTS / OUTPUTS
+- ## EDGE CASES
+- ## ANTI-BEHAVIORS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Code refs:**
+- `engine/infrastructure/tempo/health_check.py`
+
+**Sections:**
+- # Tempo Controller — Health: Verification Mechanics and Coverage
+- ## PURPOSE OF THIS FILE
+- ## WHY THIS PATTERN
+- ## HOW TO USE THIS TEMPLATE
+- ## CHAIN
+- ## FLOWS ANALYSIS (TRIGGERS + FREQUENCY)
+- ## HEALTH INDICATORS SELECTED
+- ## STATUS (RESULT INDICATOR)
+- ## DOCK TYPES (COMPLETE LIST)
+- ## CHECKER INDEX
+- ## INDICATOR: tempo_tick_advances
+- ## HOW TO RUN
+- # Run all health checks for this module
+- # Run a specific checker
+- ## KNOWN GAPS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Code refs:**
+- `engine/infrastructure/api/tempo.py`
+- `engine/infrastructure/canon/canon_holder.py`
+- `engine/infrastructure/tempo/tempo_controller.py`
+- `engine/physics/tick.py`
+
+**Sections:**
+- # Tempo Controller — Implementation: Code Architecture and Structure
+- ## CHAIN
+- ## CODE STRUCTURE
+- ## DESIGN PATTERNS
+- ## SCHEMA
+- ## ENTRY POINTS
+- ## DATA FLOW AND DOCKING (FLOW-BY-FLOW)
+- ## LOGIC CHAINS
+- ## MODULE DEPENDENCIES
+- ## STATE MANAGEMENT
+- ## RUNTIME BEHAVIOR
+- ## CONCURRENCY MODEL
+- ## CONFIGURATION
+- ## BIDIRECTIONAL LINKS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # OBJECTIFS — Tempo
+- ## PRIMARY OBJECTIVES (ranked)
+- ## NON-OBJECTIVES
+- ## TRADEOFFS (canonical decisions)
+- ## SUCCESS SIGNALS (observable)
+
+**Code refs:**
+- `engine/infrastructure/api/tempo.py`
+- `engine/infrastructure/tempo/tempo_controller.py`
+- `engine/physics/tick.py`
+
+**Sections:**
+- # Tempo Controller — Patterns: Pacing the Main Loop
+- ## CHAIN
+- ## THE PROBLEM
+- ## THE PATTERN
+- ## PRINCIPLES
+- ## DATA
+- ## DEPENDENCIES
+- ## INSPIRATIONS
+- ## SCOPE
+- ## GAPS / IDEAS / QUESTIONS
+
+**Code refs:**
+- `engine/infrastructure/tempo/tempo_controller.py`
+
+**Doc refs:**
+- `docs/infrastructure/canon/PATTERNS_Canon.md`
+- `docs/infrastructure/tempo/ALGORITHM_Tempo_Controller.md`
+- `docs/infrastructure/tempo/PATTERNS_Tempo.md`
+
+**Sections:**
+- # Tempo Controller — Sync: Current State
+- ## MATURITY
+- ## CURRENT STATE
+- ## IN PROGRESS
+- ## RECENT CHANGES
+- ## KNOWN ISSUES
+- ## HANDOFF: FOR AGENTS
+- ## HANDOFF: FOR HUMAN
+- ## TODO
+- ## CONSCIOUSNESS TRACE
+- ## POINTERS
+
+**Code refs:**
+- `engine/infrastructure/tempo/tempo_controller.py`
+
+**Sections:**
+- # Tempo Controller — Validation: Pacing Invariants
+- ## CHAIN
+- ## INVARIANTS
+- ## PROPERTIES
+- ## ERROR CONDITIONS
+- ## HEALTH COVERAGE
+- ## VERIFICATION PROCEDURE
+- # No automated tests yet
+- ## SYNC STATUS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # WSL autostart (systemd user)
+- ## 1) Activer systemd dans WSL
+- ## 2) Activer linger pour l'auto-start
+- ## 3) Binaries et chemins absolus
+- ## 4) Configurer le frontend
+- ## 5) Installer les units systemd
+- ## 6) Config ngrok v3
+- ## 7) Logs et status
+- ## 8) Checks de sante
+- ## 9) Depannage
 
 **Sections:**
 - # ngram LLM Agents — Algorithm: Gemini Stream Flow
@@ -2344,6 +4061,13 @@
 - ## EXTERNAL DEPENDENCIES
 - ## CONFIGURATION
 - ## INTEGRATION POINTS
+
+**Sections:**
+- # OBJECTIFS — Llm Agents
+- ## PRIMARY OBJECTIVES (ranked)
+- ## NON-OBJECTIVES
+- ## TRADEOFFS (canonical decisions)
+- ## SUCCESS SIGNALS (observable)
 
 **Code refs:**
 - `agent_cli.py`
@@ -2429,6 +4153,316 @@
 - ## VERIFICATION PROCEDURE
 - ## SYNC STATUS
 - ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # Physics — Algorithm: Energy Flow Sources Sinks And Moment Dynamics (consolidated)
+- ## CHAIN
+- ## CONSOLIDATION
+
+**Code refs:**
+- `engine/moment_graph/queries.py`
+- `engine/physics/graph/graph_ops_moments.py`
+- `engine/physics/graph/graph_queries.py`
+
+**Doc refs:**
+- `algorithms/ALGORITHM_Physics_Mechanisms.md`
+
+**Sections:**
+- # Physics — Algorithm: Energy Mechanics And Link Semantics
+- ## CHAIN
+- ## Energy Mechanics
+- ## NODE TYPES
+- ## LINK TYPES
+- ## NARRATIVE TYPES
+- ## LINK STRENGTH
+- ## STRENGTH MECHANICS (Six Categories)
+- # Speaking is stronger than thinking
+- # Direct address is strongest
+- # Speaker's belief activated
+- # ABOUT links activated
+- # Check what this evidence supports
+- # Check what this evidence contradicts
+- # Create new association if co-occurrence is strong enough
+- # Recent narratives in same conversation
+- # Co-occurring narratives associate
+- # How much does receiver trust source?
+- # Average trust from relationship narratives
+- # Direct witness vs secondhand
+- # Higher cost = stronger commitment
+- # What beliefs motivated this action?
+- # Tension pressure
+- # Danger
+- # Emotional weight of moment
+- # All strength changes multiplied by intensity
+- ## Consolidated: Energy Flow Sources, Sinks, And Moment Dynamics
+- ## ENERGY SOURCES
+- # Baseline regeneration
+- # State modifier
+- # Pump budget
+- # Distribute by belief strength only
+- # Things don't hold energy — redirect to related narratives
+- # Character arrives — they bring their energy with them
+- # News creates/energizes a narrative
+- # Discovery energizes existing narrative
+- # Draw energy from involved characters
+- # Inject into related narratives
+- ## ENERGY SINKS
+- # Core types resist decay
+- # Draw from speakers
+- # Draw from attached narratives
+- ## ENERGY TRANSFER (Links)
+- # A pulls from B
+- # B pulls from A
+- # Energy flows toward equilibrium
+- # Additional drain: old loses extra (world moved on)
+- # Things don't hold energy — skip
+- # Forward flow
+- # Reverse flow only if bidirectional
+- # Only if character is awake and present
+- # Only nodes with energy
+- # Reverse flow: target → moment
+- # Partial drain — recent speech still has presence
+- # Status change
+- # Remaining energy decays normally from here
+- ## MOMENT ENERGY & WEIGHT
+- ## Consolidated: Tick Cycle Gating, Flips, And Dispatch
+- ## FULL TICK CYCLE
+- # 1. Characters pump into narratives
+- # 2. Narrative-to-narrative transfer
+- # 3. ABOUT links (focal point pulls)
+- # 4. Moment energy flow
+- # 5. Tension injection (structural pressure)
+- # 6. Decay (energy leaves system)
+- # 7. Detect breaks
+- # Energy decay (fast)
+- # Check for status transition
+- # Weight decay (slow, only without reinforcement)
+- ## PHYSICAL GATING
+- ## PARAMETERS
+- ## EMERGENT BEHAVIORS
+- ## M11: FLIP DETECTION
+- # Check still valid (state may have changed)
+- # Flip to active
+- # Handler needed?
+- # Async - handler will call record_to_canon when done
+- # Direct record
+- # ... process ...
+- ## M12: CANON HOLDER
+- # 1. Status change
+- # 2. Energy cost (actualization)
+- # 3. THEN link (history chain)
+- # 4. Time passage
+- # 5. Strength mechanics
+- # 6. Actions
+- # 7. Notify frontend
+- # ABOUT links activated
+- # Confirming evidence
+- # Contradicting evidence
+- # Recent narratives in same conversation
+- # Adjust by text length
+- # Check for time-based events
+- # Decay check (large time jumps)
+- # Apply Commitment mechanic (M5)
+- # Winner proceeds to canon
+- # Loser returns to possible, decayed
+- ## M13: AGENT DISPATCH
+- # Detect and process breaks
+- # Scheduled events
+- ## WHAT WE DON'T DO
+- ## Consolidated: Handler And Input Processing Flows
+- ## Player Input Processing
+- # Character names
+- # Also check nicknames, titles
+- # Place names
+- # Thing names
+- # ATTACHED_TO player (they said it)
+- # ATTACHED_TO current location
+- # ATTACHED_TO all present characters (they heard it)
+- # REFERENCES for recognized names/things (strong energy transfer)
+- # CAN_SPEAK link (player spoke this)
+- # Direct references get full energy
+- # Boost all moments attached to this character
+- # All present characters get partial energy (they heard)
+- ## "Aldric, what do you think?"
+- ## Aldric directly referenced → full energy boost
+- ## "What does everyone think?"
+- ## No direct reference → distributed partial energy
+- # 1. Parse
+- # 2. Create moment
+- # 3. Create links
+- # 4. Inject energy
+- # 5. Emit player moment to display (immediate)
+- # 6. Trigger physics tick (may be immediate based on settings)
+- # After physics tick, check if anything flipped
+- # No response from NPCs
+- # Energy flows back to player character
+- # Player character's handler will produce observation
+- # "The silence stretches. No one meets your eye."
+- # Or: pause until submit
+- ## Question Answering
+- ## In character handler
+- # Handler needs to know about father
+- # Queue question for answering
+- # Handler continues with what it knows
+- # Does NOT block waiting for answer
+- # 1. GATHER — Get relevant existing facts
+- # 2. GENERATE — Invent answer via LLM
+- # 3. VALIDATE — Check consistency
+- # 4. INJECT — Create nodes in graph
+- # Character's existing family
+- # Character's origin place
+- # Character's existing beliefs/narratives
+- # Historical events character witnessed
+- # Check family conflicts
+- # Check place conflicts
+- # Check temporal conflicts
+- # Create new character nodes
+- # Create relationship link
+- # Create new place nodes
+- # Create relationship link
+- # Create potential memory moments
+- # Create ANSWERED_BY link for traceability
+- ## After injection, physics handles integration:
+- ## New father character exists
+- ## Memory moments attached to asker exist
+- ## These have initial weight (e.g., 0.4)
+- ## Next tick:
+- ## - Energy propagates through FAMILY links
+- ## - Memory moments may get boosted if relevant
+- ## - If weight crosses threshold, memory surfaces
+- ## No special "integrate answer" logic
+- ## Just physics
+- ## Consolidated: Speed Control And Display Filtering
+- ## Speed Controller
+- # Player character directly addressed
+- # Combat initiated
+- # Major character arrival
+- # Tension threshold crossed
+- # Decision point (player choices available)
+- # Discovery (new significant narrative)
+- # Danger to player or companions
+- # Phase 1: Running (player sees this already)
+- # - Motion blur effect
+- # - Muted colors
+- # - Text small, streaming upward
+- # Phase 2: The Beat (300-500ms)
+- # Phase 3: Arrival
+- # - Crystal clear, full color
+- # - Large, centered, deliberate
+- # Player can resume after input processed
+- ## At 3x, low-weight moments:
+- ## - Actualize in graph ✓
+- ## - Create THEN links ✓
+- ## - Become history ✓
+- ## - Display to player ✗ (filtered)
+- ## Player can review history later
+- ## Mechanisms — Function-Level Map (consolidated)
+
+**Sections:**
+- # Physics — Algorithm: Handler And Input Processing Flows (consolidated)
+- ## CHAIN
+- ## CONSOLIDATION
+
+**Code refs:**
+- `engine/moment_graph/surface.py`
+- `engine/moment_graph/traversal.py`
+- `engine/physics/attention_split_sink_mass_distribution_mechanism.py`
+- `engine/physics/contradiction_pressure_from_negative_polarity_mechanism.py`
+- `engine/physics/graph/graph_ops_moments.py`
+- `engine/physics/graph/graph_queries.py`
+- `engine/physics/primes_lag_and_half_life_decay_mechanism.py`
+- `engine/physics/tick.py`
+
+**Doc refs:**
+- `algorithms/ALGORITHM_Physics_Mechanisms.md`
+
+**Sections:**
+- # Physics — Algorithm: Mechanisms (Energy, Pressure, Surfacing)
+- ## CHAIN
+- ## CONSOLIDATION
+
+**Sections:**
+- # Physics — Algorithm: Speed Control And Display Filtering (consolidated)
+- ## CHAIN
+- ## CONSOLIDATION
+
+**Sections:**
+- # Physics — Algorithm: Tick Cycle Gating Flips And Dispatch (consolidated)
+- ## CHAIN
+- ## CONSOLIDATION
+
+**Code refs:**
+- `engine/physics/attention_split_sink_mass_distribution_mechanism.py`
+
+**Sections:**
+- # Physics — Algorithm: Attention Energy Split
+- ## CHAIN
+- ## OVERVIEW
+- ## PROCEDURE (ABRIDGED)
+
+**Code refs:**
+- `engine/physics/attention_split_sink_mass_distribution_mechanism.py`
+
+**Sections:**
+- # Physics — Behaviors: Attention Split and Interrupts
+- ## CHAIN
+- ## BEHAVIORS
+- ## INPUTS / OUTPUTS
+- ## EDGE CASES
+- ## ANTI-BEHAVIORS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Code refs:**
+- `engine/physics/attention_split_sink_mass_distribution_mechanism.py`
+
+**Sections:**
+- # Physics — Implementation: Attention Energy Split
+- ## CHAIN
+- ## CODE MAP
+- ## NOTES
+
+**Code refs:**
+- `engine/physics/attention_split_sink_mass_distribution_mechanism.py`
+- `engine/physics/tick.py`
+
+**Doc refs:**
+- `docs/engine/membrane/PATTERNS_No_Magic_Constants_Dynamic_Modulation_Functions.md`
+- `docs/engine/moments/PATTERNS_Moments.md`
+- `docs/physics/PATTERNS_Physics.md`
+
+**Sections:**
+- # Physics — Patterns: Attention Energy Split (Focus Redistribution as Physics)
+- ## CHAIN
+- ## THE PROBLEM
+- ## THE PATTERN
+- ## INTERRUPT PATTERN
+- ## PRINCIPLES
+- ## DATA
+- ## DEPENDENCIES
+- ## INSPIRATIONS
+- ## SCOPE
+- ## GAPS / IDEAS / QUESTIONS
+
+**Code refs:**
+- `engine/physics/attention_split_sink_mass_distribution_mechanism.py`
+
+**Sections:**
+- # Physics — Sync: Attention Energy Split
+- ## CURRENT STATE
+- ## RECENT CHANGES
+- ## TODO
+
+**Sections:**
+- # Physics — Validation: Attention Split + Interrupt Invariants
+- ## CHAIN
+- ## BEHAVIORS GUARANTEED
+- ## INVARIANTS (MUST ALWAYS HOLD)
+- ## PROPERTIES (PROPERTY-BASED TESTS)
+- ## ERROR CONDITIONS
+- ## HEALTH COVERAGE
+- ## VERIFICATION PROCEDURE
+- ## SYNC STATUS
+- ## GAPS / QUESTIONS
 
 **Sections:**
 - # Graph — Algorithm: Energy Flow
@@ -2558,9 +4592,12 @@
 - `engine/infrastructure/orchestration/orchestrator.py`
 - `engine/infrastructure/orchestration/world_runner.py`
 - `engine/physics/graph/graph_ops_events.py`
+- `engine/physics/graph/graph_ops_read_only_interface.py`
 - `engine/physics/graph/graph_ops_types.py`
 - `engine/physics/graph/graph_queries_moments.py`
+- `engine/physics/graph/graph_query_utils.py`
 - `engine/physics/tick.py`
+- `graph_ops.py`
 - `graph_ops_events.py`
 - `graph_ops_types.py`
 - `orchestrator.py`
@@ -2568,6 +4605,7 @@
 
 **Doc refs:**
 - `docs/physics/ALGORITHM_Physics.md`
+- `docs/physics/IMPLEMENTATION_Physics.md`
 - `docs/physics/graph/BEHAVIORS_Graph.md`
 - `docs/physics/graph/SYNC_Graph.md`
 
@@ -2575,6 +4613,7 @@
 - # Graph — Current State
 - ## MATURITY
 - ## CURRENT STATE
+- ## RECENT CHANGES
 - ## IN PROGRESS
 - ## KNOWN ISSUES
 - ## What Exists ✓
@@ -2589,12 +4628,17 @@
 - ## CHAIN
 - ## Agent Observations
 - ## Agent Observations
+- ## Agent Observations
+- ## ARCHIVE
 - ## ARCHIVE
 
 **Code refs:**
 - `engine/graph/health/check_health.py`
 - `engine/infrastructure/api/app.py`
+- `engine/physics/graph/connectome_read_cli.py`
+- `engine/physics/graph/graph_ops.py`
 - `engine/physics/graph/graph_ops_events.py`
+- `engine/physics/graph/graph_ops_read_only_interface.py`
 - `engine/physics/graph/graph_ops_types.py`
 - `engine/physics/graph/graph_queries_moments.py`
 - `engine/physics/graph/graph_queries_search.py`
@@ -2645,6 +4689,8 @@
 - # Archived: SYNC_Graph.md
 - ## What's Missing: ONE ENDPOINT
 - # TODO: SSE streaming version
+- ## RECENT CHANGES
+- # Archived: SYNC_Graph.md
 - ## RECENT CHANGES
 
 **Doc refs:**
@@ -2763,10 +4809,57 @@
 - ## GAPS / IDEAS / QUESTIONS
 
 **Sections:**
+- # MECHANISMS — Attention Energy Split (v0)
+- ## CHAIN
+- ## PURPOSE
+- ## INPUTS (REQUIRED)
+- ## STEP 1 — Build Player Neighborhood
+- ## STEP 2 — Enumerate Eligible Sinks
+- ## STEP 3 — Compute Sink Mass (Node↔Link Jointure)
+- ## STEP 4 — Allocate Attention
+- ## STEP 5 — Update Moment Energies (and only moment energies)
+- ## OUTPUTS
+- ## INTERRUPT COUPLING (uses separate pattern)
+- ## FAILURE MODES
+- ## VALIDATION HOOKS
+
+**Sections:**
+- # MECHANISMS — Contradiction Pressure (v0)
+- ## CHAIN
+- ## PURPOSE
+- ## INPUTS
+- ## EDGE PRESSURE
+- ## EFFECT (INDIRECT ONLY)
+- ## BEHAVIORAL EXPECTATIONS
+- ## FAILURE MODES
+- ## VALIDATION HOOKS
+
+**Sections:**
+- # MECHANISMS — PRIMES Lag + Half-Life (v0)
+- ## CHAIN
+- ## PURPOSE
+- ## PRIMES LINK FIELDS (REQUIRED)
+- ## INPUTS
+- ## PRIME EFFECT FUNCTION
+- ## HOW PRIMES IS USED (v0)
+- ## FAILURE MODES
+- ## VALIDATION HOOKS
+
+**Doc refs:**
+- `algorithms/ALGORITHM_Physics_Energy_Flow_Sources_Sinks_And_Moment_Dynamics.md`
+- `algorithms/ALGORITHM_Physics_Energy_Mechanics_And_Link_Semantics.md`
+- `algorithms/ALGORITHM_Physics_Handler_And_Input_Processing_Flows.md`
+- `algorithms/ALGORITHM_Physics_Mechanisms.md`
+- `algorithms/ALGORITHM_Physics_Speed_Control_And_Display_Filtering.md`
+- `algorithms/ALGORITHM_Physics_Tick_Cycle_Gating_Flips_And_Dispatch.md`
+
+**Sections:**
 - # Physics — Algorithm: System Overview
 - ## CHAIN
 - ## Consolidation Note
 - ## OVERVIEW
+- ## DETAILED ALGORITHMS
+- ## LEGACY ALGORITHM REDIRECTS
 - ## DATA STRUCTURES
 - ## ALGORITHM: Physics Tick Cycle
 - ## KEY DECISIONS
@@ -2775,294 +4868,6 @@
 - ## HELPER FUNCTIONS
 - ## INTERACTIONS
 - ## GAPS / IDEAS / QUESTIONS
-- ## Energy Mechanics
-- ## NODE TYPES
-- ## LINK TYPES
-- ## NARRATIVE TYPES
-- ## LINK STRENGTH
-- ## STRENGTH MECHANICS (Six Categories)
-- # Speaking is stronger than thinking
-- # Direct address is strongest
-- # Speaker's belief activated
-- # ABOUT links activated
-- # Check what this evidence supports
-- # Check what this evidence contradicts
-- # Create new association if co-occurrence is strong enough
-- # Recent narratives in same conversation
-- # Co-occurring narratives associate
-- # How much does receiver trust source?
-- # Average trust from relationship narratives
-- # Direct witness vs secondhand
-- # Higher cost = stronger commitment
-- # What beliefs motivated this action?
-- # Tension pressure
-- # Danger
-- # Emotional weight of moment
-- # All strength changes multiplied by intensity
-- ## ENERGY SOURCES
-- # Baseline regeneration
-- # State modifier
-- # Pump budget
-- # Distribute by belief strength only
-- # Things don't hold energy — redirect to related narratives
-- # Character arrives — they bring their energy with them
-- # News creates/energizes a narrative
-- # Discovery energizes existing narrative
-- # Draw energy from involved characters
-- # Inject into related narratives
-- ## ENERGY SINKS
-- # Core types resist decay
-- # Draw from speakers
-- # Draw from attached narratives
-- ## ENERGY TRANSFER (Links)
-- # A pulls from B
-- # B pulls from A
-- # Energy flows toward equilibrium
-- # Additional drain: old loses extra (world moved on)
-- # Things don't hold energy — skip
-- # Forward flow
-- # Reverse flow only if bidirectional
-- # Only if character is awake and present
-- # Only nodes with energy
-- # Reverse flow: target → moment
-- # Partial drain — recent speech still has presence
-- # Status change
-- # Remaining energy decays normally from here
-- ## MOMENT ENERGY & WEIGHT
-- ## FULL TICK CYCLE
-- # 1. Characters pump into narratives
-- # 2. Narrative-to-narrative transfer
-- # 3. ABOUT links (focal point pulls)
-- # 4. Moment energy flow
-- # 5. Tension injection (structural pressure)
-- # 6. Decay (energy leaves system)
-- # 7. Detect breaks
-- # Energy decay (fast)
-- # Check for status transition
-- # Weight decay (slow, only without reinforcement)
-- ## PHYSICAL GATING
-- ## PARAMETERS
-- ## EMERGENT BEHAVIORS
-- ## M11: FLIP DETECTION
-- # Check still valid (state may have changed)
-- # Flip to active
-- # Handler needed?
-- # Async - handler will call record_to_canon when done
-- # Direct record
-- # ... process ...
-- ## M12: CANON HOLDER
-- # 1. Status change
-- # 2. Energy cost (actualization)
-- # 3. THEN link (history chain)
-- # 4. Time passage
-- # 5. Strength mechanics
-- # 6. Actions
-- # 7. Notify frontend
-- # ABOUT links activated
-- # Confirming evidence
-- # Contradicting evidence
-- # Recent narratives in same conversation
-- # Adjust by text length
-- # Check for time-based events
-- # Decay check (large time jumps)
-- # Apply Commitment mechanic (M5)
-- # Winner proceeds to canon
-- # Loser returns to possible, decayed
-- ## M13: AGENT DISPATCH
-- # Detect and process breaks
-- # Scheduled events
-- ## WHAT WE DON'T DO
-- ## Physics Tick
-- # 1. PUMP — Characters inject energy into narratives
-- # 2. TRANSFER — Energy flows through narrative links
-- # 3. TENSION — Structural tensions concentrate energy
-- # 4. DECAY — Energy leaves the system
-- # 5. WEIGHT — Recompute moment weights from sources
-- # 6. DETECT — Find moments that crossed threshold
-- # 7. EMIT — Send flipped moments to Canon Holder
-- # 8. BREAKS — Return any structural breaks for handling
-- # Baseline regeneration
-- # State modifier (dead/unconscious = 0, sleeping = 0.2, awake = 1.0)
-- # Distribute by belief strength only - no proximity filter
-- # Narrative links
-- # ABOUT links (focal point pulls)
-- # Draw from participants
-- # Inject into related narratives
-- # Narrative decay
-- # Character decay
-- # From characters who can speak it
-- # From attached narratives
-- # From attached present characters
-- # Actualization cost
-- # Record to canon
-- # Trigger handlers for attached characters
-- ## Canon Holder
-- # 1. Status change
-- # 2. Energy cost (actualization)
-- # 3. THEN link (history chain)
-- # 4. Time passage
-- # 5. Strength mechanics
-- # 6. Actions
-- # 7. Notify frontend
-- # Check still valid (state may have changed)
-- # Flip to active
-- # Handler needed?
-- # Async - handler will call record_to_canon when done
-- # Direct record
-- # ... process ...
-- # ABOUT links activated
-- # Confirming evidence
-- # Contradicting evidence
-- # Recent narratives in same conversation
-- # Change AT link
-- # Change CARRIES link
-- # Change CARRIES link
-- # Complex — may trigger combat
-- # Thing-specific effects
-- # Apply Commitment mechanic (M5)
-- # Adjust by text length
-- # Check for time-based events
-- # Decay check (large time jumps)
-- # Winner proceeds to canon
-- # Loser returns to possible, decayed
-- ## Character Handlers
-- # Note: NO weight field. Physics assigns weight.
-- # Build prompt based on character type and speed
-- # LLM call
-- # Parse structured output
-- # Inject into graph (physics assigns weights)
-- # Speed-aware framing
-- # Calculate link strength (how much character energy flows to this moment)
-- # Create moment (weight will be computed by physics tick)
-- # Create CAN_SPEAK link (character energy → moment weight)
-- # Create ATTACHED_TO link
-- # Process additional links
-- # Queue questions for async answering
-- # "You there, guard on the left!"
-- # individual now has own node, inherits group properties
-- ## In handler output
-- # Parallel execution
-- # Each handler only writes its own character
-- # No conflicts because of isolation
-- # Create a synthetic "arrival" moment
-- # Trigger handler with arrival as trigger
-- # By the time player engages, potentials exist
-- ## Action Processing
-- # 1. VALIDATE — Is action still possible?
-- # 2. EXECUTE — Modify graph state
-- # 3. CONSEQUENCES — Generate consequence moments
-- # 4. INJECT — Consequences enter graph with energy
-- # Can actor travel to destination?
-- # Is thing still present and unowned?
-- # Is target still present and alive?
-- # Does actor have the thing? Is recipient present?
-- # Remove old AT link
-- # Create new AT link
-- # Handle moment dormancy (see ALGORITHM_Lifecycle.md)
-- # Remove thing's AT link
-- # Create CARRIES link
-- # Calculate damage (simplified)
-- # Update target health
-- # Check for death
-- # Update relationship
-- # Remove actor's CARRIES link
-- # Create recipient's CARRIES link
-- # Departure noticed
-- # Arrival noticed
-- # Witness reactions will be generated by their handlers
-- # Create moment with initial energy
-- # Create links
-- # Physics takes over — consequence may flip, trigger handlers
-- # First action already processed (it's first in queue)
-- # Second action validation will fail
-- # Generate "blocked" consequence
-- # Blocked consequence triggers actor_b's handler
-- # Handler can generate reaction: frustration, new plan, etc.
-- ## Player Input Processing
-- # Character names
-- # Also check nicknames, titles
-- # Place names
-- # Thing names
-- # ATTACHED_TO player (they said it)
-- # ATTACHED_TO current location
-- # ATTACHED_TO all present characters (they heard it)
-- # REFERENCES for recognized names/things (strong energy transfer)
-- # CAN_SPEAK link (player spoke this)
-- # Direct references get full energy
-- # Boost all moments attached to this character
-- # All present characters get partial energy (they heard)
-- ## "Aldric, what do you think?"
-- ## Aldric directly referenced → full energy boost
-- ## "What does everyone think?"
-- ## No direct reference → distributed partial energy
-- # 1. Parse
-- # 2. Create moment
-- # 3. Create links
-- # 4. Inject energy
-- # 5. Emit player moment to display (immediate)
-- # 6. Trigger physics tick (may be immediate based on settings)
-- # After physics tick, check if anything flipped
-- # No response from NPCs
-- # Energy flows back to player character
-- # Player character's handler will produce observation
-- # "The silence stretches. No one meets your eye."
-- # Or: pause until submit
-- ## Question Answering
-- ## In character handler
-- # Handler needs to know about father
-- # Queue question for answering
-- # Handler continues with what it knows
-- # Does NOT block waiting for answer
-- # 1. GATHER — Get relevant existing facts
-- # 2. GENERATE — Invent answer via LLM
-- # 3. VALIDATE — Check consistency
-- # 4. INJECT — Create nodes in graph
-- # Character's existing family
-- # Character's origin place
-- # Character's existing beliefs/narratives
-- # Historical events character witnessed
-- # Check family conflicts
-- # Check place conflicts
-- # Check temporal conflicts
-- # Create new character nodes
-- # Create relationship link
-- # Create new place nodes
-- # Create relationship link
-- # Create potential memory moments
-- # Create ANSWERED_BY link for traceability
-- ## After injection, physics handles integration:
-- ## New father character exists
-- ## Memory moments attached to asker exist
-- ## These have initial weight (e.g., 0.4)
-- ## Next tick:
-- ## - Energy propagates through FAMILY links
-- ## - Memory moments may get boosted if relevant
-- ## - If weight crosses threshold, memory surfaces
-- ## No special "integrate answer" logic
-- ## Just physics
-- ## Speed Controller
-- # Player character directly addressed
-- # Combat initiated
-- # Major character arrival
-- # Tension threshold crossed
-- # Decision point (player choices available)
-- # Discovery (new significant narrative)
-- # Danger to player or companions
-- # Phase 1: Running (player sees this already)
-- # - Motion blur effect
-- # - Muted colors
-- # - Text small, streaming upward
-- # Phase 2: The Beat (300-500ms)
-- # Phase 3: Arrival
-- # - Crystal clear, full color
-- # - Large, centered, deliberate
-- # Player can resume after input processed
-- ## At 3x, low-weight moments:
-- ## - Actualize in graph ✓
-- ## - Create THEN links ✓
-- ## - Become history ✓
-- ## - Display to player ✗ (filtered)
-- ## Player can review history later
 
 **Code refs:**
 - `engine/api/app.py`
@@ -3082,10 +4887,14 @@
 - # Queries
 - # Lifecycle
 
+**Doc refs:**
+- `docs/physics/algorithms/ALGORITHM_Physics_Mechanisms.md`
+
 **Sections:**
 - # Physics — Behaviors: What Should Happen
 - ## CHAIN
 - ## Overview
+- ## MECHANISMS (Implementation Anchors)
 - ## BEHAVIORS
 - ## B1: Instant Display, Eventual Depth
 - ## B2: Conversations Are Multi-Participant
@@ -3124,16 +4933,20 @@
 - ## KNOWN GAPS
 
 **Code refs:**
-- `engine/infrastructure/orchestration/speed.py`
 - `engine/models/base.py`
 - `engine/moment_graph/traversal.py`
+- `engine/physics/attention_split_sink_mass_distribution_mechanism.py`
 - `engine/physics/constants.py`
+- `engine/physics/contradiction_pressure_from_negative_polarity_mechanism.py`
 - `engine/physics/graph/graph_ops.py`
 - `engine/physics/graph/graph_ops_events.py`
+- `engine/physics/graph/graph_ops_read_only_interface.py`
 - `engine/physics/graph/graph_queries.py`
+- `engine/physics/primes_lag_and_half_life_decay_mechanism.py`
 - `engine/physics/tick.py`
-- `graph_ops.py`
-- `graph_queries_narratives.py`
+
+**Doc refs:**
+- `docs/physics/PATTERNS_Physics.md`
 
 **Sections:**
 - # Physics — Implementation: Code Architecture and Structure
@@ -3152,6 +4965,13 @@
 - ## BIDIRECTIONAL LINKS
 - ## GAPS / IDEAS / QUESTIONS
 - ## RUNTIME PATTERNS (Infrastructure)
+
+**Sections:**
+- # OBJECTIFS — Physics
+- ## PRIMARY OBJECTIVES (ranked)
+- ## NON-OBJECTIVES
+- ## TRADEOFFS (canonical decisions)
+- ## SUCCESS SIGNALS (observable)
 
 **Doc refs:**
 - `docs/schema/SCHEMA_Moments.md`
@@ -3188,6 +5008,12 @@
 **Doc refs:**
 - `docs/physics/ALGORITHM_Physics.md`
 - `docs/physics/IMPLEMENTATION_Physics.md`
+- `docs/physics/algorithms/ALGORITHM_Physics_Mechanisms.md`
+- `docs/physics/attention/PATTERNS_Attention_Energy_Split.md`
+- `docs/physics/attention/VALIDATION_Attention_Split_And_Interrupts.md`
+- `docs/physics/mechanisms/MECHANISMS_Attention_Energy_Split.md`
+- `docs/physics/mechanisms/MECHANISMS_Contradiction_Pressure.md`
+- `docs/physics/mechanisms/MECHANISMS_Primes_Lag_Decay.md`
 
 **Sections:**
 - # Physics — Current State
@@ -3632,6 +5458,13 @@
 - ## ENTRY POINT
 
 **Sections:**
+- # OBJECTIFS — Protocol
+- ## PRIMARY OBJECTIVES (ranked)
+- ## NON-OBJECTIVES
+- ## TRADEOFFS (canonical decisions)
+- ## SUCCESS SIGNALS (observable)
+
+**Sections:**
 - # ngram Framework — Patterns: Bidirectional Documentation Chain for AI Agent Workflows
 - ## CHAIN
 - ## THE PROBLEM
@@ -3795,6 +5628,71 @@
 - # Archived: SYNC_Graph_Health.md
 - ## RECENT CHANGES
 
+**Sections:**
+- # Schema — Behaviors: Link Axes Semantics
+- ## CHAIN
+- ## BEHAVIORS
+- ## INPUTS / OUTPUTS
+- ## EDGE CASES
+- ## ANTI-BEHAVIORS
+- ## GAPS / IDEAS / QUESTIONS
+
+**Doc refs:**
+- `docs/engine/moments/PATTERNS_Moments.md`
+- `docs/physics/PATTERNS_Physics.md`
+- `docs/schema/SCHEMA/SCHEMA_Links.md`
+
+**Sections:**
+- # Schema — Patterns: Link Axes, Not Link Types
+- ## CHAIN
+- ## THE PROBLEM
+- ## THE PATTERN
+- ## PRINCIPLES
+- ## DATA
+- ## DEPENDENCIES
+- ## INSPIRATIONS
+- ## SCOPE
+- ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # Schema — Link Axes: Nodes, Links, and Examples
+- ## CHAIN
+- ## OVERVIEW
+- ## NODE TYPES (V0)
+- ## UNIVERSAL FIELDS (ALL NODES)
+- ## LINK TYPES (V0)
+- ## UNIVERSAL FIELDS (ALL LINKS)
+- ## LINK AXES (REQUIRED FOR RELATES/PRIMES)
+- ## INSTANCES (10) WITH NODE ATTRIBUTES
+- ## LINK MATRIX (EXPLICIT LINKS)
+- ## ATTRIBUTE CATALOG (RICH)
+- ## RULES
+- ## OBSERVABLE BEHAVIORS (TARGET)
+
+**Sections:**
+- # Link Axes — Sync: Current State
+- ## MATURITY
+- ## CURRENT STATE
+- ## IN PROGRESS
+- ## RECENT CHANGES
+- ## KNOWN ISSUES
+- ## HANDOFF: FOR AGENTS
+- ## HANDOFF: FOR HUMAN
+- ## TODO
+- ## CONSCIOUSNESS TRACE
+- ## POINTERS
+
+**Sections:**
+- # Schema — Validation: Link Axes Invariants
+- ## CHAIN
+- ## BEHAVIORS GUARANTEED
+- ## INVARIANTS
+- ## PROPERTIES
+- ## ERROR CONDITIONS
+- ## VERIFICATION PROCEDURE
+- ## SYNC STATUS
+- ## GAPS / IDEAS / QUESTIONS
+
 **Code refs:**
 - `__init__.py`
 - `base.py`
@@ -3861,6 +5759,38 @@
 - ## Agent Observations
 
 **Sections:**
+- # Schema — Algorithm: Documentation Routing
+- ## CHAIN
+- ## FLOW
+
+**Sections:**
+- # Schema — Behaviors: Observable Schema Effects
+- ## CHAIN
+- ## BEHAVIORS
+
+**Sections:**
+- # Schema — Health: Verification Checklist
+- ## CHAIN
+- ## CHECKS
+
+**Sections:**
+- # Schema — Implementation: Documentation Structure
+- ## CHAIN
+- ## STRUCTURE
+
+**Sections:**
+- # OBJECTIFS — Schema
+- ## PRIMARY OBJECTIVES (ranked)
+- ## NON-OBJECTIVES
+- ## TRADEOFFS (canonical decisions)
+- ## SUCCESS SIGNALS (observable)
+
+**Sections:**
+- # Schema — Patterns: Module Overview and Ownership
+- ## CHAIN
+- ## PURPOSE
+
+**Sections:**
 - # SCHEMA: Code Graph
 - ## CORE INSIGHT
 - ## DESIGN PATTERNS
@@ -3868,6 +5798,14 @@
 - # Physics Properties
 - ## MECHANICS
 - ## SCHEMA EVOLUTION
+
+**Doc refs:**
+- `docs/schema/SCHEMA.md`
+
+**Sections:**
+- # Schema — Sync: Current State
+- ## CURRENT STATE
+- ## RECENT CHANGES
 
 **Code refs:**
 - `engine/graph/health/test_schema.py`
@@ -3883,6 +5821,41 @@
 - ## VERIFICATION PROCEDURE
 - ## SYNC STATUS
 - ## GAPS / IDEAS / QUESTIONS
+
+**Sections:**
+- # Tools — Algorithm: Script Flow
+- ## CHAIN
+- ## FLOWS
+
+**Sections:**
+- # Tools — Behaviors: Utility Outcomes
+- ## CHAIN
+- ## BEHAVIORS
+
+**Sections:**
+- # Tools — Health: Verification
+- ## CHAIN
+- ## HEALTH CHECKS
+
+**Sections:**
+- # OBJECTIFS — Tools
+- ## PRIMARY OBJECTIVES (ranked)
+- ## NON-OBJECTIVES
+- ## TRADEOFFS (canonical decisions)
+- ## SUCCESS SIGNALS (observable)
+
+**Sections:**
+- # Tools — Patterns: Utility Scripts
+- ## CHAIN
+- ## THE PROBLEM
+- ## THE PATTERN
+
+**Sections:**
+- # Tools — Sync: Current State
+- ## CHAIN
+- ## CURRENT STATE
+- ## Agent Observations
+- ## TODO
 
 **Code refs:**
 - `ngram/cli.py`
@@ -4039,6 +6012,13 @@
 - ## WHAT TO READ NEXT
 - ## REMAINING WORK
 - ## DECISIONS MADE
+
+**Sections:**
+- # OBJECTIFS — Tui
+- ## PRIMARY OBJECTIVES (ranked)
+- ## NON-OBJECTIVES
+- ## TRADEOFFS (canonical decisions)
+- ## SUCCESS SIGNALS (observable)
 
 **Code refs:**
 - `ngram/cli.py`
@@ -4260,11 +6240,83 @@
 **Code refs:**
 - `__init__.py`
 - `agent_cli.py`
+- `api/connectome/graph/route.ts`
+- `api/connectome/graphs/route.ts`
+- `api/connectome/search/route.ts`
+- `api/sse/route.ts`
 - `app.py`
+- `app/api/connectome/graph/route.ts`
+- `app/api/connectome/graphs/route.ts`
+- `app/api/connectome/search/route.ts`
+- `app/connectome/components/connectome_log_duration_formatting_and_threshold_color_rules.ts`
+- `app/connectome/components/connectome_log_export_buttons_using_state_store_serializers.ts`
+- `app/connectome/components/connectome_log_export_buttons_using_state_store_serializers.tsx`
+- `app/connectome/components/connectome_log_trigger_and_calltype_badge_color_tokens.ts`
+- `app/connectome/components/connectome_page_shell_route_layout_and_control_surface.ts`
+- `app/connectome/components/connectome_page_shell_route_layout_and_control_surface.tsx`
+- `app/connectome/components/deterministic_zone_and_node_layout_computation_helpers.ts`
+- `app/connectome/components/edge_kit/connectome_edge_directional_shine_animation_helpers.ts`
+- `app/connectome/components/edge_kit/connectome_edge_label_renderer_with_halo_and_zoom_policy.ts`
+- `app/connectome/components/edge_kit/connectome_edge_label_renderer_with_halo_and_zoom_policy.tsx`
+- `app/connectome/components/edge_kit/connectome_edge_pulse_particle_animation_and_boundary_clamp_helpers.ts`
+- `app/connectome/components/edge_kit/connectome_edge_style_tokens_for_trigger_and_calltype_mapping.ts`
+- `app/connectome/components/edge_kit/connectome_node_boundary_intersection_geometry_helpers.ts`
+- `app/connectome/components/edge_kit/semantic_edge_components_with_directional_shine_and_pulses.ts`
+- `app/connectome/components/edge_kit/semantic_edge_components_with_directional_shine_and_pulses.tsx`
+- `app/connectome/components/edge_label_declutter_and_visibility_policy_helpers.ts`
+- `app/connectome/components/node_kit/connectome_energy_badge_bucketed_glow_and_value_formatter.ts`
+- `app/connectome/components/node_kit/connectome_energy_badge_bucketed_glow_and_value_formatter.tsx`
+- `app/connectome/components/node_kit/connectome_node_background_theme_tokens_by_type_and_language.ts`
+- `app/connectome/components/node_kit/connectome_node_frame_with_title_path_and_tooltip_shell.ts`
+- `app/connectome/components/node_kit/connectome_node_frame_with_title_path_and_tooltip_shell.tsx`
+- `app/connectome/components/node_kit/connectome_node_step_list_and_active_step_highlighter.ts`
+- `app/connectome/components/node_kit/connectome_node_step_list_and_active_step_highlighter.tsx`
+- `app/connectome/components/node_kit/connectome_player_wait_progress_bar_with_four_second_cap.ts`
+- `app/connectome/components/node_kit/connectome_player_wait_progress_bar_with_four_second_cap.tsx`
+- `app/connectome/components/node_kit/connectome_tick_cron_circular_progress_ring_with_speed_label.ts`
+- `app/connectome/components/node_kit/connectome_tick_cron_circular_progress_ring_with_speed_label.tsx`
+- `app/connectome/components/node_kit/typed_connectome_node_components_with_energy_and_step_highlighting.ts`
+- `app/connectome/components/node_kit/typed_connectome_node_components_with_energy_and_step_highlighting.tsx`
+- `app/connectome/components/pannable_zoomable_zoned_flow_canvas_renderer.ts`
+- `app/connectome/components/pannable_zoomable_zoned_flow_canvas_renderer.tsx`
+- `app/connectome/components/unified_now_and_copyable_ledger_log_panel.ts`
+- `app/connectome/components/unified_now_and_copyable_ledger_log_panel.tsx`
+- `app/connectome/lib/connectome_export_jsonl_and_text_log_serializer.ts`
+- `app/connectome/lib/connectome_session_boundary_and_restart_policy_controller.ts`
+- `app/connectome/lib/connectome_step_script_sample_sequence.ts`
+- `app/connectome/lib/connectome_wait_timer_progress_and_tick_display_signal_selectors.ts`
+- `app/connectome/lib/flow_event_duration_bucket_color_classifier.ts`
+- `app/connectome/lib/flow_event_schema_and_normalization_contract.ts`
+- `app/connectome/lib/flow_event_trigger_and_calltype_inference_rules.ts`
+- `app/connectome/lib/minimum_duration_clamp_and_speed_based_default_policy.ts`
+- `app/connectome/lib/next_step_gate_and_realtime_playback_runtime_engine.ts`
+- `app/connectome/lib/step_script_cursor_and_replay_determinism_helpers.ts`
+- `app/connectome/lib/zustand_connectome_state_store_with_atomic_commit_actions.ts`
+- `app/connectome/page.tsx`
 - `base.py`
 - `check_health.py`
 - `cli.py`
 - `commands.py`
+- `connectome/components/connectome_health_panel.tsx`
+- `connectome/components/connectome_log_duration_formatting_and_threshold_color_rules.ts`
+- `connectome/components/connectome_log_export_buttons_using_state_store_serializers.tsx`
+- `connectome/components/connectome_log_trigger_and_calltype_badge_color_tokens.ts`
+- `connectome/components/connectome_page_shell_route_layout_and_control_surface.tsx`
+- `connectome/components/deterministic_zone_and_node_layout_computation_helpers.ts`
+- `connectome/components/edge_kit/connectome_edge_label_renderer_with_halo_and_zoom_policy.tsx`
+- `connectome/components/edge_kit/connectome_edge_style_tokens_for_trigger_and_calltype_mapping.ts`
+- `connectome/components/edge_kit/connectome_node_boundary_intersection_geometry_helpers.ts`
+- `connectome/components/edge_kit/semantic_edge_components_with_directional_shine_and_pulses.tsx`
+- `connectome/components/edge_label_declutter_and_visibility_policy_helpers.ts`
+- `connectome/components/node_kit/connectome_energy_badge_bucketed_glow_and_value_formatter.tsx`
+- `connectome/components/node_kit/connectome_node_background_theme_tokens_by_type_and_language.ts`
+- `connectome/components/node_kit/connectome_node_frame_with_title_path_and_tooltip_shell.tsx`
+- `connectome/components/node_kit/connectome_node_step_list_and_active_step_highlighter.tsx`
+- `connectome/components/node_kit/connectome_player_wait_progress_bar_with_four_second_cap.tsx`
+- `connectome/components/node_kit/connectome_tick_cron_circular_progress_ring_with_speed_label.tsx`
+- `connectome/components/node_kit/typed_connectome_node_components_with_energy_and_step_highlighting.tsx`
+- `connectome/components/pannable_zoomable_zoned_flow_canvas_renderer.tsx`
+- `connectome/components/unified_now_and_copyable_ledger_log_panel.tsx`
 - `context.py`
 - `core_utils.py`
 - `doctor.py`
@@ -4293,7 +6345,12 @@
 - `engine/infrastructure/orchestration/orchestrator.py`
 - `engine/infrastructure/orchestration/speed.py`
 - `engine/infrastructure/orchestration/world_runner.py`
+- `engine/infrastructure/tempo/health_check.py`
+- `engine/infrastructure/tempo/tempo_controller.py`
 - `engine/init_db.py`
+- `engine/membrane/functions.py`
+- `engine/membrane/health_check.py`
+- `engine/membrane/provider.py`
 - `engine/models/__init__.py`
 - `engine/models/base.py`
 - `engine/models/links.py`
@@ -4303,14 +6360,20 @@
 - `engine/moment_graph/surface.py`
 - `engine/moment_graph/traversal.py`
 - `engine/moments/__init__.py`
+- `engine/physics/attention_split_sink_mass_distribution_mechanism.py`
 - `engine/physics/constants.py`
+- `engine/physics/contradiction_pressure_from_negative_polarity_mechanism.py`
+- `engine/physics/graph/connectome_read_cli.py`
 - `engine/physics/graph/graph_ops.py`
 - `engine/physics/graph/graph_ops_events.py`
 - `engine/physics/graph/graph_ops_moments.py`
+- `engine/physics/graph/graph_ops_read_only_interface.py`
 - `engine/physics/graph/graph_ops_types.py`
 - `engine/physics/graph/graph_queries.py`
 - `engine/physics/graph/graph_queries_moments.py`
 - `engine/physics/graph/graph_queries_search.py`
+- `engine/physics/graph/graph_query_utils.py`
+- `engine/physics/primes_lag_and_half_life_decay_mechanism.py`
 - `engine/physics/tick.py`
 - `engine/tests/test_e2e_moment_graph.py`
 - `engine/tests/test_models.py`
@@ -4345,6 +6408,7 @@
 - `ngram/cli.py`
 - `ngram/context.py`
 - `ngram/core_utils.py`
+- `ngram/docs_fix.py`
 - `ngram/doctor.py`
 - `ngram/doctor_checks.py`
 - `ngram/doctor_checks_content.py`
@@ -4426,6 +6490,7 @@
 - `tensions.py`
 - `test_schema.py`
 - `tick.py`
+- `tools/stream_dialogue.py`
 - `utils.py`
 - `validate.py`
 - `views.py`
@@ -4434,21 +6499,24 @@
 - `agents/narrator/CLAUDE.md`
 - `agents/narrator/CLAUDE_old.md`
 - `agents/world_runner/CLAUDE.md`
+- `algorithms/ALGORITHM_Physics_Energy_Flow_Sources_Sinks_And_Moment_Dynamics.md`
+- `algorithms/ALGORITHM_Physics_Energy_Mechanics_And_Link_Semantics.md`
+- `algorithms/ALGORITHM_Physics_Handler_And_Input_Processing_Flows.md`
+- `algorithms/ALGORITHM_Physics_Mechanisms.md`
+- `algorithms/ALGORITHM_Physics_Speed_Control_And_Display_Filtering.md`
+- `algorithms/ALGORITHM_Physics_Tick_Cycle_Gating_Flips_And_Dispatch.md`
 - `archive/SYNC_Archive_2024-12.md`
 - `archive/SYNC_CLI_Development_State_archive_2025-12.md`
 - `archive/SYNC_CLI_State_Archive_2025-12.md`
 - `archive/SYNC_TUI_State_Archive_2025-12.md`
 - `archive/SYNC_archive_2024-12.md`
-- `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Doctor_And_Repair.md`
-- `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Init_And_Validate.md`
-- `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Markers_And_Support.md`
 - `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md`
 - `core/BEHAVIORS_CLI_Command_Effects.md`
 - `core/HEALTH_CLI_Command_Test_Coverage.md`
-- `core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Code_Structure.md`
-- `core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md`
-- `core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Runtime_And_Dependencies.md`
-- `core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Schema.md`
+- `core/IMPLEMENTATION_CLI_Code_Architecture/overview/IMPLEMENTATION_Overview.md`
+- `core/IMPLEMENTATION_CLI_Code_Architecture/runtime/IMPLEMENTATION_Runtime_And_Dependencies.md`
+- `core/IMPLEMENTATION_CLI_Code_Architecture/schema/IMPLEMENTATION_Schema.md`
+- `core/IMPLEMENTATION_CLI_Code_Architecture/structure/IMPLEMENTATION_Code_Structure.md`
 - `core/PATTERNS_Why_CLI_Over_Copy.md`
 - `core/SYNC_CLI_Development_State.md`
 - `core/VALIDATION_CLI_Instruction_Invariants.md`
@@ -4477,20 +6545,20 @@
 - `docs/cli/ALGORITHM_CLI_Command_Execution_Logic.md`
 - `docs/cli/ALGORITHM_CLI_Logic.md`
 - `docs/cli/HEALTH_CLI_Coverage.md`
-- `docs/cli/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md`
 - `docs/cli/SYNC_CLI_State.md`
 - `docs/cli/VALIDATION_CLI_Invariants.md`
 - `docs/cli/archive/SYNC_CLI_Development_State_archive_2025-12.md`
 - `docs/cli/archive/SYNC_CLI_State_Archive_2025-12.md`
+- `docs/cli/archive/SYNC_archive_2024-12.md`
 - `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic.md`
-- `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Markers_And_Support.md`
 - `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md`
-- `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Refactor_Command.md`
 - `docs/cli/core/BEHAVIORS_CLI_Command_Effects.md`
 - `docs/cli/core/HEALTH_CLI_Command_Test_Coverage.md`
 - `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture.md`
-- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Code_Structure.md`
-- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/overview/IMPLEMENTATION_Overview.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/runtime/IMPLEMENTATION_Runtime_And_Dependencies.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/schema/IMPLEMENTATION_Schema.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/structure/IMPLEMENTATION_Code_Structure.md`
 - `docs/cli/core/PATTERNS_Why_CLI_Over_Copy.md`
 - `docs/cli/core/SYNC_CLI_Development_State.md`
 - `docs/cli/core/VALIDATION_CLI_Instruction_Invariants.md`
@@ -4498,9 +6566,19 @@
 - `docs/cli/prompt/HEALTH_Prompt_Runtime_Verification.md`
 - `docs/cli/prompt/PATTERNS_Prompt_Command_Workflow_Design.md`
 - `docs/cli/prompt/SYNC_Prompt_Command_State.md`
+- `docs/connectome/edge_kit/IMPLEMENTATION_Connectome_Edge_Kit_Component_Map_And_Render_Tokens.md`
+- `docs/connectome/flow_canvas/IMPLEMENTATION_Connectome_Flow_Canvas_Code_Structure_With_React_Flow_And_Zones.md`
+- `docs/connectome/health/HEALTH_Connectome_Live_Signals.md`
+- `docs/connectome/log_panel/IMPLEMENTATION_Connectome_Log_Panel_Component_Structure_And_Serializer_Integration.md`
+- `docs/connectome/node_kit/IMPLEMENTATION_Connectome_Node_Kit_Component_Map_And_Styling_Tokens.md`
+- `docs/connectome/page_shell/PATTERNS_Connectome_Page_Shell_Route_Composition_And_User_Control_Surface_Patterns.md`
 - `docs/core_utils/ALGORITHM_Core_Utils_Template_Path_And_Module_Discovery.md`
 - `docs/core_utils/ALGORITHM_Template_Path_Resolution_And_Doc_Discovery.md`
 - `docs/core_utils/PATTERNS_Core_Utils_Functions.md`
+- `docs/engine/membrane/BEHAVIORS_Membrane_Modulation.md`
+- `docs/engine/membrane/PATTERNS_Membrane_Scoping.md`
+- `docs/engine/membrane/PATTERNS_No_Magic_Constants_Dynamic_Modulation_Functions.md`
+- `docs/engine/membrane/PATTERN_Membrane_Modulation.md`
 - `docs/engine/models/PATTERNS_Models.md`
 - `docs/engine/models/VALIDATION_Models.md`
 - `docs/engine/moments/PATTERNS_Moments.md`
@@ -4514,7 +6592,10 @@
 - `docs/infrastructure/api/TEST_Api.md`
 - `docs/infrastructure/api/VALIDATION_Api.md`
 - `docs/infrastructure/async/IMPLEMENTATION_Async_Architecture.md`
+- `docs/infrastructure/canon/PATTERNS_Canon.md`
+- `docs/infrastructure/tempo/ALGORITHM_Tempo_Controller.md`
 - `docs/infrastructure/tempo/IMPLEMENTATION_Tempo.md`
+- `docs/infrastructure/tempo/PATTERNS_Tempo.md`
 - `docs/llm_agents/ALGORITHM_Gemini_Stream_Flow.md`
 - `docs/llm_agents/BEHAVIORS_Gemini_Agent_Output.md`
 - `docs/llm_agents/HEALTH_LLM_Agent_Coverage.md`
@@ -4530,6 +6611,10 @@
 - `docs/physics/SYNC_Physics_archive_2025-12.md`
 - `docs/physics/TEST_Physics.md`
 - `docs/physics/VALIDATION_Physics.md`
+- `docs/physics/algorithms/ALGORITHM_Physics_Mechanisms.md`
+- `docs/physics/attention/PATTERNS_Attention_Energy_Split.md`
+- `docs/physics/attention/PATTERNS_Interrupt_By_Focus_Reconfiguration.md`
+- `docs/physics/attention/VALIDATION_Attention_Split_And_Interrupts.md`
 - `docs/physics/graph/ALGORITHM_Energy_Flow.md`
 - `docs/physics/graph/ALGORITHM_Weight.md`
 - `docs/physics/graph/BEHAVIORS_Graph.md`
@@ -4537,6 +6622,9 @@
 - `docs/physics/graph/SYNC_Graph.md`
 - `docs/physics/graph/SYNC_Graph_archive_2025-12.md`
 - `docs/physics/graph/VALIDATION_Living_Graph.md`
+- `docs/physics/mechanisms/MECHANISMS_Attention_Energy_Split.md`
+- `docs/physics/mechanisms/MECHANISMS_Contradiction_Pressure.md`
+- `docs/physics/mechanisms/MECHANISMS_Primes_Lag_Decay.md`
 - `docs/protocol/ALGORITHM/ALGORITHM_Protocol_Process_Flow.md`
 - `docs/protocol/BEHAVIORS_Observable_Protocol_Effects.md`
 - `docs/protocol/HEALTH_Protocol_Verification.md`
@@ -4555,6 +6643,7 @@
 - `docs/schema/SCHEMA_Moments/SCHEMA_Moments_Overview.md`
 - `docs/schema/models/PATTERNS_Pydantic_Schema_Models.md`
 - `docs/schema/models/SYNC_Schema_Models.md`
+- `docs/tui/ALGORITHM_TUI_Widget_Interaction_Flow.md`
 - `docs/tui/BEHAVIORS_TUI_Interactions.md`
 - `docs/tui/HEALTH_TUI_Coverage.md`
 - `docs/tui/IMPLEMENTATION_TUI_Code_Architecture.md`
@@ -4640,6 +6729,8 @@
 - `def get_nodes_missing_field()`
 - `def get_detailed_missing_report()`
 - `def main()`
+
+**Docs:** `docs/schema/graph-health/PATTERNS_Graph_Health_Validation.md`
 
 **Definitions:**
 - `def get_player_name_from_graph()`
@@ -4788,6 +6879,8 @@
 - `async def get_moment()`
 - `def get_moments_router()`
 
+**Docs:** `docs/infrastructure/api/PATTERNS_Api.md`
+
 **Definitions:**
 - `class PlaythroughCreateRequest`
 - `class MomentRequest`
@@ -4805,6 +6898,8 @@
 - `async def get_discussion_topics()`
 - `async def get_discussion_topic()`
 - `async def use_discussion_branch()`
+
+**Docs:** `docs/infrastructure/api/IMPLEMENTATION_Api.md`
 
 **Definitions:**
 - `def get_sse_clients()`
@@ -4837,6 +6932,7 @@
 - `class EmbeddingService`
 - `def __init__()`
 - `def _load_model()`
+- `def _fallback_embed()`
 - `def embed()`
 - `def embed_batch()`
 - `def embed_node()`
@@ -4922,6 +7018,32 @@
 - `def _call_claude()`
 - `def _fallback_response()`
 
+**Definitions:**
+- `class TempoState`
+- `class TempoController`
+- `def __init__()`
+- `def speed()`
+- `def running()`
+- `def set_speed()`
+- `def _tick_interval()`
+- `async def run()`
+- `def stop()`
+
+**Definitions:**
+- `class MembraneContext`
+- `def clamp()`
+- `def activation_threshold()`
+- `def weight_transfer_multiplier()`
+- `def decay_scale()`
+- `def tension_boost_scale()`
+
+**Definitions:**
+- `class MembraneProvider`
+- `def __init__()`
+- `def set_frame()`
+- `def get_frame()`
+- `def reset_place()`
+
 **Docs:** `docs/schema/models/PATTERNS_Pydantic_Schema_Models.md`
 
 **Definitions:**
@@ -5003,6 +7125,8 @@
 
 **Docs:** `docs/engine/moment-graph-engine/PATTERNS_Instant_Traversal_Moment_Graph.md`
 
+**Docs:** `docs/engine/moment-graph-engine/PATTERNS_Instant_Traversal_Moment_Graph.md`
+
 **Definitions:**
 - `class MomentQueries`
 - `def __init__()`
@@ -5022,6 +7146,8 @@
 - `def handle_scene_change()`
 - `def set_moment_weight()`
 - `def get_surface_stats()`
+
+**Docs:** `docs/engine/moment-graph-engine/PATTERNS_Instant_Traversal_Moment_Graph.md`
 
 **Definitions:**
 - `class MomentTraversal`
@@ -5085,11 +7211,6 @@
 - `def _apply_tension_update()`
 
 **Definitions:**
-- `def add_mutation_listener()`
-- `def remove_mutation_listener()`
-- `def emit_event()`
-
-**Definitions:**
 - `def get_image_path()`
 - `def _generate_node_image_async()`
 - `def generate_node_image()`
@@ -5124,6 +7245,21 @@
 - `def on_player_arrives_location()`
 - `def garbage_collect_moments()`
 - `def boost_moment_weight()`
+
+**Docs:** `docs/physics/graph/PATTERNS_Graph.md`
+
+**Definitions:**
+- `class GraphReadOps`
+- `def __init__()`
+- `def _query()`
+- `def _parse_natural_language()`
+- `def _collect_nodes_and_links()`
+- `def query_cypher()`
+- `def list_graphs()`
+- `def query_natural_language()`
+- `def search_semantic()`
+- `def fetch_full_graph()`
+- `def get_graph_reader()`
 
 **Definitions:**
 - `class QueryError`
@@ -5194,7 +7330,34 @@
 - `def view_to_scene_tree()`
 
 **Definitions:**
+- `def clamp()`
+- `def softmax()`
+- `def blend()`
+- `class AttentionSplitContext`
+- `class IncomingAxisLink`
+- `class AttentionSink`
+- `class AttentionSplitResult`
+- `def compute_sink_mass()`
+- `def apply_attention_split()`
+
+**Definitions:**
 - `def distance_to_proximity()`
+
+**Definitions:**
+- `def clamp()`
+- `class ContradictionEdge`
+- `class ContradictionPressureContext`
+- `class ContradictionContribution`
+- `class ContradictionPressureResult`
+- `def compute_contradiction_pressure()`
+
+**Definitions:**
+- `def clamp()`
+- `class PrimeLink`
+- `class PrimeDecayContext`
+- `class PrimeContribution`
+- `def compute_prime_effect()`
+- `def compute_prime_contributions()`
 
 **Docs:** `docs/physics/PATTERNS_Physics.md`
 
@@ -5428,6 +7591,11 @@
 - `def test_create_moment_with_tone()`
 - `class TestWeightActivation`
 - `def test_weight_below_threshold_stays_possible()`
+
+**Definitions:**
+- `def test_attention_split_conserves_budget()`
+- `def test_primes_lag_and_half_life()`
+- `def test_contradiction_pressure_accumulates_and_decays()`
 
 **Definitions:**
 - `def extract_yaml_from_markdown()`
@@ -5753,21 +7921,13 @@
 **Docs:** `docs/cli/core/PATTERNS_Why_CLI_Over_Copy.md`
 
 **Definitions:**
-- `def get_traces_dir()`
-- `def log_trace()`
-- `def read_traces()`
-- `def analyze_traces()`
-- `def print_trace_summary()`
-- `def clear_traces()`
-- `def parse_imports()`
-- `def find_file_from_import()`
-- `def find_module_docs()`
-- `def get_module_context()`
-- `def build_dependency_map()`
-- `def add_node()`
-- `def print_module_context()`
+- `def _add_module_translation_args()`
+- `def _validate_module_translation()`
+- `def _add_refactor_conflict_args()`
+- `def _validate_refactor_conflicts()`
+- `def main()`
 
-**Docs:** `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md`
+**Docs:** `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/overview/IMPLEMENTATION_Overview.md`
 
 **Definitions:**
 - `def doctor_check_new_undoc_code()`
@@ -5775,6 +7935,22 @@
 - `def doctor_check_recent_log_errors()`
 - `def doctor_check_long_strings()`
 - `def doctor_check_special_markers()`
+
+**Docs:** `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/overview/IMPLEMENTATION_Overview.md`
+
+**Definitions:**
+- `def doctor_check_placeholder_docs()`
+- `def doctor_check_orphan_docs()`
+- `def doctor_check_stale_impl()`
+- `def doctor_check_large_doc_module()`
+- `def doctor_check_incomplete_chain()`
+- `def _iter_doc_files()`
+- `def _extract_h2_sections()`
+- `def _doc_tag_allows_suppression()`
+- `def _doc_tag_message()`
+- `def doctor_check_doc_template_drift()`
+- `def doctor_check_validation_behaviors_list()`
+- `def doctor_check_nonstandard_doc_type()`
 
 **Docs:** `docs/cli/core/PATTERNS_Why_CLI_Over_Copy.md`
 
@@ -5848,11 +8024,6 @@
 **Docs:** `docs/cli/core/PATTERNS_Why_CLI_Over_Copy.md`
 
 **Definitions:**
-- `def get_doc_instructions()`
-
-**Docs:** `docs/cli/core/PATTERNS_Why_CLI_Over_Copy.md`
-
-**Definitions:**
 - `class FileInfo`
 - `class DependencyInfo`
 - `class RepoOverview`
@@ -5901,6 +8072,116 @@
 - ## After Your Response
 
 **Sections:**
+- # Skill: `ngram.create_module_documentation`
+- ## Maps to VIEW
+- ## Purpose
+- ## Inputs (YAML)
+- ## Outputs (YAML)
+- ## Gates (non-negotiable)
+- ## Evidence & referencing
+- ## Markers
+- ## Never-stop rule
+
+**Sections:**
+- # Skill: `ngram.debug_investigate_fix_issues`
+- ## Maps to VIEW
+- ## Purpose
+- ## Inputs (YAML)
+- ## Outputs (YAML)
+- ## Gates (non-negotiable)
+- ## Evidence & referencing
+- ## Markers
+- ## Never-stop rule
+
+**Sections:**
+- # Skill: `ngram.health_define_and_verify`
+- ## Maps to VIEW
+- ## Purpose
+- ## Inputs (YAML)
+- ## Outputs (YAML)
+- ## Gates (non-negotiable)
+- ## Evidence & referencing
+- ## Markers
+- ## Never-stop rule
+
+**Sections:**
+- # Skill: `ngram.extend_add_features`
+- ## Maps to VIEW
+- ## Purpose
+- ## Inputs (YAML)
+- ## Outputs (YAML)
+- ## Gates (non-negotiable)
+- ## Evidence & referencing
+- ## Markers
+- ## Never-stop rule
+
+**Sections:**
+- # Skill: `ngram.implement_write_or_modify_code`
+- ## Maps to VIEW
+- ## Purpose
+- ## Inputs (YAML)
+- ## Outputs (YAML)
+- ## Gates (non-negotiable)
+- ## Evidence & referencing
+- ## Markers
+- ## Never-stop rule
+
+**Sections:**
+- # Skill: `ngram.ingest_raw_data_sources`
+- ## Maps to VIEW
+- ## Purpose
+- ## Inputs (YAML)
+- ## Outputs (YAML)
+- ## Gates (non-negotiable)
+- ## Evidence & referencing
+- ## Markers
+- ## Never-stop rule
+
+**Sections:**
+- # Skill: `ngram.onboard_understand_module_codebase`
+- ## Maps to VIEW
+- ## Purpose
+- ## Inputs (YAML)
+- ## Outputs (YAML)
+- ## Gates (non-negotiable)
+- ## Evidence & referencing
+- ## Markers
+- ## Never-stop rule
+
+**Sections:**
+- # Skill: `ngram.orchestrate_feature_integration`
+- ## Maps to VIEW
+- ## Purpose
+- ## Inputs (YAML)
+- ## Outputs (YAML)
+- ## Gates (non-negotiable)
+- ## Evidence & referencing
+- ## Markers
+- ## Never-stop rule
+
+**Sections:**
+- # Skill: `ngram.review_evaluate_changes`
+- ## Maps to VIEW
+- ## Purpose
+- ## Inputs (YAML)
+- ## Outputs (YAML)
+- ## Gates (non-negotiable)
+- ## Evidence & referencing
+- ## Markers
+- ## Never-stop rule
+
+**Sections:**
+- # Skill: `ngram.sync_update_module_state`
+- ## Maps to VIEW
+- ## Purpose
+- ## Inputs (YAML)
+- ## Outputs (YAML)
+- ## Gates (non-negotiable)
+- ## Evidence & referencing
+- ## Markers
+- ## Never-stop rule
+
+**Sections:**
 - # Project — Sync: Current State
 - ## CURRENT STATE
 - ## ACTIVE WORK
@@ -5920,6 +8201,7 @@
 - # {Module Name} — Algorithm: {Brief Description of Procedures and Logic}
 - ## CHAIN
 - ## OVERVIEW
+- ## OBJECTIVES AND BEHAVIORS
 - ## DATA STRUCTURES
 - ## ALGORITHM: {Primary Function Name}
 - ## KEY DECISIONS
@@ -5936,6 +8218,7 @@
 - # {Module Name} — Behaviors: {Brief Description of Observable Effects}
 - ## CHAIN
 - ## BEHAVIORS
+- ## OBJECTIVES SERVED
 - ## INPUTS / OUTPUTS
 - ## EDGE CASES
 - ## ANTI-BEHAVIORS
@@ -5962,6 +8245,7 @@
 - ## CHAIN
 - ## FLOWS ANALYSIS (TRIGGERS + FREQUENCY)
 - ## HEALTH INDICATORS SELECTED
+- ## OBJECTIVES COVERAGE
 - ## STATUS (RESULT INDICATOR)
 - ## DOCK TYPES (COMPLETE LIST)
 - ## CHECKER INDEX
@@ -5992,6 +8276,13 @@
 - ## BIDIRECTIONAL LINKS
 - ## GAPS / IDEAS / QUESTIONS
 
+**Sections:**
+- # OBJECTIFS — {Module}
+- ## PRIMARY OBJECTIVES (ranked)
+- ## NON-OBJECTIVES
+- ## TRADEOFFS (canonical decisions)
+- ## SUCCESS SIGNALS (observable)
+
 **Code refs:**
 - `{path/to/main/source/file.py`
 
@@ -6000,6 +8291,8 @@
 - ## CHAIN
 - ## THE PROBLEM
 - ## THE PATTERN
+- ## BEHAVIORS SUPPORTED
+- ## BEHAVIORS PREVENTED
 - ## PRINCIPLES
 - ## DATA
 - ## DEPENDENCIES
@@ -6036,6 +8329,8 @@
 **Sections:**
 - # {Module Name} — Validation: {Brief Description of Invariants and Tests}
 - ## CHAIN
+- ## BEHAVIORS GUARANTEED
+- ## OBJECTIVES COVERED
 - ## INVARIANTS
 - ## PROPERTIES
 - ## ERROR CONDITIONS
@@ -6239,6 +8534,11 @@
 - ## GEMINI Agent Operating Principles (Derived from ngram Protocol)
 - ## Operational Directives
 
+**Definitions:**
+- `def _is_safe_relative_path()`
+- `def _split_sections()`
+- `def main()`
+
 **Docs:** `docs/infrastructure/cli-tools/PATTERNS_CLI_Agent_Utilities.md`
 
 **Definitions:**
@@ -6331,6 +8631,9 @@
 - # Auto-fix issues with agents
 - # Get documentation context for a file
 - # Generate bootstrap prompt for LLM
+- # Expose local port 3005 via ngrok
+- # Run FalkorDB MCP server
+- # Restart full stack (FalkorDB, BE, FE, MCP server, ngrok)
 - ## CLI Commands
 - ## How It Works
 - # ngram
@@ -6342,6 +8645,505 @@
 - ## Design Principles
 - ## License
 - ## Contributing
+
+**Code refs:**
+- `__init__.py`
+- `agent_cli.py`
+- `api/connectome/graph/route.ts`
+- `api/connectome/graphs/route.ts`
+- `api/connectome/search/route.ts`
+- `api/sse/route.ts`
+- `app.py`
+- `app/api/connectome/graph/route.ts`
+- `app/api/connectome/graphs/route.ts`
+- `app/api/connectome/search/route.ts`
+- `app/connectome/components/connectome_log_duration_formatting_and_threshold_color_rules.ts`
+- `app/connectome/components/connectome_log_export_buttons_using_state_store_serializers.ts`
+- `app/connectome/components/connectome_log_export_buttons_using_state_store_serializers.tsx`
+- `app/connectome/components/connectome_log_trigger_and_calltype_badge_color_tokens.ts`
+- `app/connectome/components/connectome_page_shell_route_layout_and_control_surface.ts`
+- `app/connectome/components/connectome_page_shell_route_layout_and_control_surface.tsx`
+- `app/connectome/components/deterministic_zone_and_node_layout_computation_helpers.ts`
+- `app/connectome/components/edge_kit/connectome_edge_directional_shine_animation_helpers.ts`
+- `app/connectome/components/edge_kit/connectome_edge_label_renderer_with_halo_and_zoom_policy.ts`
+- `app/connectome/components/edge_kit/connectome_edge_label_renderer_with_halo_and_zoom_policy.tsx`
+- `app/connectome/components/edge_kit/connectome_edge_pulse_particle_animation_and_boundary_clamp_helpers.ts`
+- `app/connectome/components/edge_kit/connectome_edge_style_tokens_for_trigger_and_calltype_mapping.ts`
+- `app/connectome/components/edge_kit/connectome_node_boundary_intersection_geometry_helpers.ts`
+- `app/connectome/components/edge_kit/semantic_edge_components_with_directional_shine_and_pulses.ts`
+- `app/connectome/components/edge_kit/semantic_edge_components_with_directional_shine_and_pulses.tsx`
+- `app/connectome/components/edge_label_declutter_and_visibility_policy_helpers.ts`
+- `app/connectome/components/node_kit/connectome_energy_badge_bucketed_glow_and_value_formatter.ts`
+- `app/connectome/components/node_kit/connectome_energy_badge_bucketed_glow_and_value_formatter.tsx`
+- `app/connectome/components/node_kit/connectome_node_background_theme_tokens_by_type_and_language.ts`
+- `app/connectome/components/node_kit/connectome_node_frame_with_title_path_and_tooltip_shell.ts`
+- `app/connectome/components/node_kit/connectome_node_frame_with_title_path_and_tooltip_shell.tsx`
+- `app/connectome/components/node_kit/connectome_node_step_list_and_active_step_highlighter.ts`
+- `app/connectome/components/node_kit/connectome_node_step_list_and_active_step_highlighter.tsx`
+- `app/connectome/components/node_kit/connectome_player_wait_progress_bar_with_four_second_cap.ts`
+- `app/connectome/components/node_kit/connectome_player_wait_progress_bar_with_four_second_cap.tsx`
+- `app/connectome/components/node_kit/connectome_tick_cron_circular_progress_ring_with_speed_label.ts`
+- `app/connectome/components/node_kit/connectome_tick_cron_circular_progress_ring_with_speed_label.tsx`
+- `app/connectome/components/node_kit/typed_connectome_node_components_with_energy_and_step_highlighting.ts`
+- `app/connectome/components/node_kit/typed_connectome_node_components_with_energy_and_step_highlighting.tsx`
+- `app/connectome/components/pannable_zoomable_zoned_flow_canvas_renderer.ts`
+- `app/connectome/components/pannable_zoomable_zoned_flow_canvas_renderer.tsx`
+- `app/connectome/components/unified_now_and_copyable_ledger_log_panel.ts`
+- `app/connectome/components/unified_now_and_copyable_ledger_log_panel.tsx`
+- `app/connectome/lib/connectome_export_jsonl_and_text_log_serializer.ts`
+- `app/connectome/lib/connectome_session_boundary_and_restart_policy_controller.ts`
+- `app/connectome/lib/connectome_step_script_sample_sequence.ts`
+- `app/connectome/lib/connectome_wait_timer_progress_and_tick_display_signal_selectors.ts`
+- `app/connectome/lib/flow_event_duration_bucket_color_classifier.ts`
+- `app/connectome/lib/flow_event_schema_and_normalization_contract.ts`
+- `app/connectome/lib/flow_event_trigger_and_calltype_inference_rules.ts`
+- `app/connectome/lib/minimum_duration_clamp_and_speed_based_default_policy.ts`
+- `app/connectome/lib/next_step_gate_and_realtime_playback_runtime_engine.ts`
+- `app/connectome/lib/step_script_cursor_and_replay_determinism_helpers.ts`
+- `app/connectome/lib/zustand_connectome_state_store_with_atomic_commit_actions.ts`
+- `app/connectome/page.tsx`
+- `base.py`
+- `check_health.py`
+- `cli.py`
+- `commands.py`
+- `connectome/components/connectome_health_panel.tsx`
+- `connectome/components/connectome_log_duration_formatting_and_threshold_color_rules.ts`
+- `connectome/components/connectome_log_export_buttons_using_state_store_serializers.tsx`
+- `connectome/components/connectome_log_trigger_and_calltype_badge_color_tokens.ts`
+- `connectome/components/connectome_page_shell_route_layout_and_control_surface.tsx`
+- `connectome/components/deterministic_zone_and_node_layout_computation_helpers.ts`
+- `connectome/components/edge_kit/connectome_edge_label_renderer_with_halo_and_zoom_policy.tsx`
+- `connectome/components/edge_kit/connectome_edge_style_tokens_for_trigger_and_calltype_mapping.ts`
+- `connectome/components/edge_kit/connectome_node_boundary_intersection_geometry_helpers.ts`
+- `connectome/components/edge_kit/semantic_edge_components_with_directional_shine_and_pulses.tsx`
+- `connectome/components/edge_label_declutter_and_visibility_policy_helpers.ts`
+- `connectome/components/node_kit/connectome_energy_badge_bucketed_glow_and_value_formatter.tsx`
+- `connectome/components/node_kit/connectome_node_background_theme_tokens_by_type_and_language.ts`
+- `connectome/components/node_kit/connectome_node_frame_with_title_path_and_tooltip_shell.tsx`
+- `connectome/components/node_kit/connectome_node_step_list_and_active_step_highlighter.tsx`
+- `connectome/components/node_kit/connectome_player_wait_progress_bar_with_four_second_cap.tsx`
+- `connectome/components/node_kit/connectome_tick_cron_circular_progress_ring_with_speed_label.tsx`
+- `connectome/components/node_kit/typed_connectome_node_components_with_energy_and_step_highlighting.tsx`
+- `connectome/components/pannable_zoomable_zoned_flow_canvas_renderer.tsx`
+- `connectome/components/unified_now_and_copyable_ledger_log_panel.tsx`
+- `context.py`
+- `core_utils.py`
+- `doctor.py`
+- `doctor_checks.py`
+- `doctor_cli_parser_and_run_checker.py`
+- `doctor_files.py`
+- `doctor_report.py`
+- `engine/api/app.py`
+- `engine/db/graph_ops.py`
+- `engine/graph/health/check_health.py`
+- `engine/graph/health/lint_terminology.py`
+- `engine/graph/health/test_schema.py`
+- `engine/handlers/base.py`
+- `engine/infrastructure/api/app.py`
+- `engine/infrastructure/api/moments.py`
+- `engine/infrastructure/api/playthroughs.py`
+- `engine/infrastructure/api/sse_broadcast.py`
+- `engine/infrastructure/api/tempo.py`
+- `engine/infrastructure/canon/canon_holder.py`
+- `engine/infrastructure/embeddings/service.py`
+- `engine/infrastructure/memory/__init__.py`
+- `engine/infrastructure/memory/moment_processor.py`
+- `engine/infrastructure/memory/transcript.py`
+- `engine/infrastructure/orchestration/agent_cli.py`
+- `engine/infrastructure/orchestration/narrator.py`
+- `engine/infrastructure/orchestration/orchestrator.py`
+- `engine/infrastructure/orchestration/speed.py`
+- `engine/infrastructure/orchestration/world_runner.py`
+- `engine/infrastructure/tempo/health_check.py`
+- `engine/infrastructure/tempo/tempo_controller.py`
+- `engine/init_db.py`
+- `engine/membrane/functions.py`
+- `engine/membrane/health_check.py`
+- `engine/membrane/provider.py`
+- `engine/models/__init__.py`
+- `engine/models/base.py`
+- `engine/models/links.py`
+- `engine/models/nodes.py`
+- `engine/moment_graph/__init__.py`
+- `engine/moment_graph/queries.py`
+- `engine/moment_graph/surface.py`
+- `engine/moment_graph/traversal.py`
+- `engine/moments/__init__.py`
+- `engine/physics/attention_split_sink_mass_distribution_mechanism.py`
+- `engine/physics/constants.py`
+- `engine/physics/contradiction_pressure_from_negative_polarity_mechanism.py`
+- `engine/physics/graph/connectome_read_cli.py`
+- `engine/physics/graph/graph_ops.py`
+- `engine/physics/graph/graph_ops_events.py`
+- `engine/physics/graph/graph_ops_moments.py`
+- `engine/physics/graph/graph_ops_read_only_interface.py`
+- `engine/physics/graph/graph_ops_types.py`
+- `engine/physics/graph/graph_queries.py`
+- `engine/physics/graph/graph_queries_moments.py`
+- `engine/physics/graph/graph_queries_search.py`
+- `engine/physics/graph/graph_query_utils.py`
+- `engine/physics/primes_lag_and_half_life_decay_mechanism.py`
+- `engine/physics/tick.py`
+- `engine/tests/test_e2e_moment_graph.py`
+- `engine/tests/test_models.py`
+- `engine/tests/test_moment.py`
+- `engine/tests/test_moment_graph.py`
+- `engine/tests/test_moment_lifecycle.py`
+- `engine/tests/test_moments_api.py`
+- `engine/tests/test_spec_consistency.py`
+- `file_utils.py`
+- `frontend/app/scenarios/page.tsx`
+- `frontend/app/start/page.tsx`
+- `frontend/hooks/useGameState.ts`
+- `gemini_agent.py`
+- `github.py`
+- `graph_ops.py`
+- `graph_ops_apply.py`
+- `graph_ops_events.py`
+- `graph_ops_image.py`
+- `graph_ops_types.py`
+- `graph_queries.py`
+- `graph_queries_narratives.py`
+- `graph_queries_search.py`
+- `init_cmd.py`
+- `links.py`
+- `lint_terminology.py`
+- `manager.py`
+- `moment_processor.py`
+- `moments.py`
+- `narrator.py`
+- `ngram.py`
+- `ngram/agent_cli.py`
+- `ngram/cli.py`
+- `ngram/context.py`
+- `ngram/core_utils.py`
+- `ngram/docs_fix.py`
+- `ngram/doctor.py`
+- `ngram/doctor_checks.py`
+- `ngram/doctor_checks_content.py`
+- `ngram/doctor_checks_core.py`
+- `ngram/doctor_checks_docs.py`
+- `ngram/doctor_checks_metadata.py`
+- `ngram/doctor_checks_naming.py`
+- `ngram/doctor_checks_prompt_integrity.py`
+- `ngram/doctor_checks_quality.py`
+- `ngram/doctor_checks_reference.py`
+- `ngram/doctor_checks_stub.py`
+- `ngram/doctor_checks_sync.py`
+- `ngram/doctor_files.py`
+- `ngram/doctor_report.py`
+- `ngram/doctor_types.py`
+- `ngram/github.py`
+- `ngram/init_cmd.py`
+- `ngram/llms/gemini_agent.py`
+- `ngram/project_map.py`
+- `ngram/project_map_html.py`
+- `ngram/prompt.py`
+- `ngram/refactor.py`
+- `ngram/repair.py`
+- `ngram/repair_core.py`
+- `ngram/repair_escalation_interactive.py`
+- `ngram/repair_instructions.py`
+- `ngram/repair_instructions_docs.py`
+- `ngram/repair_report.py`
+- `ngram/repo_overview.py`
+- `ngram/repo_overview_formatters.py`
+- `ngram/solve_escalations.py`
+- `ngram/sync.py`
+- `ngram/tui/__init__.py`
+- `ngram/tui/app.py`
+- `ngram/tui/app_core.py`
+- `ngram/tui/app_manager.py`
+- `ngram/tui/commands.py`
+- `ngram/tui/commands_agent.py`
+- `ngram/tui/manager.py`
+- `ngram/tui/state.py`
+- `ngram/tui/widgets/__init__.py`
+- `ngram/tui/widgets/agent_container.py`
+- `ngram/tui/widgets/agent_panel.py`
+- `ngram/tui/widgets/input_bar.py`
+- `ngram/tui/widgets/manager_panel.py`
+- `ngram/tui/widgets/status_bar.py`
+- `ngram/tui/widgets/suggestions.py`
+- `ngram/utils.py`
+- `ngram/utils/file_utils.py`
+- `ngram/utils/string_utils.py`
+- `ngram/utils/validation_utils.py`
+- `ngram/validate.py`
+- `nodes.py`
+- `orchestrator.py`
+- `playthroughs.py`
+- `project_map.py`
+- `project_map_html.py`
+- `prompt.py`
+- `repair.py`
+- `repair_core.py`
+- `repo_overview.py`
+- `scripts/check_chain_links.py`
+- `scripts/check_doc_completeness.py`
+- `scripts/check_doc_refs.py`
+- `scripts/check_orphans.py`
+- `semantic_proximity_based_character_node_selector.py`
+- `snake_case.py`
+- `src/analytics/batch_ingest.py`
+- `src/analytics/storage/event_store.py`
+- `src/analytics/stream_ingest.py`
+- `src/analytics/validation/schema_rules.py`
+- `src/dashboard/op_metrics.py`
+- `src/dashboard/product_metrics.py`
+- `sse_broadcast.py`
+- `state.py`
+- `stream_dialogue.py`
+- `string_utils.py`
+- `sync.py`
+- `tensions.py`
+- `test_schema.py`
+- `tick.py`
+- `tools/stream_dialogue.py`
+- `utils.py`
+- `validate.py`
+- `views.py`
+
+**Doc refs:**
+- `agents/narrator/CLAUDE.md`
+- `agents/narrator/CLAUDE_old.md`
+- `agents/world_runner/CLAUDE.md`
+- `algorithms/ALGORITHM_Physics_Energy_Flow_Sources_Sinks_And_Moment_Dynamics.md`
+- `algorithms/ALGORITHM_Physics_Energy_Mechanics_And_Link_Semantics.md`
+- `algorithms/ALGORITHM_Physics_Handler_And_Input_Processing_Flows.md`
+- `algorithms/ALGORITHM_Physics_Mechanisms.md`
+- `algorithms/ALGORITHM_Physics_Speed_Control_And_Display_Filtering.md`
+- `algorithms/ALGORITHM_Physics_Tick_Cycle_Gating_Flips_And_Dispatch.md`
+- `archive/SYNC_Archive_2024-12.md`
+- `archive/SYNC_CLI_Development_State_archive_2025-12.md`
+- `archive/SYNC_CLI_State_Archive_2025-12.md`
+- `archive/SYNC_TUI_State_Archive_2025-12.md`
+- `archive/SYNC_archive_2024-12.md`
+- `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md`
+- `core/BEHAVIORS_CLI_Command_Effects.md`
+- `core/HEALTH_CLI_Command_Test_Coverage.md`
+- `core/IMPLEMENTATION_CLI_Code_Architecture/overview/IMPLEMENTATION_Overview.md`
+- `core/IMPLEMENTATION_CLI_Code_Architecture/runtime/IMPLEMENTATION_Runtime_And_Dependencies.md`
+- `core/IMPLEMENTATION_CLI_Code_Architecture/schema/IMPLEMENTATION_Schema.md`
+- `core/IMPLEMENTATION_CLI_Code_Architecture/structure/IMPLEMENTATION_Code_Structure.md`
+- `core/PATTERNS_Why_CLI_Over_Copy.md`
+- `core/SYNC_CLI_Development_State.md`
+- `core/VALIDATION_CLI_Instruction_Invariants.md`
+- `data/ARCHITECTURE — Cybernetic Studio.md`
+- `data/NGRAM Documentation Chain Pattern (Draft “Marco”).md`
+- `docs/SYNC_Project_Repository_Map.md`
+- `docs/agents/narrator/ALGORITHM_Scene_Generation.md`
+- `docs/agents/narrator/BEHAVIORS_Narrator.md`
+- `docs/agents/narrator/HANDOFF_Rolling_Window_Architecture.md`
+- `docs/agents/narrator/IMPLEMENTATION_Narrator.md`
+- `docs/agents/narrator/INPUT_REFERENCE.md`
+- `docs/agents/narrator/PATTERNS_Narrator.md`
+- `docs/agents/narrator/PATTERNS_World_Building.md`
+- `docs/agents/narrator/SYNC_Narrator.md`
+- `docs/agents/narrator/TEST_Narrator.md`
+- `docs/agents/narrator/TOOL_REFERENCE.md`
+- `docs/agents/narrator/VALIDATION_Narrator.md`
+- `docs/agents/narrator/archive/SYNC_archive_2024-12.md`
+- `docs/architecture/cybernetic_studio_architecture/ALGORITHM_Cybernetic_Studio_Process_Flow.md`
+- `docs/architecture/cybernetic_studio_architecture/BEHAVIORS_Cybernetic_Studio_System_Behaviors.md`
+- `docs/architecture/cybernetic_studio_architecture/HEALTH_Cybernetic_Studio_Health_Checks.md`
+- `docs/architecture/cybernetic_studio_architecture/IMPLEMENTATION_Cybernetic_Studio_Code_Structure.md`
+- `docs/architecture/cybernetic_studio_architecture/PATTERNS_Cybernetic_Studio_Architecture.md`
+- `docs/architecture/cybernetic_studio_architecture/SYNC_Cybernetic_Studio_Architecture_State.md`
+- `docs/architecture/cybernetic_studio_architecture/VALIDATION_Cybernetic_Studio_Architectural_Invariants.md`
+- `docs/cli/ALGORITHM_CLI_Command_Execution_Logic.md`
+- `docs/cli/ALGORITHM_CLI_Logic.md`
+- `docs/cli/HEALTH_CLI_Coverage.md`
+- `docs/cli/SYNC_CLI_State.md`
+- `docs/cli/VALIDATION_CLI_Invariants.md`
+- `docs/cli/archive/SYNC_CLI_Development_State_archive_2025-12.md`
+- `docs/cli/archive/SYNC_CLI_State_Archive_2025-12.md`
+- `docs/cli/archive/SYNC_archive_2024-12.md`
+- `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic.md`
+- `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md`
+- `docs/cli/core/BEHAVIORS_CLI_Command_Effects.md`
+- `docs/cli/core/HEALTH_CLI_Command_Test_Coverage.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/overview/IMPLEMENTATION_Overview.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/runtime/IMPLEMENTATION_Runtime_And_Dependencies.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/schema/IMPLEMENTATION_Schema.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/structure/IMPLEMENTATION_Code_Structure.md`
+- `docs/cli/core/PATTERNS_Why_CLI_Over_Copy.md`
+- `docs/cli/core/SYNC_CLI_Development_State.md`
+- `docs/cli/core/VALIDATION_CLI_Instruction_Invariants.md`
+- `docs/cli/prompt/ALGORITHM_Prompt_Bootstrap_Prompt_Construction.md`
+- `docs/cli/prompt/HEALTH_Prompt_Runtime_Verification.md`
+- `docs/cli/prompt/PATTERNS_Prompt_Command_Workflow_Design.md`
+- `docs/cli/prompt/SYNC_Prompt_Command_State.md`
+- `docs/connectome/edge_kit/IMPLEMENTATION_Connectome_Edge_Kit_Component_Map_And_Render_Tokens.md`
+- `docs/connectome/flow_canvas/IMPLEMENTATION_Connectome_Flow_Canvas_Code_Structure_With_React_Flow_And_Zones.md`
+- `docs/connectome/health/HEALTH_Connectome_Live_Signals.md`
+- `docs/connectome/log_panel/IMPLEMENTATION_Connectome_Log_Panel_Component_Structure_And_Serializer_Integration.md`
+- `docs/connectome/node_kit/IMPLEMENTATION_Connectome_Node_Kit_Component_Map_And_Styling_Tokens.md`
+- `docs/connectome/page_shell/PATTERNS_Connectome_Page_Shell_Route_Composition_And_User_Control_Surface_Patterns.md`
+- `docs/core_utils/ALGORITHM_Core_Utils_Template_Path_And_Module_Discovery.md`
+- `docs/core_utils/ALGORITHM_Template_Path_Resolution_And_Doc_Discovery.md`
+- `docs/core_utils/PATTERNS_Core_Utils_Functions.md`
+- `docs/engine/membrane/BEHAVIORS_Membrane_Modulation.md`
+- `docs/engine/membrane/PATTERNS_Membrane_Scoping.md`
+- `docs/engine/membrane/PATTERNS_No_Magic_Constants_Dynamic_Modulation_Functions.md`
+- `docs/engine/membrane/PATTERN_Membrane_Modulation.md`
+- `docs/engine/models/PATTERNS_Models.md`
+- `docs/engine/models/VALIDATION_Models.md`
+- `docs/engine/moments/PATTERNS_Moments.md`
+- `docs/engine/moments/SYNC_Moments.md`
+- `docs/infrastructure/api/ALGORITHM_Api.md`
+- `docs/infrastructure/api/ALGORITHM_Playthrough_Creation.md`
+- `docs/infrastructure/api/BEHAVIORS_Api.md`
+- `docs/infrastructure/api/IMPLEMENTATION_Api.md`
+- `docs/infrastructure/api/PATTERNS_Api.md`
+- `docs/infrastructure/api/SYNC_Api.md`
+- `docs/infrastructure/api/TEST_Api.md`
+- `docs/infrastructure/api/VALIDATION_Api.md`
+- `docs/infrastructure/async/IMPLEMENTATION_Async_Architecture.md`
+- `docs/infrastructure/canon/PATTERNS_Canon.md`
+- `docs/infrastructure/tempo/ALGORITHM_Tempo_Controller.md`
+- `docs/infrastructure/tempo/IMPLEMENTATION_Tempo.md`
+- `docs/infrastructure/tempo/PATTERNS_Tempo.md`
+- `docs/llm_agents/ALGORITHM_Gemini_Stream_Flow.md`
+- `docs/llm_agents/BEHAVIORS_Gemini_Agent_Output.md`
+- `docs/llm_agents/HEALTH_LLM_Agent_Coverage.md`
+- `docs/llm_agents/IMPLEMENTATION_LLM_Agent_Code_Architecture.md`
+- `docs/llm_agents/PATTERNS_Provider_Specific_LLM_Subprocesses.md`
+- `docs/llm_agents/SYNC_LLM_Agents_State.md`
+- `docs/llm_agents/VALIDATION_Gemini_Agent_Invariants.md`
+- `docs/physics/ALGORITHM_Physics.md`
+- `docs/physics/BEHAVIORS_Physics.md`
+- `docs/physics/IMPLEMENTATION_Physics.md`
+- `docs/physics/PATTERNS_Physics.md`
+- `docs/physics/SYNC_Physics.md`
+- `docs/physics/SYNC_Physics_archive_2025-12.md`
+- `docs/physics/TEST_Physics.md`
+- `docs/physics/VALIDATION_Physics.md`
+- `docs/physics/algorithms/ALGORITHM_Physics_Mechanisms.md`
+- `docs/physics/attention/PATTERNS_Attention_Energy_Split.md`
+- `docs/physics/attention/PATTERNS_Interrupt_By_Focus_Reconfiguration.md`
+- `docs/physics/attention/VALIDATION_Attention_Split_And_Interrupts.md`
+- `docs/physics/graph/ALGORITHM_Energy_Flow.md`
+- `docs/physics/graph/ALGORITHM_Weight.md`
+- `docs/physics/graph/BEHAVIORS_Graph.md`
+- `docs/physics/graph/PATTERNS_Graph.md`
+- `docs/physics/graph/SYNC_Graph.md`
+- `docs/physics/graph/SYNC_Graph_archive_2025-12.md`
+- `docs/physics/graph/VALIDATION_Living_Graph.md`
+- `docs/physics/mechanisms/MECHANISMS_Attention_Energy_Split.md`
+- `docs/physics/mechanisms/MECHANISMS_Contradiction_Pressure.md`
+- `docs/physics/mechanisms/MECHANISMS_Primes_Lag_Decay.md`
+- `docs/protocol/ALGORITHM/ALGORITHM_Protocol_Process_Flow.md`
+- `docs/protocol/BEHAVIORS_Observable_Protocol_Effects.md`
+- `docs/protocol/HEALTH_Protocol_Verification.md`
+- `docs/protocol/IMPLEMENTATION/IMPLEMENTATION_File_Structure.md`
+- `docs/protocol/IMPLEMENTATION/IMPLEMENTATION_Overview.md`
+- `docs/protocol/PATTERNS_Bidirectional_Documentation_Chain_For_AI_Agents.md`
+- `docs/protocol/SYNC_Protocol_Current_State.md`
+- `docs/protocol/archive/SYNC_Archive_2024-12.md`
+- `docs/protocol/doctor/IMPLEMENTATION_Project_Health_Doctor.md`
+- `docs/protocol/doctor/PATTERNS_Project_Health_Doctor.md`
+- `docs/protocol/doctor/SYNC_Project_Health_Doctor.md`
+- `docs/schema/SCHEMA.md`
+- `docs/schema/SCHEMA/SCHEMA_Links.md`
+- `docs/schema/SCHEMA/SCHEMA_Nodes.md`
+- `docs/schema/SCHEMA_Moments.md`
+- `docs/schema/SCHEMA_Moments/SCHEMA_Moments_Overview.md`
+- `docs/schema/models/PATTERNS_Pydantic_Schema_Models.md`
+- `docs/schema/models/SYNC_Schema_Models.md`
+- `docs/tui/ALGORITHM_TUI_Widget_Interaction_Flow.md`
+- `docs/tui/BEHAVIORS_TUI_Interactions.md`
+- `docs/tui/HEALTH_TUI_Coverage.md`
+- `docs/tui/IMPLEMENTATION_TUI_Code_Architecture.md`
+- `docs/tui/IMPLEMENTATION_TUI_Code_Architecture/IMPLEMENTATION_TUI_Code_Architecture_Structure.md`
+- `docs/tui/PATTERNS_TUI_Design.md`
+- `docs/tui/PATTERNS_TUI_Modular_Interface_Design.md`
+- `docs/tui/SYNC_TUI_State.md`
+- `docs/tui/archive/SYNC_archive_2024-12.md`
+- `doctor/ALGORITHM_Project_Health_Doctor.md`
+- `doctor/BEHAVIORS_Project_Health_Doctor.md`
+- `doctor/HEALTH_Project_Health_Doctor.md`
+- `doctor/PATTERNS_Project_Health_Doctor.md`
+- `doctor/SYNC_Project_Health_Doctor.md`
+- `doctor/VALIDATION_Project_Health_Doctor.md`
+- `features/BEHAVIORS_Agent_Trace_Logging.md`
+- `features/PATTERNS_Agent_Trace_Logging.md`
+- `features/SYNC_Agent_Trace_Logging.md`
+- `ngram/state/SYNC_Project_Health.md`
+- `ngram/state/SYNC_Prompt_Command_State.md`
+- `prompt/ALGORITHM_Prompt_Bootstrap_Prompt_Construction.md`
+- `prompt/BEHAVIORS_Prompt_Command_Output_and_Flow.md`
+- `prompt/HEALTH_Prompt_Runtime_Verification.md`
+- `prompt/IMPLEMENTATION_Prompt_Code_Architecture.md`
+- `prompt/PATTERNS_Prompt_Command_Workflow_Design.md`
+- `prompt/SYNC_Prompt_Command_State.md`
+- `prompt/VALIDATION_Prompt_Bootstrap_Invariants.md`
+- `state/SYNC_Project_State.md`
+- `templates/CLAUDE_ADDITION.md`
+- `templates/CODEX_SYSTEM_PROMPT_ADDITION.md`
+- `templates/ngram/PRINCIPLES.md`
+- `templates/ngram/PROTOCOL.md`
+- `templates/ngram/agents/manager/CLAUDE.md`
+- `views/VIEW_Analyze_Structural_Analysis.md`
+- `views/VIEW_Collaborate_Pair_Program_With_Human.md`
+- `views/VIEW_Debug_Investigate_And_Fix_Issues.md`
+- `views/VIEW_Document_Create_Module_Documentation.md`
+- `views/VIEW_Extend_Add_Features_To_Existing.md`
+- `views/VIEW_Health_Define_Health_Checks_And_Verify.md`
+- `views/VIEW_Implement_Write_Or_Modify_Code.md`
+- `views/VIEW_Ingest_Process_Raw_Data_Sources.md`
+- `views/VIEW_Onboard_Understand_Existing_Codebase.md`
+- `views/VIEW_Refactor_Improve_Code_Structure.md`
+- `views/VIEW_Review_Evaluate_Changes.md`
+- `views/VIEW_Specify_Design_Vision_And_Architecture.md`
+
+**Sections:**
+- # Repository Map: ngram
+
+**Code refs:**
+- `api/connectome/graph/route.ts`
+- `api/connectome/graphs/route.ts`
+- `api/connectome/search/route.ts`
+- `api/sse/route.ts`
+- `connectome/components/connectome_health_panel.tsx`
+- `connectome/components/connectome_log_duration_formatting_and_threshold_color_rules.ts`
+- `connectome/components/connectome_log_export_buttons_using_state_store_serializers.tsx`
+- `connectome/components/connectome_log_trigger_and_calltype_badge_color_tokens.ts`
+- `connectome/components/connectome_page_shell_route_layout_and_control_surface.tsx`
+- `connectome/components/deterministic_zone_and_node_layout_computation_helpers.ts`
+- `connectome/components/edge_kit/connectome_edge_label_renderer_with_halo_and_zoom_policy.tsx`
+- `connectome/components/edge_kit/connectome_edge_style_tokens_for_trigger_and_calltype_mapping.ts`
+- `connectome/components/edge_kit/connectome_node_boundary_intersection_geometry_helpers.ts`
+- `connectome/components/edge_kit/semantic_edge_components_with_directional_shine_and_pulses.tsx`
+- `connectome/components/edge_label_declutter_and_visibility_policy_helpers.ts`
+- `connectome/components/node_kit/connectome_energy_badge_bucketed_glow_and_value_formatter.tsx`
+- `connectome/components/node_kit/connectome_node_background_theme_tokens_by_type_and_language.ts`
+- `connectome/components/node_kit/connectome_node_frame_with_title_path_and_tooltip_shell.tsx`
+- `connectome/components/node_kit/connectome_node_step_list_and_active_step_highlighter.tsx`
+- `connectome/components/node_kit/connectome_player_wait_progress_bar_with_four_second_cap.tsx`
+- `connectome/components/node_kit/connectome_tick_cron_circular_progress_ring_with_speed_label.tsx`
+- `connectome/components/node_kit/typed_connectome_node_components_with_energy_and_step_highlighting.tsx`
+- `connectome/components/pannable_zoomable_zoned_flow_canvas_renderer.tsx`
+- `connectome/components/unified_now_and_copyable_ledger_log_panel.tsx`
+- `ngram/core_utils.py`
+- `ngram/doctor.py`
+- `ngram/prompt.py`
+
+**Doc refs:**
+- `docs/connectome/edge_kit/IMPLEMENTATION_Connectome_Edge_Kit_Component_Map_And_Render_Tokens.md`
+- `docs/connectome/flow_canvas/IMPLEMENTATION_Connectome_Flow_Canvas_Code_Structure_With_React_Flow_And_Zones.md`
+- `docs/connectome/health/HEALTH_Connectome_Live_Signals.md`
+- `docs/connectome/log_panel/IMPLEMENTATION_Connectome_Log_Panel_Component_Structure_And_Serializer_Integration.md`
+- `docs/connectome/node_kit/IMPLEMENTATION_Connectome_Node_Kit_Component_Map_And_Styling_Tokens.md`
+- `docs/connectome/page_shell/PATTERNS_Connectome_Page_Shell_Route_Composition_And_User_Control_Surface_Patterns.md`
+
+**Sections:**
+- # Repository Map: ngram/app
+- ## Statistics
+- ## Module Dependencies
+- ## File Tree
+- ## File Details
 
 **Code refs:**
 - `__init__.py`
@@ -6512,6 +9314,7 @@
 - `tensions.py`
 - `test_schema.py`
 - `tick.py`
+- `tools/stream_dialogue.py`
 - `utils.py`
 - `validate.py`
 - `views.py`
@@ -6525,16 +9328,13 @@
 - `archive/SYNC_CLI_State_Archive_2025-12.md`
 - `archive/SYNC_TUI_State_Archive_2025-12.md`
 - `archive/SYNC_archive_2024-12.md`
-- `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Doctor_And_Repair.md`
-- `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Init_And_Validate.md`
-- `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Markers_And_Support.md`
 - `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md`
 - `core/BEHAVIORS_CLI_Command_Effects.md`
 - `core/HEALTH_CLI_Command_Test_Coverage.md`
-- `core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Code_Structure.md`
-- `core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md`
-- `core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Runtime_And_Dependencies.md`
-- `core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Schema.md`
+- `core/IMPLEMENTATION_CLI_Code_Architecture/overview/IMPLEMENTATION_Overview.md`
+- `core/IMPLEMENTATION_CLI_Code_Architecture/runtime/IMPLEMENTATION_Runtime_And_Dependencies.md`
+- `core/IMPLEMENTATION_CLI_Code_Architecture/schema/IMPLEMENTATION_Schema.md`
+- `core/IMPLEMENTATION_CLI_Code_Architecture/structure/IMPLEMENTATION_Code_Structure.md`
 - `core/PATTERNS_Why_CLI_Over_Copy.md`
 - `core/SYNC_CLI_Development_State.md`
 - `core/VALIDATION_CLI_Instruction_Invariants.md`
@@ -6563,20 +9363,20 @@
 - `docs/cli/ALGORITHM_CLI_Command_Execution_Logic.md`
 - `docs/cli/ALGORITHM_CLI_Logic.md`
 - `docs/cli/HEALTH_CLI_Coverage.md`
-- `docs/cli/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md`
 - `docs/cli/SYNC_CLI_State.md`
 - `docs/cli/VALIDATION_CLI_Invariants.md`
 - `docs/cli/archive/SYNC_CLI_Development_State_archive_2025-12.md`
 - `docs/cli/archive/SYNC_CLI_State_Archive_2025-12.md`
+- `docs/cli/archive/SYNC_archive_2024-12.md`
 - `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic.md`
-- `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Markers_And_Support.md`
 - `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md`
-- `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Refactor_Command.md`
 - `docs/cli/core/BEHAVIORS_CLI_Command_Effects.md`
 - `docs/cli/core/HEALTH_CLI_Command_Test_Coverage.md`
 - `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture.md`
-- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Code_Structure.md`
-- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/overview/IMPLEMENTATION_Overview.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/runtime/IMPLEMENTATION_Runtime_And_Dependencies.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/schema/IMPLEMENTATION_Schema.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/structure/IMPLEMENTATION_Code_Structure.md`
 - `docs/cli/core/PATTERNS_Why_CLI_Over_Copy.md`
 - `docs/cli/core/SYNC_CLI_Development_State.md`
 - `docs/cli/core/VALIDATION_CLI_Instruction_Invariants.md`
@@ -6687,226 +9487,6 @@
 - `views/VIEW_Specify_Design_Vision_And_Architecture.md`
 
 **Sections:**
-- # Repository Map: ngram
-
-**Code refs:**
-- `agent_cli.py`
-- `app.py`
-- `cli.py`
-- `commands.py`
-- `context.py`
-- `core_utils.py`
-- `doctor.py`
-- `doctor_checks.py`
-- `doctor_cli_parser_and_run_checker.py`
-- `doctor_files.py`
-- `doctor_report.py`
-- `file_utils.py`
-- `gemini_agent.py`
-- `github.py`
-- `init_cmd.py`
-- `manager.py`
-- `ngram.py`
-- `ngram/agent_cli.py`
-- `ngram/cli.py`
-- `ngram/context.py`
-- `ngram/core_utils.py`
-- `ngram/doctor.py`
-- `ngram/doctor_checks.py`
-- `ngram/doctor_checks_content.py`
-- `ngram/doctor_checks_core.py`
-- `ngram/doctor_checks_docs.py`
-- `ngram/doctor_checks_metadata.py`
-- `ngram/doctor_checks_naming.py`
-- `ngram/doctor_checks_prompt_integrity.py`
-- `ngram/doctor_checks_quality.py`
-- `ngram/doctor_checks_reference.py`
-- `ngram/doctor_checks_stub.py`
-- `ngram/doctor_checks_sync.py`
-- `ngram/doctor_files.py`
-- `ngram/doctor_report.py`
-- `ngram/doctor_types.py`
-- `ngram/github.py`
-- `ngram/init_cmd.py`
-- `ngram/llms/gemini_agent.py`
-- `ngram/project_map.py`
-- `ngram/project_map_html.py`
-- `ngram/prompt.py`
-- `ngram/refactor.py`
-- `ngram/repair.py`
-- `ngram/repair_core.py`
-- `ngram/repair_escalation_interactive.py`
-- `ngram/repair_instructions.py`
-- `ngram/repair_instructions_docs.py`
-- `ngram/repair_report.py`
-- `ngram/repo_overview.py`
-- `ngram/repo_overview_formatters.py`
-- `ngram/solve_escalations.py`
-- `ngram/sync.py`
-- `ngram/tui/__init__.py`
-- `ngram/tui/app.py`
-- `ngram/tui/app_core.py`
-- `ngram/tui/app_manager.py`
-- `ngram/tui/commands.py`
-- `ngram/tui/commands_agent.py`
-- `ngram/tui/manager.py`
-- `ngram/tui/state.py`
-- `ngram/tui/widgets/__init__.py`
-- `ngram/tui/widgets/agent_container.py`
-- `ngram/tui/widgets/agent_panel.py`
-- `ngram/tui/widgets/input_bar.py`
-- `ngram/tui/widgets/manager_panel.py`
-- `ngram/tui/widgets/status_bar.py`
-- `ngram/tui/widgets/suggestions.py`
-- `ngram/utils.py`
-- `ngram/utils/file_utils.py`
-- `ngram/utils/string_utils.py`
-- `ngram/utils/validation_utils.py`
-- `ngram/validate.py`
-- `project_map.py`
-- `project_map_html.py`
-- `prompt.py`
-- `repair.py`
-- `repair_core.py`
-- `repo_overview.py`
-- `scripts/check_chain_links.py`
-- `scripts/check_doc_completeness.py`
-- `scripts/check_doc_refs.py`
-- `scripts/check_orphans.py`
-- `semantic_proximity_based_character_node_selector.py`
-- `snake_case.py`
-- `src/analytics/batch_ingest.py`
-- `src/analytics/storage/event_store.py`
-- `src/analytics/stream_ingest.py`
-- `src/analytics/validation/schema_rules.py`
-- `src/dashboard/op_metrics.py`
-- `src/dashboard/product_metrics.py`
-- `state.py`
-- `string_utils.py`
-- `sync.py`
-- `utils.py`
-- `validate.py`
-
-**Doc refs:**
-- `archive/SYNC_Archive_2024-12.md`
-- `archive/SYNC_CLI_Development_State_archive_2025-12.md`
-- `archive/SYNC_CLI_State_Archive_2025-12.md`
-- `archive/SYNC_TUI_State_Archive_2025-12.md`
-- `archive/SYNC_archive_2024-12.md`
-- `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Doctor_And_Repair.md`
-- `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Init_And_Validate.md`
-- `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Markers_And_Support.md`
-- `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md`
-- `core/BEHAVIORS_CLI_Command_Effects.md`
-- `core/HEALTH_CLI_Command_Test_Coverage.md`
-- `core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Code_Structure.md`
-- `core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md`
-- `core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Runtime_And_Dependencies.md`
-- `core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Schema.md`
-- `core/PATTERNS_Why_CLI_Over_Copy.md`
-- `core/SYNC_CLI_Development_State.md`
-- `core/VALIDATION_CLI_Instruction_Invariants.md`
-- `data/ARCHITECTURE — Cybernetic Studio.md`
-- `data/NGRAM Documentation Chain Pattern (Draft “Marco”).md`
-- `docs/SYNC_Project_Repository_Map.md`
-- `docs/architecture/cybernetic_studio_architecture/ALGORITHM_Cybernetic_Studio_Process_Flow.md`
-- `docs/architecture/cybernetic_studio_architecture/BEHAVIORS_Cybernetic_Studio_System_Behaviors.md`
-- `docs/architecture/cybernetic_studio_architecture/HEALTH_Cybernetic_Studio_Health_Checks.md`
-- `docs/architecture/cybernetic_studio_architecture/IMPLEMENTATION_Cybernetic_Studio_Code_Structure.md`
-- `docs/architecture/cybernetic_studio_architecture/PATTERNS_Cybernetic_Studio_Architecture.md`
-- `docs/architecture/cybernetic_studio_architecture/SYNC_Cybernetic_Studio_Architecture_State.md`
-- `docs/architecture/cybernetic_studio_architecture/VALIDATION_Cybernetic_Studio_Architectural_Invariants.md`
-- `docs/cli/ALGORITHM_CLI_Command_Execution_Logic.md`
-- `docs/cli/ALGORITHM_CLI_Logic.md`
-- `docs/cli/HEALTH_CLI_Coverage.md`
-- `docs/cli/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md`
-- `docs/cli/SYNC_CLI_State.md`
-- `docs/cli/VALIDATION_CLI_Invariants.md`
-- `docs/cli/archive/SYNC_CLI_Development_State_archive_2025-12.md`
-- `docs/cli/archive/SYNC_CLI_State_Archive_2025-12.md`
-- `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic.md`
-- `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Markers_And_Support.md`
-- `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md`
-- `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Refactor_Command.md`
-- `docs/cli/core/BEHAVIORS_CLI_Command_Effects.md`
-- `docs/cli/core/HEALTH_CLI_Command_Test_Coverage.md`
-- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture.md`
-- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Code_Structure.md`
-- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md`
-- `docs/cli/core/PATTERNS_Why_CLI_Over_Copy.md`
-- `docs/cli/core/SYNC_CLI_Development_State.md`
-- `docs/cli/core/VALIDATION_CLI_Instruction_Invariants.md`
-- `docs/cli/prompt/ALGORITHM_Prompt_Bootstrap_Prompt_Construction.md`
-- `docs/cli/prompt/HEALTH_Prompt_Runtime_Verification.md`
-- `docs/cli/prompt/PATTERNS_Prompt_Command_Workflow_Design.md`
-- `docs/cli/prompt/SYNC_Prompt_Command_State.md`
-- `docs/core_utils/ALGORITHM_Core_Utils_Template_Path_And_Module_Discovery.md`
-- `docs/core_utils/ALGORITHM_Template_Path_Resolution_And_Doc_Discovery.md`
-- `docs/core_utils/PATTERNS_Core_Utils_Functions.md`
-- `docs/llm_agents/ALGORITHM_Gemini_Stream_Flow.md`
-- `docs/llm_agents/BEHAVIORS_Gemini_Agent_Output.md`
-- `docs/llm_agents/HEALTH_LLM_Agent_Coverage.md`
-- `docs/llm_agents/IMPLEMENTATION_LLM_Agent_Code_Architecture.md`
-- `docs/llm_agents/PATTERNS_Provider_Specific_LLM_Subprocesses.md`
-- `docs/llm_agents/SYNC_LLM_Agents_State.md`
-- `docs/llm_agents/VALIDATION_Gemini_Agent_Invariants.md`
-- `docs/protocol/ALGORITHM/ALGORITHM_Protocol_Process_Flow.md`
-- `docs/protocol/BEHAVIORS_Observable_Protocol_Effects.md`
-- `docs/protocol/HEALTH_Protocol_Verification.md`
-- `docs/protocol/IMPLEMENTATION/IMPLEMENTATION_File_Structure.md`
-- `docs/protocol/IMPLEMENTATION/IMPLEMENTATION_Overview.md`
-- `docs/protocol/PATTERNS_Bidirectional_Documentation_Chain_For_AI_Agents.md`
-- `docs/protocol/SYNC_Protocol_Current_State.md`
-- `docs/protocol/archive/SYNC_Archive_2024-12.md`
-- `docs/protocol/doctor/IMPLEMENTATION_Project_Health_Doctor.md`
-- `docs/protocol/doctor/PATTERNS_Project_Health_Doctor.md`
-- `docs/protocol/doctor/SYNC_Project_Health_Doctor.md`
-- `docs/tui/BEHAVIORS_TUI_Interactions.md`
-- `docs/tui/HEALTH_TUI_Coverage.md`
-- `docs/tui/IMPLEMENTATION_TUI_Code_Architecture.md`
-- `docs/tui/IMPLEMENTATION_TUI_Code_Architecture/IMPLEMENTATION_TUI_Code_Architecture_Structure.md`
-- `docs/tui/PATTERNS_TUI_Design.md`
-- `docs/tui/PATTERNS_TUI_Modular_Interface_Design.md`
-- `docs/tui/SYNC_TUI_State.md`
-- `docs/tui/archive/SYNC_archive_2024-12.md`
-- `doctor/ALGORITHM_Project_Health_Doctor.md`
-- `doctor/BEHAVIORS_Project_Health_Doctor.md`
-- `doctor/HEALTH_Project_Health_Doctor.md`
-- `doctor/PATTERNS_Project_Health_Doctor.md`
-- `doctor/SYNC_Project_Health_Doctor.md`
-- `doctor/VALIDATION_Project_Health_Doctor.md`
-- `features/BEHAVIORS_Agent_Trace_Logging.md`
-- `features/PATTERNS_Agent_Trace_Logging.md`
-- `features/SYNC_Agent_Trace_Logging.md`
-- `ngram/state/SYNC_Project_Health.md`
-- `ngram/state/SYNC_Prompt_Command_State.md`
-- `prompt/ALGORITHM_Prompt_Bootstrap_Prompt_Construction.md`
-- `prompt/BEHAVIORS_Prompt_Command_Output_and_Flow.md`
-- `prompt/HEALTH_Prompt_Runtime_Verification.md`
-- `prompt/IMPLEMENTATION_Prompt_Code_Architecture.md`
-- `prompt/PATTERNS_Prompt_Command_Workflow_Design.md`
-- `prompt/SYNC_Prompt_Command_State.md`
-- `prompt/VALIDATION_Prompt_Bootstrap_Invariants.md`
-- `state/SYNC_Project_State.md`
-- `templates/CLAUDE_ADDITION.md`
-- `templates/CODEX_SYSTEM_PROMPT_ADDITION.md`
-- `templates/ngram/PRINCIPLES.md`
-- `templates/ngram/PROTOCOL.md`
-- `templates/ngram/agents/manager/CLAUDE.md`
-- `views/VIEW_Analyze_Structural_Analysis.md`
-- `views/VIEW_Collaborate_Pair_Program_With_Human.md`
-- `views/VIEW_Debug_Investigate_And_Fix_Issues.md`
-- `views/VIEW_Document_Create_Module_Documentation.md`
-- `views/VIEW_Extend_Add_Features_To_Existing.md`
-- `views/VIEW_Health_Define_Health_Checks_And_Verify.md`
-- `views/VIEW_Implement_Write_Or_Modify_Code.md`
-- `views/VIEW_Ingest_Process_Raw_Data_Sources.md`
-- `views/VIEW_Onboard_Understand_Existing_Codebase.md`
-- `views/VIEW_Refactor_Improve_Code_Structure.md`
-- `views/VIEW_Review_Evaluate_Changes.md`
-- `views/VIEW_Specify_Design_Vision_And_Architecture.md`
-
-**Sections:**
 - # Repository Map: ngram/docs
 
 **Code refs:**
@@ -6955,16 +9535,13 @@
 **Doc refs:**
 - `archive/SYNC_CLI_Development_State_archive_2025-12.md`
 - `archive/SYNC_CLI_State_Archive_2025-12.md`
-- `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Doctor_And_Repair.md`
-- `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Init_And_Validate.md`
-- `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Markers_And_Support.md`
 - `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md`
 - `core/BEHAVIORS_CLI_Command_Effects.md`
 - `core/HEALTH_CLI_Command_Test_Coverage.md`
-- `core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Code_Structure.md`
-- `core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md`
-- `core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Runtime_And_Dependencies.md`
-- `core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Schema.md`
+- `core/IMPLEMENTATION_CLI_Code_Architecture/overview/IMPLEMENTATION_Overview.md`
+- `core/IMPLEMENTATION_CLI_Code_Architecture/runtime/IMPLEMENTATION_Runtime_And_Dependencies.md`
+- `core/IMPLEMENTATION_CLI_Code_Architecture/schema/IMPLEMENTATION_Schema.md`
+- `core/IMPLEMENTATION_CLI_Code_Architecture/structure/IMPLEMENTATION_Code_Structure.md`
 - `core/PATTERNS_Why_CLI_Over_Copy.md`
 - `core/SYNC_CLI_Development_State.md`
 - `core/VALIDATION_CLI_Instruction_Invariants.md`
@@ -6972,11 +9549,10 @@
 - `docs/cli/SYNC_CLI_State.md`
 - `docs/cli/archive/SYNC_CLI_Development_State_archive_2025-12.md`
 - `docs/cli/archive/SYNC_CLI_State_Archive_2025-12.md`
-- `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Markers_And_Support.md`
 - `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md`
 - `docs/cli/core/BEHAVIORS_CLI_Command_Effects.md`
 - `docs/cli/core/HEALTH_CLI_Command_Test_Coverage.md`
-- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/overview/IMPLEMENTATION_Overview.md`
 - `docs/cli/core/PATTERNS_Why_CLI_Over_Copy.md`
 - `docs/cli/core/SYNC_CLI_Development_State.md`
 - `docs/cli/core/VALIDATION_CLI_Instruction_Invariants.md`

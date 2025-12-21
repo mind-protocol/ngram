@@ -15,7 +15,7 @@ PATTERNS:        ./PATTERNS_Why_CLI_Over_Copy.md
 BEHAVIORS:       ./BEHAVIORS_CLI_Command_Effects.md
 ALGORITHM:       ./ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md
 VALIDATION:      ./VALIDATION_CLI_Instruction_Invariants.md
-IMPLEMENTATION:  ./IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md
+IMPLEMENTATION:  ./IMPLEMENTATION_CLI_Code_Architecture/overview/IMPLEMENTATION_Overview.md
 HEALTH:          ./HEALTH_CLI_Command_Test_Coverage.md
 THIS:            SYNC_CLI_Development_State.md (you are here)
 ```
@@ -35,6 +35,7 @@ Documented the new `docs/cli/prompt/` module: added PATTERNS → HEALTH files th
 Updated `ngram/repair_core.py` issue lookup helpers to handle empty and mixed-case issue types without being flagged as incomplete implementations.
 Verified `ngram/doctor_files.py` already implements the previously flagged empty functions; no code changes required for the INCOMPLETE_IMPL report.
 Added a new `ngram refactor` command that renames/moves documentation paths, rewrites doc/module references, and reruns overview/doctor so structural changes stay synchronized.
+Consolidated every CLI command algorithm topic (init/validate/doctor/repair/markers/refactor/docs-fix) into `ALGORITHM_Overview.md`, dropped the split files, and now treat that file as the single canonical command-algorithm reference.
 `ngram init` now copies `.ngram/skills` into `.claude/skills` and `$CODEX_HOME/skills` so agent skills stay installed during protocol refreshes.
 
 ---
@@ -74,6 +75,12 @@ Added a new `ngram refactor` command that renames/moves documentation paths, rew
 
 ## RECENT CHANGES
 
+### 2025-12-20: Rename CLI agent flag to --model
+
+- **What:** Replaced CLI flag `--agents` with `--model` (kept `--agents` as deprecated alias), defaulted provider selection to codex, and wired the Codex subprocess to `gpt-5.1-codex-mini`.
+- **Why:** Align the CLI with the desired model naming and codex default for repair/manager flows.
+- **Files:** `ngram/cli.py`, `ngram/agent_cli.py`, `docs/cli/core/BEHAVIORS_CLI_Command_Effects.md`, `docs/tui/ALGORITHM_TUI_Widget_Interaction_Flow.md`, `docs/tui/PATTERNS_TUI_Modular_Interface_Design.md`
+
 ### 2025-12-20: Pending external implementation references
 
 - **What:** Replaced stub file paths with pending import notes in implementation docs.
@@ -83,7 +90,7 @@ Added a new `ngram refactor` command that renames/moves documentation paths, rew
 
 - **What:** Added `@ngram&#58;todo` marker support to `solve-markers` and doctor special marker detection.
 - **Why:** Allows agents and managers to capture actionable tasks during reviews and triage them explicitly.
-- **Files:** `ngram/solve_escalations.py`, `ngram/doctor_checks_content.py`, `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Markers_And_Support.md`, `docs/cli/core/BEHAVIORS_CLI_Command_Effects.md`, `docs/cli/core/VALIDATION_CLI_Instruction_Invariants.md`
+- **Files:** `ngram/solve_escalations.py`, `ngram/doctor_checks_content.py`, `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md` (marker scan section), `docs/cli/core/BEHAVIORS_CLI_Command_Effects.md`, `docs/cli/core/VALIDATION_CLI_Instruction_Invariants.md`
 
 ### 2025-12-20: Archive consolidation note
 
@@ -95,14 +102,20 @@ Added a new `ngram refactor` command that renames/moves documentation paths, rew
 
 - **What:** Split CLI algorithm and implementation docs into overview + part files and condensed archived notes.
 - **Why:** Reduce module doc size and keep entry points concise.
-- **Files:** `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md`, `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md`, `docs/cli/archive/SYNC_CLI_Development_State_archive_2025-12.md`
+- **Files:** `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md`, `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/overview/IMPLEMENTATION_Overview.md`, `docs/cli/archive/SYNC_CLI_Development_State_archive_2025-12.md`
 
 ### 2025-12-21: Add CLI refactor command
 
 - **What:** Introduced `ngram/refactor.py`, wired `ngram refactor rename`, and documented the flow alongside existing CLI materials.
 - **Why:** Enables deterministic structural refactors so the documentation tree and modules manifest stay coherent after renames/moves.
-- **Files:** `ngram/refactor.py`, `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Refactor_Command.md`, `docs/cli/core/BEHAVIORS_CLI_Command_Effects.md`, `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md`, `docs/cli/core/SYNC_CLI_Development_State.md`
+- **Files:** `ngram/refactor.py`, `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md` (refactor section), `docs/cli/core/BEHAVIORS_CLI_Command_Effects.md`, `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/overview/IMPLEMENTATION_Overview.md`, `docs/cli/core/SYNC_CLI_Development_State.md`
 - **Extras:** The command now offers `move`, `promote`, `demote`, and `batch` actions plus `--overwrite` (default), `--skip-existing`, and `--no-overwrite` flags so collisions can be handled deterministically.
+
+### 2025-12-21: Consolidate CLI implementation docs
+
+- **What:** Split the CLI IMPLEMENTATION story across `overview/`, `structure/`, `runtime/`, and `schema/` subfolders so each folder hosts exactly one IMPLEMENTATION doc, then updated every referencer (CHAIN links, DOCS pointers, module mappings, and map outputs) to the canonical paths.
+- **Why:** Eliminates the duplicate IMPLEMENTATION warning by ensuring there is a single authoritative implementation doc per architectural slice while keeping the doc graph traceable and preventing future drift.
+- **Files:** `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/overview/IMPLEMENTATION_Overview.md`, `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/structure/IMPLEMENTATION_Code_Structure.md`, `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/runtime/IMPLEMENTATION_Runtime_And_Dependencies.md`, `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/schema/IMPLEMENTATION_Schema.md`, `docs/cli/modules.md`, `docs/cli/core/PATTERNS_Why_CLI_Over_Copy.md`, `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md`, `map.md`, `map_docs.md`, `map_docs_cli.md`, `docs/map.md`
 
 ### 2025-12-21: Adjust doctor doc sizing threshold + stub detection
 
@@ -114,7 +127,7 @@ Added a new `ngram refactor` command that renames/moves documentation paths, rew
 
 - **What:** `ngram init` now copies `.ngram/skills` into `.claude/skills` and `$CODEX_HOME/skills`.
 - **Why:** Keeps agent skill installs in sync with protocol refreshes without manual copying.
-- **Files:** `ngram/init_cmd.py`, `docs/cli/core/BEHAVIORS_CLI_Command_Effects.md`, `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Runtime_And_Dependencies.md`
+- **Files:** `ngram/init_cmd.py`, `docs/cli/core/BEHAVIORS_CLI_Command_Effects.md`, `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/runtime/IMPLEMENTATION_Runtime_And_Dependencies.md`
 
 ## GAPS
 
@@ -158,7 +171,7 @@ Added a new `ngram refactor` command that renames/moves documentation paths, rew
 
 | What | Where |
 |------|-------|
-| CLI implementation overview | `docs/cli/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md` |
+| CLI implementation overview | `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/overview/IMPLEMENTATION_Overview.md` |
 | CLI algorithm overview | `docs/cli/ALGORITHM_CLI_Command_Execution_Logic.md` |
 | Latest doctor output | `/tmp/doctor_new.json` |
 

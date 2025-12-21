@@ -26,9 +26,9 @@
 │   └── (..1 more files)
 ├── core/ (44.3K)
 │   ├── ALGORITHM_CLI_Command_Execution_Logic/ (8.5K)
-│   │   ├── ALGORITHM_Doctor_And_Repair.md (3.9K)
-│   │   ├── ALGORITHM_Init_And_Validate.md (1.5K)
-│   │   ├── ALGORITHM_Markers_And_Support.md (1.6K)
+│   │   ├── ALGORITHM_Overview.md (doctor & repair section) (3.9K)
+│   │   ├── ALGORITHM_Overview.md (init & validate section) (1.5K)
+│   │   ├── ALGORITHM_Overview.md (marker scans section) (1.6K)
 │   │   └── ALGORITHM_Overview.md (1.5K)
 │   ├── IMPLEMENTATION_CLI_Code_Architecture/ (9.5K)
 │   │   ├── IMPLEMENTATION_Code_Structure.md (3.9K)
@@ -76,7 +76,7 @@
 - ## RELATED ARCHIVES
 - ## CHAIN
 
-### `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Doctor_And_Repair.md`
+### `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md (doctor & repair section)`
 
 **Sections:**
 - # ngram Framework CLI — Algorithm: Doctor and Repair
@@ -89,7 +89,7 @@
 - # Also create/update documentation content
 - # Also make code changes
 
-### `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Init_And_Validate.md`
+### `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md (init & validate section)`
 
 **Sections:**
 - # ngram Framework CLI — Algorithm: Init and Validate
@@ -97,7 +97,7 @@
 - ## ALGORITHM: Init Command
 - ## ALGORITHM: Validate Command
 
-### `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Markers_And_Support.md`
+### `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md (marker scans section)`
 
 **Sections:**
 - # ngram Framework CLI — Algorithm: Marker Scans and Support Utilities
@@ -116,7 +116,7 @@
 - ## DATA FLOW (SUMMARY)
 - ## PERFORMANCE NOTES
 
-### `core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Code_Structure.md`
+### `core/IMPLEMENTATION_CLI_Code_Architecture/structure/IMPLEMENTATION_Code_Structure.md`
 
 **Code refs:**
 - `ngram/agent_cli.py`
@@ -155,7 +155,7 @@
 - ## CODE STRUCTURE
 - ## FILE RESPONSIBILITIES
 
-### `core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md`
+### `core/IMPLEMENTATION_CLI_Code_Architecture/overview/IMPLEMENTATION_Overview.md`
 
 **Code refs:**
 - `core_utils.py`
@@ -176,7 +176,7 @@
 - ## GAPS (ACTIVE)
 - ## ARCHIVE POINTER
 
-### `core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Runtime_And_Dependencies.md`
+### `core/IMPLEMENTATION_CLI_Code_Architecture/runtime/IMPLEMENTATION_Runtime_And_Dependencies.md`
 
 **Sections:**
 - # ngram Framework CLI — Implementation: Runtime and Dependencies
@@ -188,7 +188,7 @@
 - ## CONCURRENCY MODEL
 - ## CONFIGURATION
 
-### `core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Schema.md`
+### `core/IMPLEMENTATION_CLI_Code_Architecture/schema/IMPLEMENTATION_Schema.md`
 
 **Sections:**
 - # ngram Framework CLI — Implementation: Schema
@@ -273,10 +273,10 @@
 - `docs/cli/SYNC_CLI_State.md`
 - `docs/cli/archive/SYNC_CLI_Development_State_archive_2025-12.md`
 - `docs/cli/archive/SYNC_CLI_State_Archive_2025-12.md`
-- `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Markers_And_Support.md`
+- `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md (marker scans section)`
 - `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md`
 - `docs/cli/core/BEHAVIORS_CLI_Command_Effects.md`
-- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/overview/IMPLEMENTATION_Overview.md`
 - `docs/cli/core/SYNC_CLI_Development_State.md`
 - `docs/cli/core/VALIDATION_CLI_Instruction_Invariants.md`
 
@@ -456,7 +456,7 @@
 - `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md`
 - `docs/cli/core/BEHAVIORS_CLI_Command_Effects.md`
 - `docs/cli/core/HEALTH_CLI_Command_Test_Coverage.md`
-- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/overview/IMPLEMENTATION_Overview.md`
 - `docs/cli/core/PATTERNS_Why_CLI_Over_Copy.md`
 - `docs/cli/core/SYNC_CLI_Development_State.md`
 - `docs/cli/core/VALIDATION_CLI_Instruction_Invariants.md`

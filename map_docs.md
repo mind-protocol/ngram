@@ -95,12 +95,12 @@ graph TD
 │   │   └── SYNC_archive_2024-12.md (1.3K)
 │   ├── core/ (72.0K)
 │   │   ├── ALGORITHM_CLI_Command_Execution_Logic/ (13.3K)
-│   │   │   ├── ALGORITHM_Docs_Fix_Command.md (934)
-│   │   │   ├── ALGORITHM_Doctor_And_Repair.md (4.0K)
-│   │   │   ├── ALGORITHM_Init_And_Validate.md (1.5K)
-│   │   │   ├── ALGORITHM_Markers_And_Support.md (1.6K)
+│   │   │   ├── ALGORITHM_Overview.md (docs-fix section) (934)
+│   │   │   ├── ALGORITHM_Overview.md (doctor & repair section) (4.0K)
+│   │   │   ├── ALGORITHM_Overview.md (init & validate section) (1.5K)
+│   │   │   ├── ALGORITHM_Overview.md (marker scans section) (1.6K)
 │   │   │   ├── ALGORITHM_Overview.md (1.7K)
-│   │   │   └── ALGORITHM_Refactor_Command.md (3.6K)
+│   │   │   └── ALGORITHM_Overview.md (refactor section) (3.6K)
 │   │   ├── IMPLEMENTATION_CLI_Code_Architecture/ (24.8K)
 │   │   │   ├── IMPLEMENTATION_Code_Structure.md (8.1K)
 │   │   │   ├── IMPLEMENTATION_Overview.md (6.4K)
@@ -999,9 +999,9 @@ graph TD
 - `ngram/validate.py`
 
 **Doc refs:**
-- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md`
-- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Runtime_And_Dependencies.md`
-- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Schema.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/overview/IMPLEMENTATION_Overview.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/runtime/IMPLEMENTATION_Runtime_And_Dependencies.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/schema/IMPLEMENTATION_Schema.md`
 
 **Sections:**
 - # ngram Framework CLI — Implementation: Code Structure
@@ -1046,9 +1046,9 @@ graph TD
 
 **Doc refs:**
 - `docs/cli/archive/SYNC_archive_2024-12.md`
-- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Code_Structure.md`
-- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Runtime_And_Dependencies.md`
-- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Schema.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/structure/IMPLEMENTATION_Code_Structure.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/runtime/IMPLEMENTATION_Runtime_And_Dependencies.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/schema/IMPLEMENTATION_Schema.md`
 - `docs/cli/core/PATTERNS_Why_CLI_Over_Copy.md`
 
 **Sections:**
@@ -1083,9 +1083,9 @@ graph TD
 - `ngram/repair_report.py`
 
 **Doc refs:**
-- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Code_Structure.md`
-- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md`
-- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Schema.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/structure/IMPLEMENTATION_Code_Structure.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/overview/IMPLEMENTATION_Overview.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/schema/IMPLEMENTATION_Schema.md`
 
 **Sections:**
 - # ngram Framework CLI — Implementation: Runtime and Dependencies
@@ -1114,7 +1114,7 @@ graph TD
 - `ngram/validate.py`
 
 **Doc refs:**
-- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Code_Structure.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/structure/IMPLEMENTATION_Code_Structure.md`
 
 **Sections:**
 - # ngram Framework CLI — Implementation: Schema Definitions for CLI Flows
@@ -1213,15 +1213,15 @@ graph TD
 **Doc refs:**
 - `archive/SYNC_CLI_Development_State_archive_2025-12.md`
 - `docs/cli/ALGORITHM_CLI_Command_Execution_Logic.md`
-- `docs/cli/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/overview/IMPLEMENTATION_Overview.md`
 - `docs/cli/archive/SYNC_CLI_Development_State_archive_2025-12.md`
 - `docs/cli/archive/SYNC_CLI_State_Archive_2025-12.md`
-- `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Markers_And_Support.md`
+- `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md (marker scans section)`
 - `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md`
-- `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Refactor_Command.md`
+- `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md (refactor section)`
 - `docs/cli/core/BEHAVIORS_CLI_Command_Effects.md`
-- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md`
-- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Runtime_And_Dependencies.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/overview/IMPLEMENTATION_Overview.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/runtime/IMPLEMENTATION_Runtime_And_Dependencies.md`
 - `docs/cli/core/SYNC_CLI_Development_State.md`
 - `docs/cli/core/VALIDATION_CLI_Instruction_Invariants.md`
 - `docs/protocol/doctor/SYNC_Project_Health_Doctor.md`
@@ -1447,8 +1447,8 @@ graph TD
 - `ngram/repair_core.py`
 
 **Doc refs:**
-- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Code_Structure.md`
-- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/structure/IMPLEMENTATION_Code_Structure.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/overview/IMPLEMENTATION_Overview.md`
 - `docs/cli/core/PATTERNS_Why_CLI_Over_Copy.md`
 
 **Sections:**
@@ -1481,10 +1481,10 @@ graph TD
 
 **Doc refs:**
 - `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md`
-- `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Refactor_Command.md`
+- `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md (refactor section)`
 - `docs/cli/core/BEHAVIORS_CLI_Command_Effects.md`
 - `docs/cli/core/HEALTH_CLI_Command_Test_Coverage.md`
-- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/overview/IMPLEMENTATION_Overview.md`
 - `docs/cli/core/PATTERNS_Why_CLI_Over_Copy.md`
 - `docs/cli/core/SYNC_CLI_Development_State.md`
 - `docs/cli/core/VALIDATION_CLI_Instruction_Invariants.md`
@@ -4868,16 +4868,16 @@ graph TD
 - `archive/SYNC_CLI_State_Archive_2025-12.md`
 - `archive/SYNC_TUI_State_Archive_2025-12.md`
 - `archive/SYNC_archive_2024-12.md`
-- `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Doctor_And_Repair.md`
-- `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Init_And_Validate.md`
-- `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Markers_And_Support.md`
+- `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md (doctor & repair section)`
+- `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md (init & validate section)`
+- `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md (marker scans section)`
 - `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md`
 - `core/BEHAVIORS_CLI_Command_Effects.md`
 - `core/HEALTH_CLI_Command_Test_Coverage.md`
-- `core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Code_Structure.md`
-- `core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md`
-- `core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Runtime_And_Dependencies.md`
-- `core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Schema.md`
+- `core/IMPLEMENTATION_CLI_Code_Architecture/structure/IMPLEMENTATION_Code_Structure.md`
+- `core/IMPLEMENTATION_CLI_Code_Architecture/overview/IMPLEMENTATION_Overview.md`
+- `core/IMPLEMENTATION_CLI_Code_Architecture/runtime/IMPLEMENTATION_Runtime_And_Dependencies.md`
+- `core/IMPLEMENTATION_CLI_Code_Architecture/schema/IMPLEMENTATION_Schema.md`
 - `core/PATTERNS_Why_CLI_Over_Copy.md`
 - `core/SYNC_CLI_Development_State.md`
 - `core/VALIDATION_CLI_Instruction_Invariants.md`
@@ -4906,20 +4906,20 @@ graph TD
 - `docs/cli/ALGORITHM_CLI_Command_Execution_Logic.md`
 - `docs/cli/ALGORITHM_CLI_Logic.md`
 - `docs/cli/HEALTH_CLI_Coverage.md`
-- `docs/cli/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/overview/IMPLEMENTATION_Overview.md`
 - `docs/cli/SYNC_CLI_State.md`
 - `docs/cli/VALIDATION_CLI_Invariants.md`
 - `docs/cli/archive/SYNC_CLI_Development_State_archive_2025-12.md`
 - `docs/cli/archive/SYNC_CLI_State_Archive_2025-12.md`
 - `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic.md`
-- `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Markers_And_Support.md`
+- `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md (marker scans section)`
 - `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md`
-- `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Refactor_Command.md`
+- `docs/cli/core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md (refactor section)`
 - `docs/cli/core/BEHAVIORS_CLI_Command_Effects.md`
 - `docs/cli/core/HEALTH_CLI_Command_Test_Coverage.md`
 - `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture.md`
-- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Code_Structure.md`
-- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/structure/IMPLEMENTATION_Code_Structure.md`
+- `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/overview/IMPLEMENTATION_Overview.md`
 - `docs/cli/core/PATTERNS_Why_CLI_Over_Copy.md`
 - `docs/cli/core/SYNC_CLI_Development_State.md`
 - `docs/cli/core/VALIDATION_CLI_Instruction_Invariants.md`
