@@ -61,25 +61,25 @@ the service returns a safe fallback response with empty mutations.
 
 ## BEHAVIORS GUARANTEED
 
-| Behavior ID | Guarantee | Why It Matters |
-|-------------|-----------|----------------|
-| B1 | Runner output always includes `thinking`, `graph_mutations`, and `world_injection`, even when `_fallback_response()` executes. | This keeps the Narrator and downstream tooling from receiving partial payloads so health checks have a solid schema to audit. |
-| B2 | Each runner invocation reloads the graph state and emits mutations without relying on prior local state. | Stateless calls make every run deterministic and traceable, preventing hidden residues from confusing future injections. |
-| B3 | CLI errors, timeouts, and parse failures produce the documented fallback response and a log entry instead of hanging indefinitely. | The orchestrator can rapidly surface degradations, keeping user-facing actions responsive even when the agent misbehaves. |
+| Behavior ID | Behavior | Why This Validation Matters |
+|-------------|----------|-----------------------------|
+| B1 | Every invocation of `WorldRunnerService.process_flips()` delivers `thinking`, `graph_mutations`, and `world_injection`, even when `_fallback_response()` is triggered. | Guarantees that narrators and downstream tooling never see partial payloads, giving the doctor an anchor to assert schema compliance while fallback runs finish safely. |
+| B2 | Each run reloads the latest graph snapshot, applies mutations, and returns without relying on retained state. | Stateless calls keep every tick deterministic and let `background_consistency` monitors confirm the injection always reflects the freshest world before narrating. |
+| B3 | CLI errors, timeouts, or parse failures always produce the documented fallback response plus a log entry. | `adapter_resilience` can surface every degradation immediately instead of letting the orchestrator hang, so operators know when the runner tripped over the agent boundary. |
 
 ## OBJECTIVES COVERED
 
-| Objective | Invariants | Rationale |
-|-----------|------------|-----------|
-| Deliver deterministic narrator-ready injections before returning control. | V1, V2 | Binding schema and statelessness together ensures the Narrator always sees a complete world snapshot with explicit mutations, so downstream editors never guess what happened. |
-| Surface every CLI failure via safe fallbacks for the orchestrator to react to. | V3, P1 | Connecting fallback guarantees to the documented error conditions lets the health tooling flag degraded runs as soon as they happen. |
-| Keep validation documentation aligned with the error modes operators need to triage. | E1, E2, E3 | Explicitly naming the symptoms prevents ad-hoc investigations and lets tooling look for the right log keys when replaying incidents. |
+| Objective | Validations | Rationale |
+|-----------|-------------|-----------|
+| Deliver deterministic narrator-ready injections before control returns. | V1, V2 | Binding schema and statelessness together ensures the Narrator sees a complete, consistent graph snapshot plus the intended mutations every run. |
+| Surface every CLI failure via safe fallbacks so the orchestrator can react. | V3, P1 | Connecting fallback guarantees to the documented error conditions lets the health tooling flag degraded runs before they block the narrator. |
+| Keep validation documentation aligned with the error modes operators will triage. | E1, E2, E3 | Explicitly naming the symptoms prevents ad-hoc investigations and lets tooling look for the right log keys when replaying incidents. |
 
 ## HEALTH COVERAGE
 
-- `background_consistency` in `docs/agents/world-runner/HEALTH_World_Runner.md` watches each injection and graph mutation batch to prove the runner output schema stays intact before the Narrator receives it.
-- `adapter_resilience` reuses the same error conditions to alert whenever `_call_claude()` returns non-zero, times out, or emits invalid JSON, highlighting the exact fallback path described in this validation doc.
-- `fallback_validator` and `mutation_safety_checker` are the scripted health checks that tie these invariants back to automation, so `ngram doctor` can prove the service never drifts from the documented safe states during regression runs.
+- `background_consistency` in `docs/agents/world-runner/HEALTH_World_Runner.md` checks that every mutation batch and injection remains schema-compliant before the Narrator consumes it.
+- `adapter_resilience` reuses the validation error modes to alert whenever `_call_claude()` returns non-zero, times out, or emits invalid JSON, so the orchestrator always knows which guardrail tripped.
+- `fallback_validator` and `mutation_safety_checker` are the scripted checks that tie these invariants back to automation so `ngram doctor` can prove the service never drifts from the documented safe states.
 
 ---
 

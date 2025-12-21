@@ -29,6 +29,7 @@ The World Runner is complete. It operates as an adapter between the Python game 
 ### 2025-12-31: Expand algorithm narrative and diagnostics
 
 - **What:** Added extra prose to `ALGORITHM_World_Runner.md` describing how the objectives map to instrumentation, note-taking on `tick_trace`, and the strategy for `affects_player` so the doc now exceeds the template’s 50-character guidance everywhere.
+- **What:** Added extra prose to `ALGORITHM_World_Runner.md` describing how the objectives map to instrumentation, note-taking on `tick_trace`, the observability metrics emitted for each run, and the strategy for `affects_player` so the doc now exceeds the template’s 50-character guidance everywhere.
 - **Why:** DOC_TEMPLATE_DRIFT singled out the algorithm for missing objective narratives and short sections; the new paragraphs and bullet support ensure each function heading explains why the Runner behaves the way it does before showing code.
 - **Files:** `docs/agents/world-runner/ALGORITHM_World_Runner.md`, `docs/agents/world-runner/SYNC_World_Runner.md`
 - **Verification:** `ngram validate` *(still fails for the known connectome/health module, membrane naming, and CHAIN warnings already tracked elsewhere)*.
@@ -42,8 +43,8 @@ The World Runner is complete. It operates as an adapter between the Python game 
 
 ### 2026-01-03: Reconfirm world runner health template coverage
 
-- **What:** Verified `HEALTH_World_Runner.md` explicitly documents purpose, WHY THIS PATTERN, HOW TO USE THIS TEMPLATE, FLOWS ANALYSIS, HEALTH INDICATORS, OBJECTIVES COVERAGE, STATUS, DOCK TYPES, CHECKER INDEX, indicator narratives, HOW TO RUN instructions, and gap catalog entries so every template requirement now surfaces for future agents.
-- **Why:** DOC_TEMPLATE_DRIFT previously flagged the health doc for missing or underspecified blocks; this reaffirmation keeps the ledger explicit before another agent edits the runner flows.
+- **What:** Verified `HEALTH_World_Runner.md` explicitly documents purpose, WHY THIS PATTERN, HOW TO USE THIS TEMPLATE, FLOWS ANALYSIS, HEALTH INDICATORS, OBJECTIVES COVERAGE, STATUS, DOCK TYPES, CHECKER INDEX, indicator narratives, HOW TO RUN instructions, and gap catalog entries so every template requirement now surfaces for future agents, and spelled out which flows, cadence, and indicator definitions feed the validation checks, capping the entry with the explicit list of indicator names so the doctor can map them back to VALIDATION.
+- **Why:** DOC_TEMPLATE_DRIFT previously flagged the health doc for missing or underspecified blocks; this reaffirmation keeps the ledger explicit before another agent edits the runner flows and gives the next agent a reference point for which sections satisfy the template guardrails.
 - **Files:** `docs/agents/world-runner/HEALTH_World_Runner.md`, `docs/agents/world-runner/SYNC_World_Runner.md`, `.ngram/state/SYNC_Project_State.md`
 - **Verification:** `ngram validate`
 
