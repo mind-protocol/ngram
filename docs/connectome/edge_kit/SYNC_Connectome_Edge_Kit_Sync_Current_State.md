@@ -41,6 +41,13 @@ Implemented edge components for React Flow that map trigger to dash styles and c
 * **Files:** `docs/connectome/edge_kit/BEHAVIORS_Connectome_Edge_Kit_Readable_Directional_And_Truthful_Link_Effects.md`, `docs/connectome/edge_kit/SYNC_Connectome_Edge_Kit_Sync_Current_State.md`
 * **Validation:** `ngram validate` *(fails: the existing `docs/connectome/health` module still lacks its canonical PATTERNS/BEHAVIORS/ALGORITHM/VALIDATION/IMPLEMENTATION/HEALTH/SYNC chain, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` needs the plural naming, and the longstanding CHAIN-link warnings remain; no new regressions introduced).*
 
+### 2026-05-04: Expand edge kit implementation template (#11)
+
+* **What:** Filled every missing DESIGN PATTERNS, SCHEMA, FLOW-BY-FLOW DATA DOCKING, LOGIC CHAIN, MODULE DEPENDENCY, STATE MANAGEMENT, RUNTIME BEHAVIOR, CONCURRENCY MODEL, and BIDIRECTIONAL LINK section in the implementation doc so the template now exceeds 50 characters each and explicitly maps to the TypeScript helpers.
+* **Why:** DOC_TEMPLATE_DRIFT #11 flagged those empty template blocks; this ensures the implementation narrative aligns with the pattern-driven palette, FlowEvent schema, and runtime state before future agents modify the components.
+* **Files:** `docs/connectome/edge_kit/IMPLEMENTATION_Connectome_Edge_Kit_Component_Map_And_Render_Tokens.md`, `docs/connectome/edge_kit/SYNC_Connectome_Edge_Kit_Sync_Current_State.md`
+* **Validation:** `ngram validate` *(fails: the existing `docs/connectome/health` module still lacks its canonical PATTERNS/BEHAVIORS/ALGORITHM/VALIDATION/IMPLEMENTATION/HEALTH/SYNC chain, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` needs the plural naming, and the longstanding CHAIN-link warnings remain; no new regressions introduced).*
+
 ### 2025-12-21: Complete PATTERNS template sections for edge styling (#11)
 
 * **What:** Added BEHAVIORS SUPPORTED/PREVENTED narratives plus DATA and INSPIRATIONS sections so the pattern doc now meets the DOC_TEMPLATE_DRIFT length expectations.
