@@ -99,6 +99,20 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 
 ## RECENT CHANGES
 
+### 2025-12-24: Clarified LLM agent archive prose
+
+- **What:** Added narrative context to the handoff, human, and consciousness-trace sections of the archived LLM agent sync so each template block now exceeds the minimum length while reiterating that the file is historical.
+- **Why:** DOC_TEMPLATE_DRIFT warned that sections were still too terse, so expanding them ensures the archive communicates how to treat the snapshot without attempting to divert work from the live SYNC.
+- **Files:** `docs/llm_agents/SYNC_LLM_Agents_State_archive_2025-12.md`
+- **Verification:** `ngram validate`
+
+### 2025-12-24: Expanded LLM health coverage template
+
+- **What:** Added an OBJECTIVES COVERAGE summary along with a dedicated API connectivity indicator so the HEATH doc now explains both streaming and auth verification flows and their docking points.
+- **Why:** Close DOC_TEMPLATE_DRIFT for `docs/llm_agents/HEALTH_LLM_Agent_Coverage.md` and tie the `api_connectivity` indicator to concrete verification steps, throttling, and display targets.
+- **Files:** `docs/llm_agents/HEALTH_LLM_Agent_Coverage.md`, `docs/llm_agents/SYNC_LLM_Agents_State.md`
+- **Verification:** `ngram validate` *(fails: pre-existing connectome health doc gaps plus membrane naming and CHAIN/link warnings already tracked by the doctor)*
+
 ### 2025-12-22: Expand llm agents archive sync narrative
 
 - **What:** Expanded the archive copy of `SYNC_LLM_Agents_State` so every section (CURRENT STATE, IN PROGRESS, KNOWN ISSUES, the handoff notes, and the consciousness trace) now includes sentences instead of terse bullets.

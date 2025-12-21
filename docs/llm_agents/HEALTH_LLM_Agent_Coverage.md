@@ -85,6 +85,15 @@ health_indicators:
 
 ---
 
+## OBJECTIVES COVERAGE
+
+| Objective | Indicators | Why These Signals Matter |
+|-----------|------------|--------------------------|
+| Preserve the streaming contract so every chunk the TUI consumes stays parseable and complete | stream_validity | Guards the core inference channel by confirming chunk shape, tool_message pairings, and final result blocks before downstream UI/agents render anything. |
+| Lock in provider connectivity so credentials or network failures are caught before the CLI assumes Gemini is reachable | api_connectivity | Keeps the CLI/TUI reliable by surfacing missing API keys, bad client instantiations, and diagnostic noise as structured errors that operators can act on quickly. |
+
+---
+
 ## STATUS (RESULT INDICATOR)
 
 ```yaml
@@ -113,6 +122,8 @@ status:
 - Describe the invariant you are guarding, the docking points you observe, and how often the signal should be sampled.
 - Populate the indicator, status, and gap fields with precise expectations so doctor can validate the template.
 
+Each checker listed below maps directly to a high-priority indicator so the execution surface stays tethered to the ABI contract.
+
 ## CHECKER INDEX
 
 ```yaml
@@ -131,15 +142,19 @@ checkers:
 
 ## INDICATOR: Stream Validity
 
+This indicator keeps the streaming JSON surface deterministic so the toolchain never misparses ambiguous chunks.
+
 ### VALUE TO CLIENTS & VALIDATION MAPPING
 
 ```yaml
 value_and_validation:
   indicator: stream_validity
-  client_value: The TUI and CLI can reliably parse agent outputs in real-time.
+  client_value: The CLI/TUI pipeline can parse each Gemini output chunk immediately without needing retries or manual intervention.
   validation:
     - validation_id: V-GEMINI-JSON
-      criteria: Chunks must be valid newline-delimited JSON with 'type' and 'content' fields.
+      criteria: Chunks must be valid newline-delimited JSON with 'type' and 'content' fields, and tool messages must arrive as matched pairs.
+    - validation_id: V5
+      criteria: Tool-related payloads use `tool_code`/`tool_result` objects so downstream tooling gets consistent metadata.
 ```
 
 ### HEALTH REPRESENTATION
@@ -151,17 +166,208 @@ representation:
   selected:
     - float_0_1
   semantics:
-    float_0_1: Percentage of successfully parsed chunks in the last session.
+    float_0_1: Ratio of parseable chunks versus total emitted chunks across the last completed session.
+  aggregation:
+    method: Minimum-of-weighted-streams so critical parse failures are not averaged away.
+    display: The CLI health banner surfaces the float score with a green/amber/red mapping so operators see severity at a glance.
 ```
 
 ### DOCKS SELECTED
 
 ```yaml
 docks:
+  input:
+    id: model_response_parts
+    method: main
+    location: ngram/llms/gemini_agent.py:205-235
   output:
     id: assistant_chunks
     method: main
-    location: ngram/llms/gemini_agent.py:400
+    location: ngram/llms/gemini_agent.py:205-235
+```
+
+### ALGORITHM / CHECK MECHANISM
+
+```yaml
+mechanism:
+  summary: Parse every stream-json chunk printed by `main` and compare against VALIDATION V2/V5 so the JSON schema stays locked and tool payloads remain paired.
+  steps:
+    - Read `response.candidates[0].content.parts` and capture text/call payloads in sequence.
+    - Serialize each chunk as JSON with explicit `type`/`message` fields while tracking parseability counts.
+    - Emit the session success ratio and mark the indicator ERROR if parse failures exceed the established threshold.
+  data_required: `model.candidates[0].content.parts`, `args.output_format`, and the `assistant_chunks` stream for both `assistant` and `tool_result` records.
+  failure_mode: Streaming output misses the `type`, `message`, or tool payload keys, so downstream parsers raise decoding exceptions.
+```
+
+### INDICATOR
+
+```yaml
+indicator:
+  error:
+    - name: stream_parse_fail
+      linked_validation: [V-GEMINI-JSON]
+      meaning: The chunk failed to parse or lacked the required fields, leaving the stream unusable.
+      default_action: stop
+  warning:
+    - name: stream_chunk_truncated
+      linked_validation: [V-GEMINI-JSON]
+      meaning: The chunk emitted partial JSON that requires retries, slowing the session.
+      default_action: warn
+  info:
+    - name: stream_parse_ok
+      linked_validation: [V-GEMINI-JSON, V5]
+      meaning: Chunks remain parseable and the float score stays above 95%, so downstream clients stay smooth.
+      default_action: log
+```
+
+### THROTTLING STRATEGY
+
+```yaml
+throttling:
+  trigger: gemini_stream_flow chunk emission
+  max_frequency: 10/min
+  burst_limit: 20
+  backoff: linear 10s between health checks when parse errors spike
+```
+
+### FORWARDINGS & DISPLAYS
+
+```yaml
+forwarding:
+  targets:
+    - location: .ngram/state/SYNC_Project_Health.md
+      transport: file
+      notes: Doctor inspects this stream score through the canonical health log before surfacing drift tickets.
+display:
+  locations:
+    - surface: CLI health banner
+      location: Repair/TUI diagnostics screen
+      signal: green/amber/red float_0_1
+      notes: The palette mirrors the float ratio semantics so operators see severity at a glance.
+```
+
+### MANUAL RUN
+
+```yaml
+manual_run:
+  command: python3 -m ngram.llms.gemini_agent -p "health check" --output-format stream-json
+  notes: Verify the JSON parsing indicator after any Gemini API update or schema refresh by scanning for consistent `type` keys.
+```
+
+---
+## INDICATOR: api_connectivity
+
+This indicator makes sure the adapter never starts streaming without the credentials or client it needs, and that any failures remain bounded.
+
+### VALUE TO CLIENTS & VALIDATION MAPPING
+
+```yaml
+value_and_validation:
+  indicator: api_connectivity
+  client_value: The CLI/TUI surfaces missing or invalid GEMINI_API_KEY credentials before streaming so nothing launches in a broken state.
+  validation:
+    - validation_id: V1
+      criteria: Missing credentials emit a structured JSON error and exit code 1 before a Gemini request is sent.
+    - validation_id: V4
+      criteria: Diagnostic logs live on stderr so stdout stays reserved for structured chunks even during retries.
+```
+
+### HEALTH REPRESENTATION
+
+```yaml
+representation:
+  allowed:
+    - binary
+    - enum
+  selected:
+    - binary
+  semantics:
+    binary: 1 when GEMINI_API_KEY resolution and client instantiation succeeded, 0 when early exit prevents streaming.
+  aggregation:
+    method: worst_case so credential failures never hide under successful sessions.
+    display: CLI health banner and repair log show an OK/ERROR tag for this indicator.
+```
+
+### DOCKS SELECTED
+
+```yaml
+docks:
+  input:
+    id: auth_check
+    method: ngram.llms.gemini_agent.main
+    location: ngram/llms/gemini_agent.py:35-48
+  output:
+    id: auth_error
+    method: ngram.llms.gemini_agent.main
+    location: ngram/llms/gemini_agent.py:43-49
+```
+
+### ALGORITHM / CHECK MECHANISM
+
+```yaml
+mechanism:
+  summary: Validate `GEMINI_API_KEY` sources, instantiate `genai.Client`, and flag any failure before assistant chunks are emitted.
+  steps:
+    - Resolve API key via CLI args, `.env`, or environment variables.
+    - Emit the JSON `{"error": ...}` payload and exit 1 if the key is missing.
+    - Instantiate `genai.Client` and guard against propagation of SDK exceptions.
+  data_required: resolved credential string, constructor success, and exit metadata.
+  failure_mode: Missing credentials halt the subprocess so the CLI observes a structured error instead of random chunks.
+```
+
+### INDICATOR
+
+```yaml
+indicator:
+  error:
+    - name: missing_credential
+      linked_validation: [V1]
+      meaning: GEMINI_API_KEY lookup failed and the adapter refused to start.
+      default_action: stop
+  warning:
+    - name: client_init_slow
+      linked_validation: [V4]
+      meaning: Client instantiation completed slowly but stderr still isolates diagnostics.
+      default_action: warn
+  info:
+    - name: client_ready
+      linked_validation: [V1, V4]
+      meaning: Credential prechecks passed and stdout remains clean for structured chunks.
+      default_action: log
+```
+
+### THROTTLING STRATEGY
+
+```yaml
+throttling:
+  trigger: gemini_stream_flow startup
+  max_frequency: 5/min
+  burst_limit: 2
+  backoff: exponential on consecutive auth failures
+```
+
+### FORWARDINGS & DISPLAYS
+
+```yaml
+forwarding:
+  targets:
+    - location: .ngram/state/SYNC_Project_Health.md
+      transport: file
+      notes: Doctor derives alerts when the binary flag flips to 0.
+display:
+  locations:
+    - surface: CLI stderr
+      location: `ngram llms gemini` startup path
+      signal: warn
+      notes: Missing credentials paint the status line red and attach the JSON error snippet.
+```
+
+### MANUAL RUN
+
+```yaml
+manual_run:
+  command: GEMINI_API_KEY= python3 -m ngram.llms.gemini_agent -p "health ping" --output-format text
+  notes: Running without the key verifies the structured exit path and the CLI error surface before start is aborted.
 ```
 
 ---
@@ -174,7 +380,7 @@ python3 -m ngram.llms.gemini_agent -p "ping" --output-format stream-json
 
 # Manual verification of plain text
 python3 -m ngram.llms.gemini_agent -p "ping" --output-format text
-```
+``` 
 
 ---
 

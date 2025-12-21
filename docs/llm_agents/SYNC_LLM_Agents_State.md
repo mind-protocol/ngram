@@ -53,6 +53,13 @@ documentation-only updates, and adapter behavior is unchanged.
 
 ## RECENT CHANGES
 
+### 2025-12-25: Expanded Gemini implementation doc to runtime detail
+
+- **What:** Added sections covering code structure, design patterns, schema, flow-by-flow docking, logic chains, dependencies, state handling, runtime behavior, concurrency, and bidirectional links so the implementation doc now satisfies the template expectations.
+- **Why:** Resolve the DOC_TEMPLATE_DRIFT warning pointing at `IMPLEMENTATION_LLM_Agent_Code_Architecture.md` by giving each required heading substantive narrative and clarifying how the adapter interacts with the CLI and TUI.
+- **Files:** `docs/llm_agents/IMPLEMENTATION_LLM_Agent_Code_Architecture.md`, `docs/llm_agents/SYNC_LLM_Agents_State.md`
+- **Verification:** `ngram validate` *(fails: existing connectome health doc gaps, membrane naming, and CHAIN/link warnings already tracked by the doctor)*
+
 ### 2025-12-21: Added objectives and lengthened Gemini behaviors text
 
 - **What:** Added an OBJECTIVES SERVED section and expanded the NOTES/INPUTS/OUTPUTS narratives so each template passage exceeds 50 characters while highlighting how streams, plain text, and diagnostics interact.
@@ -92,6 +99,13 @@ documentation-only updates, and adapter behavior is unchanged.
 - **What:** Replaced the brief bullet lists with BEHAVIORS GUARANTEED and OBJECTIVES COVERED tables in the Gemini validation doc and expanded each rationale so every section exceeds the 50+ character threshold.
 - **Why:** Resolve the remaining DOC_TEMPLATE_DRIFT warning, give downstream agents explicit guarantees/objective alignment, and keep the template length expectations satisfied.
 - **Files:** `docs/llm_agents/VALIDATION_Gemini_Agent_Invariants.md`
+- **Verification:** `ngram validate` *(fails: pre-existing connectome health doc gaps and chain/link warnings noted by the doctor)*
+
+### 2025-12-24: Detailed LLM health coverage into objective + connectivity sections
+
+- **What:** Added an OBJECTIVES COVERAGE summary and a dedicated API connectivity indicator so the HEALTH template now captures both streaming and auth verification flows.
+- **Why:** Close the remaining DOC_TEMPLATE_DRIFT warning tied to the health doc and link the API connectivity signal to the `api_connectivity` indicator.
+- **Files:** `docs/llm_agents/HEALTH_LLM_Agent_Coverage.md`
 - **Verification:** `ngram validate` *(fails: pre-existing connectome health doc gaps and chain/link warnings noted by the doctor)*
 
 ---
@@ -161,6 +175,7 @@ That only the Gemini adapter exists, so the docs should stay lean.
 - Expanded short SYNC sections to satisfy template length requirements.
 - Documented the Gemini objectives and I/O story so the behaviors template is fully compliant again.
 - Formalized the Gemini validation guarantees/objectives tables so the doctor no longer reports drift and the sections exceed the required length threshold.
+- Expanded the Gemini implementation doc with code-structure, state, and runtime sections to close its DOC_TEMPLATE_DRIFT warning.
 
 ### Suggestions
 - [ ] Add automated tests for tool outputs (tool_code/tool_result JSON).

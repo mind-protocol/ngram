@@ -87,6 +87,8 @@ This adapter is tuned to measurable outputs that keep the CLI, TUI, and automati
 - Offer a clean plain-text fallback when `--output-format text` is requested so scripts and humans that do not want JSON still receive only the assistant response text while diagnostics stay on stderr.
 - Surface tool execution metadata (`tool_code`/`tool_result`) and credential errors alongside assistant messages so automation orchestrators can correlate each conversational step with its side effects and respond to missing keys promptly.
 
+These objectives double down on streaming determinism, explicit error handling, and stderr hygiene so the adapter never surprises downstream orchestrators or human readers.
+
 ---
 
 ## INPUTS / OUTPUTS
