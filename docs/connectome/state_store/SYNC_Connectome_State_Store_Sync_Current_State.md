@@ -43,6 +43,13 @@ Confirming that the newly written handoff, pointer, and consciousness prose cont
 
 ## RECENT CHANGES
 
+### 2026-03-17: Reaffirm health doc canonical signals
+
+- **What:** Added a HOW TO USE bullet that orders the indicator story in AGENT OBSERVATIONS and an explanatory line below DOCK TYPES so the dock taxonomy stays canonical for the state_store health harness.
+- **Why:** DOC_TEMPLATE_DRIFT #11 also requires clarity about which docks feed each indicator, so the new prose keeps flows, indicators, and dock types explicitly connected.
+- **Files:** `docs/connectome/state_store/HEALTH_Connectome_State_Store_Runtime_Verification_Of_Ledger_And_Timer_Correctness.md`, `docs/connectome/state_store/SYNC_Connectome_State_Store_Sync_Current_State.md`
+- **Verification:** `ngram validate` *(still fails for the known `docs/connectome/health` PATTERNS/SYNC gaps, the `docs/engine/membrane` PATTERN naming mismatch, and the CHAIN link warnings already tracked by the doctor).*
+
 ### 2026-03-15: Expand behavior narratives for template compliance
 
 - **What:** Extended the BEHAVIORS doc with clarifying paragraphs for edge cases, anti-behaviors, and inputs/outputs while reaffirming the OBJECTIVES section so each template block exceeds the 50-character DOC_TEMPLATE_DRIFT requirement.
@@ -174,6 +181,7 @@ pnpm connectome:health state_store
 
 * The implementation doc now lists the missing schema, flow, logic, dependency, runtime, and concurrency guidance so the chain is doc-template-compliant.
 * Completed the PATTERNS behaviors template so the guardrail summary now lives next to the problem/pattern narrative.
+* Logged that the health doc now orders indicator decisions in AGENT OBSERVATIONS so downstream agents know which dock types feed each signal.
 * Confirmed the schema, flow-by-flow docking, logic chains, module dependencies, runtime behavior, and concurrency sections remain the canonical coverage referenced by this sync so future agents can trace the entire chain before updating the store.
 * Confirmed the schema, flow-by-flow docking, logic chains, module dependencies, runtime behavior, and concurrency sections remain the canonical coverage referenced by this sync so future agents can trace the entire chain before updating the store.
 * Confirmed the schema, flow-by-flow docking, logic chains, module dependencies, runtime behavior, and concurrency sections remain the canonical coverage referenced by this sync so future agents can trace the entire chain before updating the store.

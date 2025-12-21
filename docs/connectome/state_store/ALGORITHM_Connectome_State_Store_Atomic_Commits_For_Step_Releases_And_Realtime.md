@@ -183,6 +183,10 @@ Mark the chosen policy in SYNC once decided.
   extra repaint synchronization.
 - Let the retention policy remain configurable (max entries vs time window) in
   SYNC notes so runtime_engine can decide without touching the algorithm.
+- Signal the manual `pnpm connectome:health state_store` harness and telemetry
+  exports that this document series now describes the exact commit path they must
+  validate so future agents can trace the green-check verification back to this
+  section.
 
 ## DATA FLOW
 
