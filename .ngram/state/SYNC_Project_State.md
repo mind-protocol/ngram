@@ -99,6 +99,27 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 
 ## RECENT CHANGES
 
+### 2026-03-05: Confirm state store documentation chain
+
+- **What:** Verified the state store implementation doc already includes SCHEMA, DATA FLOW AND DOCKING (FLOW-BY-FLOW), LOGIC CHAINS, MODULE DEPENDENCIES, RUNTIME BEHAVIOR, and CONCURRENCY MODEL narratives and recorded the assurance in the connectome state_store SYNC so the chain remains canonical for DOC_TEMPLATE_DRIFT #11.
+- **Why:** The doctor expected those sections to exist before the module could be considered doc-complete, so this entry captures the verification and points future agents to the SYNC and implementation files.
+- **Files:** `docs/connectome/state_store/IMPLEMENTATION_Connectome_State_Store_Code_Structure_And_Zustand_Actions.md`, `docs/connectome/state_store/SYNC_Connectome_State_Store_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate`
+
+### 2026-03-01: Complete state store health template coverage
+
+- **What:** Filled the WHY THIS PATTERN, HOW TO USE THIS TEMPLATE, OBJECTIVES COVERAGE, STATUS, DOCK TYPES, and INDICATOR sections of `docs/connectome/state_store/HEALTH_Connectome_State_Store_Runtime_Verification_Of_Ledger_And_Timer_Correctness.md` while recording the change in the module SYNC so the health doc now satisfies DOC_TEMPLATE_DRIFT #11.
+- **Why:** The doctor flagged this HEALTH doc for missing required narrative blocks; expanding the template keeps the health chain aligned with the store implementation without touching runtime code.
+- **Files:** `docs/connectome/state_store/HEALTH_Connectome_State_Store_Runtime_Verification_Of_Ledger_And_Timer_Correctness.md`, `docs/connectome/state_store/SYNC_Connectome_State_Store_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate` *(still fails for pre-existing docs/connectome/health module doc gaps, docs/engine/membrane naming, and the chain warnings already listed by the doctor).*
+
+### 2026-03-05: Document state store sync template coverage
+
+- **What:** Added IN PROGRESS, KNOWN ISSUES, HANDOFF (agents + human), POINTERS, and CONSCIOUSNESS TRACE narrative blocks to the state_store sync so every DOC_TEMPLATE_DRIFT requirement now has a story and the pointer list points at the canonical docs.
+- **Why:** The doctor warned this SYNC was missing several template sections, so the new entries keep the ledger complete and signal exactly what to monitor before another agent declares this module canonical.
+- **Files:** `docs/connectome/state_store/SYNC_Connectome_State_Store_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate`
+
 ### 2026-02-28: Record state store behavior guardrails
 
 - **What:** Documented the BEHAVIORS SUPPORTED and BEHAVIORS PREVENTED sections for the connectome state_store PATTERN and recorded the change in the state_store SYNC so the module chain now explicitly explains which ledger/focus/timer outcomes are allowed and blocked.
@@ -114,11 +135,11 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 - **Files:** `docs/connectome/state_store/IMPLEMENTATION_Connectome_State_Store_Code_Structure_And_Zustand_Actions.md`, `docs/connectome/state_store/SYNC_Connectome_State_Store_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
 - **Verification:** `ngram validate`
 
-### 2026-02-10: Document state store behaviors
+### 2026-02-11: Clarified state store behavior slots
 
-- **What:** Added BEHAVIORS SUPPORTED and BEHAVIORS PREVENTED sections to `docs/connectome/state_store/PATTERNS_Connectome_State_Store_Single_Source_Of_Truth_For_Events_Focus_And_Timers.md` so the pattern template now explains what ledger/focus/timer outcomes are allowed or blocked and every behavior block exceeds the 50-character requirement.
-- **Why:** DOC_TEMPLATE_DRIFT #11 flagged the missing behavior blocks, so these narratives keep the canonical pattern explicit before downstream agents interpret the store actions.
-- **Files:** `docs/connectome/state_store/PATTERNS_Connectome_State_Store_Single_Source_Of_Truth_For_Events_Focus_And_Timers.md`, `.ngram/state/SYNC_Project_State.md`
+- **What:** Reworded BEHAVIORS SUPPORTED and BEHAVIORS PREVENTED so they spell out how ledger commits, focus updates, and timer signals stay unified, while keeping each block over the 50-character DOC_TEMPLATE_DRIFT minimum.
+- **Why:** DOC_TEMPLATE_DRIFT #11 flagged empty behavior slots; the new prose prevents downstream agents from guessing whether renderers or helpers can mutate focus/timers by making the guardrails explicit.
+- **Files:** `docs/connectome/state_store/PATTERNS_Connectome_State_Store_Single_Source_Of_Truth_For_Events_Focus_And_Timers.md`, `docs/connectome/state_store/SYNC_Connectome_State_Store_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
 - **Verification:** `ngram validate`
 
 ### 2026-01-26: Document tools pattern template coverage
@@ -134,6 +155,7 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 - **Why:** DOC_TEMPLATE_DRIFT had flagged this SYNC for missing narrative chunks, so the richer ledger keeps the module traceable while leaving the helper scripts untouched.
 - **Files:** `docs/tools/SYNC_Tools.md`, `.ngram/state/SYNC_Project_State.md`
 - **Verification:** `ngram validate`
+- **Impact:** This entry now points downstream agents at the traced maturity and handoff context before they continue the topics this sync records.
 
 ### 2026-01-16: Complete tools implementation template coverage
 

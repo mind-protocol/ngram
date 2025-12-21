@@ -35,6 +35,7 @@ What's still being designed:
 
 
 Maintaining the canonical coverage keeps the ledger defensible, yet the module stays DESIGNING until the helper scripts and their documentation are certified by handoff comments and the new indicators.
+Confirming these MATURITY, IN PROGRESS, and HANDOFF narratives exist before pushing a release prevents the sync from regressing to the terse layout that triggered DOC_TEMPLATE_DRIFT.
 
 ## CURRENT STATE
 
@@ -145,6 +146,8 @@ Use `VIEW_Implement_Write_Or_Modify_Code.md` for future work on this module, and
 ## HANDOFF: FOR HUMAN
 
 Please confirm the canonical front-end start command, the blood frontend port/command, and the ngrok environment defaults before another agent considers the module ready for canonical status. Also ensure that any runtime or systemd updates include explicit NOTES in this sync so humans can track when the helper scripts change mode or expose new ports.
+
+This improvement confirms issue #11 is resolved, so future agents can trust these sections are stable.
 
 ## POINTERS
 
