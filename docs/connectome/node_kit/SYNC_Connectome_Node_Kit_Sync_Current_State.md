@@ -46,6 +46,13 @@ Tracking the flipped node signal source and the unbounded versus 0..1 energy sca
 
 ## RECENT CHANGES
 
+### 2026-03-23: Deepen implementation prose coverage
+
+* **What:** Added tighter prose to the node kit implementation sections (DESIGN PATTERNS, SCHEMA, LOGIC CHAINS, MODULE DEPENDENCIES, STATE MANAGEMENT, RUNTIME BEHAVIOR, CONCURRENCY MODEL, DATA FLOW AND DOCKING) so the doc now explains the render helpers, schema hooks, flow ticks, and store selectors that keep the palette/tooltip/state wiring consistent.
+* **Why:** DOC_TEMPLATE_DRIFT #11 still complains about missing sections with enough detail, so this entry records the extra sentences we added to make each section traceable back to the runtime code.
+* **Files:** `docs/connectome/node_kit/IMPLEMENTATION_Connectome_Node_Kit_Component_Map_And_Styling_Tokens.md`
+* **Verification:** `ngram validate` *(fails: pre-existing `docs/connectome/health` gaps, the `docs/engine/membrane/PATTERN_Membrane_Modulation.md` naming issue, and lingering CHAIN warnings handled elsewhere).*
+
 ### 2026-03-22: Expand implementation doc template coverage
 
 * **What:** Added the missing DEVELOPMENT sections to the node kit Implementation doc so DESIGN PATTERNS, SCHEMA, LOGIC CHAINS, MODULE DEPENDENCIES, STATE MANAGEMENT, RUNTIME BEHAVIOR, CONCURRENCY MODEL, and DATA FLOW AND DOCKING all exceed the >=50-character requirement tied to DOC_TEMPLATE_DRIFT #11.
