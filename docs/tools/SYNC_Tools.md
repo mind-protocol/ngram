@@ -1,7 +1,7 @@
 # Tools — Sync: Current State
 
 ```
-LAST_UPDATED: 2025-12-20
+LAST_UPDATED: 2026-01-05
 UPDATED_BY: codex
 STATUS: DESIGNING
 ```
@@ -31,6 +31,10 @@ config at `tools/ngrok.yml`, and a WSL autostart guide at
 `.ngram/systemd.env` placeholder to wire frontend commands into systemd.
 Added `blood-fe.service` to run the `the-blood-ledger` frontend and wired it
 into `ngram-stack.target`.
+Expanded `docs/tools/VALIDATION_Tools.md` so the validation template now
+includes behaviors guaranteed, objectives covered, properties, error
+conditions, health coverage, verification procedures, sync status, and gap
+analysis narratives that each exceed the 50-character guidance.
 
 ## Agent Observations
 

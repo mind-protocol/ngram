@@ -29,6 +29,10 @@ This file now records the December 2024 examples that were removed from the live
 - **Why:** The archive previously lacked the mandatory template sections, so filling them ensures downstream agents can read a complete state snapshot and trust the structure.
 - **Verification:** `ngram validate` confirms that the archive document now meets the template expectations along with the rest of the world-runner doc chain.
 
+## IN PROGRESS
+
+No active documentation or implementation work is happening inside this archive; the snapshot is frozen until a new historical cut needs recording.
+
 ## KNOWN ISSUES
 
 - None; this archive is intentionally static, but any future archival additions should be justified before touching the frozen content.
