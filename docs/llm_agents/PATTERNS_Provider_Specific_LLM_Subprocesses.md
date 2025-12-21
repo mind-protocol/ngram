@@ -73,6 +73,18 @@ Each provider gets its own small CLI wrapper that:
 
 The main CLI (`agent_cli.py`) builds a simple subprocess invocation and avoids SDK imports.
 
+## BEHAVIORS SUPPORTED
+
+This pattern guarantees the CLI can reliably launch each provider adapter without embedding provider SDKs or mixing credential loading into `agent_cli.py`.
+- Provides endpoint adapters with a consistent streaming JSON shape and plain-text fallback so the TUI can parse either mode without format-guessing logic.
+- Lets each adapter validate credentials, log errors, and emit structured output independently while the CLI keeps only a thin subprocess wrapper.
+
+## BEHAVIORS PREVENTED
+
+The subprocess boundary prevents the core CLI from importing heavyweight provider SDKs, keeping dependency management local to the adapter scripts.
+- Keeps debug logs, model listings, and stack traces out of stdout so downstream consumers never parse mixed formats.
+- Stops adapters from emitting mixed JSON/plain text sequences, ensuring every stream mode remains deterministic for the TUI.
+
 ---
 
 ## PRINCIPLES

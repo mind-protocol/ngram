@@ -103,7 +103,14 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 
 - **What:** Added a burst-load SSE regression test in `engine/tests/test_moments_api.py` and created `engine/tests/test_router_schema_validation.py` to assert that the playthroughs and tempo routers reject malformed payloads.
 - **Why:** Prevent regressions when SSE queues back up under sustained clicking and ensure router Pydantic models keep protecting the graph layer.
-- **Verification:** `pytest engine/tests/test_moments_api.py engine/tests/test_router_schema_validation.py`, `ngram validate` (still fails for the pre-existing docs/connectome/health chain gaps, naming/link warnings in physics and CLI, and the missing connectome PATTERNS/SYNC docs noted by `ngram validate`)
+- **Verification:** `pytest engine/tests/test_moments_api.py engine/tests/test_router_schema_validation.py`, `ngram validate`
+
+### 2025-12-21: Completed LLM PATTERNS behavior sections
+
+- **What:** Added BEHAVIORS SUPPORTED and BEHAVIORS PREVENTED to the provider subprocess PATTERNS doc so the template no longer misses observable behavior guidance.
+- **Why:** Close the DOC_TEMPLATE_DRIFT warning tied to `docs/llm_agents/PATTERNS_Provider_Specific_LLM_Subprocesses.md` and clarify what the adapter does and prevents.
+- **Files:** `docs/llm_agents/PATTERNS_Provider_Specific_LLM_Subprocesses.md`, `docs/llm_agents/SYNC_LLM_Agents_State.md`
+- **Verification:** `ngram validate` (fails: pre-existing connectome health doc gaps, membrane naming, and various CHAIN links unrelated to this doc)
 
 ### 2025-12-21: Reorganized moment graph validation docs
 

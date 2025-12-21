@@ -41,9 +41,13 @@ ngram validate
 
 ## MATURITY
 
-**Status:** ARCHIVED
+This archive is **DEPRECATED**; it simply records the repository map snapshot produced on 2025-12-20 so readers can reference that timestamp without disturbing the live map file.
 
-This archived copy is preserved for historical traceability, so the maturity note reflects that no active development is planned for this snapshot.
+**Canonical (v1):**
+- The December 20 map stats and references preserved in this document remain fixed, even as the rest of the repository evolves.
+
+**Designing (v2):**
+- None; any new work should target the current `docs/SYNC_Project_Repository_Map.md` and leave this archive untouched unless an explicit archival update is required.
 
 ---
 

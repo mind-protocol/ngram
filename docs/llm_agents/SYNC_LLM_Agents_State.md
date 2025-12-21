@@ -59,7 +59,14 @@ documentation-only updates, and adapter behavior is unchanged.
 - **Why:** Resolve DOC_TEMPLATE_DRIFT for the behaviors template and clarify output expectations.
 - **Files:** `docs/llm_agents/BEHAVIORS_Gemini_Agent_Output.md`
 
----
+### 2025-12-21: Added PATTERNS behavior sections
+
+- **What:** Filled the provider subprocess PATTERNS doc with BEHAVIORS SUPPORTED and BEHAVIORS PREVENTED narratives so the template is complete.
+- **Why:** Close the DOC_TEMPLATE_DRIFT warning for this PATTERNS file and spell out the observable effects of the subprocess boundary.
+- **Files:** `docs/llm_agents/PATTERNS_Provider_Specific_LLM_Subprocesses.md`
+- **Verification:** `ngram validate`
+
+--- 
 
 ## KNOWN ISSUES
 
@@ -119,6 +126,7 @@ That only the Gemini adapter exists, so the docs should stay lean.
 ### Remarks
 - Added SCOPE and DATA sections to the provider adapter PATTERNS doc to resolve template drift.
 - Added missing template sections (SCOPE/DATA) to the provider subprocess patterns doc.
+- Documented BEHAVIORS SUPPORTED and BEHAVIORS PREVENTED in the provider subprocess PATTERNS doc to describe allowed and blocked flows.
 - Filled missing template sections in the Gemini behaviors doc to document inputs, outputs, and edge cases.
 - Gemini tool stubs were replaced with real filesystem/web handlers and light persistence.
 - Google search base URL is now configurable via `NGRAM_GOOGLE_SEARCH_URL`.
