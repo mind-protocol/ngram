@@ -3572,6 +3572,18 @@ O(N + T) for energy + pressure caches.
 | `engine/physics/graph/graph_ops_moments.py` | `decay_moments()` | Moment decay writes |
 | `engine/moment_graph/queries.py` | `find_click_targets()` | Traversal targets |
 
+### SNAP DISPLAY SEQUENCER
+
+**Implementation:** `engine/physics/display_snap_transition_checker.py`  
+**Purpose:** Mirrors the 3× → 1× transition described in B11, applying `should_display()` filters, emitting `SnapPhaseRecord` for each visual phase, and resetting speed state once the beat completes.  
+**Verification:** `engine/tests/test_physics_display_snap.py` ensures 3× interrupts trigger the beat with a 300–500 ms pause before arrival and non-interrupts remain filtered.
+
+### REAL-TIME CLUSTER ENERGY MONITOR
+
+**Implementation:** `engine/physics/cluster_energy_monitor.py`  
+**Purpose:** Maintains histories of cluster energy readings, surfaces snapshots for clusters with ≥50 nodes, and flags spikes that exceed a configurable multiplier of the running average so dashboards can park fast attention.  
+**Verification:** `engine/tests/test_cluster_energy_monitor.py` drives the monitor with large clusters to prove summaries and spike detection remain stable even with high node counts.
+
 ### GAPS / IDEAS / QUESTIONS
 
 - [ ] Verify whether read-side energy injection is intended as physics or UX.

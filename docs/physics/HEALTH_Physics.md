@@ -113,6 +113,14 @@ checkers:
     purpose: Ensure flips occur at deterministic thresholds (I8).
     status: active
     priority: high
+  - name: snap_display_checker
+    purpose: Guard The Snap transition by confirming 3x-phase filtering and the 1x arrival.
+    status: active
+    priority: medium
+  - name: cluster_energy_monitor_checker
+    purpose: Track large cluster energy totals in real-time to catch runaway spikes.
+    status: active
+    priority: medium
 ```
 
 ---
@@ -175,6 +183,24 @@ See original `TEST_Physics.md` for detailed walk-throughs of these scenarios.
 - **Expectation:** Energy returns to player character.
 - **Verification:** Player character observation moment flips after N ticks.
 
+--- 
+
+## CHECK: Snap Display Sequence
+
+- **Purpose:** Ensure The Snap transition filters moments at 3x, enforces the frozen beat, and lands at 1x only when interrupts occur.
+- **Implementation reference:** `engine/physics/display_snap_transition_checker.py`
+- **How to run:** `pytest engine/tests/test_physics_display_snap.py`
+- **What to observe:** The test mirrors Phase 1 (blurred running), Phase 2 (300-500ms beat), and Phase 3 (arrival) durations plus speed reset.
+
+---
+
+## CHECK: Cluster Energy Monitor
+
+- **Purpose:** Verify large clusters expose real-time energy totals so surges can be surfaced before running away.
+- **Implementation reference:** `engine/physics/cluster_energy_monitor.py`
+- **How to run:** `pytest engine/tests/test_cluster_energy_monitor.py`
+- **What to observe:** The monitor records snapshots, surfaces clusters with ≥50 nodes, and flags spikes when total energy jumps beyond 1.5× the running average.
+
 ---
 
 ## HOW TO RUN
@@ -186,7 +212,18 @@ pytest engine/tests/test_moment_graph.py -v
 
 ---
 
-## KNOWN GAPS
+## NEW HEALTH CHECKS
 
-- [ ] Automated check for "The Snap" transition display rules.
-- [ ] Real-time monitoring of energy levels across large graph clusters.
+### Snap transition display rules
+
+- **Checker:** `snap_display_checker`
+- **Purpose:** Validates the three-phase Snap transition (3x blur → silence beat → 1x arrival) through `engine/physics/display_snap_transition_checker.py`.
+- **Verification:** `pytest engine/tests/test_physics_display_snap.py`
+- **Signal:** Fails when the beat duration drifts outside 300–500 ms, non-interrupts leak through 3x, or the speed never resets to 1x.
+
+### Real-time cluster energy monitoring
+
+- **Checker:** `cluster_energy_monitor_checker`
+- **Purpose:** Summarizes energy per graph cluster via `engine/physics/cluster_energy_monitor.py` and flags surges that exceed 1.5× the running average.
+- **Verification:** `pytest engine/tests/test_cluster_energy_monitor.py`
+- **Signal:** Telemetry can surface reports and spike alerts before dense clusters overwhelm the simulation.

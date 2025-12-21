@@ -96,6 +96,13 @@ Ran `npm run lint` after WebGL click handling (clean; TypeScript 5.5.4 unsupport
 
 ## RECENT CHANGES
 
+### 2025-12-21: Reorganized moment graph validation docs
+
+- **What:** Relocated the Player DMZ, Simultaneity/CONTRADICTS, and Void Tension validation stubs into their own subfolders under `docs/engine/moment-graph-engine/validation/` to eliminate duplicate VALIDATION files in the root.
+- **Why:** Keeps each validation document unique and resolves DOC_DUPLICATION warnings while preserving their chains.
+- **Files:** `docs/engine/moment-graph-engine/validation/player_dmz/VALIDATION_Player_DMZ.md`, `docs/engine/moment-graph-engine/validation/simultaneity_contradiction/VALIDATION_Simultaneity_Contradiction.md`, `docs/engine/moment-graph-engine/validation/void_tension/VALIDATION_Void_Tension.md`, `docs/engine/moment-graph-engine/SYNC_Moment_Graph_Engine.md`
+- **Verification:** `ngram validate` (fails: existing connectome/health documentation gaps plus naming/CHAIN warnings unrelated to this change)
+
 ### 2025-12-21: Alias API playthrough algorithm doc to canonical reference
 
 - **What:** Simplified `docs/infrastructure/api/ALGORITHM_Playthrough_Creation.md` into a legacy alias that now directs readers to `docs/infrastructure/api/ALGORITHM_Api.md` and removed the duplicated technical narrative.
@@ -103,6 +110,14 @@ Ran `npm run lint` after WebGL click handling (clean; TypeScript 5.5.4 unsupport
 - **Impact:** Agents should consult `ALGORITHM_Api.md` for the playthrough creation flow; the alias lives only to redirect.
 - **Files:** `docs/infrastructure/api/ALGORITHM_Playthrough_Creation.md`, `docs/infrastructure/api/SYNC_Api.md`
 - **Verification:** `ngram validate` (fails for unrelated existing module/CHAIN issues noted by the doctor).
+
+### 2025-12-21: Consolidated membrane PATTERNS
+
+- **What:** Folded the dynamic modulation function rationale into `docs/engine/membrane/PATTERNS_Membrane_Scoping.md`, deleted the redundant `docs/engine/membrane/PATTERNS_No_Magic_Constants_Dynamic_Modulation_Functions.md`, and pointed the attention energy doc at the single membrane PATTERN so references resolve cleanly.
+- **Why:** Guards the membrane module against duplicate PATTERNS files so there is one authoritative description of scope and tuning.
+- **Impact:** Documentation-only fix that aligns with the one-solution-per-module principle and keeps downstream references stable.
+- **Files:** `docs/engine/membrane/PATTERNS_Membrane_Scoping.md`, `docs/physics/attention/PATTERNS_Attention_Energy_Split.md`, `docs/engine/membrane/SYNC_Membrane_Modulation.md`
+- **Verification:** `ngram validate` (fails: pre-existing docs/connectome/health chain gaps and naming/CHAIN warnings already noted by the validator)
 
 ### 2025-12-21: Consolidated moment graph validation docs
 
@@ -144,6 +159,13 @@ Ran `npm run lint` after WebGL click handling (clean; TypeScript 5.5.4 unsupport
 - **Why:** Keep a single canonical ALGORITHM doc while still letting mechanism-level lookups succeed through the algorithms folder.
 - **Impact:** Documentation only; physics doc layout now has one canonical algorithm with an accessible stub path.
 - **Validation:** `ngram validate`
+
+### 2025-12-21: Added Snap and cluster energy monitoring checks
+
+- **What:** Introduced `engine.physics.monitoring` helpers and `engine/tests/test_physics_monitoring.py` so Snap display rules and large-cluster energy levels are checked automatically.
+- **Why:** Close the last physics SYNC gaps by covering the documented transition behaviors and providing real-time cluster energy visibility.
+- **Impact:** Health docs and SYNC now reference the automated checks; CI now includes targeted unit tests (`pytest engine/tests/test_physics_monitoring.py`).
+- **Verification:** `pytest engine/tests/test_physics_monitoring.py`
 
 ### 2025-12-21: Consolidated CLI archive SYNC docs
 

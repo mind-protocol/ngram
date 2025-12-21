@@ -32,9 +32,13 @@ IMPL:           engine/physics/tick.py
 engine/physics/__init__.py             # Exports GraphTick, TickResult
 engine/physics/tick.py                 # Physics tick loop (Energy, Flips)
 engine/physics/constants.py            # Energy/decay constants
+engine/physics/attention_split_sink_mass_distribution_mechanism.py  # Attention split mechanism
+engine/physics/primes_lag_and_half_life_decay_mechanism.py  # PRIMES lag + decay
+engine/physics/contradiction_pressure_from_negative_polarity_mechanism.py  # Contradiction pressure
 engine/physics/graph/__init__.py
 engine/physics/graph/graph_queries.py  # Read operations
 engine/physics/graph/graph_ops.py      # Write operations (Facade)
+engine/physics/graph/graph_ops_read_only_interface.py  # Connectome read-only queries
 engine/physics/graph/graph_ops_events.py
 engine/moment_graph/__init__.py        # Exports MomentGraph facade
 engine/moment_graph/queries.py         # Fast graph queries (<50ms)
@@ -50,8 +54,12 @@ engine/models/links.py                 # Link types
 |------|---------|----------------------|-------|--------|
 | `engine/physics/tick.py` | Living world simulation | `GraphTick.run()`, `_detect_flips` | ~450 | WATCH |
 | `engine/physics/graph/graph_queries.py` | Graph read operations | `GraphQueries` | ~892 | SPLIT |
-| `engine/physics/graph/graph_ops.py` | Graph write operations | `GraphOps` | ~792 | SPLIT |
+| `engine/physics/graph/graph_ops.py` | Graph write operations | `GraphOps` | ~799 | SPLIT |
+| `engine/physics/graph/graph_ops_read_only_interface.py` | Connectome read helpers | `GraphReadOps`, `get_graph_reader` | ~246 | OK |
 | `engine/moment_graph/traversal.py` | Interaction traversal | `handle_click` | ~300 | OK |
+| `engine/physics/attention_split_sink_mass_distribution_mechanism.py` | Attention split mechanics | `apply_attention_split` | ~120 | OK |
+| `engine/physics/primes_lag_and_half_life_decay_mechanism.py` | PRIMES lag + decay | `compute_prime_effect` | ~90 | OK |
+| `engine/physics/contradiction_pressure_from_negative_polarity_mechanism.py` | Contradiction pressure | `compute_contradiction_pressure` | ~90 | OK |
 
 **Size Thresholds:**
 - **OK** (<400 lines): Healthy size, easy to understand
@@ -226,6 +234,13 @@ engine/infrastructure/orchestration/orchestrator.py
 engine/physics/tick.py
     └── imports → engine/physics/graph/graph_queries.py
     └── imports → engine/physics/graph/graph_ops.py
+
+engine/physics/graph/graph_ops.py
+    └── imports → engine/physics/graph/graph_ops_read_only_interface.py
+
+engine/physics/graph/graph_ops_read_only_interface.py
+    └── imports → engine/physics/graph/graph_query_utils.py
+    └── imports → engine/infrastructure/embeddings/service.py
 ```
 
 ### External Dependencies
@@ -291,6 +306,8 @@ engine/physics/tick.py
 | File | Line | Reference |
 |------|------|-----------|
 | `engine/physics/tick.py` | 1 | `docs/physics/PATTERNS_Physics.md` |
+| `engine/physics/display_snap_transition_checker.py` | 1 | `docs/physics/algorithms/ALGORITHM_Physics_Energy_Mechanics_And_Link_Semantics.md` (The Snap display rules) |
+| `engine/physics/cluster_energy_monitor.py` | 1 | `docs/physics/algorithms/ALGORITHM_Physics_Energy_Mechanics_And_Link_Semantics.md` (Cluster energy monitoring) |
 
 ### Docs → Code
 

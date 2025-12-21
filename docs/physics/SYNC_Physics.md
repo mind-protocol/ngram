@@ -72,16 +72,18 @@ Physics documentation is consolidated in `docs/physics/`, the algorithm is canon
 - **Impact:** No code changes required; verification recorded to prevent repeat repairs.
 - **Repair run:** `18-INCOMPLETE_IMPL-physics-tick`.
 
+### 2025-12-21: Snap display rules + cluster monitor health checks
+
+- **What:** Introduced `engine/physics/display_snap_transition_checker.py` and `engine/physics/cluster_energy_monitor.py` plus targeted tests so the documented Snap phases and large-cluster energy totals are asserted automatically.
+- **Why:** Lock The Snap transition in the health suite and keep real-time watch over energy spikes inside dense clusters before they destabilize the living graph.
+- **Impact:** Health documentation now lists dedicated checkers, algorithm docs point to the new modules, and the sync reflects the removal of the open gaps.
+- **Verification:** `pytest engine/tests/test_physics_display_snap.py engine/tests/test_cluster_energy_monitor.py`.
+
 ### 2025-12-20: Ngram Framework Refactor
 
 - **What:** Refactored `IMPLEMENTATION_Physics.md` and renamed `TEST_Physics.md` to its new format (Health content).
 - **Why:** To align with the new ngram documentation standards and emphasize DATA FLOW AND DOCKING.
 - **Impact:** Physics module documentation is now compliant with the latest protocol; Health checks are anchored to concrete docking points.
-
-## GAPS
-
-- [ ] Automated check for "The Snap" transition display rules.
-- [ ] Real-time monitoring of energy levels across large graph clusters.
 
 ## KNOWN ISSUES
 
