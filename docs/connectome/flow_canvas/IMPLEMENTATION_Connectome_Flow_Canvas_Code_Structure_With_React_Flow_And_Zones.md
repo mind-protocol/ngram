@@ -19,7 +19,9 @@ THIS:            IMPLEMENTATION_Connectome_Flow_Canvas_Code_Structure_With_React
 HEALTH:          ./HEALTH_Connectome_Flow_Canvas_Runtime_Verification_Of_Render_Stability_And_Perf_Budgets.md
 SYNC:            ./SYNC_Connectome_Flow_Canvas_Sync_Current_State.md
 
-IMPL:            app/connectome/components/pannable_zoomable_zoned_flow_canvas_renderer (planned) (PROPOSED)
+IMPL:            app/connectome/components/pannable_zoomable_zoned_flow_canvas_renderer.tsx
+IMPL:            app/connectome/components/deterministic_zone_and_node_layout_computation_helpers.ts
+IMPL:            app/connectome/components/edge_label_declutter_and_visibility_policy_helpers.ts
 ```
 
 ---
@@ -27,29 +29,27 @@ IMPL:            app/connectome/components/pannable_zoomable_zoned_flow_canvas_r
 ## CODE STRUCTURE
 
 ```
-app/
-└── connectome/
-├── components/
-│   ├── pannable_zoomable_zoned_flow_canvas_renderer (planned)
-│   ├── deterministic_zone_and_node_layout_computation_helpers (planned)
-│   └── edge_label_declutter_and_visibility_policy_helpers (planned)
+app/connectome/components/pannable_zoomable_zoned_flow_canvas_renderer.tsx
+app/connectome/components/deterministic_zone_and_node_layout_computation_helpers.ts
+app/connectome/components/edge_label_declutter_and_visibility_policy_helpers.ts
 ```
 
 ### File Responsibilities
 
 | File                                                        | Responsibility                              | Key Components/Exports                   |
 | ----------------------------------------------------------- | ------------------------------------------- | ---------------------------------------- |
-| `pannable_zoomable_zoned_flow_canvas_renderer (planned)`          | renders zones + nodes + edges with pan/zoom | `FlowCanvas`                             |
-| `deterministic_zone_and_node_layout_computation_helpers (planned)` | compute positions from node list            | `computeZones`, `computeNodePositions`   |
-| `edge_label_declutter_and_visibility_policy_helpers (planned)`     | label placement offsets and zoom policy     | `computeLabelAnchors`, `shouldShowLabel` |
+| `app/connectome/components/pannable_zoomable_zoned_flow_canvas_renderer.tsx`         | renders zones + nodes + edges with pan/zoom (WebGL) | `FlowCanvas`                             |
+| `app/connectome/components/deterministic_zone_and_node_layout_computation_helpers.ts` | compute force layout + zones                | `computeZones`, `computeNodePositions`   |
+| `app/connectome/components/edge_label_declutter_and_visibility_policy_helpers.ts`     | label placement offsets and zoom policy     | `computeLabelAnchors`, `shouldShowLabel` |
 
 ---
 
 ## DESIGN PATTERNS
 
 * stable keyed elements (ids never change)
-* deterministic layout (no force)
+* force-directed layout seeded by zones
 * camera controls: fit/reset/pan/zoom
+* WebGL points/lines for scalable rendering
 
 ---
 
@@ -62,22 +62,100 @@ app/
 | `computeNodePositions(nodes, zones)`        | on node list change (not on focus change) |
 | `computeLabelAnchors(edges, nodePositions)` | on edge list change                       |
 
----
+ ---
 
-## DATA FLOW AND DOCKING
+## SCHEMA
+
+| Field               | Shape                                                                                     |
+| ------------------- | ----------------------------------------------------------------------------------------- |
+| `nodes`             | `ConnectomeNodeDefinition[]` (id, label, zone_id, type, ticks, energy metadata supplied by the runtime) |
+| `edges`             | `ConnectomeEdgeDefinition[]` (id, source, target, call_type, trigger, energy, phase)      |
+| `zones`             | Zone descriptors with `zone_id`, `name`, static bounds, and context layer order           |
+| `camera`            | `{ x: number, y: number, zoom: number }` that drives the WebGL transform and label overlay |
+| `active_focus`      | `{ active_node_id?: string; active_edge_id?: string }` populated by the stepper adapter   |
+| `revealed_node_ids` | IDs that temporarily bypass LOD-based label hiding when search or telemetry forces them on |
+| `revealed_edge_ids` | Edge IDs whose labels/pulses stay active despite camera zooming; shared with `node_kit` helpers |
+
+Schema definitions live alongside `connectome_system_map_node_edge_manifest` and the `flow_canvas` helpers so every renderer shares the same canonical contract.
+
+## DATA FLOW AND DOCKING (FLOW-BY-FLOW)
 
 ### store_projection_to_canvas
 
 ```
 flow:
 name: store_projection_to_canvas
+purpose: lay down the WebGL canvas from the shared store projection.
 steps:
-- read node list + edge list + active focus from store
-- compute positions (only when topology changes)
-- render FlowCanvas with edge_kit and node_kit components
+- read nodes, edges, zones, revealed ids, active focus, and camera state through `useConnectomeStore` selectors.
+- compute zones via `computeZones` (memoized) only when viewport dimensions change.
+- compute node positions via `computeNodePositions`; reuse cached positions on focus-only changes.
+- render WebGL points/lines and overlay labels using `computeLabelAnchors` and `edge_kit`/`node_kit` helpers.
+- apply glow/pulse logic to the active focus and throttle updates via LOD helpers.
 docking_points:
-- dock_canvas_rendered_edge_ids (metric): used by HEALTH to detect missing edges
+- `dock_canvas_rendered_edge_ids` (metric) lets HEALTH confirm no edges vanish post-render.
+- `dock_camera_sync_changes` ensures navigation controls and camera state stay in lockstep.
 ```
+
+### focus_updates_to_camera
+
+```
+flow:
+name: focus_updates_to_camera
+purpose: keep the camera centered on the runtime-chosen focus without causing motion jitter.
+steps:
+- stepper runtime updates `active_focus` via the tied adapter in `state_store`.
+- FlowCanvas selectors observe the delta and queue `fitCameraToNode` or `focusBump` helpers.
+- camera controls emit `camera_on_change` events that reuse the same handlers, so UI events and runtime focus share the same chain.
+- `requestAnimationFrame` syncs the transform update before redraw, avoiding partial renders.
+docking_points:
+- `dock_focus_cycles_for_health` (checkpoint) ensures focus transitions complete within budget.
+```
+
+### search_results_cycle
+
+```
+flow:
+name: search_results_cycle
+purpose: keep search-driven reveals consistent with LOD throttling.
+steps:
+- search API writes `search_results` and `revealed_*` slices into `useConnectomeStore`.
+- FlowCanvas reads those slices, forcing matching nodes/edges to stay on despite zoom-based hiding.
+- camera throttling logic nudges `active_focus` toward single-match results when the API indicates a primary hit.
+- `state_store` atomic commits clear or refresh `revealed_*` when nodes drop out of scope so labels do not linger.
+docking_points:
+- `dock_search_reveal_latency` (health) confirms search hits arrive before the next tick.
+```
+
+## LOGIC CHAINS
+
+* `FlowCanvas` mounts → subscribe to narrow selectors (nodes/edges/zones/focus/camera) → compute layout via the helper modules → pass data to WebGL renderer + overlay.
+* Runtime stepper advances → `state_store` updates focus and graph metadata → FlowCanvas reuses cached positions, updates glow/pulses, and optionally calls `fit_to_view`.
+* Camera control clicks funnel through the same handlers that runtime focus updates use, so UI gestures follow the same logic path.
+* LOD overrides chain `revealed_*` slices into the label helpers so zoom thresholds only remove decorations after camera movement completes.
+
+## MODULE DEPENDENCIES
+
+| Module | Why it is required |
+| --- | --- |
+| `app/connectome/lib/zustand_connectome_state_store_with_atomic_commit_actions` | Canonical store for nodes/edges/focus/search slices plus atomic dispatchers. |
+| `app/connectome/components/node_kit` | Typed node renders (badges, steps, tooltips) that FlowCanvas references when drawing overlays. |
+| `app/connectome/components/edge_kit` | Edge renderers, label tokens, and pulse helpers used by the WebGL overlay on top of the canvas. |
+| `app/connectome/components/page_shell_control_surface` | Camera control buttons and stepper wiring that trigger the same handlers as runtime focus updates. |
+| `engine/runtime_engine` adapters | Emit FlowEvents that update the graph projection and focus data consumed by FlowCanvas via `state_store`. |
+| `app/connectome/lib/connectome_system_map_node_edge_manifest` | Defines `ConnectomeNodeDefinition`/`ConnectomeEdgeDefinition` schema referenced across helpers. |
+
+## STATE MANAGEMENT
+
+FlowCanvas does not own application state; it only reads from the shared Zustand store. The store tracks graph metadata, focus targets, camera transforms, search results, and `revealed_*` toggles. All mutations flow through atomic commit actions so each transition (step advances, search, camera control, telemetry hits) leaves the data in a consistent bundle before FlowCanvas renders. Selective selectors keep rerenders scoped to the actual slices that change, and the atomic nature prevents half-applied focus/camera updates midway through a frame.
+
+## RUNTIME BEHAVIOR
+
+Stepper advances write new `active_focus` records and edge pulses to the store, prompting FlowCanvas to highlight the updated node/edge, animate pulses, and optionally adjust the camera with `fitCameraToNode`. Zooming alters label density through `edge_label_declutter_*` helpers, yet `revealed_*` overrides keep critical nodes visible. Search hits reuse the same animation loops to avoid double renders, and camera controls share handler chains with runtime focus updates so the UX remains deterministic across telemetry, user input, and stepper-driven flows.
+
+## CONCURRENCY MODEL
+
+Rendering is single-threaded but orchestrated to avoid blocking. Layout computations (`computeNodePositions`, `computeZones`) are memoized and skip rerunning unless previews change, allowing React to commit before WebGL draws. The WebGL renderer consumes the latest camera state only on `requestAnimationFrame` to avoid tearing, and camera/focus updates queue through the store before React flushes to keep the DOM + canvas in sync. Health docking points observe the render completion and camera sync events, ensuring instrumentation can detect any race between state updates and visual commits.
 
 ---
 
@@ -101,5 +179,5 @@ docking_points:
 
 ## GAPS / IDEAS / QUESTIONS
 
-* QUESTION: adopt React Flow as dependency (recommended) or implement custom canvas? (v1: React Flow)
+* NOTE: custom WebGL renderer replaced React Flow for scalability
 * IDEA: minimap toggle in top-right for navigation

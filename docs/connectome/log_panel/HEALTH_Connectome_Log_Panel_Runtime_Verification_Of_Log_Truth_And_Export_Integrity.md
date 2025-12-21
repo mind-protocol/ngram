@@ -375,6 +375,8 @@ Keep the stream entries in sync with the CLI output so the same failure report c
 
 Tag both channels (CLI log + marker stream) with the indicator name and event id so automation can replay the metadata from either viewport and tie it back to the ledger entry that triggered the failure.
 
+Also include the `session_id` and `schema_version` fields in the stream metadata so consumers know which exporter version to use when replaying or parsing the log panel history.
+
 ---
 
 ## HOW TO RUN

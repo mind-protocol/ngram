@@ -1,6 +1,6 @@
 # flow_canvas — Sync: Current State
 
-LAST_UPDATED: 2026-04-11
+LAST_UPDATED: 2026-04-16
 UPDATED_BY: codex
 STATUS: DESIGNING
 ```
@@ -37,6 +37,13 @@ Implemented a React Flow-based FlowCanvas with force-directed node layout seeded
 * **Why:** DOC_TEMPLATE_DRIFT #11 flagged the canvas health doc for missing indicator stories and a too-short how-to-run block, so this ensures every watcher knows what to look for, where the results land, and how to rerun the harness.
 * **Files:** `docs/connectome/flow_canvas/HEALTH_Connectome_Flow_Canvas_Runtime_Verification_Of_Render_Stability_And_Perf_Budgets.md`, `docs/connectome/flow_canvas/SYNC_Connectome_Flow_Canvas_Sync_Current_State.md`
 * **Validation:** `ngram validate` *(fails: existing docs/connectome/health chain gaps plus docs/engine/membrane naming mismatch and longstanding CHAIN-link warnings still remain; no new regressions introduced)*.
+
+### 2026-04-16: Fill algorithm template sections for flow canvas (#11)
+
+* **What:** Added `OBJECTIVES AND BEHAVIORS`, the top-level `render_flow_canvas_frame` summary, and the missing KEY DECISIONS / DATA FLOW / HELPER FUNCTIONS / INTERACTIONS narratives so the algorithm doc now satisfies DOC_TEMPLATE_DRIFT #11’s coverage and length requirements.
+* **Why:** Ensures the algorithm narrative explicitly links objectives, decisions, data movement, helpers, and interaction guarantees before downstream agents rely on the implementation.
+* **Files:** `docs/connectome/flow_canvas/ALGORITHM_Connectome_Flow_Canvas_Layout_Zones_And_Edge_Label_Decluttering.md`, `docs/connectome/flow_canvas/SYNC_Connectome_Flow_Canvas_Sync_Current_State.md`
+* **Validation:** `ngram validate` *(fails: docs/connectome/health still lacks PATTERNS_/BEHAVIORS_/ALGORITHM_/VALIDATION_/IMPLEMENTATION_/SYNC coverage, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` needs the plural PATTERNS prefix, and existing CHAIN/link warnings in docs/physics/* remain; no new failures introduced)*.
 
 ### 2026-04-10: Fill algorithm template sections for flow canvas (#11)
 

@@ -23,6 +23,23 @@ SYNC:            ./SYNC_Connectome_Log_Panel_Sync_Current_State.md
 
 ---
 
+## OBJECTIVES SERVED
+
+- Provide a single narrative anchor that keeps the active step explanation and ledger entries derived from the same canonical event while keeping the current focus and step index synchronously aligned.
+- Preserve a copyable audit trail so derivations for duration colors, badges, and export payloads are explicitly tied to the unified panel rather than disjoint components that could drift.
+
+## INPUTS / OUTPUTS
+
+### INPUTS
+
+- `state_store.ledger` events plus their trigger, call_type, timestamp, and duration metadata feed every ledger row, duration color, and badge emitted in the panel.
+- `state_store.current_explanation`, `state_store.active_focus`, and `state_store.step_cursor` provide the explanation sentence, arrow focus summary, and step position that keep the “Now” section synchronized with the ledger.
+
+### OUTPUTS
+
+- Live ledger rows, duration text, badge styling, and “Step X of Y” messaging reflect the same information derived from the store, making the UI representation auditable for downstream tools or operators.
+- Copy/export actions produce deterministic JSONL/text payloads that include session markers, FlowEvent ids, and duration colors so the exported ledger can be replayed or inspected without ambiguity.
+
 ## BEHAVIORS
 
 ### B1: One step has one explanation sentence, always in sync

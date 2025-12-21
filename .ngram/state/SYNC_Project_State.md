@@ -1,7 +1,7 @@
 # Project — Sync: Current State
 
 ```
-LAST_UPDATED: 2026-03-31
+LAST_UPDATED: 2026-04-15
 UPDATED_BY: codex
 ```
 
@@ -106,6 +106,13 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 * **Files:** `docs/connectome/flow_canvas/HEALTH_Connectome_Flow_Canvas_Runtime_Verification_Of_Render_Stability_And_Perf_Budgets.md`, `docs/connectome/flow_canvas/SYNC_Connectome_Flow_Canvas_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
 * **Verification:** `ngram validate` *(fails: existing docs/connectome/health chain gaps plus docs/engine/membrane naming mismatch and longstanding CHAIN-link warnings; no new errors introduced)*.
 
+### 2026-04-15: Document flow canvas implementation architecture (#11)
+
+* **What:** Expanded the flow canvas implementation doc with the SCHEMA, FLOW-BY-FLOW DATA FLOW AND DOCKING, LOGIC CHAINS, MODULE DEPENDENCIES, STATE MANAGEMENT, RUNTIME BEHAVIOR, and CONCURRENCY MODEL sections so the architecture narrative now satisfies the length and coverage requirements flagged by DOC_TEMPLATE_DRIFT #11.
+* **Why:** Without those sections downstream engineers lacked key context around the data contract, store usage, and rendering orchestration when referencing the canonical implementation writeup.
+* **Files:** `docs/connectome/flow_canvas/IMPLEMENTATION_Connectome_Flow_Canvas_Code_Structure_With_React_Flow_And_Zones.md`, `docs/connectome/flow_canvas/SYNC_Connectome_Flow_Canvas_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
+* **Verification:** `ngram validate` *(fails: docs/connectome/health still lacks PATTERNS/BEHAVIORS/ALGORITHM/VALIDATION/IMPLEMENTATION/SYNC, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` still needs the plural prefix, and the longstanding CHAIN warnings for docs/physics/* remain; these issues were present before this change).*
+
 ### 2025-12-21: Document flow canvas pattern behaviors (#11)
 
 * **What:** Added an explicit introduction to the behavior block and replaced the placeholders with detailed `BEHAVIORS SUPPORTED` and `BEHAVIORS PREVENTED` prose so the pan/zoom camera expectations, zone context resilience, focus persistence, LOD decluttering, and camera-control protections are spelled out in this design doc.
@@ -182,6 +189,13 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 - **Why:** DOC_TEMPLATE_DRIFT #11 flagged those sections as missing, so this record keeps the project history aligned with the doc chain before other agents rely on the log panel behavior contract.
 - **Files:** `docs/connectome/log_panel/BEHAVIORS_Connectome_Log_Panel_Step_Clarity_And_Copyable_Audit_Trail_Effects.md`, `docs/connectome/log_panel/SYNC_Connectome_Log_Panel_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
 - **Verification:** `ngram validate` *(fails: still reports docs/connectome/health PATTERNS/SYNC gaps plus docs/physics naming and CHAIN warnings tracked by the doctor)*.
+
+### 2026-04-12: Document log panel behavior template repair (#11)
+
+* **What:** Noted that the behavior doc now includes OBJECTIVES SERVED and INPUTS / OUTPUTS while tagging this sync entry so future agents can find the exact section that satisfied DOC_TEMPLATE_DRIFT #11 instead of hunting across files.
+* **Why:** The template drift warning required explicit linkage between the behavior narrative and the state ledger, so recording the update here keeps the sync ledger in sync with the document before downstream consumers rely on the panel.
+* **Files:** `docs/connectome/log_panel/BEHAVIORS_Connectome_Log_Panel_Step_Clarity_And_Copyable_Audit_Trail_Effects.md`, `docs/connectome/log_panel/SYNC_Connectome_Log_Panel_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
+* **Verification:** `ngram validate` *(fails: docs/connectome/health PATTERNS/SYNC still missing, docs/engine/membrane naming issue persists, and the legacy CHAIN warnings remain; no new failures introduced)*.
 
 ### 2026-04-01: Reaffirm node kit behavior template fix
 
