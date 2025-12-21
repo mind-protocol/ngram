@@ -1,7 +1,7 @@
 # Project — Sync: Current State
 
 ```
-LAST_UPDATED: 2026-03-15
+LAST_UPDATED: 2026-03-16
 UPDATED_BY: codex
 ```
 
@@ -106,6 +106,13 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 - **Verification:** `ngram validate`
 - **Notes:** Confirmed the PATTERNS entry now spans the behavior guardrails, data provenance, and inspirational framing required by DOC_TEMPLATE_DRIFT #11 so downstream agents can trace how node rendering should behave.
 
+### 2026-03-16: Confirm state store implementation coverage
+
+- **What:** Verified the state store IMPLEMENTATION doc already includes SCHEMA, DATA FLOW AND DOCKING (FLOW-BY-FLOW), LOGIC CHAINS, MODULE DEPENDENCIES, RUNTIME BEHAVIOR, and CONCURRENCY MODEL sections and recorded the confirmation here so the module chain retains canonical coverage for DOC_TEMPLATE_DRIFT #11.
+- **Why:** The doctor demanded those sections before considering the state store doc-ready, so this entry gives the next agent a clear pointer to the canonical Implementation/Sync pair before touching the store again.
+- **Files:** `docs/connectome/state_store/IMPLEMENTATION_Connectome_State_Store_Code_Structure_And_Zustand_Actions.md`, `docs/connectome/state_store/SYNC_Connectome_State_Store_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate`
+
 ### 2026-03-15: Expand state store behavior narratives
 
 - **What:** Added clarifying paragraphs for edge cases, anti-behaviors, and inputs/outputs in the connectome state_store BEHAVIORS doc and recorded the addition in the state sync so each template block now exceeds the 50-character DOC_TEMPLATE_DRIFT requirement that flagged the missing OBJECTIVES section.
@@ -171,10 +178,24 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 - **Files:** `docs/connectome/state_store/VALIDATION_Connectome_State_Store_Invariants_For_Ledger_Ordering_And_Focus.md`, `docs/connectome/state_store/SYNC_Connectome_State_Store_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
 - **Verification:** `ngram validate` *(fails for the existing docs/connectome/health PATTERNS/SYNC gaps, docs/engine/membrane PATTERN naming mismatch, and the longstanding CHAIN warnings already noted by the doctor).*
 
+### 2026-03-13: Capture pointer coverage in sync ledger
+
+- **What:** Added a short memo describing the ordered pointer list and the doc-template sections in `docs/connectome/state_store/SYNC_Connectome_State_Store_Sync_Current_State.md` so the project sync now narrates where downstream agents should look for the PATTERNS, implementation, behavior, and health stories that this state_store sync references.
+- **Why:** DOC_TEMPLATE_DRIFT #11 expects the pointer and handoff sections to be explicit, so logging this insight in the project state keeps the chain visible even if the sync doc is edited by another agent before the handoff completes.
+- **Files:** `docs/connectome/state_store/SYNC_Connectome_State_Store_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate` *(fails for the same docs/connectome/health PATTERNS/SYNC gaps and docs/engine/membrane/CHAIN warnings already tracked by doctor).*
+
 ### 2026-03-13: Enrich state store algorithm narrative
 
 - **What:** Added OBJECTIVES AND BEHAVIORS, KEY DECISIONS, DATA FLOW, HELPER FUNCTIONS, and INTERACTIONS sections plus richer descriptions of the primary commit algorithm so the ALGORITHM doc now satisfies DOC_TEMPLATE_DRIFT length and coverage requirements.
 - **Why:** DOC_TEMPLATE_DRIFT #11 flagged the algorithm doc for missing these template blocks, so the added narrative keeps the behavior story aligned with the PATTERN and implementation chain before downstream agents rely on it.
+- **Files:** `docs/connectome/state_store/ALGORITHM_Connectome_State_Store_Atomic_Commits_For_Step_Releases_And_Realtime.md`, `docs/connectome/state_store/SYNC_Connectome_State_Store_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate`
+
+### 2026-03-16: Link algorithm objectives to observability hooks
+
+- **What:** Added health/telemetry linkage notes, a commit-transition log helper, and a harness mention so the algorithm doc now spells out how each atomic commit ties into the manual `pnpm connectome:health state_store` check and telemetry exports.
+- **Why:** Capturing these connections ensures the ALGORITHM doc explains the helper functions and docking events downstream agents rely on before they modify the store, which keeps DOC_TEMPLATE_DRIFT #11 resolved across the chain.
 - **Files:** `docs/connectome/state_store/ALGORITHM_Connectome_State_Store_Atomic_Commits_For_Step_Releases_And_Realtime.md`, `docs/connectome/state_store/SYNC_Connectome_State_Store_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
 - **Verification:** `ngram validate`
 

@@ -34,6 +34,24 @@ Implemented node component variants with consistent theming, energy badges, step
 
 ## RECENT CHANGES
 
+### 2026-03-08: Complete node kit pattern sections
+
+* **What:** Added the BEHAVIORS SUPPORTED, BEHAVIORS PREVENTED, DATA, and INSPIRATIONS sections to the node kit PATTERNS doc so every required template block now explains the allowed/blocked outcomes, data dependencies, and aesthetic touchpoints.
+* **Why:** DOC_TEMPLATE_DRIFT #11 flagged those sections as missing, so enriching the pattern narrative keeps the module chain canonical before future work relies on the node rendering assumptions.
+* **Files:**
+  * `docs/connectome/node_kit/PATTERNS_Connectome_Node_Kit_Typed_Language_Coded_Energy_Aware_Node_Rendering_Patterns.md`
+  * `docs/connectome/node_kit/SYNC_Connectome_Node_Kit_Sync_Current_State.md`
+* **Verification:** `ngram validate`
+
+### 2026-03-15: Expand node kit validation guarantees
+
+* **What:** Rewove the validation BEHAVIORS GUARANTEED, OBJECTIVES COVERED, and PROPERTIES sections so each entry now exceeds 50 characters, ties the visible badge/highlight/timer contracts back to specific invariants, and explicitly states the deterministic palette/energy/timer wiring.
+* **Why:** DOC_TEMPLATE_DRIFT #11 still flagged the validation template for missing or too-short narratives, so documenting the behavioral guarantees and property contract keeps downstream readers trusting the node readability invariants.
+* **Files:**
+  * `docs/connectome/node_kit/VALIDATION_Connectome_Node_Kit_Invariants_For_Node_Readability_And_State_Reflection.md`
+  * `docs/connectome/node_kit/SYNC_Connectome_Node_Kit_Sync_Current_State.md`
+* **Verification:** `ngram validate` *(fails: known `docs/connectome/health` PATTERNS/SYNC gaps, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` naming mismatch, and lingering CHAIN-link warnings already flagged by the validator).*
+
 ### 2026-03-07: Fill node kit validation template sections
 
 * **What:** Added the missing `BEHAVIORS GUARANTEED`, `OBJECTIVES COVERED`, and `PROPERTIES` narratives to the node kit validation doc so each required template block exceeds the doctor's 50-character expectation and ties back to the existing invariants. 

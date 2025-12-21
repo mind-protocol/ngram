@@ -23,7 +23,59 @@ SYNC:            ./SYNC_Connectome_Node_Kit_Sync_Current_State.md
 
 ---
 
+## BEHAVIORS GUARANTEED
+
+| Behavior ID | Behavior | Why This Validation Matters |
+|-------------|----------|-----------------------------|
+| B1 | Node titles always stay larger, sharper, and semi-highlighted compared to file paths so the textual hierarchy remains readable across languages and dense canvases. | This guarantee prevents future tweaks from shrinking the title or bolding the path, which would blur the readability safety net designers, operators, and health tests rely on for quick scans. |
+| B2 | Energy badges render consistent glow colors and intensities for each bucket regardless of render order or active step churn, matching the store’s deterministic thresholds. | Having a documented guarantee makes downstream tooling and health indicators able to trace the visible badge back to one bucket, preventing contradictory RGB states from advertising false energy levels. |
+| B3 | Each node highlights at most one step at a time, and the highlight only appears when the runtime `active_step_key` matches a real `step_key`. | Naming this behavior keeps the “one function per step” debugging intent intact even when telemetry dumps multiple updates per frame, so the UI never flashes conflicting highlights. |
+| B4 | Player wait timers and tick cron rings clamp to their defined spans while mirroring the store-provided speed label on each render. | This ensures pacing widgets behave predictably so that human readers and automation counters always read the same countdown and cron speed without chasing drifting animations. |
+
+## OBJECTIVES COVERED
+
+| Objective | Validations | Rationale |
+|-----------|-------------|-----------|
+| Keep node readability, palette guidance, and tooltip emphasis aligned with language-specific styling tokens so every node surface communicates intent without overwhelming the user. | V1, V2, B1 | Pairing deterministic theming with enforced title hierarchy ensures human readability stays stable, which is exactly why the UI can keep being trusted under pressure. |
+| Guarantee deterministic energy badges and step highlights so observability tools focus on a single active function with consistent color meaning. | V3, V4, B2, B3 | Explicitly citing these invariants tells the doctor which checks guard the highlight and badge mapping, making regression signals traceable to concrete UI contracts. |
+| Keep wait, tick, and speed label displays grounded in store-reported values so pacing and cron indicators never drift from what the runtime actually tracks. | V5, V6, B4 | Documenting this objective reminds future agents to keep the timer clamps and label mirroring intact so runtime telemetry continues to match player-facing meters. |
+
+## PROPERTIES
+
+### P1: Node palette selection depends only on declared type and language
+
+```
+FORALL node_type, language:
+    node_theme = palette.lookup(node_type, language)
+    node_title.font_size > node_path.font_size
+    node_path.font_style == normal
+```
+
+This property locks the visual hierarchy to the palette tokens emitted by the store so render order or active triggers cannot break readability by changing font sizes or emphasis.
+
+### P2: Energy badges consistently map store energies to glow buckets
+
+```
+FOR energy in node_energy:
+    bucket = bucket_lookup(energy)
+    badge_color = theme_bucket_colors[bucket]
+    glow_intensity = theme_bucket_intensities[bucket]
+```
+
+Writing this property makes the badge wiring traceable to the deterministic bucket lookup so tests and operators know the glow always matches the documented energy ranges and never drifts. 
+
+### P3: Timer indicators clamp to their documented precision and ranges
+
+```
+wait_progress.seconds = clamp(store_wait(node), 0.0, 4.0)
+tick_progress.progress = clamp(store_tick(node), 0.0, 1.0)
+speed_label = store_speed_label(node)
+```
+
+Documenting this property links the visual widgets back to the single-source-of-truth store values that the health harness checks, ensuring automation can validate the same clamps and precision observed by humans.
+
 ---
+
 ## INVARIANTS
 
 ### V1: Type and language styling is deterministic
