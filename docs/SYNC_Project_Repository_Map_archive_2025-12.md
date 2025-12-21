@@ -53,51 +53,57 @@ This archive is **DEPRECATED**; it simply records the repository map snapshot pr
 
 ## CURRENT STATE
 
-This file now documents the archived repository map generated on 2025-12-20, including the pointer list, TODO items, and the long-form tree, and it is intentionally static so readers know it is out of the active sync stream.
+The content below still reflects the 2025-12-20 generation run; no subsequent overview refreshes have been applied, so its file counts, directories, and section refs are historical. This document now serves purely as a timestamped archive of that run.
 
 ---
 
 ## IN PROGRESS
 
-There is no ongoing work tied to this archive—the sections stay as a read-only record until the main sync file or the generator explicitly requests a new archive entry.
+No work is currently in progress inside this archive; it is intentionally read-only to keep a reproducible trace and only sees edits when an explicit archival event is recorded. Updates belong in the live map until a deliberate archival refresh is scheduled.
 
 ---
 
 ## RECENT CHANGES
 
-Archived the entire repository map run from 2025-12-20 to capture the snapshots and drift notes, and added the missing SYNC sections so the archive documents why this snapshot exists.
+Captured minimal SYNC context for the archived map so the document meets template expectations while leaving the generated body untouched for posterity.
 
 ---
 
 ## KNOWN ISSUES
 
-Because this snapshot is frozen at a point in time, it can drift from the current repository layout; rely on the live `docs/SYNC_Project_Repository_Map.md` when structural accuracy matters.
+This snapshot will drift from the live repository as soon as new files land; please regenerate the current map via `ngram overview` before relying on its tree metadata for navigation. The tracked TODOs above flag when a refresh might be due.
 
 ---
 
 ## HANDOFF: FOR AGENTS
 
-**Your likely VIEW:** `VIEW_Implement_Write_Or_Modify_Code.md`
+**Your likely VIEW:** `VIEW_Implement_Write_Or_Modify_Code.md`.
 
-**What to do next:** If you need another archive of the map, rerun `ngram overview` and capture both the new tree and sync preface before archiving again.
+**Context:** This file is a historical snapshot; treat `docs/SYNC_Project_Repository_Map.md` as the active SYNC record and only revisit this archive when tracing older releases.
 
-**Watch out for:** The generator output will overwrite the tree body, so avoid editing the map section directly and only adjust the preface or rerun the generator to refresh the archive.
+**Next steps:** Rerun `ngram overview` if you need a fresh tree, then update the live sync preface before generating a new archive entry.
+
+**Watch out for:** The generator output will overwrite the tree body, so do not edit the map section directly unless you have rerun the overview with the desired state.
 
 ---
 
 ## HANDOFF: FOR HUMAN
 
-**Executive summary:** This archive preserves the December 20, 2025 repository map snapshot and now includes a full set of SYNC sections documenting its status, purpose, and limitations.
+**Executive summary:** This archive preserves the December 20, 2025 repository map snapshot and now includes a complete SYNC preface describing why it exists and how to interpret it while the generated body remains untouched.
 
-**Decisions made:** Added the canonical SYNC sections instead of editing the generated tree body, keeping the archive readable and traceable.
+**Decisions made:** Added the canonical SYNC sections instead of editing generated output so doctor checks pass while historical accuracy stays intact.
 
-**Needs your input:** Confirm whether future archive runs should follow the same preface/sections pattern or if the generator should automate this step.
+**Needs your input:** Confirm whether future archive runs should follow the same preface pattern or if the generator should emit these sections automatically.
+
+**Concern:** If the overview generator changes format, this archive may need manual cleanup before being reused as a trusted reference.
 
 ---
 
 ## CONSCIOUSNESS TRACE
 
-Treating the archive as read-only avoids modifying the generated map output while still satisfying drift checks, so the newly added sections simply explain the scope, maturity, known gaps, and handoff context for anyone reviewing this snapshot.
+Maintaining this archive required balancing minimal manual narration with the need to satisfy template drift checks; the new sections explain the scope, maturity, known gaps, and handoffs without touching the generated body.
+
+I am confident this preserves the historical snapshot while giving future agents context, though the uncertainty remains whether the generator should automate SYNC prefaces to avoid future drift.
 
 ---
 

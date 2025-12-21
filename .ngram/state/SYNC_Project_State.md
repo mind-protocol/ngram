@@ -99,6 +99,13 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 
 ## RECENT CHANGES
 
+### 2025-12-21: Expand archive sync sections for template compliance
+
+- **What:** Expanded every SYNC section in `docs/SYNC_Project_Repository_Map_archive_2025-12.md` so the archive now explains its maturity, status, handoffs, and consciousness trace in more detail while keeping the generated map body unchanged.
+- **Why:** A DOC_TEMPLATE_DRIFT warning reported those sections were missing or too short, so the archive needed richer prose that clearly marks it as a historical snapshot.
+- **Files:** `docs/SYNC_Project_Repository_Map_archive_2025-12.md`
+- **Verification:** `ngram validate`
+
 ### 2025-12-21: Harden API SSE delivery and router schema testing
 
 - **What:** Added a burst-load SSE regression test in `engine/tests/test_moments_api.py` and created `engine/tests/test_router_schema_validation.py` to assert that the playthroughs and tempo routers reject malformed payloads.
@@ -111,6 +118,13 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 - **Why:** Close the DOC_TEMPLATE_DRIFT warning tied to `docs/llm_agents/PATTERNS_Provider_Specific_LLM_Subprocesses.md` and clarify what the adapter does and prevents.
 - **Files:** `docs/llm_agents/PATTERNS_Provider_Specific_LLM_Subprocesses.md`, `docs/llm_agents/SYNC_LLM_Agents_State.md`
 - **Verification:** `ngram validate` (fails: pre-existing connectome health doc gaps, membrane naming, and various CHAIN links unrelated to this doc)
+
+### 2025-12-21: Catalog archive repository map status
+
+- **What:** Populated `docs/SYNC_Project_Repository_Map_archive_2025-12.md` with the required MATURITY, CURRENT STATE, IN PROGRESS, RECENT CHANGES, KNOWN ISSUES, handoff, and CONSCIOUSNESS TRACE sections while preserving the generated map body.
+- **Why:** The doctor flagged DOC_TEMPLATE_DRIFT for the archive sync file, so the missing sections needed to be restored so that state tracking remains consistent even in archived copies.
+- **Files:** `docs/SYNC_Project_Repository_Map_archive_2025-12.md`
+- **Verification:** `ngram validate`
 
 ### 2025-12-21: Reorganized moment graph validation docs
 
