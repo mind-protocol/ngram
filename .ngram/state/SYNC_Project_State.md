@@ -95,6 +95,7 @@ Preserved player click-to-message by hit-testing the player node in the WebGL ca
 Ran `npm run lint` after WebGL click handling (clean; TypeScript 5.5.4 unsupported warning).
 
 The membrane PATTERN now also captures the dynamic modulation function guidance so a single doc remains canonical.
+Attention documentation now points at this canonical PATTERN so every consumer shares the same modulation policy.
 
 ## RECENT CHANGES
 

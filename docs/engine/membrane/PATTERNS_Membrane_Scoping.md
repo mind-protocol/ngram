@@ -116,6 +116,10 @@ Dynamic functions must clamp results to safe ranges to prevent runaway behavior 
 | `MembraneContext` | OTHER | Aggregates (density, pressure, surprise, age) used by dynamic functions |
 | `ModulationFrame` | OTHER | External modifiers applied to dynamic parameter functions |
 
+### Dynamic Function Inputs
+
+Dynamic modulation functions rely on the `MembraneContext` aggregates above plus the temporary modifiers captured by the `ModulationFrame` (bias, cascade, highlight, transfer). Keep the aggregator computation outside the hot path and declare the frame keys inside the doc so tuning remains visible rather than hidden in literals.
+
 ---
 
 ## DEPENDENCIES

@@ -14,11 +14,11 @@ VERIFIED: 2025-12-20 against local tree
 THIS:            PATTERNS_Attention_Energy_Split.md (you are here)
 BEHAVIORS:       ./BEHAVIORS_Attention_Split_And_Interrupts.md
 ALGORITHM:       ./ALGORITHM_Attention_Energy_Split.md
-VALIDATION:      ./VALIDATION_Attention_Energy_Split.md
+VALIDATION:      ./VALIDATION_Attention_Split_And_Interrupts.md
 HEALTH:          ./HEALTH_Attention_Energy_Split.md
 SYNC:            ./SYNC_Attention_Energy_Split.md
 
-IMPL:            engine/physics/tick.py
+IMPL:            engine/physics/attention_split_sink_mass_distribution_mechanism.py
 ```
 
 ### Bidirectional Contract
@@ -141,7 +141,7 @@ Why this matters: avoids hidden heuristics and preserves determinism.
 | `engine/physics/tick.py` | Applies energy propagation and decay |
 | `docs/physics/PATTERNS_Physics.md` | Energy and determinism constraints |
 | `docs/engine/moments/PATTERNS_Moments.md` | Player-visible artifact rules |
-| `docs/engine/membrane/PATTERNS_No_Magic_Constants_Dynamic_Modulation_Functions.md` | Dynamic parameter policy |
+| `docs/engine/membrane/PATTERNS_Membrane_Scoping.md` | Dynamic parameter policy, scoping context |
 
 ---
 
