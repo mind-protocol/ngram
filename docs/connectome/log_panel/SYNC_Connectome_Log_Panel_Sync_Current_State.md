@@ -42,7 +42,7 @@ Implemented LogPanel with a “Now” section, ledger list, duration color rules
 
 ### 2026-03-31: Expand log panel health template coverage
 
-* **What:** Added the missing WHY THIS PATTERN, HOW TO USE THIS TEMPLATE, OBJECTIVES COVERAGE, STATUS, DOCK TYPES, and indicator/value/representation/docks/mechanism/manual-run narratives to the health doc, plus a longer HOW TO RUN section so every block now exceeds the DOC_TEMPLATE_DRIFT expectation.
+* **What:** Added the missing WHY THIS PATTERN, HOW TO USE THIS TEMPLATE, OBJECTIVES COVERAGE, STATUS, DOCK TYPES, and indicator/value/representation/docks/mechanism/manual-run narratives to the health doc, documented the failure log plus dock metadata, and lengthened HOW TO RUN so every block now exceeds the DOC_TEMPLATE_DRIFT expectation.
 * **Why:** The doctor flagged those sections as missing or too brief, so the new prose keeps the log panel health harness explicit about the selectors, validation IDs, and manual runner before release.
 * **Files:** `docs/connectome/log_panel/HEALTH_Connectome_Log_Panel_Runtime_Verification_Of_Log_Truth_And_Export_Integrity.md`
 * **Validation:** `ngram validate` *(fails: existing docs/connectome/health PATTERNS/SYNC gaps plus docs/physics naming/CHAIN warnings already tracked by the doctor).*

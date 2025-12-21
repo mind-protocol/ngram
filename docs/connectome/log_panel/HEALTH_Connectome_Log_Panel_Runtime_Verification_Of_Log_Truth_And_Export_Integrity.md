@@ -126,14 +126,16 @@ status:
 
 The binary result flag is emitted by the CLI runner and written to the `connectome.health.log_panel` stream. `1` means every checker passed in the latest run and `0` means at least one indicator has tripped; update `updated_at` each time you rerun the suite so subscribers know which run produced the current status.
 
+Failure events also log a short explanation to `logs/connectome_health/log_panel.log` plus the CLI output so you can see which indicator and validation fired before you rerun the suite.
+
 ---
 
 ## DOCK TYPES (COMPLETE LIST)
 
-* `event` — reads from `state_store.ledger`, `state_store.current_explanation`, and `state_store.cursor` so each indicator knows where the raw data originates.
-* `process` — the manual `pnpm connectome:health log_panel` probe execution that drives the checkers and knobs for inspection.
-* `metrics` — emits the binary indicator/clamp values to the `connectome.health.log_panel` stream and the CLI metrics log for dashboards.
-* `display` — the CLI/marker dashboards and log surface that surface failures so humans can act quickly.
+* `event` — reads from `state_store.ledger`, `state_store.current_explanation`, and `state_store.cursor` so each indicator knows where the raw data originates. These selectors also surface the FlowEvent metadata that anchors every explanation sentence.
+* `process` — the manual `pnpm connectome:health log_panel` probe execution that drives the checkers and knobs for inspection. Shell wrappers can call these probes from CI so long as the same selectors are available.
+* `metrics` — emits the binary indicator/clamp values to the `connectome.health.log_panel` stream and the CLI metrics log for dashboards. Include extra metadata (event id, duration bucket, checker name) so dashboards can correlate `0` readings with the broken validation.
+* `display` — the CLI/marker dashboards and log surface that surface failures so humans can act quickly. The display dock also writes to `logs/connectome_health/log_panel.log` so reviewers can replay failure details later.
 
 These docks cover every input/output path in the health harness. Add `custom` docks only if you need to ingest a new data source outside the state store (none needed right now).
 
@@ -381,3 +383,4 @@ Run this command from the repo root after starting the Connectome preview (`pnpm
 * IDEA: export includes a deterministic header with session_id and schema version.
 
 ---
+Each export failure also includes the first mismatched event id and serialization path in the logs so you can quickly trace the missing payload before rerunning the command.

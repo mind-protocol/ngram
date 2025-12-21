@@ -106,19 +106,17 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 - **Files:** `docs/connectome/log_panel/ALGORITHM_Connectome_Log_Panel_Log_Rendering_Duration_Coloring_And_Export.md`, `docs/connectome/log_panel/SYNC_Connectome_Log_Panel_Sync_Current_State.md`
 - **Validation:** `ngram validate` *(fails: existing docs/connectome/health chain gaps plus docs/physics naming/CHAIN warnings already tracked elsewhere).*
 
-### 2026-03-31: Expand log panel health template coverage
-
-- **What:** Added WHY THIS PATTERN, HOW TO USE THIS TEMPLATE, OBJECTIVES COVERAGE, STATUS, DOCK TYPES, and indicator/value/representation/docks/mechanism/manual-run narratives to the health doc, expanded HOW TO RUN, and logged the work in the log panel SYNC entry so the chain no longer misses those sections.
+- **What:** Added WHY THIS PATTERN, HOW TO USE THIS TEMPLATE, OBJECTIVES COVERAGE, STATUS, DOCK TYPES, and indicator/value/representation/docks/mechanism/manual-run narratives to the health doc, documented the failure log and dock metadata, expanded HOW TO RUN, and logged the work in the log panel SYNC entry so the chain no longer misses those sections.
 - **Why:** DOC_TEMPLATE_DRIFT #11 flagged the missing sections and too-short HOW TO RUN snippet, so this richer narrative now highlights the selectors, validators, and manual runner that keep the panel honest.
 - **Files:** `docs/connectome/log_panel/HEALTH_Connectome_Log_Panel_Runtime_Verification_Of_Log_Truth_And_Export_Integrity.md`, `docs/connectome/log_panel/SYNC_Connectome_Log_Panel_Sync_Current_State.md`
 - **Validation:** `ngram validate` (still fails: existing docs/connectome/health chain gaps plus docs/physics naming/CHAIN warnings already tracked by the doctor)
 
 ### 2026-03-31: Complete log panel sync template coverage
 
-- **What:** Added IN PROGRESS, KNOWN ISSUES, HANDOFF, CONSCIOUSNESS TRACE, and POINTERS sections to the log panel SYNC so every template block now states the active work, outstanding risks, and the canonical docs to visit before touching the panel.
-- **Why:** DOC_TEMPLATE_DRIFT #11 still flags those SYNC sections as missing, so the richer narrative keeps this document auditable before release.
+- **What:** Added IN PROGRESS, KNOWN ISSUES, HANDOFF: FOR AGENTS, HANDOFF: FOR HUMAN, CONSCIOUSNESS TRACE, and POINTERS sections (with a pointer list pointing at the log panel PATTERNS, IMPLEMENTATION, HEALTH, and sync files) so the ledger now documents the active work, risks, handoffs, and canonical references while obeying the 50-character DOC_TEMPLATE_DRIFT expectations.
+- **Why:** DOC_TEMPLATE_DRIFT #11 flagged the missing sync blocks, so the enriched narrative keeps the state story auditable and traceable before downstream agents declare this module canonical.
 - **Files:** `docs/connectome/log_panel/SYNC_Connectome_Log_Panel_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
-- **Validation:** `ngram validate` (still fails: `docs/connectome/health` lacks PATTERNS/SYNC, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` needs the plural prefix, and longstanding CHAIN warnings remain unresolved)
+- **Validation:** `ngram validate` (still fails: existing docs/connectome/health chain gaps, docs/physics naming/CHAIN warnings, and lingering CHAIN issues already tracked elsewhere)
 
 ### 2026-03-28: Complete log panel patterns behavior sections
 
