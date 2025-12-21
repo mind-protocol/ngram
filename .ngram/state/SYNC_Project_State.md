@@ -225,6 +225,7 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 - **Verification:** `ngram validate` *(fails: still reports docs/connectome/health PATTERNS/SYNC gaps plus docs/physics naming and CHAIN warnings tracked by the doctor)*.
 
 * **Trace:** Verified the new OBJECTIVES and INPUTS / OUTPUTS prose directly references the state_store ledger fields so the behavior doc, sync record, and export routines share a single contract.
+* **Notes:** Called out the panel’s `state_store.health_badges` signal and copy/export metadata here so auditors understand how the doc's new schematic maps back to the actual `state_store` fields they can query.
 
 ### 2026-04-12: Document log panel behavior template repair (#11)
 
