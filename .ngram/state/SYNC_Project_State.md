@@ -99,6 +99,20 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 
 ## RECENT CHANGES
 
+### 2026-01-26: Document tools pattern template coverage
+
+- **What:** Filled the missing BEHAVIORS SUPPORTED, BEHAVIORS PREVENTED, PRINCIPLES, DATA, DEPENDENCIES, INSPIRATIONS, SCOPE, and GAPS / IDEAS / QUESTIONS sections of `docs/tools/PATTERNS_Tools.md`, ensuring every block now exceeds the DOC_TEMPLATE_DRIFT minimum while anchoring the helper intent, dependencies, and risks before editing the runtime scripts.
+- **Why:** DOC_TEMPLATE_DRIFT flagged those PATTERN sections as absent or too brief, so this rewrite keeps the canonical module guidance explicit without touching the helpers.
+- **Files:** `docs/tools/PATTERNS_Tools.md`, `docs/tools/SYNC_Tools.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate`
+
+### 2026-01-16: Document tools sync template coverage
+
+- **What:** Added MATURITY, IN PROGRESS, KNOWN ISSUES, HANDOFF (agents + human), CONSCIOUSNESS TRACE, and POINTERS sections to `docs/tools/SYNC_Tools.md` so it now satisfies the DOC_TEMPLATE_DRIFT template and captures the full state story for downstream agents.
+- **Why:** The tools sync was missing multiple required sections, so documenting them now records the module maturity, outstanding work, and handoff details without modifying the runtime helpers.
+- **Files:** `docs/tools/SYNC_Tools.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate`
+
 ### 2026-01-09: Capture world runner health flow note
 
 - **What:** Logged the new Health doc paragraph that spells out the 0.5/min cadence, 5/min bursts, and `background_consistency`/`adapter_resilience` indicators so the doctor knows which signals to rerun.
@@ -164,6 +178,7 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 - **Why:** DOC_TEMPLATE_DRIFT flagged the tools behaviors ledger for missing sections, so the expanded prose keeps the ledger canonical while leaving the helper scripts untouched.
 - **Files:** `docs/tools/BEHAVIORS_Tools.md`, `docs/tools/SYNC_Tools.md`, `.ngram/state/SYNC_Project_State.md`
 - **Verification:** `ngram validate` *(fails for the existing `docs/connectome/health` PATTERNS/SYNC gaps, the `docs/engine/membrane` PATTERN naming mismatch, and the longstanding CHAIN/link warnings already tracked in the state file).*
+- **Trace:** The sync now calls out how the behavior doc connects B1/B2 to `tools/run_stack.sh` restarts, log outputs, and stream inputs so future agents see exactly which helpers deliver which artifacts.
 
 ### 2025-12-31: Reconfirm world runner health template coverage
 
