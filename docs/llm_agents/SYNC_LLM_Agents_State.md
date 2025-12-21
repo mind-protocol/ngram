@@ -55,7 +55,7 @@ documentation-only updates, and adapter behavior is unchanged.
 
 ### 2025-12-26: Extended Gemini validation behavior/objective rationale
 
-- **What:** Added richer explanatory clauses to the BEHAVIORS GUARANTEED and OBJECTIVES COVERED tables in `docs/llm_agents/VALIDATION_Gemini_Agent_Invariants.md` so every row now exceeds 50 characters while calling out why each invariant matters and giving the doctor pre-digested evidence for each guarantee.
+- **What:** Added richer explanatory clauses to the BEHAVIORS GUARANTEED and OBJECTIVES COVERED tables in `docs/llm_agents/VALIDATION_Gemini_Agent_Invariants.md` so every row now exceeds 50 characters while calling out why each invariant matters, giving the doctor pre-digested evidence for each guarantee, and showing which health checks expect the invariant.
 - **Why:** Keep the validation template compliant with the length expectations and give future agents more context before they follow downstream chains.
 - **Files:** `docs/llm_agents/VALIDATION_Gemini_Agent_Invariants.md`, `docs/llm_agents/SYNC_LLM_Agents_State.md`
 - **Verification:** `ngram validate` *(fails: pre-existing connectome health doc gaps, membrane naming, and CHAIN/link warnings already tracked by the doctor)*

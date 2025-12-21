@@ -18,60 +18,150 @@ matter more than raw output volume.
 
 ## The Problem
 
-The game needs authored continuity that survives choices, callbacks, and
-long-running sessions. A pure text generator forgets intent, breaks foreshadowing,
-and erodes the sense that the world existed before the player arrived.
+Adventures span long playthroughs, callbacks, and evolving player knowledge,
+yet the current writing flow often relies on ad-hoc generation. Without an
+anchored narrator the fiction erodes: callbacks misfire, foreshadowing gets
+forgotten, and the player loses the sense that the world existed before they
+arrived. The game needs prose that survives choices, supports long sessions,
+and keeps canon consistent even when new information is injected midstream.
 
 ---
 
 ## The Pattern
 
-Use a narrator that queries canonical graph state, then authors scenes and
-responses that preserve intent across time. Pre-authored responses cover the
-main path, while limited on-demand generation fills gaps without breaking canon.
+Query canonical graph state, map it into authored scenes, and only fall back on
+on-demand generation when coverage gaps appear. Pre-authored responses cover
+major beats, while the narrator tracks open questions, compiles clickables,
+and writes follow-up text that persists back into the graph. The runtime
+orchestration (`engine/infrastructure/orchestration/narrator.py`) stitches
+prompts, executes session loops, and ensures every mutation is recorded before
+the next response is released.
+
+Key steps:
+1. Read the current canon from the graph—player state, scene tokens, and click
+   history.
+2. Choose authored prose (scene descriptions, voice lines, dialogue) for the
+   target beat; reserve on-demand generation for true gaps or free-input
+   prompts.
+3. Persist any new facts as graph mutations so future beats inherit the shared
+   intent.
+4. Emit the scene/response stream in the expected SSE/streaming format.
 
 ---
 
-## Design Principles
+## Scope
 
-1. **Authored, not generated**
-   - The narrator writes a play. Every clickable and response is intentional,
-     curated for tone, and anchored in prior world facts.
+In scope: scene narration, clickable discovery, response authoring, voice line
+delivery, and graph-backed canon updates. The pattern governs how narration
+reaches the frontend, how clicks resolve to authored responses, and how new
+facts are encoded. Out of scope: low-level physics ticks, frontend styling, and
+non-narrator agent responsibilities such as tooling or CLI routing decisions.
 
-2. **The world is real before being observed**
-   - Pre-generation is world-building, not caching. What is authored becomes
-     canon, so later callbacks feel earned rather than improvised.
+---
 
-3. **Graph is memory, narrator is voice**
-   - The graph stores truth; the narrator shapes how it is spoken, ensuring
-     presentation is distinct from underlying facts.
+## Data
 
-4. **Continuity over context**
-   - `--continue` preserves authored history so foreshadowing and callbacks
-     remain possible even across multiple sessions.
+Inputs:
+- Graph truth (nodes, edges, canon tags) from `engine/physics/graph/graph_ops.py`.
+- Session metadata (player tags, active path, click sequence) from the narrator
+  loop.
+- Prompt instructions captured in `agents/narrator/CLAUDE.md`.
+- Sparse authored voice snippets stored in the narrative content repository.
 
-5. **Click is lookup, not generation**
-   - Clicks should resolve to pre-authored responses whenever possible, with
-     generation reserved for true gaps in authored coverage.
+Outputs:
+- SSE stream fragments and text responses that include voice line cues, pacing
+  hints, and callable actions.
+- Graph mutations that persist new facts, markers, or causal links for future
+  narration.
+- Optional debugging logs that describe why a generator was invoked.
+
+---
+
+## Behaviors Supported
+
+- Maintains authored continuity so callbacks and foreshadowing work even after
+  branching choices.
+- Delivers click-targeted responses with curated prose by default, keeping
+  generation to a fallback mode when coverage is missing.
+- Persists every authored fact mutation back into the graph so the world stays
+  consistent for all downstream agents and future sessions.
+- Honors pacing rules (silence, brevity, emphasis) so scenes feel designed, not
+  accidental.
+
+---
+
+## Behaviors Prevented
+
+- Drift from established canon by avoiding ad-hoc generator improvisation unless
+  absolutely necessary.
+- Flooding players with content or repeating state explanations when the graph
+  already encodes the answer.
+- Emitting clickables that reference information the narrator has not retrieved
+  or authenticated through the graph.
+- Delegating responsibility for narrative truth to the frontend or other agents.
 
 ---
 
 ## Principles
 
-- Preserve narrative intent ahead of novelty; the narrator prioritizes story
-  coherence over surprising the player in every beat.
-- Treat canon as durable truth; authored outcomes must update the graph and
-  be referenced in later responses.
-- Maintain pacing discipline; do not flood the player with text when silence
-  or brevity better serves the moment.
+### Principle 1: Preserve narrative intent ahead of novelty
+
+The narrator values story coherence over flashy surprises; when design choices
+conflict with continuity the canon-aligned path wins.
+
+### Principle 2: Treat canon as durable truth
+
+Authored outcomes must write back to the graph and be referenced in later
+responses so every agent sees the same honest world.
+
+### Principle 3: Maintain pacing discipline
+
+The narrator resists the urge to flood the player with text when silence or
+minimal phrasing serves the moment better.
+
+### Principle 4: Keep the graph separate from the voice
+
+Graph queries capture truth; the narrator crafts how that truth is spoken without
+recomputing it for each click.
+
+### Principle 5: Let clicks resolve to authored lookup
+
+Clicks should hit pre-authored content when available, with generators handling
+only the inevitable gaps.
+
+---
+
+## Dependencies
+
+| Module | Why We Depend On It |
+|--------|---------------------|
+| `engine/infrastructure/orchestration/narrator.py` | Orchestrates session loops and prompt assembly. |
+| `engine/physics/graph/graph_ops.py` | Reads canonical nodes/edges and applies mutations. |
+| `engine/physics/graph/graph_queries.py` | Supplies domain-specific queries needed to frame scenes. |
+| `agents/narrator/CLAUDE.md` | Captures voice instructions, style, and allowed improvisation. |
+| `engine/infrastructure/scene_memory/` | Stores session metadata that informs pacing and scope. |
+
+---
+
+## Inspirations
+
+- Serialized narrative games and visual novels that reward memory, giving
+  callbacks and foreshadowing the space to land.
+- Tabletop GM practices that keep canon consistent while improvising within a
+  bounded scene frame.
+- Authorial notes from classical dramaturgy (scene beats, rising action, call
+  and response) that guide pacing choices.
 
 ---
 
 ## Pre-Generation Model
 
-- **Full pre-generation** for key beats (bounded scenes).
-- **Rolling window** for depth (current + one layer ahead).
-- **Hybrid default:** important scenes pre-baked, minor scenes use rolling window.
+- **Full pre-generation** for key beats that anchor each chapter and satisfy
+  foreshadowing needs.
+- **Rolling window** for nearby scenes (current + one layer ahead) to keep the
+  backlog shallow while still prepping the next layer of prose.
+- **Hybrid default:** important scenes are pre-baked, minor scenes rely on the
+  rolling window plus selective prompts when justified.
 
 See `docs/agents/narrator/HANDOFF_Rolling_Window_Architecture.md` for the rolling window mechanics.
 
@@ -109,40 +199,16 @@ See `docs/agents/narrator/HANDOFF_Rolling_Window_Architecture.md` for the rollin
 
 ---
 
-## Dependencies
-
-- `engine/infrastructure/orchestration/narrator.py` for prompt assembly and
-  runtime orchestration of narrator sessions.
-- `engine/physics/graph/graph_ops.py` and `engine/physics/graph/graph_queries.py`
-  for reading and mutating canon during narration.
-- `agents/narrator/CLAUDE.md` for narrator prompt instructions and voice.
-
----
-
-## Inspirations
-
-- Serialized narrative games that reward memory, where callbacks feel authored
-  rather than generated on the fly.
-- Tabletop GM practices that keep canon consistent while still improvising
-  within a bounded scene frame.
-
----
-
-## Scope
-
-In scope: scene narration, clickables, response authoring, voice lines, and
-graph-backed canon updates. Out of scope: low-level physics ticks, frontend
-presentation, and non-narrator agent tooling.
-
----
-
 ## Gaps / Ideas / Questions
 
-- How aggressively should the rolling window pre-author responses to avoid
-  player-visible generation delays?
-- What is the minimal response inventory that still makes the world feel
-  authored and intentional?
-- When free input is used, what guardrails prevent canon drift?
+- [ ] Figure out how aggressively the rolling window should pre-author responses
+  to avoid player-visible generation delays without front-loading every branch.
+- [ ] Define the minimal authored response inventory that keeps the world feeling
+  intentional while leaving room for targeted generation.
+- QUESTION: What guardrails should free input respect by default before the
+  narrator defers to a generator so canon drift is still prevented?
+- IDEA: Capture canonical click-to-response linkages so designer tooling can
+  audit when a generator was used instead of authored content.
 
 ---
 
@@ -155,4 +221,3 @@ VALIDATION:      ./VALIDATION_Narrator.md
 IMPLEMENTATION:  ./IMPLEMENTATION_Narrator.md
 HEALTH:          ./HEALTH_Narrator.md
 SYNC:            ./SYNC_Narrator.md
-```
