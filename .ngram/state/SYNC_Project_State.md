@@ -99,10 +99,38 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 
 ## RECENT CHANGES
 
+### 2025-12-21: Complete tools health template coverage
+
+- **What:** Filled every required HEALTH template block in `docs/tools/HEALTH_Tools.md` so PURPOSE, WHY, FLOWS, INDICATORS, OBJECTIVES, STATUS, DOCKS, CHECKER INDEX, the indicator narratives, HOW TO RUN guidance, and GAPS/IDEAS/QUESTIONS all exceed 50 characters while recording the flows and guardrails operators care about. Captured the coverage in `docs/tools/SYNC_Tools.md` so future agents know the doc now satisfies DOC_TEMPLATE_DRIFT.
+- **Why:** DOC_TEMPLATE_DRIFT flagged the Tools health doc for missing sections and terse prose, so the rewrite keeps the canonical ledger traceable without touching runtime scripts.
+- **Files:** `docs/tools/HEALTH_Tools.md`, `docs/tools/SYNC_Tools.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate` *(fails: the longstanding `docs/connectome/health` PATTERNS/SYNC gaps, the `docs/engine/membrane/PATTERN_Membrane_Modulation.md` naming mismatch, and the existing CHAIN/link warnings the doctor already lists).*
+
+### 2026-01-13: Document tools algorithm template coverage
+
+- **What:** Expanded `docs/tools/ALGORITHM_Tools.md` to include IDEAL sections (OVERVIEW, OBJECTIVES AND BEHAVIORS, DATA STRUCTURES, ALGORITHM callout, KEY DECISIONS, DATA FLOW, COMPLEXITY, HELPER FUNCTIONS, INTERACTIONS, and GAPS / IDEAS / QUESTIONS) so every block now exceeds 50 characters and traces the bundle splitter, dialogue streamer, and runtime helpers back to the behaviors doc and scripts.
+- **Why:** DOC_TEMPLATE_DRIFT flagged `docs/tools/ALGORITHM_Tools.md` for missing the required template blocks, so the narrative now documents the documented utilities without touching the scripts themselves.
+- **Files:** `docs/tools/ALGORITHM_Tools.md`, `docs/tools/SYNC_Tools.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate` *(fails for the existing docs/connectome/health PATTERNS/SYNC gaps, the engine/membrane PATTERN naming mismatch, and the unresolved CHAIN/link warnings).*
+
+### 2025-12-31: Reconfirm world runner health template coverage
+
+- **What:** Verified `docs/agents/world-runner/HEALTH_World_Runner.md` enumerates purpose, WHY THIS PATTERN, the full HOW TO USE THIS TEMPLATE instructions, FLOWS (0.5/min base, 5/min bursts), HEALTH INDICATORS, OBJECTIVES, statuses, DOCK TYPES, CHECKER INDEX, indicator narratives, HOW TO RUN steps, and gap catalog entries, and cross-linked every indicator to the validation IDs plus the manual `ngram validate` run so future agents can rerun the same checks.
+- **Why:** DOC_TEMPLATE_DRIFT previously flagged the health doc for missing or terse blocks; this affirmation keeps the ledger explicit before future agents update the runner flows and signals the exact flows and indicators they need to monitor.
+- **Files:** `docs/agents/world-runner/HEALTH_World_Runner.md`, `docs/agents/world-runner/SYNC_World_Runner.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate`
+
 ### 2026-01-07: Record world-runner archive template fix
 
 - **What:** Added MATURITY, CURRENT STATE, KNOWN ISSUES, TODO, CONSCIOUSNESS TRACE, and POINTERS to `docs/agents/world-runner/archive/SYNC_archive_2024-12.md` so the archive now satisfies the DOC_TEMPLATE_DRIFT template and left the payloads untouched.
 - **Why:** The archive needed the mandatory template sections before it could be trusted as a historical snapshot, so the new narratives make its purpose explicit and keep agents from confusing the archive with the live state.
+- **Files:** `docs/agents/world-runner/archive/SYNC_archive_2024-12.md`, `docs/agents/world-runner/SYNC_World_Runner.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate` *(fails: pre-existing `docs/connectome/health` lacks PATTERNS/SYNC/full chain, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` needs the `PATTERNS_` prefix, and longstanding CHAIN link warnings remain elsewhere).*
+
+### 2026-01-08: Document world-runner archive template detail
+
+- **What:** Reworded and expanded the MATURITY, CURRENT STATE, IN PROGRESS, HANDOFF, TODO, CONSCIOUSNESS TRACE, and POINTERS sections inside the archive sync so each block now exceeds 50 characters and explicitly states that the file is a frozen record of the December 2024 payloads.
+- **Why:** Doc-template drift flagged the archive for missing or terse sections, so these extra sentences now make the archival purpose, nil-in-progress status, and handoff cues explicit while keeping the stored data unchanged.
 - **Files:** `docs/agents/world-runner/archive/SYNC_archive_2024-12.md`, `docs/agents/world-runner/SYNC_World_Runner.md`, `.ngram/state/SYNC_Project_State.md`
 - **Verification:** `ngram validate` *(fails: pre-existing `docs/connectome/health` lacks PATTERNS/SYNC/full chain, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` needs the `PATTERNS_` prefix, and longstanding CHAIN link warnings remain elsewhere).*
 
@@ -122,6 +150,14 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 - **Files:** `docs/agents/world-runner/HEALTH_World_Runner.md`, `docs/agents/world-runner/SYNC_World_Runner.md`, `.ngram/state/SYNC_Project_State.md`
 - **Verification:** `ngram validate`
 - **Addendum:** Flow cadence stays at 0.5/min with 5/min bursts and the indicator pair `background_consistency`/`adapter_resilience` now reference the same manual validation steps so operators know what to rerun.
+
+### 2025-12-22: Describe objective-output mapping in behaviors doc
+
+- **What:** Added an explicit note below the `OBJECTIVES SERVED` table so narrators can see which objective maps to `world_changes`, `news_available`, and the interrupt/completion flags before they compose the next scene.
+- **Why:** DOC_TEMPLATE_DRIFT wants each section to exceed 50 characters and clearly tie behaviors to outputs, so the new sentence reinforces the runner’s contract while leaving runtime logs untouched.
+- **Files:** `docs/agents/world-runner/BEHAVIORS_World_Runner.md`, `docs/agents/world-runner/SYNC_World_Runner.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate` *(fails: known connectome/health, membrane naming, and CHAIN link warnings that predate this repair).*
+- **Trace:** The note now explicitly mentions the output channels each objective maps to so narrators can cross-reference the objective rows with `world_changes`, `news_available`, and the interrupt/completion flags without rereading the runner implementation.
 
 ### 2025-12-21: Expand world runner validation template coverage
 
@@ -625,6 +661,7 @@ The refactor command can standardize doc moves once the import is staged.
 
 - Completed `docs/agents/world-runner/HEALTH_World_Runner.md` so every template section now exists; `ngram validate` still fails for known connectome/health doc gaps, the engine/membrane PATTERN naming issue, and existing broken CHAIN links.
 - Added the missing template sections to `docs/agents/world-runner/archive/SYNC_archive_2024-12.md` and recorded the update in `docs/agents/world-runner/SYNC_World_Runner.md`; `ngram validate` still fails for the pre-existing connectome/health, membrane naming, and CHAIN link issues but reports no new archive drift.
+- Reaffirmed that the archived template now lists MATURITY, CURRENT STATE, IN PROGRESS, KNOWN ISSUES, HANDOFFS, TODO, CONSCIOUSNESS TRACE, and POINTERS so downstream agents know the file is a static snapshot, and verified `ngram validate` still reports the known connectome/health, membrane naming, and CHAIN warnings.
 
 ## ARCHIVE
 

@@ -26,6 +26,14 @@ The World Runner is complete. It operates as an adapter between the Python game 
 - **Files:** `docs/agents/world-runner/archive/SYNC_archive_2024-12.md`, `docs/agents/world-runner/SYNC_World_Runner.md`
 - **Verification:** `ngram validate`
 
+### 2025-12-22: Describe objective-output mapping in behaviors doc
+
+- **What:** Added an explicit note below the `OBJECTIVES SERVED` table in `docs/agents/world-runner/BEHAVIORS_World_Runner.md` so narrators can see which objective maps to `world_changes`, `news_available`, and the interrupt/completion flags before they compose the next scene.
+- **Why:** DOC_TEMPLATE_DRIFT wants each section to exceed 50 characters and clearly tie behaviors to outputs, so the new sentence reinforces the runner’s contract while leaving runtime logs untouched.
+- **Files:** `docs/agents/world-runner/BEHAVIORS_World_Runner.md`, `docs/agents/world-runner/SYNC_World_Runner.md`
+- **Verification:** `ngram validate` *(fails: known connectome/health, membrane naming, and CHAIN link warnings that predate this repair).*
+- **Trace:** The new note also codifies which injection fields each objective influences so future narrators can match the explicit behavior IDs back to `world_changes`, `news_available`, and the interrupt/completion flags without re-reading the code.
+
 ### 2025-12-21: Document world-runner behavior objectives
 
 - **What:** Added an `OBJECTIVES SERVED` table that walks through B1 (deterministic tick/injection grounding), B2 (player interrupt), B3 (completion summaries), and B4 (queued beats) while expanding the `Injection Interface` paragraph so every template block exceeds the 50+ character guidance and the objective story is explicit, and spelled out how each behavior maps to `world_changes`, `news_available`, and the `remaining`/`interrupted` output fields so narrators can inspect the contract before resuming a scene.

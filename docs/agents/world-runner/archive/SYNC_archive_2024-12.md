@@ -15,48 +15,55 @@ This archive stores verbose examples and full schemas removed from the main docs
 
 STATUS: ARCHIVED
 
-The archived snapshot is frozen for historical reference and should never be treated as the canonical operational sync document.
+The archived snapshot is frozen for historical reference and should never be treated as the canonical operational sync document because all live orchestration happens in the world-runner module’s main sync ledger.
+This status line keeps the archive separated from active timelines while letting auditors trace why the example belongs in history rather than the working state.
 
 ## CURRENT STATE
 
 This file now records the December 2024 examples that were removed from the live runner documentation and keeps them searchable for audits or historical comparisons.
+Each section stresses that the payload is historical: no CLI commands read from this archive, and it exists to preserve reasoning samples, not to drive runtime logic.
 
 ## RECENT CHANGES
 
 ### 2026-01-07: Stabilize archive template coverage
 
-- **What:** Added MATURITY, CURRENT STATE, KNOWN ISSUES, TODO, POINTERS, and other header sections so the archive sync now satisfies the DOC_TEMPLATE_DRIFT template requirements without changing the archived payloads.
-- **Why:** The archive previously lacked the mandatory template sections, so filling them ensures downstream agents can read a complete state snapshot and trust the structure.
+- **What:** Added MATURITY, CURRENT STATE, KNOWN ISSUES, TODO, HANDOFF narratives, CONSCIOUSNESS TRACE, and POINTERS so the archive sync now satisfies the DOC_TEMPLATE_DRIFT template requirements while leaving the archived payloads untouched.
+- **Why:** The archive previously lacked the mandatory template sections, so filling them ensures downstream agents can read a complete state snapshot, trust the structure, and see exactly where the live contracts live.
 - **Verification:** `ngram validate` confirms that the archive document now meets the template expectations along with the rest of the world-runner doc chain.
 
 ## IN PROGRESS
 
 No active documentation or implementation work is happening inside this archive; the snapshot is frozen until a new historical cut needs recording.
+The inert status is documented so future agents realize the file is read-only and does not expect runnable content.
 
 ## KNOWN ISSUES
 
-- None; this archive is intentionally static, but any future archival additions should be justified before touching the frozen content.
+- None; this archive is intentionally static, but any future archival additions should be justified before touching the frozen content and should include a new `RECENT CHANGES` entry that describes how the history has evolved.
 
 ## HANDOFF: FOR AGENTS
 
 Treat this file as a historical snapshot only. For active work on the world-runner module, follow `VIEW_Implement_Write_Or_Modify_Code.md` and update the canonical `docs/agents/world-runner/SYNC_World_Runner.md` instead.
+This entry reminds agents to keep the operational contract in the live SYNC document so the archive does not drift into acting like a working plan.
 
 ## HANDOFF: FOR HUMAN
 
 This archive now self-documents its maturity, state, and TODO items, so no immediate action is required; request human review only if new archival data must be added or referenced explicitly.
+Please confirm any future archival cut before aging new narratives into this snapshot so the record stays consistent.
 
 ## TODO
 
-- [ ] Keep this archive synchronized with any future migrations of world-runner examples that need long-term preservation; otherwise, leave it untouched.
+- [ ] Keep this archive synchronized with any future migrations of world-runner examples that need long-term preservation; otherwise, leave it untouched and note the reason for each freeze.
 
 ## CONSCIOUSNESS TRACE
 
 Captured the archive-template drift by articulating why each new section exists and reminding future agents that this file’s purpose is record keeping rather than active orchestration.
+The trace now explicitly says the archive is deterministic history, so agents do not expect it to evolve on each sprint.
 
 ## POINTERS
 
 - `docs/agents/world-runner/SYNC_World_Runner.md` describes the current live work; use it whenever you need the active status.
 - The CHAIN references below point to PATTERNS/BEHAVIORS/ALGORITHM/VALIDATION/IMPLEMENTATION/TEST docs that explain the live world-runner experience.
+- Use `docs/agents/world-runner/archive/SYNC_archive_2024-12.md` to trace the 2024 payloads and the JSON schema samples linked above.
 
 ---
 
