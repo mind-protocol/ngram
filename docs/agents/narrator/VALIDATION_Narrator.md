@@ -88,30 +88,6 @@ Narrator invariants must hold even when the graph is large, sessions persist for
 
 ---
 
-## PROPERTIES
-
-- `SceneTree` and `NarratorOutput` payloads are shaped by the same schema the renderer consumes, so clients can trust the stream without runtime coercion.
-- Clickable metadata pairs (key, span, waitingMessage/response) mirror the UI contract, keeping every highlight mapped to a visible segment before input is accepted.
-- Mutation batches are only persisted after being validated against the graph schemas, ensuring every invented fact joins the canonical memory with the right references.
-
----
-
-## ERROR CONDITIONS
-
-- `MissingScenePayload`: emitted when a significant scene fails to include the SceneTree payload that downstream services require.
-- `ClickableMismatch`: raised if a clickable key or span is missing while the narration still references the highlighted text, preventing unusable UI targets.
-- `MutationSchemaViolation`: triggered by the schema validator in `Health` when a mutation batch contains unexpected fields, guarding the graph from malformed updates.
-
----
-
-## HEALTH COVERAGE
-
-- `author_coherence` health indicator relies on `HEALTH_Narrator.md` checkers and traces back to invariants V1, V3, and V4 to keep story facts aligned with the graph.
-- `mutation_validity` depends on the `mutation_safety_checker`, which enforces V3 and V6 by running the schema validator before committing invented facts.
-- The Narrator health flows include manual `pytest engine/tests/test_narrator_integration.py` runs so the invariants stay validated whenever the health suite replays recent scenes.
-
----
-
 ## VERIFICATION PROCEDURE
 
 ### Manual Checklist

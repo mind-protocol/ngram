@@ -59,7 +59,7 @@ Schema: `TOOL_REFERENCE.md`.
 ## time_elapsed Rules
 
 - Only include `time_elapsed` for significant actions.
-- Conversational actions omit it entirely.
+- Conversational actions omit it entirely to keep the stream light and avoid implying every click should be tracked with a timestamp.
 
 ---
 
@@ -69,6 +69,15 @@ Schema: `TOOL_REFERENCE.md`.
 - Emits a streaming response where the first chunk arrives fast and subsequent chunks preserve voice, pacing, and scene context.
 - Returns a full SceneTree only for significant actions, while conversational actions return an empty scene structure.
 - Persists inventions as graph mutations so new facts are canon and can be queried immediately in the next turn.
+
+---
+
+## OBJECTIVES SERVED
+
+- Ensure the opening chunk lands within the 1-2 second window so streaming consumers can start rendering while the narrator continues composing the rest of the story without blocking.
+- Keep every response traceable to the canonical graph state by persisting new inventions as mutations and referencing existing nodes, giving continuity tooling a single truthful timeline.
+- Signal whether the action is conversational or significant so orchestrators know when to expect the lightweight placeholder scene versus a fully populated SceneTree with `time_elapsed`.
+- Surface mutation metadata, pacing telemetry, and world-injection flags so health monitors and analytics can verify the narrator is honoring canon and avoiding runaway invention.
 
 ---
 

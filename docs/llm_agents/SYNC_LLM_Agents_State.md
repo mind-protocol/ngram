@@ -60,7 +60,7 @@ documentation-only updates, and adapter behavior is unchanged.
 - **Files:** `docs/llm_agents/VALIDATION_Gemini_Agent_Invariants.md`, `docs/llm_agents/SYNC_LLM_Agents_State.md`
 - **Verification:** `ngram validate` *(fails: pre-existing connectome health doc gaps, membrane naming, and CHAIN/link warnings already tracked by the doctor)*
 
--### 2025-12-25: Filled Gemini algorithm template length requirements
+### 2025-12-25: Filled Gemini algorithm template length requirements
 
 - **What:** Added the missing `OBJECTIVES AND BEHAVIORS` section, renamed the algorithm narrative to call out `main()`, and clarified how the entrypoint's stages satisfy the 50+ character template requirement.
 - **Why:** Close the DOC_TEMPLATE_DRIFT warning pointing at `ALGORITHM_Gemini_Stream_Flow.md` by making objectives explicit and highlighting the primary entrypoint responsible for running the Gemini subprocess.
@@ -137,6 +137,13 @@ documentation-only updates, and adapter behavior is unchanged.
 - **Files:** `docs/llm_agents/IMPLEMENTATION_LLM_Agent_Code_Architecture.md`, `docs/llm_agents/SYNC_LLM_Agents_State.md`
 - **Verification:** `ngram validate` *(fails: existing connectome health doc gaps plus naming/CHAIN warnings noted by doctor)*
 
+### 2025-12-30: Logged concurrency question for LLM implementation gaps
+
+- **What:** Noted in the implementation GAPS section that tracking helper execution timestamps could expose long-running helpers and keep the concurrency narrative visible for downstream diagnostics.
+- **Why:** The doc drift fix reorganized the Implementation doc, so surfacing this open question in the SYNC ensures the doctor can find the concurrency concern when the issue recurs.
+- **Files:** `docs/llm_agents/IMPLEMENTATION_LLM_Agent_Code_Architecture.md`, `docs/llm_agents/SYNC_LLM_Agents_State.md`
+- **Verification:** `ngram validate` *(fails: existing docs/connectome/health gaps, the membrane naming mismatch, and CHAIN/link warnings tracked elsewhere)*
+
 ---
 
 ## KNOWN ISSUES
@@ -203,9 +210,9 @@ That only the Gemini adapter exists, so the docs should stay lean.
 - Google search base URL is now configurable via `NGRAM_GOOGLE_SEARCH_URL`.
 - Expanded short SYNC sections to satisfy template length requirements.
 - Documented the Gemini objectives and I/O story so the behaviors template is fully compliant again.
-- Formalized the Gemini validation guarantees/objectives tables so the doctor no longer reports drift and the sections exceed the required length threshold.
+- Formalized the Gemini validation guarantees/objectives tables so the doctor no longer reports drift and the sections exceed the required length threshold, giving future agents richer context to trust the invariants.
 - Expanded the Gemini implementation doc with code-structure, state, and runtime sections to close its DOC_TEMPLATE_DRIFT warning.
-- Logged a helper execution timestamp question in the implementation GAPS section so the concurrency narrative stays visible for future investigations and the doctor can trace the helper timeline question back to the health narrative.
+- Logged a helper execution timestamp question in the implementation GAPS section so the concurrency narrative stays visible for future investigations and the doctor can trace the helper timeline question back to the health narrative; this open idea now sits in the Implementation doc until the doctor closes it.
 - Logged a helper execution timestamp question in the implementation GAPS section so the concurrency narrative stays visible for future investigations and the doctor can trace the helper timeline question back to the health narrative.
 
 ### Suggestions

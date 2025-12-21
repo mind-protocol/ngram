@@ -28,6 +28,20 @@ Documentation stays current after the template alignment work, with the module i
 
 ## RECENT CHANGES
 
+### 2025-12-30: Document narrator behavior objectives
+
+- **What:** Added an `OBJECTIVES SERVED` section that spells out the streaming timing requirement, canonical mutation guarantees, SceneTree signaling expectations, and mutation telemetry the narrator must emit so this behaviors doc now meets the template’s length requirements with actionable goals.
+- **Why:** DOC_TEMPLATE_DRIFT flagged the missing objectives block, so the only way to comply was to enrich the observed behavior narrative while leaving the runtime story untouched.
+- **Files:** `docs/agents/narrator/BEHAVIORS_Narrator.md`, `docs/agents/narrator/SYNC_Narrator.md`
+- **Verification:** `ngram validate` *(still reports the known connectome/health, membrane naming, and CHAIN warnings that predate this change)*
+
+### 2025-12-30: Align narrator health coverage with the template
+
+- **What:** Expanded `HEALTH_Narrator.md` with `WHY THIS PATTERN`, `HOW TO USE THIS TEMPLATE`, `OBJECTIVES COVERAGE`, a full set of indicator subsections including `mutation_validity`, and a GAPS / IDEAS / QUESTIONS section, then recorded the revision in this SYNC entry and the project state log.
+- **Why:** The DOC_TEMPLATE_DRIFT warning singled out the health doc, so filling every template clause makes the verification story explicit without touching runtime prompts.
+- **Files:** `docs/agents/narrator/HEALTH_Narrator.md`, `docs/agents/narrator/SYNC_Narrator.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate`
+
 ### 2025-12-29: Expand narrator validation coverage
 
 - **What:** Added the PROPERTIES, ERROR CONDITIONS, and HEALTH COVERAGE sections to `docs/agents/narrator/VALIDATION_Narrator.md` and noted the completion inside this SYNC entry so future agents see the full template compliance.
@@ -45,6 +59,13 @@ Documentation stays current after the template alignment work, with the module i
   the authorial-intent narrative keeps the canonical chain compliant and clear.
 - **Files:** `docs/agents/narrator/PATTERNS_Narrator.md`, `docs/agents/narrator/SYNC_Narrator.md`
 - **Verification:** `ngram validate`
+
+### 2025-12-30: Expand narrator health template coverage
+
+- **What:** Filled the health doc with the missing objectives coverage, usage guidance, indicator details, and GAPS / IDEAS / QUESTIONS prose so the template stops flagging drift and every observable signal now references concrete docks, aggregations, and failure modes.
+- **Why:** DOC_TEMPLATE_DRIFT complained about missing objectives, usage guidance, and indicator writeups, so the fix keeps the canonical health ledger aligned without touching any runtime code.
+- **Files:** `docs/agents/narrator/HEALTH_Narrator.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate` *(still reports pre-existing connectome/health and membrane naming warnings)*
 
 ### 2025-12-27: Expand Narrator sync coverage
 

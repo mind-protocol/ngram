@@ -374,3 +374,4 @@ No explicit async or threading constructs are present, so the adapter relies on 
 
 - QUESTION: Should adapters expose health metrics for tool execution latency so the doctor can flag slow helpers?
 - QUESTION: Do we need a common JSON schema validator before emitting the stream to guard against SDK drift?
+- QUESTION: Would tracking helper execution timestamps improve the concurrency diagnostics so we can spot helpers that block the stream longer than expected?
