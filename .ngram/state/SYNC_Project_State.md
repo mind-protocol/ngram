@@ -127,6 +127,13 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 - **Files:** `docs/agents/world-runner/ALGORITHM_World_Runner.md`, `docs/agents/world-runner/SYNC_World_Runner.md`, `.ngram/state/SYNC_Project_State.md`
 - **Verification:** `ngram validate` *(fails: the pre-existing connectome/health gaps, membrane naming mismatch, and CHAIN warnings already tracked by the doctor)*.
 
+### 2025-12-21: Fill World Runner implementation template sections
+
+- **What:** Added LOGIC CHAINS, RUNTIME BEHAVIOR, CONFIGURATION, BIDIRECTIONAL LINKS, and GAPS / IDEAS / QUESTIONS sections to `docs/agents/world-runner/IMPLEMENTATION_World_Runner_Service_Architecture.md` and recorded the narrative in the world-runner SYNC so the implementation doc now satisfies the template length requirements.
+- **Why:** DOC_TEMPLATE_DRIFT reported those blocks were missing, so enriching the prose keeps the documentation chain canonical while leaving runtime behavior untouched.
+- **Files:** `docs/agents/world-runner/IMPLEMENTATION_World_Runner_Service_Architecture.md`, `docs/agents/world-runner/SYNC_World_Runner.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate` *(fails: the known docs/connectome/health module still lacks PATTERNS/SYNC/docs and multiple CHAIN links remain broken in unrelated areas)*.
+
 ### 2025-12-27: Documented narrator archive metadata
 
 - **What:** The narrator archive now includes longer MATURITY, CURRENT STATE, IN PROGRESS, KNOWN ISSUES, and POINTERS sections so the template drift warning is satisfied while still pointing future agents at the canonical SYNC before they make changes.
