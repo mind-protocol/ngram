@@ -106,6 +106,14 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 * **Files:** `docs/connectome/flow_canvas/SYNC_Connectome_Flow_Canvas_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
 * **Validation:** `ngram validate` *(fails: existing docs/connectome/health still lacks the full PATTERNS/BEHAVIORS/ALGORITHM/VALIDATION/IMPLEMENTATION/SYNC chain, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` needs the plural prefix, and longstanding CHAIN link warnings persist; no new failures introduced).*
 
+### 2026-04-20: Affirm flow canvas algorithm template sections (#11)
+
+* **What:** Verified the ALGORITHM doc now spells out OBJECTIVES AND BEHAVIORS, render summary, KEY DECISIONS, DATA FLOW, HELPER FUNCTIONS, and INTERACTIONS, and recorded that story plus the supporting SYNC entry in this state block.
+* **Why:** DOC_TEMPLATE_DRIFT #11 called out those missing sections, so this note ties the narrative, files, and validation status together for downstream agents.
+* **Files:** `docs/connectome/flow_canvas/ALGORITHM_Connectome_Flow_Canvas_Layout_Zones_And_Edge_Label_Decluttering.md`, `docs/connectome/flow_canvas/SYNC_Connectome_Flow_Canvas_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
+* **Validation:** `ngram validate` *(fails because docs/connectome/health lacks PATTERNS/BEHAVIORS/ALGORITHM/VALIDATION/IMPLEMENTATION/HEALTH coverage, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` needs the plural PATTERNS prefix, and longstanding CHAIN/link warnings remain; no new failures were introduced).*
+* **Notes:** The doc now mentions the zone layout anchors, force layout seeding, edge label declutter policy, camera transform invariants, and interaction gating so the ALGORITHM story aligns with the implementation references.
+
 ### 2026-04-17: Clarify flow canvas algorithm telemetry (#11)
 
 * **What:** Extended the algorithm doc's `OBJECTIVES AND BEHAVIORS`, `render_flow_canvas_frame` summary, KEY DECISIONS, DATA FLOW, HELPER FUNCTIONS, and INTERACTIONS narratives with telemetry, render-commit reporting, and interaction-gating details and logged the addition in the SYNC entry so the template now leaves no required block under fifty characters.
@@ -226,6 +234,7 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 
 * **Trace:** Verified the new OBJECTIVES and INPUTS / OUTPUTS prose directly references the state_store ledger fields so the behavior doc, sync record, and export routines share a single contract.
 * **Notes:** Called out the panel’s `state_store.health_badges` signal and copy/export metadata here so auditors understand how the doc's new schematic maps back to the actual `state_store` fields they can query.
+* **Log:** Connected the session cursor, FlowEvent ids, and duration color buckets recorded under `state_store.session_meta` to the new prose so that the doc now names every metadata field the ledger exports and the sync entry records the same fields in case downstream agents must confirm the runtime semantics.
 
 ### 2026-04-12: Document log panel behavior template repair (#11)
 

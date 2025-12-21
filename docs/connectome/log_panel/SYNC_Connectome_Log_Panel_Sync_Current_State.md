@@ -53,7 +53,7 @@ Implemented LogPanel with a “Now” section, ledger list, duration color rules
 * **Why:** DOC_TEMPLATE_DRIFT #11 flagged those sections as missing, so capturing the addition here keeps downstream agents aware of the canonical behavior before they rely on the panel.
 * **Files:** `docs/connectome/log_panel/BEHAVIORS_Connectome_Log_Panel_Step_Clarity_And_Copyable_Audit_Trail_Effects.md`, this SYNC file
 * **Validation:** `ngram validate` *(fails: existing docs/connectome/health PATTERNS/SYNC gaps plus docs/physics naming and CHAIN warnings already tracked elsewhere).*
-* **Trace:** Reconfirmed that this entry now points at the refreshed behavior doc so the OBJECTIVES and INPUTS/OUTPUTS narratives are discoverable from both the UI and the sync log.
+* **Trace:** Reconfirmed that this entry now points at the refreshed behavior doc so the OBJECTIVES, INPUTS, and OUTPUTS narratives are discoverable from both the UI and the sync log, and that the state_store badges/durations mentioned in the doc track the same metadata this ledger surface exposes.
 
 ### 2025-12-21: Expand behavior doc objectives and I/O coverage
 

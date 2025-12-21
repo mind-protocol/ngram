@@ -37,6 +37,7 @@ Implemented a React Flow-based FlowCanvas with force-directed node layout seeded
 * **Why:** DOC_TEMPLATE_DRIFT #11 still demands each health doc explain indicator inputs, outputs, and execution guidance; the fresh wording and metadata references keep the flow canvas health chain canonical for downstream agents and dashboards.
 * **Files:** `docs/connectome/flow_canvas/HEALTH_Connectome_Flow_Canvas_Runtime_Verification_Of_Render_Stability_And_Perf_Budgets.md`, `docs/connectome/flow_canvas/SYNC_Connectome_Flow_Canvas_Sync_Current_State.md`
 * **Validation:** `ngram validate` *(fails: existing docs/connectome/health chain gaps plus docs/engine/membrane naming mismatch and lingering CHAIN-link warnings; no new regressions introduced)*.
+* **Notes:** Each indicator block also logs the validation ID, dock IDs, and log file location so debugging the binary `connectome.health.flow_canvas` stream no longer requires scanning the implementation documents.
 
 ### 2026-04-11: Extend health template indicators (#11)
 
