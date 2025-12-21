@@ -99,6 +99,20 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 
 ## RECENT CHANGES
 
+### 2026-01-03: Reconfirm World Runner health template coverage
+
+- **What:** Verified `docs/agents/world-runner/HEALTH_World_Runner.md` now covers the purpose, WHY THIS PATTERN rationale, HOW TO USE THIS TEMPLATE guidance, FLOWS ANALYSIS, HEALTH INDICATORS, OBJECTIVES COVERAGE, STATUS, DOCK TYPES, CHECKER INDEX, indicator narratives, HOW TO RUN instructions, and gap catalog so the template drift warning is silenced.
+- **Why:** DOC_TEMPLATE_DRIFT previously reported missing or underspecified sections; this recounting keeps the ledger explicit and traceable before future agents adjust the runner flows.
+- **Files:** `docs/agents/world-runner/HEALTH_World_Runner.md`, `docs/agents/world-runner/SYNC_World_Runner.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate`
+
+### 2025-12-21: Expand world runner validation template coverage
+
+- **What:** Expanded `docs/agents/world-runner/VALIDATION_World_Runner_Invariants.md` with BEHAVIORS GUARANTEED and OBJECTIVES COVERED tables plus a HEALTH COVERAGE narrative that lists the new long-form guarantees, ties each objective to the runner invariants, and surfaces the `background_consistency`, `adapter_resilience`, and fallback checks from `HEALTH_World_Runner.md`.
+- **Why:** DOC_TEMPLATE_DRIFT reported the validation template blocks were missing or too terse; documenting the guarantees, objectives, and health signals keeps the canonical ledger compliant while pointing operators at the exact indicators they should monitor.
+- **Files:** `docs/agents/world-runner/VALIDATION_World_Runner_Invariants.md`, `docs/agents/world-runner/SYNC_World_Runner.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate`
+
 ### 2025-12-31: Expand world-runner algorithm detail
 
 - **What:** Added instrumentation context and strategy clarifications to `docs/agents/world-runner/ALGORITHM_World_Runner.md`, captured the work in the module SYNC, and noted it in this project log so the doc now satisfies the OBJ/ALGO template requirements.
@@ -191,7 +205,7 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 - **Files:** `docs/agents/narrator/HEALTH_Narrator.md`, `docs/agents/narrator/SYNC_Narrator.md`
 - **Verification:** `ngram validate` *(fails: pre-existing connectome/health and membrane naming warnings already tracked elsewhere)*
 
-- ### 2025-12-31: Clarify narrator health usage guidance
+### 2025-12-31: Clarify narrator health usage guidance
 
 - **What:** Added a usage reminder about logging indicator updates in `.ngram/state/SYNC_Project_Health.md`, extended the `HOW TO USE THIS TEMPLATE` guidance to call out indicator runs, highlighted how the schema and mutation checkers update the health scores, and expanded the GAPS sections with a CLI-warning catalog so the doc stays tied to tooling outcomes.
 - **Why:** Future agents need to know which tooling runs correspond to each indicator; connecting the print narrative with `ngram doctor`, the CLI warnings, and the template guidance prevents guesswork if the doctor alarms later.

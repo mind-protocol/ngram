@@ -102,6 +102,10 @@ def run_world(action, max_minutes, player_context):
 - `news_available` is appended to on each tick so queued beats never vanish, and the `remaining` field marks how much budget is left for the next resumed call.
 - A lightweight `tick_trace` captures how many flips were inspected vs filtered each run so diagnostics can flag unusually noisy actions without leaking complete graph snapshots.
 
+### Observability
+
+The Runner emits counters for interrupted vs completed Injections plus timestamps for each resumed call so monitoring dashboards can show whether long actions are flowing smoothly or if interrupts happen too often.
+
 ---
 
 ## ALGORITHM: affects_player

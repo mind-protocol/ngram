@@ -39,39 +39,6 @@ WorldRunnerService.process_flips() returns a dict containing:
 
 **Checked by:** Manual review of `_call_claude()` and `_fallback_response()` in `engine/infrastructure/orchestration/world_runner.py`.
 
-## BEHAVIORS GUARANTEED
-
-### B1: Narration stays responsive
-
-```
-WorldRunnerService always returns a structured Injection within the expected timeout,
-so the Narrator never waits indefinitely for the runner to finish.
-```
-
-**Checked by:** The CLI invocation enforces `timeout` and `_fallback_response()` is defined so every outcome produces the schema described in V1.
-
-### B2: World mutations remain explicit
-
-```
-When the runner detects a flip that affects the player, it emits a mutation record
-and an Injection so downstream narration explicitly acknowledges the change.
-```
-
-**Checked by:** `affects_player()` toggles between injection paths, ensuring player-facing flips are emitted rather than silently applied.
-
-## OBJECTIVES COVERED
-
-| Objective | Coverage |
-|-----------|----------|
-| Keep long actions predictable while still offering player-facing interrupts | The runner runs the tick loop until `affects_player()` returns true or ticks complete, guaranteeing deterministic completion behavior before reporting back to the Narrator. |
-| Provide safe fallbacks whenever the CLI agent misbehaves | Error conditions E1–E3 explicitly document how `_fallback_response()` is triggered so the service degrades gracefully rather than crashing or producing malformed output. |
-| Keep schema compliance traceable from engine to CLI output | V1 plus the PROPERTIES section ensure every path returns the same graph mutation/injection shape, enabling health checks to validate schema conformity end-to-end. |
-
-## HEALTH COVERAGE
-
-The World Runner health indicators focus on ensuring that the CLI contract stays available, that timeouts do not silently drop outputs, and that the injection schema can be validated whenever a run finishes.
-These signals are surfaced through `docs/agents/world-runner/HEALTH_World_Runner.md`, which ties back to V1–V3 and the error conditions, and explicitly calls out when fallback responses occur so the rest of the pipeline can alert on degraded operation.
-
 ### V2: Runner Calls Are Stateless
 
 ```
@@ -89,6 +56,30 @@ the service returns a safe fallback response with empty mutations.
 ```
 
 **Checked by:** Manual review of `_call_claude()` error handlers.
+
+---
+
+## BEHAVIORS GUARANTEED
+
+| Behavior ID | Guarantee | Why It Matters |
+|-------------|-----------|----------------|
+| B1 | Runner output always includes `thinking`, `graph_mutations`, and `world_injection`, even when `_fallback_response()` executes. | This keeps the Narrator and downstream tooling from receiving partial payloads so health checks have a solid schema to audit. |
+| B2 | Each runner invocation reloads the graph state and emits mutations without relying on prior local state. | Stateless calls make every run deterministic and traceable, preventing hidden residues from confusing future injections. |
+| B3 | CLI errors, timeouts, and parse failures produce the documented fallback response and a log entry instead of hanging indefinitely. | The orchestrator can rapidly surface degradations, keeping user-facing actions responsive even when the agent misbehaves. |
+
+## OBJECTIVES COVERED
+
+| Objective | Invariants | Rationale |
+|-----------|------------|-----------|
+| Deliver deterministic narrator-ready injections before returning control. | V1, V2 | Binding schema and statelessness together ensures the Narrator always sees a complete world snapshot with explicit mutations, so downstream editors never guess what happened. |
+| Surface every CLI failure via safe fallbacks for the orchestrator to react to. | V3, P1 | Connecting fallback guarantees to the documented error conditions lets the health tooling flag degraded runs as soon as they happen. |
+| Keep validation documentation aligned with the error modes operators need to triage. | E1, E2, E3 | Explicitly naming the symptoms prevents ad-hoc investigations and lets tooling look for the right log keys when replaying incidents. |
+
+## HEALTH COVERAGE
+
+- `background_consistency` in `docs/agents/world-runner/HEALTH_World_Runner.md` watches each injection and graph mutation batch to prove the runner output schema stays intact before the Narrator receives it.
+- `adapter_resilience` reuses the same error conditions to alert whenever `_call_claude()` returns non-zero, times out, or emits invalid JSON, highlighting the exact fallback path described in this validation doc.
+- `fallback_validator` and `mutation_safety_checker` are the scripted health checks that tie these invariants back to automation, so `ngram doctor` can prove the service never drifts from the documented safe states during regression runs.
 
 ---
 

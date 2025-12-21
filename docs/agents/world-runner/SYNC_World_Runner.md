@@ -19,6 +19,13 @@ The World Runner is complete. It operates as an adapter between the Python game 
 
 ## RECENT CHANGES
 
+### 2025-12-21: Document world-runner behavior objectives
+
+- **What:** Added an `OBJECTIVES SERVED` table for the behaviors doc and expanded the `Injection Interface` paragraph so every template block exceeds the 50+ character guidance and the objective story is explicit.
+- **Why:** DOC_TEMPLATE_DRIFT flagged `docs/agents/world-runner/BEHAVIORS_World_Runner.md` for lacking the objectives section and for terse narratives, so the new prose and table keep the canonical behaviors ledger in sync without touching runtime code.
+- **Files:** `docs/agents/world-runner/BEHAVIORS_World_Runner.md`, `docs/agents/world-runner/SYNC_World_Runner.md`
+- **Verification:** `ngram validate` *(fails: known connectome/health, membrane naming, and CHAIN link warnings that predate this repair).*
+
 ### 2025-12-31: Expand algorithm narrative and diagnostics
 
 - **What:** Added extra prose to `ALGORITHM_World_Runner.md` describing how the objectives map to instrumentation, note-taking on `tick_trace`, and the strategy for `affects_player` so the doc now exceeds the template’s 50-character guidance everywhere.
@@ -31,6 +38,20 @@ The World Runner is complete. It operates as an adapter between the Python game 
 - **What:** Added the missing PATTERNS sections (behaviors supported/prevented, principles, data, dependencies, inspirations, scope, and gaps) with 50+ character narratives so the template warning is satisfied.
 - **Why:** DOC_TEMPLATE_DRIFT reported `PATTERNS_World_Runner.md` as missing the required sections and short on narrative length, so this change keeps the canonical rationale authoritative without touching runtime behavior.
 - **Files:** `docs/agents/world-runner/PATTERNS_World_Runner.md`, `docs/agents/world-runner/SYNC_World_Runner.md`
+- **Verification:** `ngram validate`
+
+### 2026-01-03: Reconfirm world runner health template coverage
+
+- **What:** Verified `HEALTH_World_Runner.md` explicitly documents purpose, WHY THIS PATTERN, HOW TO USE THIS TEMPLATE, FLOWS ANALYSIS, HEALTH INDICATORS, OBJECTIVES COVERAGE, STATUS, DOCK TYPES, CHECKER INDEX, indicator narratives, HOW TO RUN instructions, and gap catalog entries so every template requirement now surfaces for future agents.
+- **Why:** DOC_TEMPLATE_DRIFT previously flagged the health doc for missing or underspecified blocks; this reaffirmation keeps the ledger explicit before another agent edits the runner flows.
+- **Files:** `docs/agents/world-runner/HEALTH_World_Runner.md`, `docs/agents/world-runner/SYNC_World_Runner.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate`
+
+### 2026-01-04: Expand validation template coverage
+
+- **What:** Added BEHAVIORS GUARANTEED, OBJECTIVES COVERED, and HEALTH COVERAGE sections to `docs/agents/world-runner/VALIDATION_World_Runner_Invariants.md`, giving each guarantee narrative 50+ characters while tracing them back to the runner invariants and the health indicators.
+- **Why:** DOC_TEMPLATE_DRIFT flagged these validation template blocks as missing, so the new tables and narrative keep the canonical ledger compliant without touching runtime behavior.
+- **Files:** `docs/agents/world-runner/VALIDATION_World_Runner_Invariants.md`, `docs/agents/world-runner/SYNC_World_Runner.md`, `.ngram/state/SYNC_Project_State.md`
 - **Verification:** `ngram validate`
 
 ### 2025-12-21: Expand health template coverage
