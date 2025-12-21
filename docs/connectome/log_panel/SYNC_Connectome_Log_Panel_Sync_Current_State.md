@@ -2,7 +2,7 @@
 
 # log_panel — Sync: Current State
 
-LAST_UPDATED: 2025-12-20
+LAST_UPDATED: 2026-03-31
 UPDATED_BY: codex
 STATUS: DESIGNING
 ```
@@ -33,12 +33,26 @@ Implemented LogPanel with a “Now” section, ledger list, duration color rules
 
 ## RECENT CHANGES
 
+### 2026-03-31: Expand log panel health template coverage
+
+* **What:** Added the missing WHY THIS PATTERN, HOW TO USE THIS TEMPLATE, OBJECTIVES COVERAGE, STATUS, DOCK TYPES, and indicator/value/representation/docks/mechanism/manual-run narratives to the health doc, plus a longer HOW TO RUN section so every block now exceeds the DOC_TEMPLATE_DRIFT expectation.
+* **Why:** The doctor flagged those sections as missing or too brief, so the new prose keeps the log panel health harness explicit about the selectors, validation IDs, and manual runner before release.
+* **Files:** `docs/connectome/log_panel/HEALTH_Connectome_Log_Panel_Runtime_Verification_Of_Log_Truth_And_Export_Integrity.md`
+* **Validation:** `ngram validate` *(fails: existing docs/connectome/health PATTERNS/SYNC gaps plus docs/physics naming/CHAIN warnings already tracked by the doctor).*
+
 ### 2026-03-28: Complete log panel patterns behavior template
 
 * **What:** Added BEHAVIORS SUPPORTED, BEHAVIORS PREVENTED, and INSPIRATIONS sections with at least 50 characters per template block so the PATTERNS doc now satisfies the DOC_TEMPLATE_DRIFT expectations.
 * **Why:** The doctor flagged those sections as missing or too brief, so the new narrative keeps the log panel’s design rationale tied to observable behaviors and cultural inspiration.
 * **Files:** `docs/connectome/log_panel/PATTERNS_Connectome_Log_Panel_Unified_Explain_And_Copyable_Event_Ledger_View_Patterns.md`
 * **Validation:** `ngram validate` *(fails: existing docs/connectome/health chain gaps, docs/physics naming/link warnings, and long-standing CHAIN issues tracked elsewhere).*
+
+### 2026-03-31: Enrich log panel implementation sections
+
+* **What:** Added explanatory prose to each required IMPLEMENTATION section (patterns, schema, data flow, logic chains, etc.) so the doc explicitly traces the panel, export utilities, and search hooks back to the shared store without introducing new state.
+* **Why:** The doc needed clearer narrative depth to satisfy DOC_TEMPLATE_DRIFT #11 and to help future agents follow the live code paths before touching serializers or search hooks.
+* **Files:** `docs/connectome/log_panel/IMPLEMENTATION_Connectome_Log_Panel_Component_Structure_And_Serializer_Integration.md`, this SYNC file
+* **Validation:** `ngram validate` *(fails for the same known docs/connectome/health chain gaps, docs/physics naming/link warnings, and legacy CHAIN issues tracked elsewhere).*
 
 ### 2025-12-20: Applied serif ledger headers and semantic palette badges
 

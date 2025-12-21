@@ -74,6 +74,7 @@ Tracking the flipped node signal source and the unbounded versus 0..1 energy sca
 * **Issue:** DOC_TEMPLATE_DRIFT #11 (GitHub issue #11) flagged the behaviors template for missing objectives/I-O narratives, so this entry captures the completion.
 * **Files:** `docs/connectome/node_kit/BEHAVIORS_Connectome_Node_Kit_Visible_Clarity_And_Trust_Effects.md`, this SYNC file
 * **Verification:** `ngram validate` *(fails: pre-existing `docs/connectome/health` gaps, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` naming mismatch, and legacy CHAIN-link warnings)*
+* **Status:** Template drift resolved locally; node kit behaviors now document both the objective and the I/O contract so future agents can trace from behavior to verification.
 
 ### 2026-03-22: Expand implementation doc template coverage
 

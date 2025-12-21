@@ -117,12 +117,14 @@ If `view_model.flipped` is `true`, draw an outer glow ring with a distinct white
 * Highlight exactly one step at a time by consulting `active_focus` and `call_type`, preventing the confusion that duplicate highlights used to cause.
 * Render progress widgets only when the runtime state explicitly enables them (PlayerNode wait bars, TickCron rings) so we never over-render or duplicate signals.
 * Align every palette change with the PATTERNS doc so designers can audit node themes without reverse-engineering runtime logic.
+* Always pull live focus, energy, wait, tick, and flipped selectors from the state_store before rendering so the ledger remains the single source of truth for what the canvas may show.
 
 ---
 
 ## DATA FLOW
 
 Metadata and `call_type` information flow from `event_model` into the `ConnectomeNodeViewModel`, which the renderer consumes along with `state_store` selectors for energy, wait progress, tick display, and flipped status. `render_node` stitches this data into component props, delegates step rendering to `render_steps_list`, sources colors from `map_energy_to_color`, and eventually hands the payload to presentation components so the canvas always reflects the active state without inventing signals.
+The instrumentation logs which selectors fired so downstream health tooling can replay the same signals when it verifies palette/hotspot invariants.
 Flow instrumentation also records which selectors were used so health checks can confirm the animation stems from the same data the store exposes.
 
 ---
@@ -135,6 +137,7 @@ Flow instrumentation also records which selectors were used so health checks can
 * `render_widget_for_node_type(node_type, store_state)`: dispatches to wait progress or tick cron renders, ensuring only supported widgets appear for each variant.
 * `render_flipped_ring(flipped)` adds the pink/white glow and extra blur when the ledger marks a node as flipped so mirrored states are visible.
 * `format_energy_value(energy_value)` picks the rounding precision that keeps the badge legible without reformatting mid-stream.
+* `resolve_step_call_type_color(call_type)` returns the accent token defined in PATTERNS for the linked call type so helpers never invent new colors without an update.
 
 ---
 
@@ -187,6 +190,8 @@ Color thresholds (v1) as described in BEHAVIORS:
 Node rendering depends on `state_store` selectors for live focus, energy, wait, tick, and flip signals, while `event_model` supplies step metadata and call_type hues. `flow_canvas` handles placement but leaves rendering to this kit, `edge_kit` owns every link so nodes never draw edges, and the component map / implementation tokens document the actual styles applied to each palette, glow, and widget.
 
 Health checks read the same colors, step highlights, and timers through `VALIDATION_Connectome_Node_Kit_Invariants_For_Node_Readability_And_State_Reflection.md` so any divergence between visuals and the store is immediately flaggable.
+
+The health doc reuses the same selectors so automated tests can confirm the canvas only paints what the invariant script expects.
 
 ---
 
