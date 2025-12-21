@@ -127,12 +127,12 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 - **Files:** `docs/connectome/state_store/SYNC_Connectome_State_Store_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
 - **Verification:** `ngram validate` *(fails: still reports the known `docs/connectome/health` PATTERNS/SYNC/chain gaps, the `docs/engine/membrane/PATTERN_Membrane_Modulation.md` naming mismatch, and the longstanding CHAIN-link warnings).*
 
-### 2026-03-11: Document validation behavior guarantees
+### 2026-03-12: Record validation behavior guarantees
 
-- **What:** Added the BEHAVIORS GUARANTEED table and OBJECTIVES COVERED narrative to the validation doc and referenced the change in the state SYNC so the ledger/focus/timer contract is explicitly named before downstream agents rely on it.
-- **Why:** DOC_TEMPLATE_DRIFT #11 still flagged the validation template, so these extra sections keep the doc chain aligned even while the connectome health coverage gap remains for other docs.
+- **What:** Added the BEHAVIORS GUARANTEED table and OBJECTIVES COVERED narrative to `docs/connectome/state_store/VALIDATION_Connectome_State_Store_Invariants_For_Ledger_Ordering_And_Focus.md`, and noted the change in the state_store SYNC so downstream validators can trace the ledger/focus/timer contract back to observable outcomes.
+- **Why:** DOC_TEMPLATE_DRIFT #11 still reported the validation template as incomplete, so this block ensures the guardrail contract explicitly ties to the invariants before future agents rely on the store.
 - **Files:** `docs/connectome/state_store/VALIDATION_Connectome_State_Store_Invariants_For_Ledger_Ordering_And_Focus.md`, `docs/connectome/state_store/SYNC_Connectome_State_Store_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
-- **Verification:** `ngram validate` *(fails: existing docs/connectome/health PATTERNS/SYNC gaps, docs/engine/membrane PATTERN naming, and the longstanding CHAIN warnings already reported by the doctor).*
+- **Verification:** `ngram validate` *(fails for the existing docs/connectome/health PATTERNS/SYNC gaps, docs/engine/membrane PATTERN naming mismatch, and the longstanding CHAIN warnings already noted by the doctor).*
 
 ### 2026-02-28: Record state store behavior guardrails
 
