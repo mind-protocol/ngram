@@ -106,6 +106,10 @@ def run_world(action, max_minutes, player_context):
 
 The Runner emits counters for interrupted vs completed Injections plus timestamps for each resumed call so monitoring dashboards can show whether long actions are flowing smoothly or if interrupts happen too often.
 
+It also surfaces the duration of each tick and the overall run so latency regressions are visible before narration feels laggy.
+
+Monitoring dashboards can correlate those metrics with the `tick_trace` histogram on the CLI logs to trace slow runs back to specific tension flips or background changes.
+
 ---
 
 ## ALGORITHM: affects_player
