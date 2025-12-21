@@ -215,35 +215,7 @@ Export serializers (JSONL, Text) ← ledger array
 
 ---
 
-## OBJECTIVES AND BEHAVIORS
 
-This algorithm keeps the log panel aligned with the BEHAVIORS doc by presenting a single contiguous “Now + Ledger” surface, making trigger context, duration severity, and export fidelity clearly visible while preventing the panel from drifting into ad-hoc debugging layouts. The panel also serves the behavior of copyable trust by labeling durations and events explicitly so auditors can trace the provenance of each explanation sentence.
-
-## DATA STRUCTURES
-
-The panel consumes `store.ledger`, an ordered `FlowEvent[]` carrying `{timestamp, trigger, call_type, duration_ms, from, to, label, payload_summary, rate_hint, notes}` and derives badges from `store.health_badges`. `store.current_explanation` supplies the explanation sentence, `store.active_focus` tracks the highlighted from→to lane, and `store.cursor` plus optional `store.script_total` define the step index used by both the Now section and export metadata.
-
-## DATA FLOW
-
-Updates flow from the runtime engine into `state_store` selectors, down into `render_full_log_panel(store_state)` which drives `render_now_section` plus `render_ledger_list`, and out through the export buttons that serialize ledger rows back into JSONL or text without touching UI-only values. Badge colors, duration thresholds, and hover tooltips are derived deterministically so the same data can be shipped to telemetry without re-rendering.
-
-## ALGORITHM: `render_full_log_panel(store_state)`
-
-1. Gather shared context:
-
-   * `ledger = store.ledger`
-   * `cursor`, `script_total`, `current_explanation`, `active_focus`
-   * `health_badges` for trigger/call badge hints
-
-2. Materialize the Now section by delegating to `render_now_section` with the gathered context.
-
-3. List each ledger entry through `render_ledger_list` so rows remain in chronological order and badges reuse shared color helpers.
-
-4. Enable export controls by wiring the ledger to the JSONL/Text serializers plus the copy pipe, ensuring no UI-only derived column (like hover state) enters the exported payload.
-
-5. Rehydrate interactions: attach hover tooltips, copy listeners, and accessibility labels so the rendered UI matches the documented behaviors end-to-end.
-
----
 
 ## ALGORITHM: `render_now_section(store_state)`
 
@@ -331,28 +303,6 @@ timer  => grey/orange badge (?)
 
 ---
 
-## KEY DECISIONS
-
-* Derive every visible duration, trigger, and call_type from the ledger so audit exports stay truthful and the behavior doc’s invariants around duration coloring are traceable to the same values the UI shows.
-* Keep duration threshold overrides explicit (blue for <1s despite domain guidance) to honor the “white-hot ms detail” aesthetic while still surfacing higher-severity colors in the 1s/2s/3s bands.
-* Export format choices (per-line JSONL with optional session header plus stable text lines) mirror the logging semantics required by downstream tooling rather than inventing a new schema.
-
-## HELPER FUNCTIONS
-
-* `format_duration_text`: renders ms with the human-friendly “123ms” or seconds decimals to avoid forcing the user to convert values mentally.
-* `duration_color_class`: maps thresholds to badge classes while keeping the <1s blue override documented and the red stake for >3s durations to match severity expectations.
-* `serialize_log_entry(entry)`: stabilizes the export order, ensures `from→to` pairs do not mutate, and omits transient UI hints before writing JSONL or text lines.
-* `render_badge(label, variant)`: centralizes the trigger and call_type palette so new badges reuse the same deterministic mapping and style tokens defined in the implementation doc.
-
-## INTERACTIONS
-
-* Hovering over a ledger row reveals tooltips for trigger, call_type, duration, and payload so readers can inspect context without leaving the panel.
-* Copy/export buttons stream the current cursor-aligned ledger snapshot to the clipboard or modal, honoring the documented API that forbids synthetic rows in exports.
-* Trigger/call badges provide visual affordances and signal states for instrumentation, matching the behavior doc’s emphasis on clarity and copyability.
-* The prominent Now section focus summary links each explanation sentence to ledger rows, creating an interaction path from narrative to raw event data.
-
----
-
 ## ALGORITHM: export
 
 ### Export JSONL
@@ -373,18 +323,8 @@ Export must be derived from ledger only (no UI-only state).
 
 ---
 
-## COMPLEXITY
-
-* The rendering pass remains O(n) because each ledger entry produces at most two view rows plus constant-time badge wiring so no quadratic joins occur when big graphs stream in.
-* Exporting JSONL or stable text is also O(n) because it streams the ledger once, reuses the same helpers, and never sorts or duplicates FlowEvents before serialization.
-* Badge coloring, duration formatting, and tooltip lookups stay O(1) per row while drawing from memoized palette tokens and threshold tables defined in the helper layer.
-
----
-
 ## GAPS / IDEAS / QUESTIONS
 
 * QUESTION: Should export include cursor and speed changes as synthetic events? (nice-to-have; possibly represented as call_type=code)
-
----
 
 ---
