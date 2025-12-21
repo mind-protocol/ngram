@@ -41,10 +41,16 @@ the tick cycle applies deterministic propagation rules.
 ## DETAILED ALGORITHMS
 
 - `algorithms/ALGORITHM_Physics_Energy_Mechanics_And_Link_Semantics.md`
+  — canonical physics algorithm covering energy mechanics, flow sources/sinks, tick cycle, handler/input processing, and speed control behaviors.
+- `algorithms/ALGORITHM_Physics_Mechanisms.md` (function-level mapping to code)
+
+## LEGACY ALGORITHM REDIRECTS
+
 - `algorithms/ALGORITHM_Physics_Energy_Flow_Sources_Sinks_And_Moment_Dynamics.md`
 - `algorithms/ALGORITHM_Physics_Tick_Cycle_Gating_Flips_And_Dispatch.md`
 - `algorithms/ALGORITHM_Physics_Handler_And_Input_Processing_Flows.md`
 - `algorithms/ALGORITHM_Physics_Speed_Control_And_Display_Filtering.md`
+  — stubs that point readers to the canonical algorithm above.
 
 ## DATA STRUCTURES
 

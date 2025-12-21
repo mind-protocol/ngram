@@ -45,6 +45,19 @@ Observable behaviors of the moment graph system:
 
 ---
 
+## MECHANISMS (Implementation Anchors)
+
+These behaviors are produced by concrete mechanisms listed in:
+`docs/physics/algorithms/ALGORITHM_Physics_Mechanisms.md`.
+
+Key anchors:
+- Energy pump and propagation (GraphTick: character → narrative → narrative)
+- Pressure accumulation + flip detection (GraphTick: tensions)
+- Moment lifecycle decay and surfacing (GraphTick + MomentSurface)
+- Instant traversal (MomentTraversal hot path)
+
+---
+
 ## BEHAVIORS
 
 The physics system exposes the B1–B12 behaviors below; each section describes

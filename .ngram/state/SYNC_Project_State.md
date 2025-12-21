@@ -71,11 +71,19 @@ Updated semantic search to use embeddings (never returned) and re-ran `npm run l
 
 ## RECENT CHANGES
 
+### 2025-12-21: Split GraphReadOps into an isolated reader module
+
+- **What:** Extracted `GraphReadOps` and `get_graph_reader` into `engine/physics/graph/graph_ops_read_only_interface.py`, re-exported them from `graph_ops.py`, recorded the new structure in the implementation/module docs and graph SYNC, and noted the line counts (799L vs. 246L) so the write facade stays under 800 lines.
+- **Why:** Keeps mutations concentrated in `GraphOps` while isolating Connectome read helpers and semantic search utilities for clearer ownership and future evolution.
+- **Tests:** `pytest engine/tests/test_spec_consistency.py`
+- **Validation:** `ngram validate` still fails until upstream naming/CHAIN issues are fixed (`docs/engine/membrane/PATTERN_Membrane_Modulation.md` naming and multiple physics attention/moment-graph-engine CHAIN links pointing to non-existent docs).
+
 ### 2025-12-21: Physics ALGORITHM doc layout cleaned
 
 - **What:** Relocated `ALGORITHM_Physics_Mechanisms.md` into `docs/physics/algorithms/` and updated the SYNC, behaviors, and CHAIN pointers so only `ALGORITHM_Physics.md` lives at the physics root.
 - **Why:** Remove the duplicate ALGORITHM document warning while keeping the function-level mechanism map accessible inside the algorithms subfolder.
 - **Impact:** Documentation only; physics sync and pointer lists now reference the new path.
+- **Trace:** CHAIN entries in `docs/physics/SYNC_Physics.md` + this state log now affirm the algorithm subfolder as the authoritative location for mechanism-level mappings.
 
 ---
 

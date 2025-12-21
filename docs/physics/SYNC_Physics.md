@@ -43,9 +43,9 @@ Physics documentation is consolidated in `docs/physics/`, the algorithm is canon
 
 ### 2025-12-21: Physics mechanisms doc relocated to algorithms
 
-- **What:** Moved `ALGORITHM_Physics_Mechanisms.md` into `docs/physics/algorithms/` so the physics root keeps one canonical ALGORITHM doc while detailed mechanisms live under `algorithms/`.
-- **Why:** Squashed the duplicate ALGORITHM doc warning by keeping specialized mechanism docs in the algorithms subfolder.
-- **Impact:** Documentation only; CHAIN/POINTERS now reference the new path.
+- **What:** Moved `ALGORITHM_Physics_Mechanisms.md` into `docs/physics/algorithms/` and refreshed CHAIN/POINTERS so every physics doc links to the canonical mechanism map in the algorithms subfolder.
+- **Why:** Squashed the duplicate ALGORITHM doc warning by keeping specialized mechanism docs in the algorithms folder while leaving `ALGORITHM_Physics.md` as the physics root overview.
+- **Impact:** Documentation only; the root physics directory now hosts a single ALGORITHM doc while mechanism-level detail lives under `algorithms/`.
 
 ### 2025-12-20: Pending external implementation references
 
