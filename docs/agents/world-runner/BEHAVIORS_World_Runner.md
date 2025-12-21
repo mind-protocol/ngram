@@ -33,7 +33,7 @@ This interface is the only observable contract the Narrator consumes after a lon
 | B3 | Complete the requested duration when no player-facing flips arise, summarizing background changes and elapsed minutes for scene continuity. | Supplies narrators with the quiet aftermath data they need to keep world news and tension updates in sync without rerunning the simulation. |
 | B4 | Append low-urgency beats to the injection queue without interrupting the current scene, documenting supplemental reactions for optional narration. | Gives narrators optional hooks for flavor beats while preserving the smooth pacing of the ongoing scene and the deterministic interrupt contract. |
 
-The table above spells out how each observable behavior ties back to the runner contract so the narrator can audit interrupts, completions, and queued beats against explicit objectives before weaving the Injection into prose.
+The table above spells out how each observable behavior ties back to the runner contract so the narrator can audit interrupts, completions, and queued beats against explicit objectives before weaving the Injection into prose, and now the objective rows explicitly reference the output channels (`world_changes`, `news_available`, `remaining`, and `interrupted`) each behavior drives so narrators know which payload fields to trust.
 
 ## INPUTS / OUTPUTS
 
