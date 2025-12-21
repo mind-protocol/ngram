@@ -120,6 +120,13 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 - **Files:** `docs/tools/SYNC_Tools.md`, `.ngram/state/SYNC_Project_State.md`
 - **Verification:** `ngram validate`
 
+### 2026-01-16: Complete tools implementation template coverage
+
+- **What:** Expanded `docs/tools/IMPLEMENTATION_Tools.md` to describe the code structure, design patterns, schema, entry points, flow-by-flow docking, logic chains, module dependencies, state management, runtime behavior, concurrency model, configuration, bidirectional links, and gaps list so every blocking section exceeds the DOC_TEMPLATE_DRIFT minimum while leaving the helper scripts untouched.
+- **Why:** DOC_TEMPLATE_DRIFT flagged the implementation doc for missing CODE STRUCTURE, DESIGN PATTERNS, SCHEMA, ENTRY POINTS, DATA FLOW, LOGIC CHAINS, MODULE DEPENDENCIES, STATE MANAGEMENT, RUNTIME BEHAVIOR, CONCURRENCY MODEL, CONFIGURATION, BIDIRECTIONAL LINKS, and GAPS sections, so the new narrative restores the canonical coverage.
+- **Files:** `docs/tools/IMPLEMENTATION_Tools.md`, `docs/tools/SYNC_Tools.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate` *(fails: known docs/connectome/health PATTERNS/SYNC gaps, the `docs/engine/membrane` PATTERN naming mismatch, and the longstanding CHAIN/link warnings).*
+
 ### 2026-01-09: Capture world runner health flow note
 
 - **What:** Logged the new Health doc paragraph that spells out the 0.5/min cadence, 5/min bursts, and `background_consistency`/`adapter_resilience` indicators so the doctor knows which signals to rerun.
