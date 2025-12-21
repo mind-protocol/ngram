@@ -90,6 +90,8 @@ THEN:   store commits remain ordered and consistent (no lost steps)
 AND:    the ordered action stream keeps telemetry loggers from replaying partial transitions after the player spams Next.
 ```
 
+This deterministic queue keeps telemetry loggers and replay tools aligned with every release event even under fast click bursts.
+
 ### E2: Out-of-order realtime events (deferred)
 
 ```
@@ -98,6 +100,8 @@ THEN:   store preserves a stable ordering policy (arrival order or at_ms policy)
 AND:    UI remains readable
 AND:    the ordering policy documented in the store keeps renderers sane even when telemetry batches arrive with jitter.
 ```
+
+This ordering contract keeps the UI timeline readable when telemetry arrival order drifts, so health monitors can still validate their invariants.
 
 ---
 
@@ -111,6 +115,8 @@ AND:         the store’s ledger is the only source for copy/export, so local s
 INSTEAD: log is derived exclusively from store.ledger
 ```
 
+Local copies would drift from canonical exports, so renderers must derive logs exclusively through selectors that read `store.ledger`.
+
 ### A2: Focus ambiguity
 
 ```
@@ -118,6 +124,8 @@ MUST NOT: multiple active edges remain lit simultaneously (unless explicitly all
 AND:         focus ambiguity would break health stories that assert exactly one edge/node pair is active per release.
 INSTEAD: store.active_focus is singular
 ```
+
+`store.active_focus` remains the single focus source, so inference-based highlight kits cannot introduce ambiguity or double-lit edges.
 
 ---
 
@@ -127,6 +135,8 @@ Store is a state authority; it does not return values except selectors.
 
 **Inputs (actions):** explicit store actions (see PATTERNS).
 **Outputs:** updated state; selectors for UI.
+
+Documenting these inputs/outputs clarifies that the store never returns derived payloads and that renderers must read selectors instead of asking the store for values directly.
 
 ---
 
