@@ -33,6 +33,13 @@ Implemented a Zustand store with explicit long-named actions. Step releases use 
 
 ## RECENT CHANGES
 
+### 2026-03-01: Complete state store health template coverage
+
+- **What:** Filled the WHY THIS PATTERN, HOW TO USE THIS TEMPLATE, OBJECTIVES COVERAGE, STATUS, DOCK TYPES, and INDICATOR sections so the health doc now lists every required narrative plus a result stream tied to the atomic commit indicator.
+- **Why:** DOC_TEMPLATE_DRIFT #11 flagged the state store health doc for missing template blocks; the expanded coverage keeps the health chain aligned with the implementation story without touching the store itself.
+- **Files:** `docs/connectome/state_store/HEALTH_Connectome_State_Store_Runtime_Verification_Of_Ledger_And_Timer_Correctness.md`, `docs/connectome/state_store/SYNC_Connectome_State_Store_Sync_Current_State.md`
+- **Verification:** `ngram validate`
+
 ### 2026-02-10: Document state store behavior guardrails
 
 * **What:** Added the BEHAVIORS SUPPORTED and BEHAVIORS PREVENTED sections to the PATTERNS doc so the state_store’s behavioral guardrails are explicit and each block now exceeds the 50-character DOC_TEMPLATE_DRIFT requirement.
