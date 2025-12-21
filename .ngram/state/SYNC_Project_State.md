@@ -106,12 +106,26 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 - **Files:** `docs/agents/narrator/IMPLEMENTATION_Narrator.md`, `docs/agents/narrator/SYNC_Narrator.md`
 - **Verification:** `ngram validate`
 
+### 2025-12-27: Documented narrator archive metadata
+
+- **What:** Added the missing MATURITY, CURRENT STATE, IN PROGRESS, KNOWN ISSUES, handoff, TODO, consciousness trace, and pointers sections so the narrator archive now explains its frozen role and points back to the live sync.
+- **Why:** DOC_TEMPLATE_DRIFT flagged those sections as missing, so expanding each entry keeps every block above the minimum length while making the archive’s archive status explicit.
+- **Files:** `docs/agents/narrator/SYNC_Narrator_archive_2025-12.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate`
+
 ### 2025-12-27: Flesh out narrator algorithm template
 
 - **What:** Documented the missing objectives table, data structures, helper list, key decisions, interactions, and GAPS items in `docs/agents/narrator/ALGORITHM_Scene_Generation.md`, then noted the alignment in `docs/agents/narrator/SYNC_Narrator.md`.
 - **Why:** DOC_TEMPLATE_DRIFT flagged the narrator algorithm doc for missing sections, so expanding the narrative removes ambiguity about how scene generation should stream, query the graph, and mutate canon.
 - **Files:** `docs/agents/narrator/ALGORITHM_Scene_Generation.md`, `docs/agents/narrator/SYNC_Narrator.md`, `.ngram/state/SYNC_Project_State.md`
 - **Verification:** `ngram validate` *(still fails for the known connectome/health doc gaps, membrane naming mismatches, and CHAIN/link warnings the doctor already tracks).*
+
+### 2025-12-27: Expand Narrator sync coverage
+
+- **What:** Added IN PROGRESS, KNOWN ISSUES, HANDOFF: FOR HUMAN, and CONSCIOUSNESS TRACE narratives to `docs/agents/narrator/SYNC_Narrator.md`, along with richer current-state prose, so every template section stays above 50+ characters and the doctor stops flagging template drift.
+- **Why:** DOC_TEMPLATE_DRIFT flagged the sync file for missing and terse sections; the fix keeps the module’s canonical narrative compliant without touching the stable prompt or CLI behavior.
+- **Files:** `docs/agents/narrator/SYNC_Narrator.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate`
 
 ### 2025-12-26: Supplemented LLM archive guidance
 
@@ -133,7 +147,7 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 - **Why:** The DOC_TEMPLATE_DRIFT warning highlighted missing content for this doc (code structure, flows, state, concurrency, links), so the fleshed-out narrative restores architectural clarity for downstream agents.
 - **Files:** `docs/llm_agents/IMPLEMENTATION_LLM_Agent_Code_Architecture.md`, `docs/llm_agents/SYNC_LLM_Agents_State.md`, `.ngram/state/SYNC_Project_State.md`
 - **Verification:** `ngram validate` *(fails: pre-existing docs/connectome/health gaps, membrane naming, and CHAIN/link warnings noted by the doctor)*
-- **Trace:** The new GAPS/IDEAS/QUESTIONS and bidirectional link notes tie the implementation narrative back to the observed state so future agents can trace assumptions, concerns, and open investigations.
+- **Trace:** The new GAPS/IDEAS/QUESTIONS and bidirectional link notes tie the implementation narrative back to the observed state so future agents can trace assumptions, concerns, and open investigations, and the helper execution timestamp question keeps the concurrency diagnostics visible for the doctor.
 
 -### 2025-12-25: Completed Gemini algorithm template compliance
 
@@ -159,7 +173,7 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 
 ### 2025-12-24: Expanded LLM health coverage template
 
-- **What:** Added an OBJECTIVES COVERAGE summary along with a dedicated API connectivity indicator so the HEATH doc now explains both streaming and auth verification flows and their docking points.
+- **What:** Added the OBJECTIVES COVERAGE summary and enriched the `stream_validity` and `api_connectivity` indicator sections with algorithm/check narratives, throttling strategy, forwarding surfaces, and manual-run guidance.
 - **Why:** Close DOC_TEMPLATE_DRIFT for `docs/llm_agents/HEALTH_LLM_Agent_Coverage.md` and tie the `api_connectivity` indicator to concrete verification steps, throttling, and display targets.
 - **Files:** `docs/llm_agents/HEALTH_LLM_Agent_Coverage.md`, `docs/llm_agents/SYNC_LLM_Agents_State.md`
 - **Verification:** `ngram validate` *(fails: pre-existing connectome health doc gaps plus membrane naming and CHAIN/link warnings already tracked by the doctor)*
@@ -181,10 +195,12 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 
 ### 2025-12-22: Extended Gemini validation behavior/objective rationale
 
-- **What:** Added richer explanatory clauses to the BEHAVIORS GUARANTEED and OBJECTIVES COVERED tables in `docs/llm_agents/VALIDATION_Gemini_Agent_Invariants.md` so every row now exceeds the 50+ character expectation and calls out why each guarantee or objective matters.
+- **What:** Added richer explanatory clauses to the BEHAVIORS GUARANTEED and OBJECTIVES COVERED tables in `docs/llm_agents/VALIDATION_Gemini_Agent_Invariants.md` so every row now exceeds the 50+ character expectation, explicitly ties each guarantee/objective back to the invariants the doctor monitors, and calls out why it matters.
 - **Why:** Keep the validation template compliant with the length requirements while giving future agents more context to judge each guarantee's impact without chasing down the implementation.
 - **Files:** `docs/llm_agents/VALIDATION_Gemini_Agent_Invariants.md`
 - **Verification:** `ngram validate` *(fails: pre-existing connectome health doc gaps, membrane naming, and CHAIN/link warnings already tracked by the doctor)*
+
+### 2025-12-25: Documented LLM health indicator coverage
 
 - **What:** Added the OBJECTIVES COVERAGE table and enriched the `stream_validity`/`api_connectivity` indicator sections with algorithm/check mechanics, throttling, forwardings, and manual-run guidance tied to V-GEMINI-JSON, V1, and V4.
 - **Why:** Close the DOC_TEMPLATE_DRIFT warning reported on `docs/llm_agents/HEALTH_LLM_Agent_Coverage.md` by giving every required subsection the expected length and tracing it to existing validations.

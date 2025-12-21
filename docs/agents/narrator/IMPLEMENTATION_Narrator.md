@@ -223,7 +223,7 @@ engine/infrastructure/orchestration/narrator.py
 ```
 1. The engine calls `NarratorService.generate` with player actions, scene context, and optional world injections so the prompt builder can bake precise canonical state into the request.
 2. The service runs `agent_cli.run_agent`, passing the continuation flag, streaming hooks, and `CLAUDE.md` instructions so the LLM can respond via SSE/JSON while the CLI awaits completion.
-3. Parsed `NarratorOutput` flows through `engine/physics/graph/graph_ops.py:apply_mutation` before the orchestrator streams the updated scene, elapsed time, and clickables back to the UI and logs success.
+3. Parsed `NarratorOutput` flows through `engine/physics/graph/graph_ops.py:apply_mutations` before the orchestrator streams the updated scene, elapsed time, and clickables back to the UI and logs success.
 ```
 
 ### Shutdown
@@ -248,8 +248,9 @@ engine/infrastructure/orchestration/narrator.py
 
 | Doc Section | Implemented In |
 |-------------|----------------|
-| DATA FLOW AND DOCKING (Scene Generation: Action → Narrator → Graph) | `engine/infrastructure/orchestration/narrator.py:45-165` (`generate`, `_build_prompt`, `_call_claude`) |
-| LOGIC CHAINS (LC1: Invention to Canon) | `engine/physics/graph/graph_ops.py:704-742` (`apply_mutations`, associated logging) |
+| RUNTIME BEHAVIOR (Main Loop / Request Cycle) | `engine/infrastructure/orchestration/narrator.py:45-165` (`generate`, `_build_prompt`, `_call_claude`) |
+| DATA FLOW AND DOCKING (Scene Generation: Action → Narrator → Graph) | `engine/physics/graph/graph_ops.py:704-742` (`apply_mutations`, logging) |
+| LOGIC CHAINS (LC1: Invention to Canon) | `engine/physics/graph/graph_ops.py:704-742` (`apply_mutations`, graph logging) |
 | STATE MANAGEMENT (Thread History resets) | `engine/infrastructure/orchestration/narrator.py:197-200` (`reset_session`) |
 
 --- 
