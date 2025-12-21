@@ -46,6 +46,12 @@ The World Runner is complete. It operates as an adapter between the Python game 
 - **Files:** `docs/agents/world-runner/HEALTH_World_Runner.md`, `docs/agents/world-runner/SYNC_World_Runner.md`
 - **Verification:** `ngram validate`
 
+### 2026-01-02: Expand validation template coverage
+
+- **What:** Added dedicated `BEHAVIORS GUARANTEED`, `OBJECTIVES COVERED`, and `HEALTH COVERAGE` sections to `VALIDATION_World_Runner_Invariants.md`, giving each guarantee/objective narrative at least 50 characters and tracing them back to the CLI contract and error handling.
+- **Why:** DOC_TEMPLATE_DRIFT reported those blocks were missing or too terse; filling them keeps the canonical validation ledger compliant while still pointing at the existing World Runner invariants.
+- **Files:** `docs/agents/world-runner/VALIDATION_World_Runner_Invariants.md`, `docs/agents/world-runner/SYNC_World_Runner.md`
+- **Verification:** `ngram validate`
 ### 2025-12-20: Ngram Framework Refactor
 
 - **What:** Refactored `IMPLEMENTATION_World_Runner_Service_Architecture.md` and updated `TEST_World_Runner_Coverage.md` to the Health format.

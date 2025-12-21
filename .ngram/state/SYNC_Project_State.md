@@ -120,6 +120,13 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 - **Files:** `docs/agents/world-runner/ALGORITHM_World_Runner.md`, `docs/agents/world-runner/SYNC_World_Runner.md`
 - **Verification:** `ngram validate` *(fails: existing warnings remain—`docs/connectome/health` lacks PATTERNS/SYNC/chain documentation, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` needs the plural prefix, and multiple CHAIN links across connectome/physics/CLI docs remain broken; these predate this repair).*
 
+### 2026-01-02: Expand world-runner validation coverage
+
+- **What:** Added `BEHAVIORS GUARANTEED`, `OBJECTIVES COVERED`, and `HEALTH COVERAGE` sections to `docs/agents/world-runner/VALIDATION_World_Runner_Invariants.md` so every template block now exceeds 50 characters while tracing each guarantee back to the invariants and error conditions.
+- **Why:** DOC_TEMPLATE_DRIFT flagged those validation template blocks as missing, so populating them keeps the canonical validation ledger compliant without touching runtime behavior.
+- **Files:** `docs/agents/world-runner/VALIDATION_World_Runner_Invariants.md`, `docs/agents/world-runner/SYNC_World_Runner.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate` *(reports the same pre-existing connectome/health and membrane naming warnings that preceded this repair).*
+
 ### 2026-01-01: Align World Runner SYNC template
 
 - **What:** Added IN PROGRESS, KNOWN ISSUES, HANDOFF: FOR HUMAN, and CONSCIOUSNESS TRACE sections to `docs/agents/world-runner/SYNC_World_Runner.md` so the template warning is satisfied and every section now provides a 50+ character narrative.
@@ -548,6 +555,8 @@ The refactor command can standardize doc moves once the import is staged.
 
 - Merged interrupt-focused reasoning into `docs/physics/attention/PATTERNS_Attention_Energy_Split.md`, added the focus-reconfiguration principles, data, and scope details, and deleted the redundant `PATTERNS_Interrupt_By_Focus_Reconfiguration.md`.
 - Pointed the attention behavior/validation chains and `docs/physics/SYNC_Physics.md` at the canonical doc and recorded the cleanup in the physics sync trace.
+
+- Completed `docs/agents/world-runner/HEALTH_World_Runner.md` so every template section now exists; `ngram validate` still fails for known connectome/health doc gaps, the engine/membrane PATTERN naming issue, and existing broken CHAIN links.
 
 ## ARCHIVE
 
