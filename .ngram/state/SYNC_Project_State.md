@@ -104,6 +104,13 @@ Ran `npm run lint` after WebGL click handling (clean; TypeScript 5.5.4 unsupport
 - **Files:** `docs/infrastructure/api/ALGORITHM_Playthrough_Creation.md`, `docs/infrastructure/api/SYNC_Api.md`
 - **Verification:** `ngram validate` (fails for unrelated existing module/CHAIN issues noted by the doctor).
 
+### 2025-12-21: Consolidated moment graph validation docs
+
+- **What:** Moved the Void Tension, Simultaneity/CONTRADICTS, and Player DMZ VALIDATION stubs into dedicated `docs/engine/moment-graph-engine/validation/<topic>/` subfolders so the root moment-graph-engine folder now only hosts the canonical traversal validation doc.
+- **Why:** Eliminate the DOC_DUPLICATION warning that flagged multiple VALIDATION files in the same directory and make the root chain the single authoritative landing page for moment graph invariants.
+- **Files:** `docs/engine/moment-graph-engine/SYNC_Moment_Graph_Engine.md`, `docs/engine/moment-graph-engine/validation/void_tension/VALIDATION_Void_Tension.md`, `docs/engine/moment-graph-engine/validation/simultaneity_contradiction/VALIDATION_Simultaneity_Contradiction.md`, `docs/engine/moment-graph-engine/validation/player_dmz/VALIDATION_Player_DMZ.md`
+- **Verification:** `ngram validate` (fails: pre-existing docs/connectome/health chain gaps)
+
 ### 2025-12-21: Split GraphReadOps into an isolated reader module
 
 - **What:** Extracted `GraphReadOps` and `get_graph_reader` into `engine/physics/graph/graph_ops_read_only_interface.py`, re-exported them from `graph_ops.py`, recorded the new structure in the implementation/module docs and graph SYNC, and noted the line counts (799L vs. 246L) so the write facade stays under 800 lines.

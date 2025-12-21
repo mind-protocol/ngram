@@ -86,6 +86,25 @@ The module relies on physics graph ops/queries and is treated as a hot path.
 - **Why:** Ensure `ngram doctor` can link code back to this module's doc chain.
 - **Files:** `engine/moment_graph/traversal.py`, `engine/moment_graph/queries.py`
 
+### 2025-12-20: Added attention split + interrupt validation
+
+- **What:** Moved attention split/interrupt validation to physics attention.
+- **Why:** Keep physics-level invariants with attention patterns and behaviors.
+- **Files:** `docs/physics/attention/VALIDATION_Attention_Split_And_Interrupts.md`
+
+### 2025-12-21: Consolidated moment graph validation docs
+
+- **What:** Relocated the Void Tension, Simultaneity/CONTRADICTS, and Player DMZ validation stubs into dedicated `validation/<topic>/` subfolders so `docs/engine/moment-graph-engine/` now hosts only the canonical traversal validation doc.
+- **Why:** Keep a single VALIDATION doc per folder, which eliminates the DOC_DUPLICATION warning and makes the root chain the authoritative landing page for moment graph invariants.
+- **Files:** `docs/engine/moment-graph-engine/validation/void_tension/VALIDATION_Void_Tension.md`, `docs/engine/moment-graph-engine/validation/simultaneity_contradiction/VALIDATION_Simultaneity_Contradiction.md`, `docs/engine/moment-graph-engine/validation/player_dmz/VALIDATION_Player_DMZ.md`
+- **Verification:** `ngram validate` (fails: connectome/health chain gaps already open)
+
+### 2025-12-20: Added validation stubs (DMZ, Simultaneity, Void)
+
+- **What:** Added validation stubs for Player DMZ, Simultaneity/CONTRADICTS, and Void Tension.
+- **Why:** Reserve stable validation IDs and behavior mappings for upcoming behaviors.
+- **Files:** `docs/engine/moment-graph-engine/validation/player_dmz/VALIDATION_Player_DMZ.md`, `docs/engine/moment-graph-engine/validation/simultaneity_contradiction/VALIDATION_Simultaneity_Contradiction.md`, `docs/engine/moment-graph-engine/validation/void_tension/VALIDATION_Void_Tension.md`
+
 ### 2025-12-19: Revalidated traversal helpers
 
 - **What:** Checked `make_dormant` and `process_wait_triggers` in
