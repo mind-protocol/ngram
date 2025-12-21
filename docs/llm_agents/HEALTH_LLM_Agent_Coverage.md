@@ -264,7 +264,7 @@ This indicator makes sure the adapter never starts streaming without the credent
 ```yaml
 value_and_validation:
   indicator: api_connectivity
-  client_value: The CLI/TUI surfaces missing or invalid GEMINI_API_KEY credentials before streaming so nothing launches in a broken state.
+  client_value: Prevents the CLI/TUI from assuming Gemini is reachable by surfacing missing or invalid GEMINI_API_KEY instances before streaming can start.
   validation:
     - validation_id: V1
       criteria: Missing credentials emit a structured JSON error and exit code 1 before a Gemini request is sent.
@@ -277,15 +277,14 @@ value_and_validation:
 ```yaml
 representation:
   allowed:
-    - binary
     - enum
   selected:
-    - binary
+    - enum
   semantics:
-    binary: 1 when GEMINI_API_KEY resolution and client instantiation succeeded, 0 when early exit prevents streaming.
+    enum: OK=key validated, WARN=client created with diagnostics, ERROR=key missing or client creation failed.
   aggregation:
-    method: worst_case so credential failures never hide under successful sessions.
-    display: CLI health banner and repair log show an OK/ERROR tag for this indicator.
+    method: worst_case
+    display: CLI log and doctor summary
 ```
 
 ### DOCKS SELECTED
@@ -295,11 +294,11 @@ docks:
   input:
     id: auth_check
     method: ngram.llms.gemini_agent.main
-    location: ngram/llms/gemini_agent.py:35-48
+    location: ngram/llms/gemini_agent.py:32-48
   output:
     id: auth_error
     method: ngram.llms.gemini_agent.main
-    location: ngram/llms/gemini_agent.py:43-49
+    location: ngram/llms/gemini_agent.py:43-45
 ```
 
 ### ALGORITHM / CHECK MECHANISM
@@ -308,11 +307,11 @@ docks:
 mechanism:
   summary: Validate `GEMINI_API_KEY` sources, instantiate `genai.Client`, and flag any failure before assistant chunks are emitted.
   steps:
-    - Resolve API key via CLI args, `.env`, or environment variables.
-    - Emit the JSON `{"error": ...}` payload and exit 1 if the key is missing.
-    - Instantiate `genai.Client` and guard against propagation of SDK exceptions.
-  data_required: resolved credential string, constructor success, and exit metadata.
-  failure_mode: Missing credentials halt the subprocess so the CLI observes a structured error instead of random chunks.
+    - Resolve `--api-key`, `.env`, and environment variables for GEMINI_API_KEY in priority order.
+    - Emit the JSON `{"error": ...}` payload and exit 1 if the key is missing, blocking streaming entirely.
+    - When a key exists, instantiate `genai.Client` and log diagnostics on stderr; surface exceptions as WARN-level connectivity signals.
+  data_required: CLI args, dotenv/env lookups, constructor success flags, and exit metadata.
+  failure_mode: Missing credentials halt the subprocess so the CLI observes a structured error instead of random chunks, while client exceptions become WARN signals.
 ```
 
 ### INDICATOR
@@ -320,19 +319,19 @@ mechanism:
 ```yaml
 indicator:
   error:
-    - name: missing_credential
+    - name: missing_credentials
       linked_validation: [V1]
-      meaning: GEMINI_API_KEY lookup failed and the adapter refused to start.
+      meaning: GEMINI_API_KEY lookup failed and the adapter refused to start, preventing downstream activity.
       default_action: stop
   warning:
-    - name: client_init_slow
+    - name: client_init_warning
       linked_validation: [V4]
-      meaning: Client instantiation completed slowly but stderr still isolates diagnostics.
+      meaning: `genai.Client` creation emitted stderr diagnostics, indicating degraded connectivity even though the key exists.
       default_action: warn
   info:
-    - name: client_ready
+    - name: credential_probe
       linked_validation: [V1, V4]
-      meaning: Credential prechecks passed and stdout remains clean for structured chunks.
+      meaning: API key is present and client instantiation succeeded, so downstream streaming can begin.
       default_action: log
 ```
 
@@ -340,10 +339,10 @@ indicator:
 
 ```yaml
 throttling:
-  trigger: gemini_stream_flow startup
+  trigger: ngram agent/repair invocation with Gemini provider
   max_frequency: 5/min
-  burst_limit: 2
-  backoff: exponential on consecutive auth failures
+  burst_limit: 10
+  backoff: exponential starting at 15s to avoid repeated auth failures.
 ```
 
 ### FORWARDINGS & DISPLAYS
@@ -353,13 +352,13 @@ forwarding:
   targets:
     - location: .ngram/state/SYNC_Project_Health.md
       transport: file
-      notes: Doctor derives alerts when the binary flag flips to 0.
+      notes: Doctor consumes this indicator to flag missing credentials before streaming begins.
 display:
   locations:
     - surface: CLI stderr
       location: `ngram llms gemini` startup path
       signal: warn
-      notes: Missing credentials paint the status line red and attach the JSON error snippet.
+      notes: Displays structured credential failures and diagnostics for operators.
 ```
 
 ### MANUAL RUN
@@ -367,7 +366,7 @@ display:
 ```yaml
 manual_run:
   command: GEMINI_API_KEY= python3 -m ngram.llms.gemini_agent -p "health ping" --output-format text
-  notes: Running without the key verifies the structured exit path and the CLI error surface before start is aborted.
+  notes: Run without GEMINI_API_KEY to confirm the structured exit path and rerun with the key set to verify the OK state.
 ```
 
 ---
