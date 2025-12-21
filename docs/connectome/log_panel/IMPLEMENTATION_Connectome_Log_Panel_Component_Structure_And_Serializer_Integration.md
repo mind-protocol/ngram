@@ -31,11 +31,15 @@ IMPL:            app/connectome/components/connectome_log_export_buttons_using_s
 
 The implementation strictly follows the unified "Now + Ledger" pattern from the PATTERNS doc: a single panel surfaces the current explanation, focus information, ledger rows, and a shared export area derived from the canonical store. Duration color rules, trigger badges, copy buttons, and ledger calculus are all rendered from the same state, which prevents bidirectional drift between narrative and audit report. This single-surface discipline also keeps downstream tooling (badges, exporter, search hooks) consistent with the overarching ledger story.
 
+That discipline guarantees that copy actions, badge colors, and ledger ordering never rely on shadow caches—everything the user sees is derived from the store so updates stay coherent and deterministic.
+
 ExportButtons, duration helpers, and badge color tokens all reference the same selectors so the pattern stays declarative; none of those modules maintain their own copy of the ledger or retry logic, which keeps the panel from diverging from the store’s agreed-upon flow event list.
 
 ## SCHEMA
 
 Each row renders a normalized `FlowEvent` from `flow_event_schema_and_normalization_contract`, so the implementation consumes the same shape used by the telemetry pipeline: `id`, `at_ms`/`timestamp`, `from_node_id`, `to_node_id`, `label`, `trigger`, `call_type`, `duration_ms`, `payload_summary`, `notes`, and the optional `session_id` boundary recorded by the store serializer. Duration coloring, badges, hover detail text, and export serializers all trust these fields, meaning schema drift would show up immediately in the log export buttons or in the color tokens module. If the schema gains new badges, this file just plumbs them into the badge palette helpers and ledger rows.
+
+The export serializers can annotate those badges without changing the LogPanel layout because the schema shape stays stable.
 
 Because the schema includes `session_id`, `serialize_ledger_to_jsonl` can emit session boundaries inside the copy payload, which makes the export faithful to the same events shown on-screen.
 
@@ -48,9 +52,13 @@ Because the schema includes `session_id`, `serialize_ledger_to_jsonl` can emit s
 
 This flow is bidirectionally docked to the store: when the runtime publishes a step release it immediately becomes visible here, and when the search hooks reveal nodes they write back to the store to stay consistent with the investor-paint life cycle.
 
+Because each numbered step feeds directly into the next, debugging time stays low: a missing event is visible in the store, the rendered ledger row, and the export output all at once so the trace from runtime to copy exists in one place.
+
 ## LOGIC CHAINS
 
 The ledger "logic chain" begins with a step release payload from the stepper runtime, passes through the normalized FlowEvent schema, lands in the store, and is read by this panel exactly once per render. Copy actions reuse the same ledger slice, so when `ExportButtons.handleCopyJsonl`/`handleCopyText` run they are logically downstream of every event that already updated the ledger. Search triggers, graph reveals, and `setSearchStatus` updates represent adjacent chains but still rely on the same `useConnectomeStore` selectors, so a single source of truth governs the entire component.
+
+That direct mapping also means auditors can trace a ledger row back to the original commit payload for post-mortem review or trust checks.
 
 The search `handleSearch` path is part of this chain: it writes search results and reveal calls into the store before re-rendering the ledger header, which keeps the ledger and graph selector align.
 

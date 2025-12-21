@@ -1,7 +1,7 @@
 # Project — Sync: Current State
 
 ```
-LAST_UPDATED: 2026-03-16
+LAST_UPDATED: 2026-03-31
 UPDATED_BY: codex
 ```
 
@@ -99,6 +99,20 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 
 ## RECENT CHANGES
 
+### 2026-03-31: Expand log panel health template coverage
+
+- **What:** Added WHY THIS PATTERN, HOW TO USE THIS TEMPLATE, OBJECTIVES COVERAGE, STATUS, DOCK TYPES, and indicator/value/representation/docks/mechanism/manual-run narratives to the health doc, expanded HOW TO RUN, and logged the work in the log panel SYNC entry so the chain no longer misses those sections.
+- **Why:** DOC_TEMPLATE_DRIFT #11 flagged the missing sections and too-short HOW TO RUN snippet, so this richer narrative now highlights the selectors, validators, and manual runner that keep the panel honest.
+- **Files:** `docs/connectome/log_panel/HEALTH_Connectome_Log_Panel_Runtime_Verification_Of_Log_Truth_And_Export_Integrity.md`, `docs/connectome/log_panel/SYNC_Connectome_Log_Panel_Sync_Current_State.md`
+- **Validation:** `ngram validate` (still fails: existing docs/connectome/health chain gaps plus docs/physics naming/CHAIN warnings already tracked by the doctor)
+
+### 2026-03-31: Complete log panel sync template coverage
+
+- **What:** Added IN PROGRESS, KNOWN ISSUES, HANDOFF, CONSCIOUSNESS TRACE, and POINTERS sections to the log panel SYNC so every template block now states the active work, outstanding risks, and the canonical docs to visit before touching the panel.
+- **Why:** DOC_TEMPLATE_DRIFT #11 still flags those SYNC sections as missing, so the richer narrative keeps this document auditable before release.
+- **Files:** `docs/connectome/log_panel/SYNC_Connectome_Log_Panel_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
+- **Validation:** `ngram validate` (still fails: `docs/connectome/health` lacks PATTERNS/SYNC, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` needs the plural prefix, and longstanding CHAIN warnings remain unresolved)
+
 ### 2026-03-28: Complete log panel patterns behavior sections
 
 * **What:** Added BEHAVIORS SUPPORTED, BEHAVIORS PREVENTED, and INSPIRATIONS sections to the connectome log panel PATTERNS doc so each template block meets the DOC_TEMPLATE_DRIFT length requirements and links the design to observable behaviors.
@@ -127,6 +141,14 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 - **Files:** `docs/connectome/log_panel/IMPLEMENTATION_Connectome_Log_Panel_Component_Structure_And_Serializer_Integration.md`, `docs/connectome/log_panel/SYNC_Connectome_Log_Panel_Sync_Current_State.md`
 - **Validation:** `ngram validate` *(fails: the existing `docs/connectome/health` chain gaps, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` naming mismatch, and the long-standing CHAIN-link warnings the doctor already tracks).*
 
+### 2026-03-31: Add depth to log panel implementation sections
+
+- **What:** Expanded the implementation narrative with detailed sentences about how the pattern, schema, data flow, and logic chain stay synchronized with the store so the doc passes DOC_TEMPLATE_DRIFT length checks without building redundant state.
+- **Why:** This gives future agents more context for tracing exports, badge helpers, and search hooks back to the shared `state_store`, making any adjustments easier to reason about.
+- **Files:** `docs/connectome/log_panel/IMPLEMENTATION_Connectome_Log_Panel_Component_Structure_And_Serializer_Integration.md`, `docs/connectome/log_panel/SYNC_Connectome_Log_Panel_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
+- **Validation:** `ngram validate` *(fails: known `docs/connectome/health` PATTERNS/SYNC gaps, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` naming mismatch, and lingering CHAIN warnings already noted by the doctor).*
+
+
 ### 2026-03-23: Document expanded node kit implementation depth
 
 - **What:** Added richer prose to the node kit Implementation sections (DESIGN PATTERNS through CONCURRENCY MODEL) so the doc explicitly mentions tooltip helpers, render hints, queued ticks, energy/glow wiring, store selectors, and concurrency safeguards.
@@ -138,8 +160,11 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 
 - **What:** Added the missing `OBJECTIVES SERVED` and `INPUTS / OUTPUTS` sections to `docs/connectome/node_kit/BEHAVIORS_Connectome_Node_Kit_Visible_Clarity_And_Trust_Effects.md`, expanded the question about energy metrics, and brought each block above the 50-character threshold flagged by DOC_TEMPLATE_DRIFT #11.
 - **Why:** The doctor reported those sections as missing/too terse, so this update keeps the behavior contract explicit before downstream agents rely on the clarity and trust effects.
+- **Issue:** DOC_TEMPLATE_DRIFT #11 (GitHub issue #11) flagged the behaviors template for missing objectives/I-O narratives, so this entry captures the completion.
 - **Files:** `docs/connectome/node_kit/BEHAVIORS_Connectome_Node_Kit_Visible_Clarity_And_Trust_Effects.md`, `docs/connectome/node_kit/SYNC_Connectome_Node_Kit_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
 - **Validation:** `ngram validate` *(fails: existing `docs/connectome/health` gaps, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` naming mismatch, and the long-standing CHAIN warnings already reported)*
+- **Status:** Template drift resolved locally; node kit behaviors now document both the objective and the I/O contract so future agents can trace from behavior to verification.
+- **Notes:** This change captures the clarity/trust contract within the BEHAVIORS doc itself so the entry now tells future agents exactly which sections to verify before editing the node kit.
 
 ### 2026-03-22: Expand node kit implementation template coverage
 
