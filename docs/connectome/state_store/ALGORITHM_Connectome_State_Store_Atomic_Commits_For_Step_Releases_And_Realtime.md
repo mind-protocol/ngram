@@ -34,9 +34,36 @@ state_store owns:
 
 All updates for one release must occur in a single commit to prevent visual/log desync.
 
+## OBJECTIVES AND BEHAVIORS
+
+The state_store objective is to keep every release, log export, and realtime tick
+in lockstep with the ledger/focus/timer state so downstream renderers, auditors,
+and health checks always see the same narrative. Behaviorally, this algorithm
+commits a single interlocked bundle (ledger append, focus override, explanation
+sentence, and timer state) for each release while simultaneously preventing helper
+components from emitting their own inconsistent focus/timer transitions outside
+that bundle.
+
+By tying focus, timers, and ledger writes to a single long-lived store action,
+the behavior contract ensures UI renderers can read a canonical state without
+compensating for asynchronous mutations.
+
+This algorithm also forbids untethered timer or focus changes from appearing in
+auxiliary helpers: each atomic commit self-documents the ledger append, focus
+highlight, and timer signal so realtime clients and log exporters always view the
+same released sequence even when latency tries to push updates out of order.
+
+Every rendered release, telemetry export, and realtime tick now aligns to this
+store so downstream readers never chase divergent focus or timer values while
+observability surfaces relay the same ledger sequence recorded here.
+
 ---
 
 ## DATA STRUCTURES
+
+The store intentionally keeps the schema lean so serialization, cloning, and
+inspection remain predictable when health tooling or replay exports read the
+state snapshot.
 
 ### `ConnectomeStoreState`
 
@@ -67,6 +94,9 @@ health_badges:
 [module_name]: {status: OK|WARN|ERROR|UNKNOWN, tooltip: string}
 ```
 
+Each field is intentionally minimal so serialization, replay export, and health
+inspections can consume the state as a simple JSON blob with predictable keys.
+
 ---
 
 ## ALGORITHM: `commit_step_release_append_event_and_set_focus_and_explanation(release)`
@@ -81,16 +111,23 @@ Input: `release` contains:
 
 Steps:
 
-1. Validate minimal shape (never throw; fill `?` if needed)
-2. Append event to ledger (immutable append)
-3. Set active_focus exactly to focus values
-4. Set current_explanation sentence and notes
-5. Apply wait timer updates:
+1. Validate the release payload shape (coerce missing fields rather than throwing)
+2. Append event to `ledger` with immutability so audit exports replay the exact
+   history
+3. Set `active_focus` to the focus identifiers so renderers always highlight the
+   node/edge pair we just committed
+4. Update `current_explanation` sentence and optional notes so narrative
+   surfaces match the store’s voice
+5. Apply wait timer updates atomically:
 
    * start: set started_at_ms=now, stopped_at_ms=null
    * stop: set stopped_at_ms=now (or set started_at_ms=null if reset policy)
-6. Update cursor to cursor_next
-7. Done (one transaction)
+6. Update `cursor` to `cursor_next` to keep the store cursor in sync with the
+   ledger order
+7. Emit any docking events (health, telemetry, retention) tied to this commit so
+   downstream listeners can react before the next render frame
+8. Return the canonical snapshot so callers can read a fresh ledger/focus/timer
+   bundle without another read cycle
 
 ---
 
@@ -128,6 +165,57 @@ Mark the chosen policy in SYNC once decided.
 4. Done
 
 ---
+
+## KEY DECISIONS
+
+- Prefer append-only ledger growth within a session so exported logs always match
+  the UI sequence even when renders lag or telemetry replays run later.
+- Keep the store as the single writer of focus and timer state so renderers cannot
+  race to override each other when the runtime_engine adjusts the stepper.
+- Emit health and telemetry docking events after the commit finishes so those
+  modules see a settled snapshot rather than an intermediate state.
+- Lock cursor updates into the commit so transitions between releases never need
+  extra repaint synchronization.
+- Let the retention policy remain configurable (max entries vs time window) in
+  SYNC notes so runtime_engine can decide without touching the algorithm.
+
+## DATA FLOW
+
+- `runtime_engine` dispatches a release object; the store applies the commit and
+  relays the new snapshot to telemetry adapters and health checks.
+- Realtime ingestion travels through `telemetry_adapter` → `event_model` →
+  `append_realtime_event_and_update_focus_if_needed`, with retention trimming
+  before focus updates when necessary.
+- Export helpers read `ledger`, `current_explanation`, and `active_focus` to
+  materialize logs that mirror the committed sequence.
+- UI selectors rely on `active_focus`, `wait_progress`, `tick_display`, and
+  `cursor` without writing back, trusting the store for focus/timer consistency.
+
+## HELPER FUNCTIONS
+
+- `infer_release_payload(release)` fills missing focus/explanation fields so the
+  commit proceeds even with partial telemetry data.
+- `apply_wait_timer_action(store, action)` converts `start`/`stop` semantics into
+  `wait_progress` timestamp mutations that follow the store’s duration policy.
+- `emit_store_snapshot_to_health(store)` dispatches docking events after the
+  commit so health tooling can validate invariants before the next render tick.
+- `serialize_ledger_export(store)` reuses the immutable `ledger` array to build
+  JSONL/text outputs without reordering or filtering events.
+- `notify_retention_policy(store)` checks eviction thresholds and trims `ledger`
+  entries without mutating focus or explanation state prematurely.
+
+## INTERACTIONS
+
+- `runtime_engine` drives atomic releases and depends on this algorithm to finish
+  commits before downstream renderers rerun.
+- `telemetry_adapter` and `health` gateways consume the emitted snapshots to
+  produce observability signals that synchronize with the ledger order.
+- `flow_canvas`, `log_panel`, and `stepper` selectors read the store but never
+  write so they stay aligned with canonical focus/timers.
+- `ngram` doc export utilities replay the immutable ledger produced here to keep
+  documentation and replay tools consistent with releases.
+- Connectome CLI helpers that snapshot the store expect these helper functions
+  to keep serialization, export, and retention semantics predictable.
 
 ## ALGORITHM: wait progress computation (selector)
 

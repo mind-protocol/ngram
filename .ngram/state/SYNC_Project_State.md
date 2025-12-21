@@ -131,10 +131,10 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 
 ### 2026-03-01: Complete state store health template coverage
 
-- **What:** Filled the WHY THIS PATTERN, HOW TO USE THIS TEMPLATE, OBJECTIVES COVERAGE, STATUS, DOCK TYPES, and INDICATOR sections of `docs/connectome/state_store/HEALTH_Connectome_State_Store_Runtime_Verification_Of_Ledger_And_Timer_Correctness.md` while recording the change in the module SYNC so the health doc now satisfies DOC_TEMPLATE_DRIFT #11.
-- **Why:** The doctor flagged this HEALTH doc for missing required narrative blocks; expanding the template keeps the health chain aligned with the store implementation without touching runtime code.
+- **What:** Added the WHY THIS PATTERN, HOW TO USE THIS TEMPLATE, FLOWS ANALYSIS, OBJECTIVES COVERAGE, STATUS, DOCK TYPES, CHECKER INDEX, and six indicator narratives to `docs/connectome/state_store/HEALTH_Connectome_State_Store_Runtime_Verification_Of_Ledger_And_Timer_Correctness.md` so the document now names each flow, indicator, and status stream tied to the implementation docks.
+- **Why:** DOC_TEMPLATE_DRIFT #11 flagged missing sections and indicator detail, so the expanded coverage keeps the health doc aligned with the PATTERNS/ALGORITHM/VALIDATION chain without altering the implementation.
 - **Files:** `docs/connectome/state_store/HEALTH_Connectome_State_Store_Runtime_Verification_Of_Ledger_And_Timer_Correctness.md`, `docs/connectome/state_store/SYNC_Connectome_State_Store_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
-- **Verification:** `ngram validate` *(still fails for pre-existing docs/connectome/health module doc gaps, docs/engine/membrane naming, and the chain warnings already listed by the doctor).*
+- **Verification:** `ngram validate` *(fails for the known docs/connectome/health PATTERNS/SYNC gaps, the docs/engine/membrane PATTERN naming mismatch, and the legacy CHAIN warnings already listed by the doctor).*
 
 ### 2026-03-05: Document state store sync template coverage
 
@@ -842,3 +842,5 @@ Older content archived to: `SYNC_Project_State_archive_2025-12.md`
 ## ARCHIVE
 
 Older content archived to: `SYNC_Project_State_archive_2025-12.md`
+
+<!-- ISSUE_11_STATE -->

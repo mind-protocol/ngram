@@ -23,6 +23,7 @@ SYNC:            ./SYNC_Connectome_Node_Kit_Sync_Current_State.md
 
 ---
 
+---
 ## INVARIANTS
 
 ### V1: Type and language styling is deterministic
