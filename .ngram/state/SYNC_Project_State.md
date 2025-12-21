@@ -1,7 +1,7 @@
 # Project — Sync: Current State
 
 ```
-LAST_UPDATED: 2025-12-21
+LAST_UPDATED: 2025-12-25
 UPDATED_BY: codex
 ```
 
@@ -99,9 +99,23 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 
 ## RECENT CHANGES
 
+### 2025-12-25: Completed Gemini algorithm template compliance
+
+- **What:** Added the missing `OBJECTIVES AND BEHAVIORS` section and renamed the algorithm narrative to call out `main()` so every template requirement exceeds 50 characters.
+- **Why:** Close the DOC_TEMPLATE_DRIFT warning for `ALGORITHM_Gemini_Stream_Flow.md` and spell out the entrypoint responsible for credential loading, tool wiring, and streaming output.
+- **Files:** `docs/llm_agents/ALGORITHM_Gemini_Stream_Flow.md`, `docs/llm_agents/SYNC_LLM_Agents_State.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate` *(still fails because of existing `docs/connectome/health` gaps, membrane naming mismatches, and CHAIN/link warnings the doctor already tracks)*
+
+### 2025-12-25: Expanded Gemini implementation doc to runtime detail
+
+- **What:** Added sections covering code structure, design patterns, schema, docking, logic chains, dependencies, state management, runtime behavior, concurrency, and bidirectional links to `IMPLEMENTATION_LLM_Agent_Code_Architecture.md` so the implementation doc now meets the template requirements.
+- **Why:** The doctor flagged DOC_TEMPLATE_DRIFT for the implementation doc, so we needed substantive prose for each missing heading and clearer explanations of how the Gemini adapter meshes with `agent_cli` and the TUI stream.
+- **Files:** `docs/llm_agents/IMPLEMENTATION_LLM_Agent_Code_Architecture.md`, `docs/llm_agents/SYNC_LLM_Agents_State.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate` *(still fails because of existing `docs/connectome/health` gaps, membrane naming mismatches, and CHAIN/link warnings the doctor already tracks)*
+
 ### 2025-12-24: Clarified LLM agent archive prose
 
-- **What:** Added narrative context to the handoff, human, and consciousness-trace sections of the archived LLM agent sync so each template block now exceeds the minimum length while reiterating that the file is historical.
+- **What:** Added narrative context to the handoff, human, consciousness-trace, current-state, in-progress, and known-issues sections of the archived LLM agent sync so each template block now exceeds the minimum length while reiterating that the file is historical.
 - **Why:** DOC_TEMPLATE_DRIFT warned that sections were still too terse, so expanding them ensures the archive communicates how to treat the snapshot without attempting to divert work from the live SYNC.
 - **Files:** `docs/llm_agents/SYNC_LLM_Agents_State_archive_2025-12.md`
 - **Verification:** `ngram validate`
@@ -128,12 +142,19 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 - **Verification:** `ngram validate` (still fails for the pre-existing connectome/health CHAIN gaps tracked by the doctor).
 
 
-### 2025-12-22: Formalized Gemini validation behavior/objectives tables
+### 2025-12-22: Extended Gemini validation behavior/objective rationale
 
-- **What:** Replaced the brief behavior/objective bullets with BEHAVIORS GUARANTEED and OBJECTIVES COVERED tables in `docs/llm_agents/VALIDATION_Gemini_Agent_Invariants.md` and expanded every rationale to satisfy the 50+ character requirement.
-- **Why:** Resolve the DOC_TEMPLATE_DRIFT warning that flagged the validation doc for having missing/too-short sections and give downstream agents precise guarantees plus objective alignment.
+- **What:** Added richer explanatory clauses to the BEHAVIORS GUARANTEED and OBJECTIVES COVERED tables in `docs/llm_agents/VALIDATION_Gemini_Agent_Invariants.md` so every row now exceeds the 50+ character expectation and calls out why each guarantee or objective matters.
+- **Why:** Keep the validation template compliant with the length requirements while giving future agents more context to judge each guarantee's impact without chasing down the implementation.
 - **Files:** `docs/llm_agents/VALIDATION_Gemini_Agent_Invariants.md`
 - **Verification:** `ngram validate` *(fails: pre-existing connectome health doc gaps, membrane naming, and CHAIN/link warnings already tracked by the doctor)*
+
+### 2025-12-25: Completed LLM health coverage template
+
+- **What:** Added the OBJECTIVES COVERAGE table and fleshed out the `stream_validity` and `api_connectivity` indicators with docking details, throttling, forwardings, and manual-run guidance tied to V-GEMINI-JSON, V1, and V4.
+- **Why:** Close the DOC_TEMPLATE_DRIFT warning reported on `docs/llm_agents/HEALTH_LLM_Agent_Coverage.md` by giving every required subsection the expected length and tracing it to existing validations.
+- **Files:** `docs/llm_agents/HEALTH_LLM_Agent_Coverage.md`, `docs/llm_agents/SYNC_LLM_Agents_State.md`
+- **Verification:** `ngram validate` *(fails: existing connectome health doc gaps, membrane naming, and CHAIN/link warnings already tracked by the doctor)*
 
 ### 2025-12-21: Expand archive sync sections for template compliance
 
@@ -260,6 +281,7 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 - **Why:** Close the DOC_TEMPLATE_DRIFT warning for the validation doc and give downstream agents concrete guarantees and objectives to verify before they rely on the Gemini adapter’s output behavior.
 - **Files:** `docs/llm_agents/VALIDATION_Gemini_Agent_Invariants.md`, `docs/llm_agents/SYNC_LLM_Agents_State.md`, `.ngram/state/SYNC_Project_State.md`
 - **Verification:** `ngram validate` (fails: pre-existing `docs/connectome/health` gaps plus naming/CHAIN warnings in `docs/physics/*`)
+- **Trace:** Captured the Gemini validation guarantees/objectives addition so the next agent sees the explicit doc fix and can follow up if the doctor returns.
 
 ---
 

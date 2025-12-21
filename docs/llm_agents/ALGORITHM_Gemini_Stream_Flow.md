@@ -28,7 +28,15 @@ The Gemini adapter is a CLI program that loads credentials, initializes the Gemi
 
 ---
 
-## ALGORITHM: Gemini Adapter Execution
+## OBJECTIVES AND BEHAVIORS
+
+The adapter pursues two complementary goals: protect the CLI from provider SDK dependencies while still delivering a consistent, observable stream that the TUI and repair workflow can trust. It behaves like a guarded translator—validating credentials, logging diagnostics to stderr, and emitting structured assistant/tool messages so downstream panels and loggers can interpret every turn without guessing formats.
+
+---
+
+## ALGORITHM: main
+
+The `main()` entrypoint in `ngram/llms/gemini_agent.py` orchestrates argument parsing, credential resolution, tool wiring, and the streaming loop so the subprocess behaves consistently when invoked from `ngram agent` or `ngram repair`.
 
 ### Step 1: Parse Arguments
 

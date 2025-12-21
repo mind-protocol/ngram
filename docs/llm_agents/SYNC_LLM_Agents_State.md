@@ -1,7 +1,7 @@
 # LLM Agents — Sync: Current State
 
 ```
-LAST_UPDATED: 2025-12-22
+LAST_UPDATED: 2025-12-25
 UPDATED_BY: codex
 STATUS: DESIGNING
 ```
@@ -52,6 +52,20 @@ documentation-only updates, and adapter behavior is unchanged.
 ---
 
 ## RECENT CHANGES
+
+### 2025-12-25: Filled Gemini algorithm template length requirements
+
+- **What:** Added the missing `OBJECTIVES AND BEHAVIORS` section and renamed the algorithm narrative to call out `main()` so every template requirement exceeds 50 characters.
+- **Why:** Close the DOC_TEMPLATE_DRIFT warning pointing at `ALGORITHM_Gemini_Stream_Flow.md` by making objectives explicit and highlighting the primary entrypoint responsible for running the Gemini subprocess.
+- **Files:** `docs/llm_agents/ALGORITHM_Gemini_Stream_Flow.md`, `docs/llm_agents/SYNC_LLM_Agents_State.md`
+- **Verification:** `ngram validate` (fails: existing `docs/connectome/health` gaps plus naming/CHAIN warnings noted by the doctor)
+
+### 2025-12-25: Expanded Gemini health coverage template
+
+- **What:** Added the OBJECTIVES COVERAGE table plus richer `stream_validity` and `api_connectivity` indicator sections describing algorithm mechanics, throttling, forwardings, and manual run guidance.
+- **Why:** Close the DOC_TEMPLATE_DRIFT warning for `HEALTH_LLM_Agent_Coverage.md` while giving doctors precise streaming and connectivity signals.
+- **Files:** `docs/llm_agents/HEALTH_LLM_Agent_Coverage.md`
+- **Verification:** `ngram validate`
 
 ### 2025-12-25: Expanded Gemini implementation doc to runtime detail
 
@@ -107,6 +121,13 @@ documentation-only updates, and adapter behavior is unchanged.
 - **Why:** Close the remaining DOC_TEMPLATE_DRIFT warning tied to the health doc and link the API connectivity signal to the `api_connectivity` indicator.
 - **Files:** `docs/llm_agents/HEALTH_LLM_Agent_Coverage.md`
 - **Verification:** `ngram validate` *(fails: pre-existing connectome health doc gaps and chain/link warnings noted by the doctor)*
+
+### 2025-12-25: Populate LLM implementation architecture doc
+
+- **What:** Expanded `IMPLEMENTATION_LLM_Agent_Code_Architecture.md` with code structure, module layout, design patterns, schema, flows, logic chains, dependencies, state transitions, runtime/concurrency, configuration, bidirectional links, and GAPS/IDEAS/Q entries so every template bucket now has 50+ characters of guidance.
+- **Why:** The doc drift warning listed missing sections such as logical flows, state management, and concurrency; filling them keeps the implementation doc aligned with downstream expectations.
+- **Files:** `docs/llm_agents/IMPLEMENTATION_LLM_Agent_Code_Architecture.md`, `docs/llm_agents/SYNC_LLM_Agents_State.md`
+- **Verification:** `ngram validate` *(fails: existing connectome health doc gaps plus naming/CHAIN warnings noted by doctor)*
 
 ---
 

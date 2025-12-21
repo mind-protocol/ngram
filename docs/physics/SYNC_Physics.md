@@ -2,161 +2,32 @@
 
 ```
 STATUS: CANONICAL
-UPDATED: 2025-12-20
+UPDATED: 2025-12-21
 ```
 
 ## MATURITY
 
-STATUS: CANONICAL. The physics module behavior is stable and documented. 
-Core implementation exists for:
-- Physics Tick (`engine/physics/tick.py`)
-- Graph Ops/Queries
-- Canon Holder (`engine/infrastructure/canon/canon_holder.py` - Core logic built, integration pending)
-
-Still pending:
-- Character Handlers (`engine/handlers/`)
-- Speed Controller (`engine/infrastructure/orchestration/speed.py`)
+STATUS: CANONICAL. Core physics tick, graph ops, and health checks are implemented. Handler runtime wiring and speed controller remain planned integrations.
 
 ## CURRENT STATE
 
-Physics documentation is consolidated in `docs/physics/`, the algorithm is canonical. Implementation exists for core tick + graph ops and the base Canon Holder. Runtime integration with the Orchestrator and specific character handlers are planned but not yet built.
+Physics documentation is split into focused fragments (patterns, behaviors, implementation, validation, health). The behavior/implementation docs now live in dedicated folders so each file stays readable, and the previous implementation/validation histories are preserved in the archive.
 
 ## RECENT CHANGES
 
-### 2025-12-20: Attention split + interrupt patterns added
-
-- **What:** Added attention split and interrupt-by-focus patterns plus behaviors under `docs/physics/attention/`.
-- **Why:** Lock interrupt semantics as focus reconfiguration rather than heuristics.
-- **Impact:** Documentation only; no runtime changes.
-
-### 2025-12-20: Attention split validation added
-
-- **What:** Added `VALIDATION_Attention_Split_And_Interrupts.md` under `docs/physics/attention/`.
-- **Why:** Centralize attention/interrupt invariants with their patterns.
-- **Impact:** Documentation only; no runtime changes.
-
-### 2025-12-20: Physics mechanisms doc added
-
-- **What:** Added `ALGORITHM_Physics_Mechanisms.md` to enumerate concrete mechanisms with code references.
-- **Why:** Provide a precise, function-level map of energy/pressure/surfacing mechanics.
-- **Impact:** Documentation only; no runtime changes.
-
-### 2025-12-21: Physics mechanisms doc relocated to algorithms
-
-- **What:** Moved `ALGORITHM_Physics_Mechanisms.md` into `docs/physics/algorithms/` and refreshed CHAIN/POINTERS so every physics doc links to the canonical mechanism map in the algorithms subfolder.
-- **Why:** Squashed the duplicate ALGORITHM doc warning by keeping specialized mechanism docs in the algorithms folder while leaving `ALGORITHM_Physics.md` as the physics root overview.
-- **Impact:** Documentation only; the root physics directory now hosts a single ALGORITHM doc while mechanism-level detail lives under `algorithms/`.
-
-### 2025-12-21: Mechanism map folded into canonical physics algorithm
-
-- **What:** Added the mechanism-level function map to `ALGORITHM_Physics_Energy_Mechanics_And_Link_Semantics.md` and converted `docs/physics/algorithms/ALGORITHM_Physics_Mechanisms.md` into a deprecated stub that points readers to that consolidated section while keeping the implementation references intact.
-- **Why:** Keep a single authoritative ALGORITHM doc while still letting mechanism-focused references resolve through the algorithms folder.
-- **Impact:** Documentation only; no runtime changes.
-- **Validation:** `ngram validate`
-
-### 2025-12-21: Implemented attention split, primes, contradiction pressure (v0)
-
-- **What:** Added mechanism implementations for attention split, PRIMES lag/half-life, and contradiction pressure, plus unit tests.
-- **Why:** Move v0 mechanisms from spec to executable, deterministic logic.
-- **Impact:** New pure computation modules + tests; no runtime wiring yet.
-
-### 2025-12-20: Pending external implementation references
-
-- **What:** Replaced stub file paths with pending import notes in implementation docs.
-- **Why:** Remove broken impl links until upstream code is imported.
-
-### 2025-12-20: Physics tick energy helpers verified
-
-- **What:** Verified `_flow_energy_to_narratives`, `_propagate_energy`, `_decay_energy`, and `_update_narrative_weights` in `engine/physics/tick.py` already contain concrete implementations.
-- **Why:** Repair #16 flagged these helpers as empty; confirmed they are implemented and align with the physics algorithm.
-- **Impact:** No code changes required; verification recorded to prevent repeat repairs.
-- **Repair run:** `18-INCOMPLETE_IMPL-physics-tick`.
-
-### 2025-12-21: Snap display rules + cluster monitor health checks
-
-- **What:** Introduced `engine/physics/display_snap_transition_checker.py` and `engine/physics/cluster_energy_monitor.py` plus targeted tests so the documented Snap phases and large-cluster energy totals are asserted automatically.
-- **Why:** Lock The Snap transition in the health suite and keep real-time watch over energy spikes inside dense clusters before they destabilize the living graph.
-- **Impact:** Health documentation now lists dedicated checkers, algorithm docs point to the new modules, and the sync reflects the removal of the open gaps.
-- **Verification:** `pytest engine/tests/test_physics_display_snap.py engine/tests/test_cluster_energy_monitor.py`.
-
-### 2025-12-20: Ngram Framework Refactor
-
-- **What:** Refactored `IMPLEMENTATION_Physics.md` and renamed `TEST_Physics.md` to its new format (Health content).
-- **Why:** To align with the new ngram documentation standards and emphasize DATA FLOW AND DOCKING.
-- **Impact:** Physics module documentation is now compliant with the latest protocol; Health checks are anchored to concrete docking points.
+- Split `docs/physics/BEHAVIORS_Physics.md` into an overview plus a continuation document so B1–B12 sections stay under 300 lines each.
+- Rebuilt the implementation doc into a concise root plus three focused fragments and archived the prior implementation write-up to `docs/physics/archive/IMPLEMENTATION_Physics_archive_2025-12.md`.
+- Refactored `VALIDATION_Physics.md` into an overview linking to `VALIDATION_Physics_Invariants.md` and `VALIDATION_Physics_Procedures.md` under `docs/physics/VALIDATION_Physics/`.
 
 ## KNOWN ISSUES
 
-`ngram validate` still reports pre-existing doc gaps and broken CHAIN links in other modules; no physics-specific defects are currently open.
+- Handler runtime and speed controller wiring are pending and tracked in the archive sync/pattern notes.
 
-## HANDOFF: FOR AGENTS
+## ARCHIVE REFERENCES
 
-If you touch physics code, use VIEW_Implement_Write_Or_Modify_Code and update this SYNC plus any impacted doc chain entries (ALGORITHM/IMPLEMENTATION/TEST).
+- `docs/physics/archive/SYNC_Physics_archive_2025-12.md` holds the 2025-12 detailed changelog and diagnostics.
+- `docs/physics/archive/SYNC_archive_2024-12.md` preserves the prior year snapshot for traceability.
 
-## HANDOFF: FOR HUMAN
+## HANDOFF NOTES
 
-Physics documentation is aligned and no behavior changes were made; the only remaining work is optional implementation of planned handlers/canon/speed.
-
-## TODO
-
-- [ ] Create `engine/handlers/` and wire flip-triggered handler dispatch.
-- [ ] Implement canon holder and speed controller runtime scaffolding.
-
-## CONSCIOUSNESS TRACE
-
-Focus stayed on doc-template alignment with minimal scope; no code paths were changed, so confidence is high in the consistency of this sync update.
-Attention documentation now uses a single PATTERNS file—interrupt semantics were merged into `PATTERNS_Attention_Energy_Split.md` and the redundant doc was removed to keep the chain canonical.
-
-## POINTERS
-
-- `docs/physics/ALGORITHM_Physics.md` for the canonical physics mechanics.
-- `docs/physics/algorithms/ALGORITHM_Physics_Mechanisms.md` (deprecated stub pointing to the Mechanisms section in `ALGORITHM_Physics_Energy_Mechanics_And_Link_Semantics.md`).
-- `docs/physics/IMPLEMENTATION_Physics.md` for current code entry points.
-- `docs/physics/attention/PATTERNS_Attention_Energy_Split.md` for attention split invariants and focus reconfiguration interrupts.
-- `docs/physics/attention/VALIDATION_Attention_Split_And_Interrupts.md` for attention/interrupt validations.
-- `docs/physics/mechanisms/MECHANISMS_Attention_Energy_Split.md` for sink mass formulas.
-- `docs/physics/mechanisms/MECHANISMS_Primes_Lag_Decay.md` for PRIMES timing.
-- `docs/physics/mechanisms/MECHANISMS_Contradiction_Pressure.md` for contradiction pressure.
-
-## CHAIN
-
-```
-THIS:            SYNC_Physics.md (you are here)
-PATTERNS:        ./PATTERNS_Physics.md
-BEHAVIORS:       ./BEHAVIORS_Physics.md
-ALGORITHMS:      ./ALGORITHM_Physics.md (consolidated: energy, tick, canon, handlers, input, actions, QA, speed)
-ALGORITHMS:      ./algorithms/ALGORITHM_Physics_Mechanisms.md (mechanism-level mapping)
-SCHEMA:          ../schema/SCHEMA_Moments.md
-API:             ./API_Physics.md
-VALIDATION:      ./VALIDATION_Physics.md
-IMPLEMENTATION:  ./IMPLEMENTATION_Physics.md (+ Runtime Patterns from INFRASTRUCTURE.md)
-HEALTH:          ./HEALTH_Physics.md
-IMPL (existing): ../../engine/physics/tick.py, ../../engine/physics/graph/
-IMPL (planned):  ../../engine/handlers/, ../../engine/canon/, ../../engine/infrastructure/orchestration/speed.py
-```
-
----
-
-## Architecture Summary
-
-**The graph is the only truth.**
-
-| Component | Purpose | Status |
-|-----------|---------|--------|
-| Energy System | Characters pump, links route, decay drains | ALGORITHM_Physics.md ✓ |
-| Physics Tick | Pump, transfer, decay, detect flips | ALGORITHM_Physics.md ✓ |
-| Character Handlers | One handler per character, triggered on flip | ALGORITHM_Physics.md ✓ |
-| Flip Detection | Status progression, salience threshold | ALGORITHM_Physics.md ✓ |
-| Canon Holder | Record what becomes real, THEN links | ALGORITHM_Physics.md ✓ |
-| Speed Controller | 1x/2x/3x display modes | ALGORITHM_Physics.md ✓ |
-
----
-
-## Handoff Notes
-
-- v2 architecture is fully documented in ALGORITHM files.
-- **ALGORITHM_Physics.md** is the master document.
-- **Weight vs Energy**: All nodes have both weight (importance over time, slow) and energy (current activation, fast).
-- **Salience = weight × energy** — determines surfacing (threshold = 0.3).
-- Tension is computed from structure, not stored.
-- **Energy IS proximity** — no separate proximity calculation.
+Doc restructures keep the canonical chain intact; future agents should update the new fragments directly and refresh this SYNC when behaviors, implementation, or validation narratives change.

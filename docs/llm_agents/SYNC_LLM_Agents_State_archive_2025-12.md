@@ -15,12 +15,14 @@ Original file: SYNC_LLM_Agents_State.md
 
 - Snapshot reflects the document chain created around 2025-12-20. No live updates are applied to this archive, so the narrative intentionally lags behind the canonical chain (see the pointer below) and should only be consulted for historical reference.
 - Because this archive is frozen, any edits, bug fixes, or template work happens in `docs/llm_agents/SYNC_LLM_Agents_State.md`, and the archive only documents the snapshot that existed on the date shown above.
+- Agents should treat this file as a museum record; refer to `docs/llm_agents/SYNC_LLM_Agents_State.md` for explanations or actions before invoking the archived narrative.
 
 ---
 
 ## IN PROGRESS
 
 - None. This archive is intentionally frozen and no ongoing work is queued here; all active investigations, template repairs, or doc expansions land in the canonical state, so there is nothing new to track on the archived copy until a human requests a fresh snapshot.
+- Because this file is static, there is no owner assigned to it; treat every real handoff as targeting the live SYNC so that the archive remains a baseline.
 
 ---
 
@@ -28,6 +30,7 @@ Original file: SYNC_LLM_Agents_State.md
 
 - Legacy archive files can drift; consult the canonical `SYNC_LLM_Agents_State.md` for active work and treat this archive as a historical artefact rather than a source of truth.
 - This copy does not include any updates made after 2025-12-20 (including the template fixes now described), so it will continue to lag intentionally.
+- There are no parallel issue trackers for this archive; any bugs or template requests should be routed to the live state so they can be triaged, leaving this file to remain a faithful snapshot.
 
 ---
 
@@ -74,7 +77,7 @@ This archive is intentionally simple; its silence is a feature that keeps the na
 
 ### 2025-12-24: Added explicit guidance to archive sections
 
-- **What:** Added clarifying sentences to the handoff, human, and consciousness-trace sections so readers understand the archive is a frozen snapshot and know where to go for active work.
+- **What:** Added clarifying sentences to the handoff, human, consciousness-trace, current state, in-progress, and known-issues sections so readers understand the archive is a frozen snapshot and know where to go for active work.
 - **Why:** DOC_TEMPLATE_DRIFT kept flagging those sections as too short, so extending them with narrative context ensures each area meets the minimum length while reinforcing the archive’s read-only role.
 - **Files:** `docs/llm_agents/SYNC_LLM_Agents_State_archive_2025-12.md`
 
