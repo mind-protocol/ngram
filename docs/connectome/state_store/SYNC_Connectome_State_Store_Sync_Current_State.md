@@ -85,6 +85,7 @@ Confirming that the newly written handoff, pointer, and consciousness prose cont
 - **Files:** `docs/connectome/state_store/ALGORITHM_Connectome_State_Store_Atomic_Commits_For_Step_Releases_And_Realtime.md`
 - **Verification:** `ngram validate`
 - **Trace:** Recorded the extra narrative here so the health harness and telemetry adapter docs can cite this section before celebrating green-check commits.
+- **Impact:** Highlights that the manual `pnpm connectome:health state_store` command now reads the same ledger/focus/timer bundle the algorithm writes, preventing stale hazard reports.
 
 ### 2026-02-11: Clarify state store behavior guardrails
 

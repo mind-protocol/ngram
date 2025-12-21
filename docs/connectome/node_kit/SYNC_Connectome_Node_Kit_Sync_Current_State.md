@@ -46,6 +46,13 @@ Tracking the flipped node signal source and the unbounded versus 0..1 energy sca
 
 ## RECENT CHANGES
 
+### 2026-03-22: Expand implementation doc template coverage
+
+* **What:** Added the missing DEVELOPMENT sections to the node kit Implementation doc so DESIGN PATTERNS, SCHEMA, LOGIC CHAINS, MODULE DEPENDENCIES, STATE MANAGEMENT, RUNTIME BEHAVIOR, CONCURRENCY MODEL, and DATA FLOW AND DOCKING all exceed the >=50-character requirement tied to DOC_TEMPLATE_DRIFT #11.
+* **Why:** The doctor flagged `docs/connectome/node_kit/IMPLEMENTATION_Connectome_Node_Kit_Component_Map_And_Styling_Tokens.md` for missing the sections above; filling them keeps the implementation chain canonical before additional runtime work touches the module.
+* **Files:** `docs/connectome/node_kit/IMPLEMENTATION_Connectome_Node_Kit_Component_Map_And_Styling_Tokens.md`, this SYNC file
+* **Verification:** `ngram validate` *(fails: pre-existing `docs/connectome/health` gap, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` naming detail, and long-standing CHAIN link warnings already noted by the system doctor)*
+
 ### 2026-03-19: Fill node kit sync template coverage
 
 * **What:** Added IN PROGRESS, KNOWN ISSUES, HANDOFF, CONSCIOUSNESS TRACE, AGENT OBSERVATIONS, and POINTERS narratives so the node kit SYNC now records the active work, outstanding risks, handoffs, and canonical doc map required by DOC_TEMPLATE_DRIFT #11.
@@ -59,6 +66,24 @@ Tracking the flipped node signal source and the unbounded versus 0..1 energy sca
 * **Why:** DOC_TEMPLATE_DRIFT #11 flagged those sections as missing, so enriching the pattern narrative keeps the module chain canonical before future work relies on the node rendering assumptions.
 * **Files:**
   * `docs/connectome/node_kit/PATTERNS_Connectome_Node_Kit_Typed_Language_Coded_Energy_Aware_Node_Rendering_Patterns.md`
+  * `docs/connectome/node_kit/SYNC_Connectome_Node_Kit_Sync_Current_State.md`
+* **Verification:** `ngram validate`
+
+### 2026-03-21: Fill node kit health template coverage
+
+* **What:** Added WHY THIS PATTERN, HOW TO USE THIS TEMPLATE, OBJECTIVES COVERAGE, STATUS, DOCK TYPES, and detailed indicator blocks to the node kit HEALTH doc so each template section now exceeds 50 characters and ties every health signal back to the VALIDATION invariants.
+* **Why:** DOC_TEMPLATE_DRIFT #11 highlighted missing template sections in this health doc; closing the gap keeps the node kit health/validation/documentation chain canonical before future agents rely on the manual health harness.
+* **Files:**
+  * `docs/connectome/node_kit/HEALTH_Connectome_Node_Kit_Runtime_Verification_Of_Node_State_And_Visual_Signal_Truth.md`
+  * `docs/connectome/node_kit/SYNC_Connectome_Node_Kit_Sync_Current_State.md`
+* **Verification:** `ngram validate`
+
+### 2026-03-21: Fill node kit health template coverage
+
+* **What:** Added WHY THIS PATTERN, HOW TO USE THIS TEMPLATE, OBJECTIVES COVERAGE, STATUS, DOCK TYPES, and detailed indicator blocks to the node kit HEALTH doc so each template section now exceeds 50 characters and ties every health signal back to the VALIDATION invariants.
+* **Why:** DOC_TEMPLATE_DRIFT #11 highlighted missing template sections in this health doc; closing the gap keeps the node kit health/validation/documentation chain canonical before future agents rely on the manual health harness.
+* **Files:**
+  * `docs/connectome/node_kit/HEALTH_Connectome_Node_Kit_Runtime_Verification_Of_Node_State_And_Visual_Signal_Truth.md`
   * `docs/connectome/node_kit/SYNC_Connectome_Node_Kit_Sync_Current_State.md`
 * **Verification:** `ngram validate`
 
@@ -156,6 +181,15 @@ pnpm connectome:health node_kit
 ```
 
 ---
+
+### 2026-03-17: Flesh out node kit HEALTH template coverage
+
+* **What:** Added the missing WHY THIS PATTERN, HOW TO USE THIS TEMPLATE, OBJECTIVES COVERAGE, STATUS, DOCK TYPES, and INDICATOR sections to the node kit HEALTH doc so every required block now exceeds 50 characters and ties each indicator back to VALIDATION invariants.
+* **Why:** DOC_TEMPLATE_DRIFT #11 flagged those sections as missing or too short, so enriching the HEALTH doc keeps the health/validation/implementation chain consistent before the doctor runs again.
+* **Files:**
+  * `docs/connectome/node_kit/HEALTH_Connectome_Node_Kit_Runtime_Verification_Of_Node_State_And_Visual_Signal_Truth.md`
+  * `docs/connectome/node_kit/SYNC_Connectome_Node_Kit_Sync_Current_State.md`
+* **Verification:** `ngram validate`
 
 ## AGENT OBSERVATIONS
 

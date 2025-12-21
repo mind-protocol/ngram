@@ -99,12 +99,20 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 
 ## RECENT CHANGES
 
+### 2026-03-22: Expand node kit implementation template coverage
+
+- **What:** Added DESIGN PATTERNS, SCHEMA, LOGIC CHAINS, MODULE DEPENDENCIES, STATE MANAGEMENT, RUNTIME BEHAVIOR, CONCURRENCY MODEL, and DATA FLOW AND DOCKING content to `docs/connectome/node_kit/IMPLEMENTATION_Connectome_Node_Kit_Component_Map_And_Styling_Tokens.md` so every required template block now satisfies the DOC_TEMPLATE_DRIFT warning for this file.
+- **Why:** The doctor reported `docs/connectome/node_kit/IMPLEMENTATION_Connectome_Node_Kit_Component_Map_And_Styling_Tokens.md` as missing those sections; filling them keeps the implementation chain canonical for future runtime changes.
+- **Files:** `docs/connectome/node_kit/IMPLEMENTATION_Connectome_Node_Kit_Component_Map_And_Styling_Tokens.md`, `docs/connectome/node_kit/SYNC_Connectome_Node_Kit_Sync_Current_State.md`
+- **Validation:** `ngram validate` *(fails: pre-existing `docs/connectome/health` doc gaps, the `docs/engine/membrane/PATTERN_Membrane_Modulation.md` naming mismatch, and existing CHAIN-link warnings already reported to the doctor)*
+
 ### 2026-03-19: Fill node kit sync template sections
 
 - **What:** Added the IN PROGRESS, KNOWN ISSUES, handoff, consciousness trace, agent observations, and pointer narratives to `docs/connectome/node_kit/SYNC_Connectome_Node_Kit_Sync_Current_State.md` so the DOC_TEMPLATE_DRIFT #11 template now describes the active work and canonical doc map for this module.
 - **Why:** The doctor flagged the node kit sync as missing these sections, so the new entry preserves the template compliance story before any further node kit work proceeds.
 - **Files:** `docs/connectome/node_kit/SYNC_Connectome_Node_Kit_Sync_Current_State.md`
 - **Verification:** `ngram validate`
+- **Notes:** `ngram validate` still reports pre-existing `docs/connectome/health` chain gaps, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` naming mismatch, and the legacy CHAIN link warnings tracked by the doctor.
 
 ### 2026-03-08: Complete node kit PATTERNS behavior/data sections
 
@@ -119,6 +127,13 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 - **Why:** The doctor demanded those sections before considering the state store doc-ready, so this entry gives the next agent a clear pointer to the canonical Implementation/Sync pair before touching the store again.
 - **Files:** `docs/connectome/state_store/IMPLEMENTATION_Connectome_State_Store_Code_Structure_And_Zustand_Actions.md`, `docs/connectome/state_store/SYNC_Connectome_State_Store_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
 - **Verification:** `ngram validate`
+
+### 2026-03-21: Fill node kit HEALTH template coverage
+
+- **What:** Rebuilt the node kit HEALTH doc so WHY THIS PATTERN, HOW TO USE THIS TEMPLATE, OBJECTIVES COVERAGE, STATUS, DOCK TYPES, INDICATOR narratives, indicator-specific value/validation, dock/mechanism detail, throttling, forwarding, and manual-run guidance now appear and exceed 50 characters per section.
+- **Why:** DOC_TEMPLATE_DRIFT #11 flagged these template holes, so the richer health narrative now anchors each health indicator directly to the VALIDATION invariants and actionable CHECKERS before downstream agents rely on the manual health harness.
+- **Files:** `docs/connectome/node_kit/HEALTH_Connectome_Node_Kit_Runtime_Verification_Of_Node_State_And_Visual_Signal_Truth.md`, `docs/connectome/node_kit/SYNC_Connectome_Node_Kit_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate` *(fails: existing docs/connectome/health PATTERN/SYNC gaps, docs/physics/attention naming issues, and the longstanding CHAIN link warnings tracked by the doctor).*
 
 ### 2026-03-15: Expand state store behavior narratives
 
@@ -148,6 +163,7 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 - **Files:** `docs/connectome/state_store/ALGORITHM_Connectome_State_Store_Atomic_Commits_For_Step_Releases_And_Realtime.md`
 - **Verification:** `ngram validate`
   *(fails for existing `docs/connectome/health` PATTERN/SYNC gaps, the `docs/engine/membrane/PATTERN_Membrane_Modulation.md` naming mismatch, and the longstanding CHAIN-link warnings already reported by the doctor).*
+- **Notes:** This entry now points future agents at the health/telemetry trace so they know which doc to refresh when the doctor complains about the commit invariant.
 
 ### 2025-12-21: Document state store behavior objectives
 

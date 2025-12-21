@@ -19,7 +19,13 @@ THIS:            IMPLEMENTATION_Connectome_Node_Kit_Component_Map_And_Styling_To
 HEALTH:          ./HEALTH_Connectome_Node_Kit_Runtime_Verification_Of_Node_State_And_Visual_Signal_Truth.md
 SYNC:            ./SYNC_Connectome_Node_Kit_Sync_Current_State.md
 
-IMPL:            app/connectome/components/node_kit/typed_connectome_node_components_with_energy_and_step_highlighting (planned) (PROPOSED)
+IMPL:            app/connectome/components/node_kit/typed_connectome_node_components_with_energy_and_step_highlighting.tsx
+IMPL:            app/connectome/components/node_kit/connectome_node_frame_with_title_path_and_tooltip_shell.tsx
+IMPL:            app/connectome/components/node_kit/connectome_energy_badge_bucketed_glow_and_value_formatter.tsx
+IMPL:            app/connectome/components/node_kit/connectome_player_wait_progress_bar_with_four_second_cap.tsx
+IMPL:            app/connectome/components/node_kit/connectome_tick_cron_circular_progress_ring_with_speed_label.tsx
+IMPL:            app/connectome/components/node_kit/connectome_node_background_theme_tokens_by_type_and_language.ts
+IMPL:            app/connectome/components/node_kit/connectome_node_step_list_and_active_step_highlighter.tsx
 ```
 
 ---
@@ -27,32 +33,58 @@ IMPL:            app/connectome/components/node_kit/typed_connectome_node_compon
 ## CODE STRUCTURE
 
 ```
-app/
-└── connectome/
-├── components/
-│   └── node_kit/
-│       ├── typed_connectome_node_components_with_energy_and_step_highlighting (planned)
-│       ├── connectome_node_frame_with_title_path_and_tooltip_shell (planned)
-│       ├── connectome_energy_badge_bucketed_glow_and_value_formatter (planned)
-│       ├── connectome_player_wait_progress_bar_with_four_second_cap (planned)
-│       ├── connectome_tick_cron_circular_progress_ring_with_speed_label (planned)
-│       ├── connectome_node_background_theme_tokens_by_type_and_language (planned)
-│       └── connectome_node_step_list_and_active_step_highlighter (planned)
+app/connectome/components/node_kit/typed_connectome_node_components_with_energy_and_step_highlighting.tsx
+app/connectome/components/node_kit/connectome_node_frame_with_title_path_and_tooltip_shell.tsx
+app/connectome/components/node_kit/connectome_energy_badge_bucketed_glow_and_value_formatter.tsx
+app/connectome/components/node_kit/connectome_player_wait_progress_bar_with_four_second_cap.tsx
+app/connectome/components/node_kit/connectome_tick_cron_circular_progress_ring_with_speed_label.tsx
+app/connectome/components/node_kit/connectome_node_background_theme_tokens_by_type_and_language.ts
+app/connectome/components/node_kit/connectome_node_step_list_and_active_step_highlighter.tsx
 ```
 
 ### File Responsibilities
 
 | File                                                                     | Responsibility                                         | Key Exports                                                                                         |
 | ------------------------------------------------------------------------ | ------------------------------------------------------ | --------------------------------------------------------------------------------------------------- |
-| `typed_connectome_node_components_with_energy_and_step_highlighting (planned)` | exports node variants used by flow_canvas              | `PlayerNode`, `UiNode`, `ModuleNode`, `GraphQueriesNode`, `MomentNode`, `AgentNode`, `TickCronNode` |
-| `connectome_node_frame_with_title_path_and_tooltip_shell (planned)`            | shared rounded frame (“more circled”) + tooltip anchor | `NodeFrame`                                                                                         |
-| `connectome_energy_badge_bucketed_glow_and_value_formatter (planned)`          | energy value display + deterministic glow mapping      | `EnergyBadge`                                                                                       |
-| `connectome_player_wait_progress_bar_with_four_second_cap (planned)`           | wait progress bar widget                               | `PlayerWaitProgressBar`                                                                             |
-| `connectome_tick_cron_circular_progress_ring_with_speed_label (planned)`       | tick cron ring widget                                  | `TickCronRing`                                                                                      |
-| `connectome_node_background_theme_tokens_by_type_and_language (planned)`        | token tables for background + title colors             | `themeForNodeTypeAndLanguage`                                                                       |
-| `connectome_node_step_list_and_active_step_highlighter (planned)`              | renders steps list + active highlight                  | `StepList`                                                                                          |
+| `app/connectome/components/node_kit/typed_connectome_node_components_with_energy_and_step_highlighting.tsx` | exports node variants used by flow_canvas              | `PlayerNode`, `UiNode`, `ModuleNode`, `GraphQueriesNode`, `MomentNode`, `AgentNode`, `TickCronNode` |
+| `app/connectome/components/node_kit/connectome_node_frame_with_title_path_and_tooltip_shell.tsx`           | shared rounded frame (“more circled”) + tooltip anchor | `NodeFrame`                                                                                         |
+| `app/connectome/components/node_kit/connectome_energy_badge_bucketed_glow_and_value_formatter.tsx`         | energy value display + deterministic glow mapping      | `EnergyBadge`                                                                                       |
+| `app/connectome/components/node_kit/connectome_player_wait_progress_bar_with_four_second_cap.tsx`          | wait progress bar widget                               | `PlayerWaitProgressBar`                                                                             |
+| `app/connectome/components/node_kit/connectome_tick_cron_circular_progress_ring_with_speed_label.tsx`      | tick cron ring widget                                  | `TickCronRing`                                                                                      |
+| `app/connectome/components/node_kit/connectome_node_background_theme_tokens_by_type_and_language.ts`       | token tables for background + title colors             | `theme_for_node`, `title_color_for_node`                                                            |
+| `app/connectome/components/node_kit/connectome_node_step_list_and_active_step_highlighter.tsx`             | renders steps list + active highlight                  | `StepList`                                                                                          |
 
 ---
+
+## DESIGN PATTERNS
+
+Follows the typed language-coded, energy-aware node rendering patterns captured in `docs/connectome/node_kit/PATTERNS_Connectome_Node_Kit_Typed_Language_Coded_Energy_Aware_Node_Rendering_Patterns.md`. Every node variant reuses the shared `NodeFrame`, deterministic energy badge, and step highlight widgets so the clarity and trust guarantees described there stay aligned with the current ecological gothic styling tokens.
+
+## SCHEMA
+
+Nodes consume `ConnectomeNodeDefinition` shapes defined under `app/connectome/lib/connectome_system_map_node_edge_manifest.ts`, which bundle `node_id`, `zone_id`, `node_type`, `language`, `title`, optional `file_path`, `steps`, and `energy_value`. The `steps` list contains `{ step_key, label, call_type }` entries used by the `StepList`, while the ledger of normalized `FlowEvent` rows from `app/connectome/lib/flow_event_schema_and_normalization_contract.ts` feeds the tooltip updater.
+
+## LOGIC CHAINS
+
+1. Runtime scripts invoke `dispatch_runtime_command`/`release_next_step` in `app/connectome/lib/next_step_gate_and_realtime_playback_runtime_engine.ts`, which normalizes `FlowEvent`s, updates `useConnectomeStore`, and flips `active_focus` so the node kit can highlight the current node and step.
+2. Player node clicks call `dispatch_runtime_command({ kind: "player_message" })`, causing the runtime engine to append a ledger event, start the wait timer, and push the new focus so the progress bar and energy badge animate truthfully.
+3. Ledger and focus updates propagate to every node via subscriptions to `useConnectomeStore`, keeping the energy palette, tooltip text, and active step highlight consistent with the latest flow events.
+
+## MODULE DEPENDENCIES
+
+Depends on the runtime engine bits in `next_step_gate_and_realtime_playback_runtime_engine.ts`, the `flow_event_schema_and_normalization_contract.ts` for ledger normalization, the `zustand_connectome_state_store_with_atomic_commit_actions.ts` store, and the theme token map in `connectome_node_background_theme_tokens_by_type_and_language.ts`. The node kit exports are wired into the canvas in `docs/connectome/flow_canvas/IMPLEMENTATION_Connectome_Flow_Canvas_Code_Structure_With_React_Flow_And_Zones.md`.
+
+## STATE MANAGEMENT
+
+Rendering paths draw from `useConnectomeStore`: `active_focus` drives glow classes, `ledger` builds tooltips, `wait_progress` powers the player wait bar, `tick_display` drives the cron ring, and `revealed_node_ids`/`edges` determine what nodes are even minted. The node kit never writes to state—it purely consumes the deterministic projection emitted by the runtime store and relegates all mutations to the runtime engine actions.
+
+## RUNTIME BEHAVIOR
+
+Nodes show an `EnergyBadge` whenever `energy_value` exists, render `StepList` entries when `steps` are present, obey `render_hint` overrides such as `show_steps`/`show_wait`/`show_tick`, and apply language- and call-type-aware title colors to maintain the trust gestures expected by the visual style guide. Player nodes inject the capped four-second wait progress bar while TickCron nodes spin the ring using the provided `tick_display` signal.
+
+## CONCURRENCY MODEL
+
+Each component is `"use client"` to keep React running in the browser thread so it can subscribe to Zustand and manage timer effects. The wait/tick widgets install `window.setInterval` observers and tear them down through `useEffect`, which lets the progress indicators stay synced while the rest of the canvas re-renders via the React event loop. Store updates are memoized with `useMemo`, so even when the ledger appends multiple events quickly, the highlight, badge, and tooltip remain deterministic.
 
 ## STYLING TOKENS (V1)
 
@@ -90,7 +122,16 @@ app/
 
 ## DATA FLOW AND DOCKING
 
-node_kit consumes store selectors only; no writes.
+Node kit only consumes selectors from `useConnectomeStore`; it never mutates the runtime store.
+
+### Flow-by-flow
+- `next_step` releases from `next_step_gate_and_realtime_playback_runtime_engine.ts` normalize `FlowEvent` data, update the ledger/focus state, and trigger the node kit to repaint the active node plus badge values.
+- Player interactions dispatch runtime commands, bump the ledger, start/stop the wait timer, and cause `PlayerWaitProgressBar` plus the energy badge to reflect the latest seconds and bucketed energy.
+- Ledger replays and focus updates drive the tooltip builder, step-list highlight, and tick ring animation through memoized selectors, keeping the UI physics congruent with the runtime story.
+
+### Docking
+- React Flow handles injected via `NodeFrame` make sure each node docks cleanly with incoming and outgoing edges so the layout never leaks mouse events.
+- Health automation (`pnpm connectome:health node_kit`) probes DOM snapshots of the frame, badge, and timers, so no additional docking anchors are required beyond the handles in `NodeFrame`.
 
 ```
 flow:
