@@ -23,6 +23,30 @@ Physics documentation is consolidated in `docs/physics/`, the algorithm is canon
 
 ## RECENT CHANGES
 
+### 2025-12-20: Attention split + interrupt patterns added
+
+- **What:** Added attention split and interrupt-by-focus patterns plus behaviors under `docs/physics/attention/`.
+- **Why:** Lock interrupt semantics as focus reconfiguration rather than heuristics.
+- **Impact:** Documentation only; no runtime changes.
+
+### 2025-12-20: Attention split validation added
+
+- **What:** Added `VALIDATION_Attention_Split_And_Interrupts.md` under `docs/physics/attention/`.
+- **Why:** Centralize attention/interrupt invariants with their patterns.
+- **Impact:** Documentation only; no runtime changes.
+
+### 2025-12-20: Physics mechanisms doc added
+
+- **What:** Added `ALGORITHM_Physics_Mechanisms.md` to enumerate concrete mechanisms with code references.
+- **Why:** Provide a precise, function-level map of energy/pressure/surfacing mechanics.
+- **Impact:** Documentation only; no runtime changes.
+
+### 2025-12-21: Physics mechanisms doc relocated to algorithms
+
+- **What:** Moved `ALGORITHM_Physics_Mechanisms.md` into `docs/physics/algorithms/` so the physics root keeps one canonical ALGORITHM doc while detailed mechanisms live under `algorithms/`.
+- **Why:** Squashed the duplicate ALGORITHM doc warning by keeping specialized mechanism docs in the algorithms subfolder.
+- **Impact:** Documentation only; CHAIN/POINTERS now reference the new path.
+
 ### 2025-12-20: Pending external implementation references
 
 - **What:** Replaced stub file paths with pending import notes in implementation docs.
@@ -66,11 +90,15 @@ Physics documentation is aligned and no behavior changes were made; the only rem
 ## CONSCIOUSNESS TRACE
 
 Focus stayed on doc-template alignment with minimal scope; no code paths were changed, so confidence is high in the consistency of this sync update.
+Attention documentation now uses a single PATTERNS file—interrupt semantics were merged into `PATTERNS_Attention_Energy_Split.md` and the redundant doc was removed to keep the chain canonical.
 
 ## POINTERS
 
 - `docs/physics/ALGORITHM_Physics.md` for the canonical physics mechanics.
+- `docs/physics/algorithms/ALGORITHM_Physics_Mechanisms.md` for mechanism-level mapping to code.
 - `docs/physics/IMPLEMENTATION_Physics.md` for current code entry points.
+- `docs/physics/attention/PATTERNS_Attention_Energy_Split.md` for attention split invariants and focus reconfiguration interrupts.
+- `docs/physics/attention/VALIDATION_Attention_Split_And_Interrupts.md` for attention/interrupt validations.
 
 ## CHAIN
 
@@ -79,6 +107,7 @@ THIS:            SYNC_Physics.md (you are here)
 PATTERNS:        ./PATTERNS_Physics.md
 BEHAVIORS:       ./BEHAVIORS_Physics.md
 ALGORITHMS:      ./ALGORITHM_Physics.md (consolidated: energy, tick, canon, handlers, input, actions, QA, speed)
+ALGORITHMS:      ./algorithms/ALGORITHM_Physics_Mechanisms.md (mechanism-level mapping)
 SCHEMA:          ../schema/SCHEMA_Moments.md
 API:             ./API_Physics.md
 VALIDATION:      ./VALIDATION_Physics.md

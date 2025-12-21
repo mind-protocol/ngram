@@ -47,6 +47,35 @@ Randomized doctor issue ordering in `ngram/doctor.py` to distribute agent focus,
 Fixed the connectome bundle splitter to only treat `### <path>.md` headers as section boundaries, then re-ran it on `data/connectome/1.md` through `data/connectome/10.md` to prevent truncating sections at internal headings.
 Added engine and tools doc chains plus a populated `modules.yaml` mapping; after fixing YAML indentation and module coverage, re-ran `ngram doctor --format json` and reduced critical issues to 18 (now dominated by broken impl links and long prompt/sql signals).
 Normalized implementation docs across CLI/core_utils/physics/connectome/infra/models to remove broken impl links (pending-import notes, full-path references, and doc link cleanups). Latest `ngram doctor --format json` reports 0 critical issues (warning/info remain).
+Implemented the initial Next.js connectome frontend under `app/` with a `/connectome` route, runtime engine stepper, Zustand store, FlowEvent normalization, React Flow canvas, node/edge kits, and unified log panel. Added Next.js configuration files, package manifest, and mapped the new frontend module in `modules.yaml`.
+Replaced `next/font/google` usage with a CSS font import to avoid build failures in the restricted environment; Next.js build now completes successfully for `/connectome`.
+Added `docs/connectome/VISUAL_STYLEGUIDE_Connectome.md` to define the ecological gothic / abyssal materialism visual language, palette, typography, component styling, and motion rules for the Connectome UI.
+Renamed CLI agent selection to `--model` (deprecated `--agents` alias preserved), defaulted repair/TUI selection to codex, and set the Codex subprocess to `gpt-5.1-codex-mini`.
+Enhanced connectome mechanisms with explicit Stepper/Realtime controls, live wait/tick progress updates, colored log semantics, and edge pulse layering hooks, then verified `npm run build` for `/connectome`.
+Replaced the Connectome visual style guide with the ecological gothic manifesto and implemented the semantic palette, typography, and component color mapping across the frontend styles.
+Configured ESLint (Base) for Next.js, installed matching `eslint-config-next@14.2.5` and `eslint@8.57.1`, and ran `npm run lint` (clean, with a TypeScript 5.5.4 support warning).
+Re-ran `npm run build` after the ESLint configuration; build completed successfully for `/connectome`.
+Added physics-based easing tokens and applied inertial/viscous/tension motion rules to node focus and edge pulse animations.
+Re-ran `npm run lint` (clean, with TypeScript 5.5.4 support warning) and `npm run build` after motion updates; build succeeded.
+Implemented edge pulse clamping to node boundaries and energy-based stroke modulation for visible transfer magnitude.
+Re-ran `npm run lint` (clean, with TypeScript 5.5.4 support warning) and `npm run build`; build succeeded after edge clamp changes.
+Added hover tooltips for nodes/edges/log rows and animated energy packets along active edges for clearer directionality.
+Re-ran `npm run lint` (clean, with TypeScript 5.5.4 support warning) and `npm run build` after tooltip/energy packet changes; build succeeded.
+Installed `d3-force` and switched the connectome canvas to a force-directed layout seeded by zones to scale to large graphs.
+Re-ran `npm run lint` (clean, with TypeScript 5.5.4 support warning) and `npm run build`; build completed with exit code 0 after the force layout change.
+Re-ran tests: `npm run lint` (clean) and `npm run build` (exit 0).
+Added `GraphReadOps` in `engine/physics/graph/graph_ops.py` to query the `seed` graph via Cypher or simple natural-language parsing, returning nodes/links without embeddings.
+Added a Connectome semantic search panel (threshold + hops sliders) and a search API route that queries FalkorDB `seed` via a Python CLI helper using embeddings without returning them.
+Re-ran `npm run lint` (clean, with TypeScript 5.5.4 support warning) and `npm run build` (exit 0) after adding search + graph read wiring.
+Updated semantic search to use embeddings (never returned) and re-ran `npm run lint` (clean) + `npm run build` (exit 0).
+
+## RECENT CHANGES
+
+### 2025-12-21: Physics ALGORITHM doc layout cleaned
+
+- **What:** Relocated `ALGORITHM_Physics_Mechanisms.md` into `docs/physics/algorithms/` and updated the SYNC, behaviors, and CHAIN pointers so only `ALGORITHM_Physics.md` lives at the physics root.
+- **Why:** Remove the duplicate ALGORITHM document warning while keeping the function-level mechanism map accessible inside the algorithms subfolder.
+- **Impact:** Documentation only; physics sync and pointer lists now reference the new path.
 
 ---
 
@@ -136,33 +165,14 @@ The refactor command can standardize doc moves once the import is staged.
 
 ---
 
-## MODULE COVERAGE
+## DOC REPAIR: Attention Patterns
 
-Check `modules.yaml` (project root) for full manifest.
+- Merged interrupt-focused reasoning into `docs/physics/attention/PATTERNS_Attention_Energy_Split.md`, added the focus-reconfiguration principles, data, and scope details, and deleted the redundant `PATTERNS_Interrupt_By_Focus_Reconfiguration.md`.
+- Pointed the attention behavior/validation chains and `docs/physics/SYNC_Physics.md` at the canonical doc and recorded the cleanup in the physics sync trace.
 
-**Mapped modules:**
-| Module | Code | Docs | Maturity |
-|--------|------|------|----------|
-| cli_core | `ngram/**` | `docs/cli/core/` | CANONICAL |
-| cli_prompt | `ngram/prompt.py` | `docs/cli/prompt/` | DESIGNING |
-| core_utils | `ngram/core_utils.py` | `docs/core_utils/` | CANONICAL |
-| protocol_doctor | `ngram/doctor*.py` | `docs/protocol/doctor/` | DESIGNING |
-| llm_agents | `ngram/llms/**` | `docs/llm_agents/` | DESIGNING |
-| tui | `ngram/tui/**` | `docs/tui/` | DESIGNING |
-| engine_root | `engine/**` | `docs/engine/` | DESIGNING |
-| engine_models | `engine/models/**` | `docs/engine/models/` | DESIGNING |
-| engine_moments | `engine/moments/**` | `docs/engine/moments/` | DESIGNING |
-| engine_moment_graph | `engine/moment_graph/**` | `docs/engine/moment-graph-engine/` | DESIGNING |
-| engine_physics | `engine/physics/**` | `docs/physics/` | DESIGNING |
-| engine_physics_graph | `engine/physics/graph/**` | `docs/physics/graph/` | DESIGNING |
-| engine_api | `engine/api/**` | `docs/infrastructure/api/` | DESIGNING |
-| engine_scene_memory | `engine/infrastructure/memory/**` | `docs/infrastructure/scene-memory/` | DESIGNING |
-| tools | `tools/**` | `docs/tools/` | DESIGNING |
+## ARCHIVE
 
-**Unmapped code:** none recorded in `modules.yaml` (run `ngram validate` to confirm).
-
-**Coverage notes:**
-Graph ownership modules are staged; the engine root module now covers unclaimed engine paths pending deeper module splits.
+Older content archived to: `SYNC_Project_State_archive_2025-12.md`
 
 
 ---
