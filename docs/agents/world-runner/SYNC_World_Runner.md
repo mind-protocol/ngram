@@ -19,6 +19,27 @@ The World Runner is complete. It operates as an adapter between the Python game 
 
 ## RECENT CHANGES
 
+### 2026-01-09: Annotate world runner health run instructions
+
+- **What:** Added a note about the 0.5/min base cadence, 5/min bursts, and the `background_consistency`/`adapter_resilience` indicator pair in the Health doc, plus a new manual command reference so operators know which `ngram validate` run to replay.
+- **Why:** DOC_TEMPLATE_DRIFT wanted more explicit flow and manual-run guidance; this entry documents those tweaks and points future agents to the same verification script.
+- **Files:** `docs/agents/world-runner/HEALTH_World_Runner.md`, `docs/agents/world-runner/SYNC_World_Runner.md`
+- **Verification:** `ngram validate`
+
+### 2026-01-09: Extend world runner health flow narrative
+
+- **What:** Added a paragraph that records the 0.5/min base cadence, 5/min bursts, and how the `background_consistency`/`adapter_resilience` indicator pair derivations feed VALIDATION so the doctor knows what to sample.
+- **Why:** DOC_TEMPLATE_DRIFT highlighted the health doc for missing the explicit flow and indicator language; this extension keeps the ledger explicit before future agents edit the runner flows.
+- **Files:** `docs/agents/world-runner/HEALTH_World_Runner.md`, `docs/agents/world-runner/SYNC_World_Runner.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate`
+
+### 2026-01-10: Reaffirm world runner archive freeze workflow
+
+- **What:** Added a note to the `IN PROGRESS` section so it now explains that updates require an explicit freeze, the TODO/RECENT CHANGES entries must be updated accordingly, and that agents should not treat this file as an evolving plan.
+- **Why:** This clarification keeps the archive from being misused as a live plan and ensures future agents only adjust it during deliberate historical snapshots.
+- **Files:** `docs/agents/world-runner/archive/SYNC_archive_2024-12.md`, `docs/agents/world-runner/SYNC_World_Runner.md`
+- **Verification:** `ngram validate`
+
 ### 2026-01-07: Populate archive sync template sections
 
 - **What:** Documented MATURITY, CURRENT STATE, IN PROGRESS, KNOWN ISSUES, HANDOFFS (agents + human), TODO, CONSCIOUSNESS TRACE, and POINTERS inside `docs/agents/world-runner/archive/SYNC_archive_2024-12.md` so the ledger now satisfies the DOC_TEMPLATE_DRIFT requirements while leaving the archived payloads untouched.

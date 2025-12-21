@@ -30,11 +30,14 @@ Each section stresses that the payload is historical: no CLI commands read from 
 - **What:** Added MATURITY, CURRENT STATE, KNOWN ISSUES, TODO, HANDOFF narratives, CONSCIOUSNESS TRACE, and POINTERS so the archive sync now satisfies the DOC_TEMPLATE_DRIFT template requirements while leaving the archived payloads untouched.
 - **Why:** The archive previously lacked the mandatory template sections, so filling them ensures downstream agents can read a complete state snapshot, trust the structure, and see exactly where the live contracts live.
 - **Verification:** `ngram validate` confirms that the archive document now meets the template expectations along with the rest of the world-runner doc chain.
+- **Legacy note:** Every added section includes a reminder that the December 2024 payloads are historical; leave the JSON samples and validation rules unchanged unless a new archival cut is authorized.
 
 ## IN PROGRESS
 
 No active documentation or implementation work is happening inside this archive; the snapshot is frozen until a new historical cut needs recording.
 The inert status is documented so future agents realize the file is read-only and does not expect runnable content.
+Any future archival notes must go through a deliberate freeze process, so add them to the TODO list and RECENT CHANGES only after explicit approval from the module owner.
+This keeps the archive from being treated as an evolving plan and preserves the December 2024 behavior cache for auditors rather than forcing it into the live workflow.
 
 ## KNOWN ISSUES
 
@@ -44,6 +47,7 @@ The inert status is documented so future agents realize the file is read-only an
 
 Treat this file as a historical snapshot only. For active work on the world-runner module, follow `VIEW_Implement_Write_Or_Modify_Code.md` and update the canonical `docs/agents/world-runner/SYNC_World_Runner.md` instead.
 This entry reminds agents to keep the operational contract in the live SYNC document so the archive does not drift into acting like a working plan.
+Also use the added HANDOFF lines to skip this archive when verifying current behavior or refreshing the World Runner CLI.
 
 ## HANDOFF: FOR HUMAN
 
@@ -64,6 +68,7 @@ The trace now explicitly says the archive is deterministic history, so agents do
 - `docs/agents/world-runner/SYNC_World_Runner.md` describes the current live work; use it whenever you need the active status.
 - The CHAIN references below point to PATTERNS/BEHAVIORS/ALGORITHM/VALIDATION/IMPLEMENTATION/TEST docs that explain the live world-runner experience.
 - Use `docs/agents/world-runner/archive/SYNC_archive_2024-12.md` to trace the 2024 payloads and the JSON schema samples linked above.
+- Consider the archive’s `Purpose` and `MAINTENANCE` sections whenever you or future agents are asked to reference historical samples during debugging or audit reviews.
 
 ---
 
