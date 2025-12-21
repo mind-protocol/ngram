@@ -94,6 +94,8 @@ Ran `npm run lint` after WebGL renderer swap (clean; TypeScript 5.5.4 unsupporte
 Preserved player click-to-message by hit-testing the player node in the WebGL canvas.
 Ran `npm run lint` after WebGL click handling (clean; TypeScript 5.5.4 unsupported warning).
 
+The membrane PATTERN now also captures the dynamic modulation function guidance so a single doc remains canonical.
+
 ## RECENT CHANGES
 
 ### 2025-12-21: Harden API SSE delivery and router schema testing
@@ -168,10 +170,10 @@ Ran `npm run lint` after WebGL click handling (clean; TypeScript 5.5.4 unsupport
 
 ### 2025-12-21: Added Snap and cluster energy monitoring checks
 
-- **What:** Introduced `engine.physics.monitoring` helpers and `engine/tests/test_physics_monitoring.py` so Snap display rules and large-cluster energy levels are checked automatically.
-- **Why:** Close the last physics SYNC gaps by covering the documented transition behaviors and providing real-time cluster energy visibility.
-- **Impact:** Health docs and SYNC now reference the automated checks; CI now includes targeted unit tests (`pytest engine/tests/test_physics_monitoring.py`).
-- **Verification:** `pytest engine/tests/test_physics_monitoring.py`
+- **What:** Introduced `engine/physics/display_snap_transition_checker.py` and `engine/physics/cluster_energy_monitor.py` plus targeted tests so The Snap phases and large-cluster energy totals are asserted automatically.
+- **Why:** Close the last physics SYNC gaps by capturing the documented transition behavior and keeping real-time cluster energy visibility live for the health suite.
+- **Impact:** Health docs now list the dedicated checkers and the CI pipeline runs `pytest engine/tests/test_physics_display_snap.py engine/tests/test_cluster_energy_monitor.py` to guard both features.
+- **Verification:** `pytest engine/tests/test_physics_display_snap.py engine/tests/test_cluster_energy_monitor.py`
 
 ### 2025-12-21: Consolidated CLI archive SYNC docs
 
