@@ -33,6 +33,13 @@ Implemented LogPanel with a “Now” section, ledger list, duration color rules
 
 ## RECENT CHANGES
 
+### 2025-12-21: Complete log panel validation template trace
+
+* **What:** Added BEHAVIORS GUARANTEED, OBJECTIVES COVERED, PROPERTIES, and SYNC STATUS to the validation doc so every template block preserves the ledger, duration, and export invariants that keep the audit trail honest.
+* **Why:** The doctor reported those sections as missing or too terse, so this update documents the richer prose before downstream agents rely on the validation chain.
+* **Files:** `docs/connectome/log_panel/VALIDATION_Connectome_Log_Panel_Invariants_For_Truthful_Durations_And_Stable_Export.md`, this SYNC file
+* **Validation:** `ngram validate` *(fails: existing docs/connectome/health PATTERNS/SYNC gaps plus docs/physics naming and CHAIN warnings already tracked elsewhere).*
+
 ### 2026-03-31: Expand log panel health template coverage
 
 * **What:** Added the missing WHY THIS PATTERN, HOW TO USE THIS TEMPLATE, OBJECTIVES COVERAGE, STATUS, DOCK TYPES, and indicator/value/representation/docks/mechanism/manual-run narratives to the health doc, plus a longer HOW TO RUN section so every block now exceeds the DOC_TEMPLATE_DRIFT expectation.

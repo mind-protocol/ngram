@@ -99,6 +99,13 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 
 ## RECENT CHANGES
 
+### 2026-03-31: Complete log panel algorithm template sections
+
+- **What:** Added OBJECTIVES AND BEHAVIORS, DATA STRUCTURES, DATA FLOW, the high-level `render_full_log_panel` description, KEY DECISIONS, HELPER FUNCTIONS, INTERACTIONS, and richer COMPLEXITY prose to the log panel algorithm doc and recorded the update in the log panel SYNC so the chain now satisfies DOC_TEMPLATE_DRIFT #11’s template requirements.
+- **Why:** The doctor flagged the log panel algorithm writeup for missing sections, so these narratives keep the documentation chain canonical before downstream agents rely on the UI.
+- **Files:** `docs/connectome/log_panel/ALGORITHM_Connectome_Log_Panel_Log_Rendering_Duration_Coloring_And_Export.md`, `docs/connectome/log_panel/SYNC_Connectome_Log_Panel_Sync_Current_State.md`
+- **Validation:** `ngram validate` *(fails: existing docs/connectome/health chain gaps plus docs/physics naming/CHAIN warnings already tracked elsewhere).*
+
 ### 2026-03-31: Expand log panel health template coverage
 
 - **What:** Added WHY THIS PATTERN, HOW TO USE THIS TEMPLATE, OBJECTIVES COVERAGE, STATUS, DOCK TYPES, and indicator/value/representation/docks/mechanism/manual-run narratives to the health doc, expanded HOW TO RUN, and logged the work in the log panel SYNC entry so the chain no longer misses those sections.
@@ -165,6 +172,7 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 - **Validation:** `ngram validate` *(fails: existing `docs/connectome/health` gaps, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` naming mismatch, and the long-standing CHAIN warnings already reported)*
 - **Status:** Template drift resolved locally; node kit behaviors now document both the objective and the I/O contract so future agents can trace from behavior to verification.
 - **Notes:** This change captures the clarity/trust contract within the BEHAVIORS doc itself so the entry now tells future agents exactly which sections to verify before editing the node kit.
+- **Impact:** Calling out this repair keeps issue #11 visible and signals that the behaviors template already meets the necessary objectives/I-O coverage, reducing future drift.
 
 ### 2026-03-22: Expand node kit implementation template coverage
 
