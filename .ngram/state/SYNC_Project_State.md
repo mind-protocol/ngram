@@ -1161,6 +1161,7 @@ Overwriting `.ngram/` content could damage protocol continuity; conflicts must b
 ### Backlog
 
 - [ ] Import any remaining non-conflicting paths once source deletions are permitted.
+- [x] Confirmed the flow canvas ALGORITHM doc now spells out the OBJECTIVES AND BEHAVIORS plus the KEY DECISIONS/DATA FLOW/HELPER FUNCTIONS/INTERACTIONS sections and logged that trace against issue #11.
 - IDEA: Use `ngram refactor` to reconcile area/module layout after the transfer completes.
 
 ---
