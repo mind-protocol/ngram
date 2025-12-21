@@ -99,6 +99,22 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 
 ## RECENT CHANGES
 
+### 2025-12-21: Fill edge kit pattern template sections (#11)
+
+* **What:** Added BEHAVIORS SUPPORTED/PREVENTED narratives plus DATA/INSPIRATIONS sections so the edge styling pattern doc satisfies DOC_TEMPLATE_DRIFT minimum prose requirements.
+* **Why:** Issue #11 flagged the empty template blocks; supplying explicit behaviors/data keeps downstream agents aligned with the strict trigger/call_type styling plan.
+* **Files:** `docs/connectome/edge_kit/PATTERNS_Connectome_Edge_Kit_Color_Coded_Trigger_Typed_Directional_Link_Styling_Patterns.md`, `docs/connectome/edge_kit/SYNC_Connectome_Edge_Kit_Sync_Current_State.md`
+* **Validation:** `ngram validate` *(fails: existing docs/connectome/health chain gaps, docs/engine/membrane naming mismatch, and longstanding CHAIN warnings remain; no new regressions introduced).*
+
+### 2025-12-21: Expand runtime engine algorithm coverage (#11)
+
+* **What:** Added the `OBJECTIVES AND BEHAVIORS` narratives and a primary `runtime_engine_step_release_and_realtime_scheduler()` overview so the algorithm doc now explains the manual release gate, realtime pacing, and how each runtime command ties into the deterministic ledger commit story.
+* **Why:** DOC_TEMPLATE_DRIFT #11 flagged those template blocks as missing; the new prose maps the objective, behavior, and scheduler descriptions directly to `release_next_step` and `dispatch_runtime_command` before future agents edit the module.
+* **Files:**
+  * `docs/connectome/runtime_engine/ALGORITHM_Connectome_Runtime_Engine_Step_Release_And_Realtime_Scheduling.md`
+  * `docs/connectome/runtime_engine/SYNC_Connectome_Runtime_Engine_Sync_Current_State.md`
+* **Validation:** `ngram validate` *(fails: known docs/connectome/health module chain gaps, the docs/engine/membrane/PATTERN_Membrane_Modulation.md naming mismatch, and longstanding CHAIN-link warnings remain; no new regressions introduced).*
+
 ### 2026-04-22: Expand runtime engine behavior template prose (#11)
 
 * **What:** Expanded the runtime engine BEHAVIORS doc with a full `OBJECTIVES SERVED` table, richer `Side Effects`, and more descriptive `EDGE CASES` and `ANTI-BEHAVIORS` explanations so every DOC_TEMPLATE_DRIFT block now explains why the stepper/realtime guards exist.
@@ -127,6 +143,7 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 * **Why:** DOC_TEMPLATE_DRIFT #11 flagged the implementation doc for missing logic chains and dependency context; the new prose clarifies how command gating flows into the store and which helpers the runtime engine relies on before future agents edit the runtime wiring.
 * **Files:** `docs/connectome/runtime_engine/IMPLEMENTATION_Connectome_Runtime_Engine_Code_Structure_And_Control_Surface.md`, `docs/connectome/runtime_engine/SYNC_Connectome_Runtime_Engine_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
 * **Validation:** `ngram validate` *(fails: known `docs/connectome/health` chain gaps, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` naming mismatch, and longstanding CHAIN-link warnings remain; no new regressions introduced).*
+* **Notes:** Logged the runtime engine logic-chain and dependency narratives so downstream agents know the canonical release path, which selectors to inspect, and where to dock health instrumentation before touching the command wiring.
 
 ### 2026-05-03: Document runtime engine algorithm objectives (Closes #11)
 

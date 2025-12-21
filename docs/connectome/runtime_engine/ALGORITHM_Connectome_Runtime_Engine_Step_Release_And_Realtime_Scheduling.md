@@ -34,6 +34,25 @@ runtime_engine is a small controller that:
 
 It does not render and does not store ledgers directly.
 
+## OBJECTIVES AND BEHAVIORS
+
+### Objectives
+
+- Guard every manual traversal command so the UI can trust that `next_step` and realtime inputs always emit exactly one canonical FlowEvent release, preventing ledger/focus drift between frames.
+- Keep telemetry-friendly metadata synchronized by committing focus, explanation, cursor, and wait timer updates before emitting any RuntimeReleaseResult so dashboards replay the recorded sequence faithfully.
+
+### Observable Behaviors
+
+- When `dispatch_runtime_command` receives a `next_step` while the store is in stepper mode, it routes through `release_next_step`, ensuring a deterministic `released`/`blocked`/`end_of_script` result tied to a single ledger append.
+- Realtime scheduling defers every release loop until `mode` remains realtime and the minimum animation duration clamp passes, so background ticks cannot crowbar extra events or bypass manual pacing.
+
+## ALGORITHM: `runtime_engine_step_release_and_realtime_scheduler()`
+
+1. Validate the incoming `RuntimeCommand` (mode guard, cursor bounds, pause state) before choosing between stepper or realtime flows.
+2. In stepper mode, call `release_next_step()` so normalization, duration computation, and the atomic store commit happen inside one deterministic batch that never exposes partial updates.
+3. In realtime mode, reuse the same commit path by scheduling deferred releases with `wait_timer_action`, honoring `local_pause`, speed, and duration limits while aborting if the user switches mode or reaches the script end.
+4. Emit the final `RuntimeReleaseResult` immediately after the commit so UI, telemetry, and health readers see the exact ledger/focus snapshot without chasing asynchronous updates.
+
 ---
 
 ## DATA STRUCTURES
