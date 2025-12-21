@@ -35,7 +35,7 @@ Documentation stays current after the template alignment work, with the module i
 - **Files:** `docs/agents/narrator/VALIDATION_Narrator.md`, `docs/agents/narrator/SYNC_Narrator.md`
 - **Verification:** `ngram validate` *(still reporting the existing connectome/health and membrane naming warnings).*
 
-- **Trace:** Points future agents at the updated validation health coverage paragraphs so the contract stays traceable to the sync entry even after subsequent edits, with this note versioned on 2025-12-31 for easy cross-reference.
+- **Trace:** Points future agents at the updated validation health coverage paragraphs so the contract stays traceable to the sync entry even after subsequent edits, with this note versioned on 2025-12-31 for easy cross-reference and trace ID ngram-sync-2025-12-31-narrator-validation.
 
 - **Trace ID:** ngram-sync-2025-12-31-narrator-validation
 

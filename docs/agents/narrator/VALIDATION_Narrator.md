@@ -149,7 +149,7 @@ These labels keep diagnostics consistent whenever the health suite replays the n
 - `mutation_safety_checker` asserts every invented fact obeys graph constraints before the narrator returns control, directly anchoring V3.
 - `pytest engine/tests/test_narrator_integration.py` is the manual entrypoint referenced in the health doc to confirm V2 latency, clickable sequencing, and streaming flows.
 
-Linking these indicators to the same invariants keeps the doctor focused on the same guarantees that the validation doc outlines while feeding back to the new health coverage narrative for repeatable verification. These paragraphs now point back to the newly logged sync entries so future agents see the same contract in both branches, and they prime the health monitors for the same failures when the doc changes again. This validation update was documented on 2025-12-31 to tie the new properties directly to the recorded sync entry.
+Linking these indicators to the same invariants keeps the doctor focused on the same guarantees that the validation doc outlines while feeding back to the new health coverage narrative for repeatable verification. These paragraphs now point back to the newly logged sync entries so future agents see the same contract in both branches, and they prime the health monitors for the same failures when the doc changes again. This validation update was documented on 2025-12-31 to tie the new properties directly to the recorded sync entry, trace ID 2025-12-31-V0-VALIDATION.
 
 ---
 
