@@ -47,6 +47,19 @@ Physics documentation is consolidated in `docs/physics/`, the algorithm is canon
 - **Why:** Squashed the duplicate ALGORITHM doc warning by keeping specialized mechanism docs in the algorithms folder while leaving `ALGORITHM_Physics.md` as the physics root overview.
 - **Impact:** Documentation only; the root physics directory now hosts a single ALGORITHM doc while mechanism-level detail lives under `algorithms/`.
 
+### 2025-12-21: Mechanism map folded into canonical physics algorithm
+
+- **What:** Added the mechanism-level function map to `ALGORITHM_Physics_Energy_Mechanics_And_Link_Semantics.md` and converted `docs/physics/algorithms/ALGORITHM_Physics_Mechanisms.md` into a deprecated stub that points readers to that consolidated section while keeping the implementation references intact.
+- **Why:** Keep a single authoritative ALGORITHM doc while still letting mechanism-focused references resolve through the algorithms folder.
+- **Impact:** Documentation only; no runtime changes.
+- **Validation:** `ngram validate`
+
+### 2025-12-21: Implemented attention split, primes, contradiction pressure (v0)
+
+- **What:** Added mechanism implementations for attention split, PRIMES lag/half-life, and contradiction pressure, plus unit tests.
+- **Why:** Move v0 mechanisms from spec to executable, deterministic logic.
+- **Impact:** New pure computation modules + tests; no runtime wiring yet.
+
 ### 2025-12-20: Pending external implementation references
 
 - **What:** Replaced stub file paths with pending import notes in implementation docs.
@@ -95,10 +108,13 @@ Attention documentation now uses a single PATTERNS file—interrupt semantics we
 ## POINTERS
 
 - `docs/physics/ALGORITHM_Physics.md` for the canonical physics mechanics.
-- `docs/physics/algorithms/ALGORITHM_Physics_Mechanisms.md` for mechanism-level mapping to code.
+- `docs/physics/algorithms/ALGORITHM_Physics_Mechanisms.md` (deprecated stub pointing to the Mechanisms section in `ALGORITHM_Physics_Energy_Mechanics_And_Link_Semantics.md`).
 - `docs/physics/IMPLEMENTATION_Physics.md` for current code entry points.
 - `docs/physics/attention/PATTERNS_Attention_Energy_Split.md` for attention split invariants and focus reconfiguration interrupts.
 - `docs/physics/attention/VALIDATION_Attention_Split_And_Interrupts.md` for attention/interrupt validations.
+- `docs/physics/mechanisms/MECHANISMS_Attention_Energy_Split.md` for sink mass formulas.
+- `docs/physics/mechanisms/MECHANISMS_Primes_Lag_Decay.md` for PRIMES timing.
+- `docs/physics/mechanisms/MECHANISMS_Contradiction_Pressure.md` for contradiction pressure.
 
 ## CHAIN
 

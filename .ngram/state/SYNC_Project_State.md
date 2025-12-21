@@ -1,7 +1,7 @@
 # Project — Sync: Current State
 
 ```
-LAST_UPDATED: 2025-12-20
+LAST_UPDATED: 2025-12-21
 UPDATED_BY: codex
 ```
 
@@ -68,6 +68,31 @@ Added `GraphReadOps` in `engine/physics/graph/graph_ops.py` to query the `seed` 
 Added a Connectome semantic search panel (threshold + hops sliders) and a search API route that queries FalkorDB `seed` via a Python CLI helper using embeddings without returning them.
 Re-ran `npm run lint` (clean, with TypeScript 5.5.4 support warning) and `npm run build` (exit 0) after adding search + graph read wiring.
 Updated semantic search to use embeddings (never returned) and re-ran `npm run lint` (clean) + `npm run build` (exit 0).
+Cleared the `.next` cache to address a missing chunk error in dev, and the sandboxed `npm run dev` attempt failed with `EPERM` binding 0.0.0.0:3000.
+Implemented v0 physics mechanisms (attention split, PRIMES lag/half-life, contradiction pressure) as pure computation modules with new tests, plus added the mechanisms docs and completed the attention split doc chain.
+Ran `pytest engine/tests/test_physics_mechanisms.py` (3 passed).
+Added a deterministic hash-based fallback embedding in `engine/infrastructure/embeddings/service.py` so semantic search works without `sentence-transformers`.
+Updated the Connectome search API to fall back to `python3` when `python` is missing.
+Improved the Connectome search API error reporting to surface CLI stderr/stdout and invalid JSON.
+Forced embeddings fallback in the search API, added CLI JSON error payloads, and set spawn timeouts/buffers for more reliable debugging.
+Added FalkorDB socket timeouts for GraphReadOps and passed timeout env vars to the search API to prevent hangs.
+Set search API spawn timeout to 120s and FalkorDB timeout default to 10s (passed via env) for the new module injection tuning.
+Made Connectome search host/port configurable via `NGRAM_FALKORDB_HOST` and `NGRAM_FALKORDB_PORT` in the API runner and CLI.
+Added a Connectome graph selector backed by a new `/api/connectome/graphs` route and list-graphs CLI support; search now scopes to the selected graph.
+Ran `npm run lint` (clean; TypeScript 5.5.4 unsupported warning).
+Ran `npm run lint` after handle id wiring (clean; TypeScript 5.5.4 unsupported warning).
+Added an `/api/sse` stub that emits a minimal `connectome_health` event plus heartbeat pings to avoid 404s while telemetry_adapter remains deferred.
+Added explicit React Flow handles (source/target ids) to node frames and wired edges to use them.
+Ran `npm run lint` (clean; TypeScript 5.5.4 unsupported warning).
+Defaulted Connectome to load and reveal the entire selected graph on panel mount via a new `/api/connectome/graph` route.
+Ran `npm run lint` (clean; TypeScript 5.5.4 unsupported warning).
+Fixed GraphReadOps link extraction for FalkorDB Edge objects so full-graph responses include links.
+Added LOD throttling for large graphs (hide labels/steps/motion) to address 1fps rendering.
+Ran `npm run lint` (clean; TypeScript 5.5.4 unsupported warning).
+Switched the connectome canvas to a custom WebGL renderer to scale better for large graphs.
+Ran `npm run lint` after WebGL renderer swap (clean; TypeScript 5.5.4 unsupported warning).
+Preserved player click-to-message by hit-testing the player node in the WebGL canvas.
+Ran `npm run lint` after WebGL click handling (clean; TypeScript 5.5.4 unsupported warning).
 
 ## RECENT CHANGES
 
@@ -84,6 +109,13 @@ Updated semantic search to use embeddings (never returned) and re-ran `npm run l
 - **Why:** Remove the duplicate ALGORITHM document warning while keeping the function-level mechanism map accessible inside the algorithms subfolder.
 - **Impact:** Documentation only; physics sync and pointer lists now reference the new path.
 - **Trace:** CHAIN entries in `docs/physics/SYNC_Physics.md` + this state log now affirm the algorithm subfolder as the authoritative location for mechanism-level mappings.
+
+### 2025-12-21: Mechanism map folded into canonical physics algorithm
+
+- **What:** Added the mechanism-level function map to `ALGORITHM_Physics_Energy_Mechanics_And_Link_Semantics.md` and converted `docs/physics/algorithms/ALGORITHM_Physics_Mechanisms.md` into a deprecated stub that points readers to the consolidated section while keeping implementation references intact.
+- **Why:** Keep a single canonical ALGORITHM doc while still letting mechanism-level lookups succeed through the algorithms folder.
+- **Impact:** Documentation only; physics doc layout now has one canonical algorithm with an accessible stub path.
+- **Validation:** `ngram validate`
 
 ---
 
