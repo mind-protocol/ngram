@@ -2,7 +2,7 @@
 
 # runtime_engine — Sync: Current State
 
-LAST_UPDATED: 2026-04-18
+LAST_UPDATED: 2026-05-01
 UPDATED_BY: codex
 STATUS: DESIGNING
 ```
