@@ -113,6 +113,13 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 - **Files:** `docs/agents/narrator/BEHAVIORS_Narrator.md`, `docs/agents/narrator/SYNC_Narrator.md`, `.ngram/state/SYNC_Project_State.md`
 - **Verification:** `ngram validate` *(still reports the known connectome/health, membrane naming, and CHAIN warnings that predate this change)*
 
+### 2025-12-30: Expand narrator health template coverage
+
+- **What:** Filled the missing health objectives coverage, usage guidance, indicator detail, and GAPS / IDEAS / QUESTIONS prose so the narrator health ledger now documents why each signal matters and how to run the checks.
+- **Why:** DOC_TEMPLATE_DRIFT flagged the narrator health doc for missing subsections; enriching the prose keeps the canonical health contract compliant without touching runtime code.
+- **Files:** `docs/agents/narrator/HEALTH_Narrator.md`, `docs/agents/narrator/SYNC_Narrator.md`
+- **Verification:** `ngram validate` *(fails: pre-existing connectome/health and membrane naming warnings already tracked elsewhere)*
+
 ### 2025-12-29: Document narrator implementation stream nuance
 
 - **What:** Added a streaming health note under the implementation main loop, captured new SSE telemetry wording in the GAPS idea list, and fleshed out the narrator sync CURRENT STATE/IN PROGRESS sections so future agents see why the template seemed short.

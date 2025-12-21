@@ -82,6 +82,13 @@ documentation-only updates, and adapter behavior is unchanged.
 - **Files:** `docs/llm_agents/IMPLEMENTATION_LLM_Agent_Code_Architecture.md`, `docs/llm_agents/SYNC_LLM_Agents_State.md`
 - **Verification:** `ngram validate` *(fails: existing connectome health doc gaps, membrane naming, and CHAIN/link warnings already tracked by the doctor)*
 
+### 2025-12-30: Recorded concurrency question for implementation gaps
+
+- **What:** Noted in the `IMPLEMENTATION_LLM_Agent_Code_Architecture.md` GAPS section that tracking helper execution timestamps could surface helpers that block the stream unexpectedly, keeping the concurrency narrative visible for future diagnostics.
+- **Why:** DOC_TEMPLATE_DRIFT highlighted missing explanatory sections, and this open question anchors the remaining concurrency concerns inside the Implementation doc while the SYNC points agents at the right follow-up.
+- **Files:** `docs/llm_agents/IMPLEMENTATION_LLM_Agent_Code_Architecture.md`, `docs/llm_agents/SYNC_LLM_Agents_State.md`
+- **Verification:** `ngram validate` *(fails for the known docs/connectome/health gaps, membrane naming mismatch, and CHAIN/link warnings already tracked elsewhere)*
+
 ### 2025-12-21: Added objectives and lengthened Gemini behaviors text
 
 - **What:** Added an OBJECTIVES SERVED section and expanded the NOTES/INPUTS/OUTPUTS narratives so each template passage exceeds 50 characters while highlighting how streams, plain text, and diagnostics interact.
