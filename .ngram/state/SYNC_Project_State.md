@@ -99,6 +99,20 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 
 ## RECENT CHANGES
 
+### 2026-04-11: Extend flow canvas health template indicators (#11)
+
+* **What:** Added WHY THIS PATTERN, HOW TO USE THIS TEMPLATE, expanded OBJECTIVES/DOCKS, indicator-level VALUE/REPRESENTATION/DOCK narratives, and a richer HOW TO RUN block plus the SYNC entry so `HEALTH_Connectome_Flow_Canvas_Runtime_Verification_Of_Render_Stability_And_Perf_Budgets.md` satisfies DOC_TEMPLATE_DRIFT #11 expectations while the SYNC log records the fix.
+* **Why:** DOC_TEMPLATE_DRIFT #11 called out missing indicator stories and a too-short HOW TO RUN section; the updated content keeps the harness aligned with VALIDATION and instrumentation dashboards before downstream agents rely on the binary flag.
+* **Files:** `docs/connectome/flow_canvas/HEALTH_Connectome_Flow_Canvas_Runtime_Verification_Of_Render_Stability_And_Perf_Budgets.md`, `docs/connectome/flow_canvas/SYNC_Connectome_Flow_Canvas_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
+* **Verification:** `ngram validate` *(fails: existing docs/connectome/health chain gaps plus docs/engine/membrane naming mismatch and longstanding CHAIN-link warnings; no new errors introduced)*.
+
+### 2025-12-21: Document flow canvas pattern behaviors (#11)
+
+* **What:** Replaced the placeholder behavior sections with detailed `BEHAVIORS SUPPORTED` and `BEHAVIORS PREVENTED` prose so the pan/zoom camera expectations, zone context resilience, focus persistence, LOD decluttering, and camera-control protections are spelled out in this design doc.
+* **Why:** DOC_TEMPLATE_DRIFT #11 reported this PATTERNS doc lacked observable behavior guidance, so the new wording keeps the flow canvas design contract aligned with the rest of the chain.
+* **Files:** `docs/connectome/flow_canvas/PATTERNS_Connectome_Flow_Canvas_Pannable_Zoomable_Zoned_System_Map_Rendering_Patterns.md`, `docs/connectome/flow_canvas/SYNC_Connectome_Flow_Canvas_Sync_Current_State.md`
+* **Validation:** `ngram validate` *(fails: docs/connectome/health lacks PATTERNS/SYNC/chain docs, docs/engine/membrane/PATTERN_Membrane_Modulation.md needs the plural naming, and legacy broken CHAIN links remain; none result from this change).*
+
 ### 2026-04-08: Document flow canvas behavior objectives and I/O (#11)
 
 * **What:** Added OBJECTIVES SERVED, INPUTS / OUTPUTS, and OBSERVATIONS to `docs/connectome/flow_canvas/BEHAVIORS_Connectome_Flow_Canvas_Readable_Stable_Interaction_Effects.md`, refreshed the flow canvas SYNC with the change, and recorded the repair here so the behavior contract and data contract remain traceable via DOC_TEMPLATE_DRIFT #11.
@@ -124,7 +138,7 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 * **What:** Added `OBJECTIVES AND BEHAVIORS`, a `render_flow_canvas_frame` walkthrough, and the missing KEY DECISIONS / DATA FLOW / HELPER FUNCTIONS / INTERACTIONS sections plus richer prose so the algorithm doc now satisfies DOC_TEMPLATE_DRIFT #11 for narrative coverage and length.
 * **Why:** The flow canvas algorithm is now aligned with the rest of the chain, enabling downstream agents to trace the primary functions, data paths, and interaction constraints before relying on the implementation.
 * **Files:** `docs/connectome/flow_canvas/ALGORITHM_Connectome_Flow_Canvas_Layout_Zones_And_Edge_Label_Decluttering.md`, `docs/connectome/flow_canvas/SYNC_Connectome_Flow_Canvas_Sync_Current_State.md`
-* **Validation:** `ngram validate` *(still fails because docs/connectome/health lacks PATTERNS/SYNC/CHAIN docs, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` needs the plural prefix, and the long-standing CHAIN link warnings remain; no new failures were introduced).*
+* **Validation:** `ngram validate` *(fails because docs/connectome/health still lacks PATTERNS_/SYNC_/BEHAVIORS/ALGORITHM/VALIDATION/IMPLEMENTATION/HEALTH coverage, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` still needs the plural PATTERNS prefix, and numerous pre-existing CHAIN links (including health/physics/cli/engine archives) remain broken; no new failures were introduced).*
 
 ### 2026-04-03: Document log panel health forwarding metadata
 
