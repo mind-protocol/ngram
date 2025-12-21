@@ -99,11 +99,26 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 
 ## RECENT CHANGES
 
+### 2026-02-28: Record state store behavior guardrails
+
+- **What:** Documented the BEHAVIORS SUPPORTED and BEHAVIORS PREVENTED sections for the connectome state_store PATTERN and recorded the change in the state_store SYNC so the module chain now explicitly explains which ledger/focus/timer outcomes are allowed and blocked.
+- **Why:** DOC_TEMPLATE_DRIFT #11 flagged the missing behavior guidance, so adding this narrative keeps the canonical pattern complete and prevents the doctor from treating the module as incomplete.
+- **Files:** `docs/connectome/state_store/PATTERNS_Connectome_State_Store_Single_Source_Of_Truth_For_Events_Focus_And_Timers.md`, `docs/connectome/state_store/SYNC_Connectome_State_Store_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate` *(fails for pre-existing docs/connectome/health PATTERNS/SYNC gaps, docs/engine/membrane PATTERN naming, and the longstanding CHAIN link warnings the doctor already reports).*
+- **Issues:** Validation still reports the upstream docs/connectome/health chain gap, the docs/engine/membrane PATTERN naming mismatch, and the CHAIN link warnings noted by doctor.
+
 ### 2026-02-01: Document state store implementation detail
 
 - **What:** Added SCHEMA, DATA FLOW AND DOCKING (FLOW-BY-FLOW), LOGIC CHAINS, MODULE DEPENDENCIES, RUNTIME BEHAVIOR, and CONCURRENCY MODEL sections to the Connectome state_store implementation doc and traced the change in the module SYNC so the doc chain now satisfies DOC_TEMPLATE_DRIFT #11.
 - **Why:** The doctor reported the implementation doc as missing those template blocks, so the expanded articulation keeps the chain aligned with patterns, behaviors, and validation expectations.
 - **Files:** `docs/connectome/state_store/IMPLEMENTATION_Connectome_State_Store_Code_Structure_And_Zustand_Actions.md`, `docs/connectome/state_store/SYNC_Connectome_State_Store_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate`
+
+### 2026-02-10: Document state store behaviors
+
+- **What:** Added BEHAVIORS SUPPORTED and BEHAVIORS PREVENTED sections to `docs/connectome/state_store/PATTERNS_Connectome_State_Store_Single_Source_Of_Truth_For_Events_Focus_And_Timers.md` so the pattern template now explains what ledger/focus/timer outcomes are allowed or blocked and every behavior block exceeds the 50-character requirement.
+- **Why:** DOC_TEMPLATE_DRIFT #11 flagged the missing behavior blocks, so these narratives keep the canonical pattern explicit before downstream agents interpret the store actions.
+- **Files:** `docs/connectome/state_store/PATTERNS_Connectome_State_Store_Single_Source_Of_Truth_For_Events_Focus_And_Timers.md`, `.ngram/state/SYNC_Project_State.md`
 - **Verification:** `ngram validate`
 
 ### 2026-01-26: Document tools pattern template coverage

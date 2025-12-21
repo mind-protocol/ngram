@@ -1,6 +1,6 @@
 # state_store — Sync: Current State
 
-LAST_UPDATED: 2026-02-01
+LAST_UPDATED: 2026-02-10
 UPDATED_BY: codex
 STATUS: DESIGNING
 
@@ -32,6 +32,13 @@ Implemented a Zustand store with explicit long-named actions. Step releases use 
 ---
 
 ## RECENT CHANGES
+
+### 2026-02-10: Document state store behavior guardrails
+
+* **What:** Added the BEHAVIORS SUPPORTED and BEHAVIORS PREVENTED sections to the PATTERNS doc so the state_store’s behavioral guardrails are explicit and each block now exceeds the 50-character DOC_TEMPLATE_DRIFT requirement.
+* **Why:** DOC_TEMPLATE_DRIFT #11 flagged the missing behavior blocks, so the new prose keeps the canonical pattern aligned with the store’s ledger/focus/timer semantics before downstream agents commit code.
+* **Files:** `docs/connectome/state_store/PATTERNS_Connectome_State_Store_Single_Source_Of_Truth_For_Events_Focus_And_Timers.md`, `docs/connectome/state_store/SYNC_Connectome_State_Store_Sync_Current_State.md`
+* **Verification:** `ngram validate`
 
 ### 2026-02-01: Expand state store implementation collateral
 
@@ -70,3 +77,4 @@ pnpm connectome:health state_store
 ### Remarks
 
 * The implementation doc now lists the missing schema, flow, logic, dependency, runtime, and concurrency guidance so the chain is doc-template-compliant.
+* Completed the PATTERNS behaviors template so the guardrail summary now lives next to the problem/pattern narrative.

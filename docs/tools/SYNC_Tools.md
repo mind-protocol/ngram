@@ -151,6 +151,7 @@ Please confirm the canonical front-end start command, the blood frontend port/co
 - `docs/tools/IMPLEMENTATION_Tools.md` for the code architecture, entry points, and stack runner wiring that this sync now references explicitly.
 - `docs/tools/HEALTH_Tools.md` for the flows, indicators, and checkers that validate the helper scripts and connect to this module's behavior and validation narratives.
 - `docs/tools/BEHAVIORS_Tools.md` for the upgraded behavior ledger, including the OUTPUTS (stack runner) note describing which restarts wrote to `./logs/run_stack` and `./.ngram/error.log`.
+- `docs/tools/IMPLEMENTATION_Tools.md` for the refreshed code structure narrative, bidirectional links, and `CONFIGURATION` reminders so any future changes to the helper flags can be traced back to the documentation chain before issue #11 can be closed again.
 - `docs/tools/PATTERNS_Tools.md` for the design intent, scope, and gap narratives that keep the docs grounded before touching the scripts.
 - `docs/tools/ALGORITHM_Tools.md` for the bundle splitter, dialogue streamer, and stack runner flows that link to the behaviors and implementations.
 - `docs/tools/VALIDATION_Tools.md` for the invariants and verification steps that tie back to this sync's objectives.
