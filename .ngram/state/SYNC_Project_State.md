@@ -116,11 +116,12 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 ### 2026-01-03: Reconfirm World Runner health template coverage
 
 - **What:** Verified `docs/agents/world-runner/HEALTH_World_Runner.md` now covers the purpose, WHY THIS PATTERN rationale, HOW TO USE THIS TEMPLATE guidance, FLOWS ANALYSIS, HEALTH INDICATORS, OBJECTIVES COVERAGE, STATUS, DOCK TYPES, CHECKER INDEX, indicator narratives, HOW TO RUN instructions, and gap catalog so the template drift warning is silenced, and recorded the flow/indicator crosswalk that shows which sections feed the validation checks.
-- **Why:** DOC_TEMPLATE_DRIFT previously reported missing or underspecified sections; this recounting keeps the ledger explicit and traceable before future agents adjust the runner flows and notes which health sections satisfy the guardrails.
+- **Why:** DOC_TEMPLATE_DRIFT previously reported missing or underspecified sections; this recounting keeps the ledger explicit and traceable before future agents adjust the runner flows and notes which health sections satisfy the guardrails. It also points investigators at the manual health checklist so they can rerun `ngram validate` focusing on the same indicators.
 - **What:** Verified `docs/agents/world-runner/HEALTH_World_Runner.md` now covers the purpose, WHY THIS PATTERN rationale, HOW TO USE THIS TEMPLATE guidance, FLOWS ANALYSIS, HEALTH INDICATORS, OBJECTIVES COVERAGE, STATUS, DOCK TYPES, CHECKER INDEX, indicator narratives, HOW TO RUN instructions, and gap catalog so the template drift warning is silenced, recorded the flow/indicator crosswalk that shows which sections feed the validation checks, noted the nominal cadence (0.5/min, 5/min bursts), and listed `background_consistency` plus `adapter_resilience` so operators can map each signal back to validation.
 - **Why:** DOC_TEMPLATE_DRIFT previously reported missing or underspecified sections; this recounting keeps the ledger explicit and traceable before future agents adjust the runner flows, notes which health sections satisfy the guardrails, and points to the resulting pages in case anyone needs to double-check the templates against the indicator documentation.
 - **Files:** `docs/agents/world-runner/HEALTH_World_Runner.md`, `docs/agents/world-runner/SYNC_World_Runner.md`, `.ngram/state/SYNC_Project_State.md`
 - **Verification:** `ngram validate`
+- **Addendum:** Flow cadence stays at 0.5/min with 5/min bursts and the indicator pair `background_consistency`/`adapter_resilience` now reference the same manual validation steps so operators know what to rerun.
 
 ### 2025-12-21: Expand world runner validation template coverage
 
