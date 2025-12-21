@@ -77,22 +77,6 @@ Display uses 1 decimal precision
 
 ---
 
-## BEHAVIORS GUARANTEED
-
-| Behavior | Guarantee |
-| -------- | --------- |
-| Ledger order integrity | Every commit appends a new ledger entry so the sequence strictly grows and never rewrites past history, ensuring playback and audit trails see the original ordering. |
-| Single focus authority | The store can only mark one active node _or_ edge per step release, so the UI never shows competing focus atoms or spurious multi-focus states. |
-| Atomic commit visibility | Ledger growth, focus updates, and explanation text switch together with no observable intermediate frame, which keeps subscribers from reading partial commits. |
-| Wait timer boundaries | Wait progress values always clamp to the [0, 4.0] span while started timestamps do not exceed `now_ms`, preventing timer drift or backward jumps in the UI. |
-
-## OBJECTIVES COVERED
-
-1. Verify that append-only ledger behavior, focus singletons, atomic commits, and timer clamps align with the `store_*` health indicators so failing tests highlight which invariant slipped.
-2. Confirm that exports and restarts obey the restart policies, ensuring `store_export_equals_ledger` and `store_restart_policy_consistency` remain traceable in exporter telemetry and session boundary events.
-
----
-
 ## PROPERTIES
 
 ### P1: Export equals ledger
@@ -181,7 +165,5 @@ V4: NOT RUN
 
 * QUESTION: do we need a “transaction id” recorded per commit for debugging atomicity? (nice-to-have)
 * IDEA: ledger entries can include `arrival_index` to guarantee ordering even with same timestamp
-
----
 
 ---
