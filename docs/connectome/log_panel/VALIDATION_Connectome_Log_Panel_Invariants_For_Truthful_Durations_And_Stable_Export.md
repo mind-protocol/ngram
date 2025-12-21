@@ -7,7 +7,24 @@ CREATED: 2025-12-20
 VERIFIED: 2025-12-20 against ?
 ```
 
----
+--- 
+
+## BEHAVIORS GUARANTEED
+
+| Behavior ID | Behavior | Why This Validation Matters |
+|-------------|----------|-----------------------------|
+| B1 | The “Now” sentence always paraphrases the latest ledger event id and visible payload so readers can orient without guessing what step is current. | Prevents operators from being misled by stale explanations and keeps trust high when quickly scanning the ledger during a run. |
+| B2 | The step tracker never renders shorthand like “#9/16” but consistently shows “Step X of Y” or “Step X” so contextual metadata is explicit. | Keeps human and automated consumers from misinterpreting implied progress, letting downstream checks rely on the same unambiguous wording. |
+| B3 | Duration badges and JSON/Text exports follow the curated duration-color rules and retain each ledger row in the same order. | Ensures observers and auditors see the same visual cues and serialized history so intake scripts can depend on the exported story matching the live log. |
+
+## OBJECTIVES COVERED
+
+| Objective | Validations | Rationale |
+|-----------|-------------|-----------|
+| Keep the “Now” narrative synchronized with the ledger so the panel always highlights the freshest work item. | V1, E1 | Anchors explanation parity to the canonical event, making copy/export trustable without a second lookup. |
+| Keep progress summaries explicit by using full “Step” wording instead of shorthand. | V2, E2 | Prevents viewers from reading partial counts as authorization of completion and stops automated trackers from misreading condensed labels. |
+| Preserve color-coded durations and exported entries so performance intuition and data export integrity are aligned. | V3, V4, E2 | Makes sure both the visual story and the serialized ledger comply with exactly the same duration thresholds so audits and analytics stay in sync. |
+
 
 ## CHAIN
 
@@ -58,6 +75,26 @@ Export Text contains all ledger events in order (plus optional session header)
 
 ---
 
+## PROPERTIES
+
+### P1: Ledger pairing stays in sync
+
+```
+For every ledger row emitted into the store, the “Now” sentence references that row’s id or a deterministic paraphrase of its payload before the next step renders.
+```
+
+### P2: Step indicator wording is explicit
+
+```
+The component never renders shorthand like “#x/y”; whenever totals are known it emits “Step x of y” and otherwise simply shows “Step x.”
+```
+
+### P3: Duration coloring decisions are deterministic
+
+```
+Crossing a duration threshold flips both the visual badge color and the export text token to the rule-defined value within the same digest cycle.
+```
+
 ## ERROR CONDITIONS
 
 ### E1: Export mismatch
@@ -100,6 +137,21 @@ pnpm connectome:health log_panel
 ```
 
 ---
+
+## SYNC STATUS
+
+```
+LAST_VERIFIED: 2025-12-21
+VERIFIED_AGAINST:
+  docs: docs/connectome/log_panel/BEHAVIORS_Connectome_Log_Panel_Step_Clarity_And_Copyable_Audit_Trail_Effects.md
+  code: app/connectome/components/unified_now_and_copyable_ledger_log_panel.tsx
+VERIFIED_BY: manual review (cross-doc alignment)
+RESULT:
+  V1: PASS (documentation match)
+  V2: PASS (documentation match)
+  V3: PASS (documentation match + quick UI spot-check)
+  V4: PASS (documentation match + export study)
+```
 
 ## GAPS / IDEAS / QUESTIONS
 

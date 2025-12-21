@@ -33,9 +33,16 @@ Implemented LogPanel with a “Now” section, ledger list, duration color rules
 
 ## RECENT CHANGES
 
+### 2026-04-03: Expand log panel algorithm template coverage
+
+* **What:** Added the OBJECTIVES AND BEHAVIORS table, DATA STRUCTURES, `render_log_panel` overview, KEY DECISIONS, DATA FLOW, helper summaries, and INTERACTIONS descriptions plus a fuller COMPLEXITY narrative so the algorithm doc now satisfies DOC_TEMPLATE_DRIFT’s required sections.
+* **Why:** The doctor kept flagging the log panel algorithm doc for templated sections and a too-short complexity block; the new content explicitly documents goals, structures, helper functions, and interaction partners before downstream agents rely on the rendering contract.
+* **Files:** `docs/connectome/log_panel/ALGORITHM_Connectome_Log_Panel_Log_Rendering_Duration_Coloring_And_Export.md`
+* **Validation:** `ngram validate` *(still fails for the pre-existing `docs/connectome/health` PATTERNS/SYNC gaps, the `docs/engine/membrane/PATTERN_Membrane_Modulation.md` naming mismatch, and the legacy CHAIN link warnings tracked by the doctor).*
+
 ### 2025-12-21: Complete log panel validation template trace
 
-* **What:** Added BEHAVIORS GUARANTEED, OBJECTIVES COVERED, PROPERTIES, and SYNC STATUS to the validation doc so every template block preserves the ledger, duration, and export invariants that keep the audit trail honest.
+* **What:** Added BEHAVIORS GUARANTEED, OBJECTIVES COVERED, PROPERTIES, and SYNC STATUS to the validation doc so every template block preserves the ledger, duration, and export invariants that keep the audit trail honest, and logged the audit in this SYNC entry so future agents see the verification chain for the log panel invariants.
 * **Why:** The doctor reported those sections as missing or too terse, so this update documents the richer prose before downstream agents rely on the validation chain.
 * **Files:** `docs/connectome/log_panel/VALIDATION_Connectome_Log_Panel_Invariants_For_Truthful_Durations_And_Stable_Export.md`, this SYNC file
 * **Validation:** `ngram validate` *(fails: existing docs/connectome/health PATTERNS/SYNC gaps plus docs/physics naming and CHAIN warnings already tracked elsewhere).*
@@ -161,3 +168,5 @@ Please confirm the desired filter scope, export format expectations, and health 
 - `docs/connectome/log_panel/IMPLEMENTATION_Connectome_Log_Panel_Component_Structure_And_Serializer_Integration.md` for the component structure, serializer wiring, and export connectors that the new pointer list now tracks.
 - `docs/connectome/log_panel/HEALTH_Connectome_Log_Panel_Runtime_Verification_Of_Log_Truth_And_Export_Integrity.md` for the duration color, export, and truth checks that the TODO command targets.
 - `docs/connectome/log_panel/SYNC_Connectome_Log_Panel_Sync_Current_State.md` for this overview, the new handoff narratives, and the pointer list that shows where DOC_TEMPLATE_DRIFT compliance now lives.
+
+<!-- ISSUE_11_LOG_PANEL_SYNC -->

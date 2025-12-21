@@ -99,6 +99,13 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 
 ## RECENT CHANGES
 
+### 2026-04-01: Reaffirm node kit behavior template fix
+
+- **What:** Logged the OBJECTIVES/INPUTS/Status/Notes/Impact/Trace content added to `docs/connectome/node_kit/BEHAVIORS_Connectome_Node_Kit_Visible_Clarity_And_Trust_Effects.md` so every agent following the RECENT CHANGES trail immediately finds the issue #11 repair.
+- **Why:** DOC_TEMPLATE_DRIFT #11 still tracks that behaviors templates need explicit objectives and I/O narratives, so duplicating the story in the project state keeps the pipeline aware of this canonical fix.
+- **Files:** `docs/connectome/node_kit/SYNC_Connectome_Node_Kit_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate` *(still fails: existing docs/connectome/health chain gaps, docs/engine/membrane naming mismatch, and the longstanding CHAIN warnings already logged by the doctor)*.
+
 ### 2026-03-31: Complete log panel algorithm template sections
 
 - **What:** Added OBJECTIVES AND BEHAVIORS, DATA STRUCTURES, DATA FLOW, the high-level `render_full_log_panel` description, KEY DECISIONS, HELPER FUNCTIONS, INTERACTIONS, and richer COMPLEXITY prose to the log panel algorithm doc and recorded the update in the log panel SYNC so the chain now satisfies DOC_TEMPLATE_DRIFT #11’s template requirements.
@@ -106,10 +113,18 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 - **Files:** `docs/connectome/log_panel/ALGORITHM_Connectome_Log_Panel_Log_Rendering_Duration_Coloring_And_Export.md`, `docs/connectome/log_panel/SYNC_Connectome_Log_Panel_Sync_Current_State.md`
 - **Validation:** `ngram validate` *(fails: existing docs/connectome/health chain gaps plus docs/physics naming/CHAIN warnings already tracked elsewhere).*
 
-- **What:** Added WHY THIS PATTERN, HOW TO USE THIS TEMPLATE, OBJECTIVES COVERAGE, STATUS, DOCK TYPES, and indicator/value/representation/docks/mechanism/manual-run narratives to the health doc, documented the failure log and dock metadata, expanded HOW TO RUN, and logged the work in the log panel SYNC entry so the chain no longer misses those sections.
+- **What:** Added WHY THIS PATTERN, HOW TO USE THIS TEMPLATE, OBJECTIVES COVERAGE, STATUS, DOCK TYPES, and indicator/value/representation/docks/mechanism/manual-run narratives to the health doc, documented the failure log and dock metadata, expanded HOW TO RUN, and logged the work in the log panel SYNC entry so the chain no longer misses those sections while pointing readers at `logs/connectome_health/log_panel.log` to follow failures.
+- **Impact:** The new sentences highlight both the CLI log file (`logs/connectome_health/log_panel.log`) and the metric docking metadata so dashboards can correlate the binary stream with the failing indicator before rerunning the probes.
 - **Why:** DOC_TEMPLATE_DRIFT #11 flagged the missing sections and too-short HOW TO RUN snippet, so this richer narrative now highlights the selectors, validators, and manual runner that keep the panel honest.
 - **Files:** `docs/connectome/log_panel/HEALTH_Connectome_Log_Panel_Runtime_Verification_Of_Log_Truth_And_Export_Integrity.md`, `docs/connectome/log_panel/SYNC_Connectome_Log_Panel_Sync_Current_State.md`
 - **Validation:** `ngram validate` (still fails: existing docs/connectome/health chain gaps plus docs/physics naming/CHAIN warnings already tracked by the doctor)
+
+### 2026-04-01: Chronicle log panel sync narrative refresh
+
+- **What:** Added IN PROGRESS, KNOWN ISSUES, HANDOFF (agents + human), CONSCIOUSNESS TRACE, and POINTERS wording to `docs/connectome/log_panel/SYNC_Connectome_Log_Panel_Sync_Current_State.md`, and documented the addition here so the ledger now explains the active work and the references-to-follow.
+- **Why:** DOC_TEMPLATE_DRIFT #11 called out the missing sync template sections, so the refreshed narratives keep downstream agents aware of the unresolved risks, handoffs, and canonical docs before further panel work moves forward.
+- **Files:** `docs/connectome/log_panel/SYNC_Connectome_Log_Panel_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
+- **Validation:** `ngram validate` (fails for the existing blockers: `docs/connectome/health` still lacks PATTERNS/SYNC, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` needs the plural prefix, and legacy CHAIN warnings remain)
 
 ### 2026-03-31: Complete log panel sync template coverage
 
