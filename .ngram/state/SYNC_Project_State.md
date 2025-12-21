@@ -106,6 +106,13 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 - **Files:** `docs/agents/narrator/IMPLEMENTATION_Narrator.md`, `docs/agents/narrator/SYNC_Narrator.md`
 - **Verification:** `ngram validate`
 
+### 2025-12-27: Flesh out narrator algorithm template
+
+- **What:** Documented the missing objectives table, data structures, helper list, key decisions, interactions, and GAPS items in `docs/agents/narrator/ALGORITHM_Scene_Generation.md`, then noted the alignment in `docs/agents/narrator/SYNC_Narrator.md`.
+- **Why:** DOC_TEMPLATE_DRIFT flagged the narrator algorithm doc for missing sections, so expanding the narrative removes ambiguity about how scene generation should stream, query the graph, and mutate canon.
+- **Files:** `docs/agents/narrator/ALGORITHM_Scene_Generation.md`, `docs/agents/narrator/SYNC_Narrator.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate` *(still fails for the known connectome/health doc gaps, membrane naming mismatches, and CHAIN/link warnings the doctor already tracks).*
+
 ### 2025-12-26: Supplemented LLM archive guidance
 
 - **What:** Added extra sentences to the CURRENT STATE, IN PROGRESS, and KNOWN ISSUES sections of `docs/llm_agents/SYNC_LLM_Agents_State_archive_2025-12.md` so the archive explains its read-only role and points readers at the live SYNC before they follow any instructions.
@@ -128,7 +135,7 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 - **Verification:** `ngram validate` *(fails: pre-existing docs/connectome/health gaps, membrane naming, and CHAIN/link warnings noted by the doctor)*
 - **Trace:** The new GAPS/IDEAS/QUESTIONS and bidirectional link notes tie the implementation narrative back to the observed state so future agents can trace assumptions, concerns, and open investigations.
 
-- ### 2025-12-25: Completed Gemini algorithm template compliance
+-### 2025-12-25: Completed Gemini algorithm template compliance
 
 - **What:** Added the missing `OBJECTIVES AND BEHAVIORS` section, highlighted the `main()` entrypoint, and expanded the narrative so every template chunk now exceeds the 50+ character expectation.
 - **Why:** Anchor the `ALGORITHM_Gemini_Stream_Flow.md` story in `ngram/llms/gemini_agent.py` so the objective/behavior pairing explains how the adapter runs in practice and prevents further template drift.
