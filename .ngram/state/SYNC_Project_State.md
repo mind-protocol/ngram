@@ -99,6 +99,13 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 
 ## RECENT CHANGES
 
+### 2026-03-19: Fill node kit sync template sections
+
+- **What:** Added the IN PROGRESS, KNOWN ISSUES, handoff, consciousness trace, agent observations, and pointer narratives to `docs/connectome/node_kit/SYNC_Connectome_Node_Kit_Sync_Current_State.md` so the DOC_TEMPLATE_DRIFT #11 template now describes the active work and canonical doc map for this module.
+- **Why:** The doctor flagged the node kit sync as missing these sections, so the new entry preserves the template compliance story before any further node kit work proceeds.
+- **Files:** `docs/connectome/node_kit/SYNC_Connectome_Node_Kit_Sync_Current_State.md`
+- **Verification:** `ngram validate`
+
 ### 2026-03-08: Complete node kit PATTERNS behavior/data sections
 
 - **What:** Added the BEHAVIORS SUPPORTED, BEHAVIORS PREVENTED, DATA, and INSPIRATIONS sections to `docs/connectome/node_kit/PATTERNS_Connectome_Node_Kit_Typed_Language_Coded_Energy_Aware_Node_Rendering_Patterns.md` so the template now spells out allowed outcomes, blocked behaviors, data dependencies, and inspiration cues.
@@ -140,6 +147,7 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 - **Why:** The doctor reported these sections as missing or too short, so documenting the full algorithm story keeps the PATTERNS → ALGORITHM → IMPLEMENTATION chain aligned before the state store module is considered canonical.
 - **Files:** `docs/connectome/state_store/ALGORITHM_Connectome_State_Store_Atomic_Commits_For_Step_Releases_And_Realtime.md`
 - **Verification:** `ngram validate`
+  *(fails for existing `docs/connectome/health` PATTERN/SYNC gaps, the `docs/engine/membrane/PATTERN_Membrane_Modulation.md` naming mismatch, and the longstanding CHAIN-link warnings already reported by the doctor).*
 
 ### 2025-12-21: Document state store behavior objectives
 

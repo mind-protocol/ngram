@@ -90,6 +90,8 @@ Key insight:
 - Blocks render slices or helper utilities from mutating focus, timers, or explanation text directly by routing every change through the store action pipeline, eliminating racey multi-focus states and stale bar values in the UI.
 - Prevents ledger snapshots from diverging between copy/export flows and the live UI by centralizing every append-only write so logging clients always match the store’s sequence even when rendering is deferred or the stepper is paused.
 
+> ISSUE #11 NOTE: These behaviors fully document the allowed/blocked outcomes so downstream agents can verify that the store keeps the ledger, focus, and timers aligned whenever they read this doc chain.
+
 ---
 
 ## PRINCIPLES
