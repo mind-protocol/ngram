@@ -106,6 +106,13 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 * **Files:** `docs/connectome/runtime_engine/VALIDATION_Connectome_Runtime_Engine_Invariants_For_Stepper_And_Realtime.md`, `docs/connectome/runtime_engine/SYNC_Connectome_Runtime_Engine_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
 * **Validation:** `ngram validate` *(fails: known docs/connectome/health chain gaps, the docs/engine/membrane/PATTERN_Membrane_Modulation.md naming mismatch, and longstanding CHAIN link warnings remain; no new regressions introduced).*
 
+### 2026-05-05: Refine edge kit behavior narrative (#11)
+
+* **What:** Added telemetry tie-ins, longer behavior paragraphs, a new objective bullet, and a more descriptive GAPS question so the doc ties every observable effect back to the verified signals and state inputs.
+* **Why:** DOC_TEMPLATE_DRIFT #11 still insists on over-50-character behavior blocks and explicit telemetry contracts; these refinements keep the narrative rich while the Connectome health probes guard link readability.
+* **Files:** `docs/connectome/edge_kit/BEHAVIORS_Connectome_Edge_Kit_Readable_Directional_And_Truthful_Link_Effects.md`, `docs/connectome/edge_kit/SYNC_Connectome_Edge_Kit_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
+* **Validation:** `ngram validate` *(fails: docs/connectome/health still lacks the full PATTERNS/BEHAVIORS/ALGORITHM/VALIDATION/IMPLEMENTATION/HEALTH/SYNC chain, docs/engine/membrane/PATTERN_Membrane_Modulation.md needs the plural naming, and the longstanding CHAIN-link warnings remain; no new regressions introduced).*
+
 ### 2026-05-04: Expand edge kit behavior template (#11)
 
 * **What:** Added the missing `OBJECTIVES SERVED` and `INPUTS / OUTPUTS` sections, then expanded every behavior/anti description plus the Edge Case commentary so the prose now exceeds the 50-character threshold before downstream agents edit the edge kit.
@@ -129,10 +136,10 @@ Attention documentation now points at this canonical PATTERN so every consumer s
 
 ### 2026-05-05: Complete edge kit validation template (#11)
 
-* **What:** Added BEHAVIORS GUARANTEED, OBJECTIVES COVERED, PROPERTIES, and SYNC STATUS sections that tie every invariant back to the documented behaviors, property guards, and verification steps so the template satisfies DOC_TEMPLATE_DRIFT's 50+ character requirement.
-* **Why:** DOC_TEMPLATE_DRIFT #11 flagged the missing validation prose; this update makes the semantic/dash/pulse guarantees instantly traceable to the observable behavior and verification story before downstream agents edit the edge kit.
+* **What:** Added BEHAVIORS GUARANTEED, OBJECTIVES COVERED, PROPERTIES, and SYNC STATUS sections that tie each invariant back to the documented behaviors, property guards, and verification steps so the template satisfies DOC_TEMPLATE_DRIFT's 50+ character requirement.
+* **Why:** DOC_TEMPLATE_DRIFT #11 flagged those empty validation blocks; this update makes the semantic/dash/pulse guarantees instantly traceable to the observable behaviors and verification story before downstream agents edit the edge kit.
 * **Files:** `docs/connectome/edge_kit/VALIDATION_Connectome_Edge_Kit_Invariants_For_Color_Dash_And_Pulse_Truth.md`, `docs/connectome/edge_kit/SYNC_Connectome_Edge_Kit_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
-* **Validation:** `ngram validate` *(fails: existing docs/connectome/health chain gaps, docs/engine/membrane/PATTERN_Membrane_Modulation.md plural naming mismatch, and legacy CHAIN-link warnings remain; no new regressions introduced).* 
+* **Validation:** `ngram validate` *(fails: the existing `docs/connectome/health` module still lacks its PATTERNS/BEHAVIORS/ALGORITHM/VALIDATION/IMPLEMENTATION/HEALTH/SYNC chain, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` needs the plural naming, and the longstanding CHAIN-link warnings remain; no new regressions introduced).*
 
 ### 2025-12-21: Fill edge kit pattern template sections (#11)
 

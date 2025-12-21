@@ -36,7 +36,7 @@ Implemented edge components for React Flow that map trigger to dash styles and c
 
 ### 2026-05-04: Expand edge kit behavior template (#11)
 
-* **What:** Documented `OBJECTIVES SERVED` plus `INPUTS / OUTPUTS` so the edge behavior narrative clearly states the goals and contract-rich I/O story before downstream edits happen.
+* **What:** Documented `OBJECTIVES SERVED` plus `INPUTS / OUTPUTS`, expanded each behavior/anti description, and highlighted the telemetry tie-ins so the edge behavior narrative clearly states the goals, contract-rich I/O story, and verified signals before downstream edits happen.
 * **Why:** DOC_TEMPLATE_DRIFT #11 flagged the missing sections and short prose; the new narrative ensures the behavior doc now explains what the edge visuals aim to achieve and how the canonical signals flow through the kit.
 * **Files:** `docs/connectome/edge_kit/BEHAVIORS_Connectome_Edge_Kit_Readable_Directional_And_Truthful_Link_Effects.md`, `docs/connectome/edge_kit/SYNC_Connectome_Edge_Kit_Sync_Current_State.md`
 * **Validation:** `ngram validate` *(fails: the existing `docs/connectome/health` module still lacks its canonical PATTERNS/BEHAVIORS/ALGORITHM/VALIDATION/IMPLEMENTATION/HEALTH/SYNC chain, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` needs the plural naming, and the longstanding CHAIN-link warnings remain; no new regressions introduced).*
@@ -47,6 +47,20 @@ Implemented edge components for React Flow that map trigger to dash styles and c
 * **Why:** DOC_TEMPLATE_DRIFT #11 flagged those empty template blocks; this ensures the implementation narrative aligns with the pattern-driven palette, FlowEvent schema, and runtime state before future agents modify the components.
 * **Files:** `docs/connectome/edge_kit/IMPLEMENTATION_Connectome_Edge_Kit_Component_Map_And_Render_Tokens.md`, `docs/connectome/edge_kit/SYNC_Connectome_Edge_Kit_Sync_Current_State.md`
 * **Validation:** `ngram validate` *(fails: the existing `docs/connectome/health` module still lacks its canonical PATTERNS/BEHAVIORS/ALGORITHM/VALIDATION/IMPLEMENTATION/HEALTH/SYNC chain, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` needs the plural naming, and the longstanding CHAIN-link warnings remain; no new regressions introduced).*
+
+### 2026-05-05: Expand edge kit implementation architecture (#11)
+
+* **What:** Expanded the implementation doc with precise FlowEvent schema references, flow-by-flow docking steps, logic chains, module dependencies, state management, runtime behavior, concurrency notes, and bidirectional link guidance so the architecture narrative now references `event_model`, `state_store`, `flow_canvas`, `runtime_engine`, the helper modules, and the health probes before downstream edits occur.
+* **Why:** DOC_TEMPLATE_DRIFT #11 required richer prose above fifty characters for each section; this revision keeps the canonical writeup aligned with the PATTERNS and behavior narratives while clarifying how FlowEvent releases ripple through React Flow rendering and health instrumentation.
+* **Files:** `docs/connectome/edge_kit/IMPLEMENTATION_Connectome_Edge_Kit_Component_Map_And_Render_Tokens.md`, `docs/connectome/edge_kit/SYNC_Connectome_Edge_Kit_Sync_Current_State.md`
+* **Validation:** `ngram validate` *(fails: the existing `docs/connectome/health` module still lacks its canonical PATTERNS/BEHAVIORS/ALGORITHM/VALIDATION/IMPLEMENTATION/HEALTH/SYNC chain, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` needs the plural naming, and the longstanding CHAIN-link warnings remain; no new regressions introduced).*
+
+### 2026-05-05: Complete edge kit validation template (#11)
+
+* **What:** Added BEHAVIORS GUARANTEED, OBJECTIVES COVERED, PROPERTIES, and SYNC STATUS to the validation doc so the template now exceeds the DOC_TEMPLATE_DRIFT threshold and traces each invariant back to the documented behaviors and verification steps.
+* **Why:** DOC_TEMPLATE_DRIFT #11 flagged those missing sections; the new narrative makes the contract between styling invariants and observable outcomes explicit for future editors.
+* **Files:** `docs/connectome/edge_kit/VALIDATION_Connectome_Edge_Kit_Invariants_For_Color_Dash_And_Pulse_Truth.md`, `docs/connectome/edge_kit/SYNC_Connectome_Edge_Kit_Sync_Current_State.md`
+* **Validation:** `ngram validate`
 
 ### 2025-12-21: Complete PATTERNS template sections for edge styling (#11)
 
