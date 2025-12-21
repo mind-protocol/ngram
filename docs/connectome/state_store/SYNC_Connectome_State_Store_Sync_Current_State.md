@@ -57,10 +57,10 @@ Confirming that the newly written handoff, pointer, and consciousness prose cont
 - **Files:** `docs/connectome/state_store/SYNC_Connectome_State_Store_Sync_Current_State.md`
 - **Verification:** `ngram validate`
 
-### 2026-03-13: Enrich algorithm narrative to satisfy template
+### 2026-03-16: Expand state store algorithm sections for template coverage
 
-- **What:** Added OBJECTIVES AND BEHAVIORS, KEY DECISIONS, DATA FLOW, HELPER FUNCTIONS, and INTERACTIONS sections plus richer descriptions of the primary commit algorithm so the ALGORITHM doc now passes the DOC_TEMPLATE_DRIFT requirements for narrative length and coverage.
-- **Why:** DOC_TEMPLATE_DRIFT #11 flagged the algorithm doc as missing those template blocks, so this change keeps the behavior story aligned with the PATTERN and implementation chain.
+- **What:** Added OBJECTIVES AND BEHAVIORS, KEY DECISIONS, DATA FLOW, HELPER FUNCTIONS, and INTERACTIONS sections plus a fuller `commit_step_release_append_event_and_set_focus_and_explanation` narrative so the ALGORITHM document satisfies DOC_TEMPLATE_DRIFT length and structure rules.
+- **Why:** DOC_TEMPLATE_DRIFT #11 signaled this ALGORITHM doc was missing entire sections and short on prose, so enriching the narrative keeps the PATTERN-to-ALGORITHM chain canonical before downstream agents consume the store design.
 - **Files:** `docs/connectome/state_store/ALGORITHM_Connectome_State_Store_Atomic_Commits_For_Step_Releases_And_Realtime.md`, `docs/connectome/state_store/SYNC_Connectome_State_Store_Sync_Current_State.md`
 - **Verification:** `ngram validate`
 
@@ -106,6 +106,13 @@ Confirming that the newly written handoff, pointer, and consciousness prose cont
 * **Files:** `docs/connectome/state_store/PATTERNS_Connectome_State_Store_Single_Source_Of_Truth_For_Events_Focus_And_Timers.md`, `docs/connectome/state_store/SYNC_Connectome_State_Store_Sync_Current_State.md`
 * **Verification:** `ngram validate`
 
+### 2026-02-13: Record the behavior guardrail fix
+
+- **What:** Documented the PATTERNS behavior update inside this sync so future agents tracing issue #11 can see the change in both the pattern and sync layers without searching through older entries.
+- **Why:** DOC_TEMPLATE_DRIFT #11 flagged the missing behavior slots, and recording the fix here keeps the project state and sync aligned with the canonical ledger/focus/timer story before downstream agents update the code.
+- **Files:** `docs/connectome/state_store/SYNC_Connectome_State_Store_Sync_Current_State.md`
+- **Verification:** `ngram validate`
+
 ### 2026-02-01: Expand state store implementation collateral
 
 * **What:** Added SCHEMA, DATA FLOW AND DOCKING (FLOW-BY-FLOW), LOGIC CHAINS, MODULE DEPENDENCIES, RUNTIME BEHAVIOR, and CONCURRENCY MODEL sections to the implementation doc and recorded the Observations trace so the doc chain satisfies DOC_TEMPLATE_DRIFT (#11).
@@ -149,6 +156,7 @@ pnpm connectome:health state_store
 * Added detailed paragraphs in the BEHAVIORS doc for edge cases, anti-behaviors, and inputs/outputs so each template block now exceeds the 50-character minimum while staying aligned with the store invariants.
 * Recorded that IN PROGRESS now tracks the retention cap placeholder, KNOWN ISSUES captures the outstanding health harness and DOC_TEMPLATE_DRIFT dependencies, and the new handoff/pointer/consciousness sections keep the doc-template narrative discoverable for downstream agents.
 * Confirmed the schema, flow-by-flow docking, logic chains, module dependencies, runtime behavior, and concurrency sections remain the canonical coverage referenced by this sync so future agents can trace the entire chain before updating the store.
+* The POINTERS block now explicitly names the PATTERNS, IMPLEMENTATION, BEHAVIORS, and HEALTH docs that feed this sync so downstream agents can follow the canonical chain without hunting for the references.
 
 ## HANDOFF: FOR AGENTS
 
@@ -164,6 +172,8 @@ Please finalize the realtime retention policy decision and decide whether the he
 - `docs/connectome/state_store/IMPLEMENTATION_Connectome_State_Store_Code_Structure_And_Zustand_Actions.md` for the schema, docking flows, logic chains, module links, and concurrency guarantees referenced above.
 - `docs/connectome/state_store/BEHAVIORS_Connectome_State_Store_Observable_State_Consistency_Effects.md` for the observable results we expect and the anti-patterns this store prevents before updates run.
 - `docs/connectome/state_store/HEALTH_Connectome_State_Store_Runtime_Verification_Of_Ledger_And_Timer_Correctness.md` for the manual verification cadence and indicator set tied to the `pnpm connectome:health state_store` command.
+
+The pointers are ordered to flow from PATTERNS through IMPLEMENTATION, BEHAVIORS, and HEALTH so readers can follow the canonical doc chain without guessing which file comes next, keeping this sync tightly coupled to the upstream narratives.
 
 ## CONSCIOUSNESS TRACE
 

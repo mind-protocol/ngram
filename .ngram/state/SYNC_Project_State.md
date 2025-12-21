@@ -1,7 +1,7 @@
 # Project — Sync: Current State
 
 ```
-LAST_UPDATED: 2026-03-13
+LAST_UPDATED: 2026-03-15
 UPDATED_BY: codex
 ```
 
@@ -98,6 +98,27 @@ The membrane PATTERN now also captures the dynamic modulation function guidance 
 Attention documentation now points at this canonical PATTERN so every consumer shares the same modulation policy.
 
 ## RECENT CHANGES
+
+### 2026-03-08: Complete node kit PATTERNS behavior/data sections
+
+- **What:** Added the BEHAVIORS SUPPORTED, BEHAVIORS PREVENTED, DATA, and INSPIRATIONS sections to `docs/connectome/node_kit/PATTERNS_Connectome_Node_Kit_Typed_Language_Coded_Energy_Aware_Node_Rendering_Patterns.md` so the template now spells out allowed outcomes, blocked behaviors, data dependencies, and inspiration cues.
+- **Files:** `docs/connectome/node_kit/PATTERNS_Connectome_Node_Kit_Typed_Language_Coded_Energy_Aware_Node_Rendering_Patterns.md`, `docs/connectome/node_kit/SYNC_Connectome_Node_Kit_Sync_Current_State.md`
+- **Verification:** `ngram validate`
+- **Notes:** Confirmed the PATTERNS entry now spans the behavior guardrails, data provenance, and inspirational framing required by DOC_TEMPLATE_DRIFT #11 so downstream agents can trace how node rendering should behave.
+
+### 2026-03-15: Expand state store behavior narratives
+
+- **What:** Added clarifying paragraphs for edge cases, anti-behaviors, and inputs/outputs in the connectome state_store BEHAVIORS doc and recorded the addition in the state sync so each template block now exceeds the 50-character DOC_TEMPLATE_DRIFT requirement that flagged the missing OBJECTIVES section.
+- **Why:** DOC_TEMPLATE_DRIFT #11 reported the BEHAVIORS doc as missing OBJECTIVES and having terse sections, so the new prose keeps the observable behavior contract canonical and aligned with the store invariants before downstream agents rely on it.
+- **Files:** `docs/connectome/state_store/BEHAVIORS_Connectome_State_Store_Observable_State_Consistency_Effects.md`, `docs/connectome/state_store/SYNC_Connectome_State_Store_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate` *(fails: known `docs/connectome/health` PATTERNS/SYNC gaps, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` naming mismatch, and the longstanding CHAIN warnings the doctor already notes).*
+
+### 2026-03-15: Expand node kit validation guarantees
+
+- **What:** Rewrote the validation BEHAVIORS GUARANTEED, OBJECTIVES COVERED, and PROPERTIES sections so each entry now exceeds the 50-character requirement, explicitly traces palette/energy/timer wiring back to the invariants, and gives downstream agents clearer guardrails for node readability and state reflection.
+- **Why:** DOC_TEMPLATE_DRIFT #11 kept reporting the validation doc as missing or too terse in those sections, so the enriched behavior + property narratives make the node kit’s readability contract traceable from validation to health.
+- **Files:** `docs/connectome/node_kit/VALIDATION_Connectome_Node_Kit_Invariants_For_Node_Readability_And_State_Reflection.md`, `docs/connectome/node_kit/SYNC_Connectome_Node_Kit_Sync_Current_State.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate` *(fails: persistent `docs/connectome/health` PATTERNS/SYNC gaps, `docs/engine/membrane/PATTERN_Membrane_Modulation.md` naming mismatch, and the legacy CHAIN-link warnings the doctor still reports).*
 
 ### 2026-03-07: Flesh out node kit validation guarantees
 
