@@ -35,7 +35,9 @@ Documentation stays current after the template alignment work, with the module i
 - **Files:** `docs/agents/narrator/VALIDATION_Narrator.md`, `docs/agents/narrator/SYNC_Narrator.md`
 - **Verification:** `ngram validate` *(still reporting the existing connectome/health and membrane naming warnings).*
 
-- **Trace:** Points future agents at the updated validation health coverage paragraphs so the contract stays traceable to the sync entry even after subsequent edits.
+- **Trace:** Points future agents at the updated validation health coverage paragraphs so the contract stays traceable to the sync entry even after subsequent edits, with this note versioned on 2025-12-31 for easy cross-reference.
+
+- **Trace ID:** ngram-sync-2025-12-31-narrator-validation
 
 ### 2025-12-30: Document narrator behavior objectives
 
@@ -77,9 +79,10 @@ Documentation stays current after the template alignment work, with the module i
 - **Verification:** `ngram validate` *(still reports pre-existing connectome/health and membrane naming warnings)*
 
 ### 2025-12-31: Clarify narrator health usage guidance
+### 2025-12-31: Clarify narrator health usage guidance
 
-- **What:** Added a usage reminder about logging each indicator update in `.ngram/state/SYNC_Project_Health.md`, explained how each checker run feeds the health score, and enriched the GAPS section with a CLI-warning catalog idea so the doc connects to observable tooling.
-- **Why:** Keeping the health template traceable requires linking the prose to the actual tooling runs that generate the indicators, so future agents can follow the signal without guessing what boundary they are watching.
+- **What:** Added a usage reminder about logging each indicator update in `.ngram/state/SYNC_Project_Health.md`, explained how each checker run feeds the health score, enriched the GAPS section with a CLI-warning catalog idea, and tied the doc to observable tooling so every indicator has a documented trail.
+- **Why:** Keeping the health template traceable requires linking prose to the tooling runs that generate the indicators, so future agents can follow the signal without guessing which boundary they are watching.
 - **Files:** `docs/agents/narrator/HEALTH_Narrator.md`, `docs/agents/narrator/SYNC_Narrator.md`, `.ngram/state/SYNC_Project_State.md`
 - **Verification:** `ngram validate` *(fails: still the known connectome/health and membrane naming warnings)*
 

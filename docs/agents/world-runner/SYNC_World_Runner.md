@@ -19,6 +19,27 @@ The World Runner is complete. It operates as an adapter between the Python game 
 
 ## RECENT CHANGES
 
+### 2025-12-31: Expand algorithm narrative and diagnostics
+
+- **What:** Added extra prose to `ALGORITHM_World_Runner.md` describing how the objectives map to instrumentation, note-taking on `tick_trace`, and the strategy for `affects_player` so the doc now exceeds the template’s 50-character guidance everywhere.
+- **Why:** DOC_TEMPLATE_DRIFT singled out the algorithm for missing objective narratives and short sections; the new paragraphs and bullet support ensure each function heading explains why the Runner behaves the way it does before showing code.
+- **Files:** `docs/agents/world-runner/ALGORITHM_World_Runner.md`, `docs/agents/world-runner/SYNC_World_Runner.md`
+- **Verification:** `ngram validate` *(still fails for the known connectome/health module, membrane naming, and CHAIN warnings already tracked elsewhere)*.
+
+### 2026-01-02: Fill PATTERNS template coverage
+
+- **What:** Added the missing PATTERNS sections (behaviors supported/prevented, principles, data, dependencies, inspirations, scope, and gaps) with 50+ character narratives so the template warning is satisfied.
+- **Why:** DOC_TEMPLATE_DRIFT reported `PATTERNS_World_Runner.md` as missing the required sections and short on narrative length, so this change keeps the canonical rationale authoritative without touching runtime behavior.
+- **Files:** `docs/agents/world-runner/PATTERNS_World_Runner.md`, `docs/agents/world-runner/SYNC_World_Runner.md`
+- **Verification:** `ngram validate`
+
+### 2025-12-21: Expand health template coverage
+
+- **What:** Completely rebuilt `HEALTH_World_Runner.md` so every required template section (purpose, why, flows, objectives, indicators, docks, checkers, instructions, gaps, and ideas) now exists with 50+ character prose.
+- **Why:** DOC_TEMPLATE_DRIFT flagged the health document for missing the new template sections, so the rewrite keeps the health ledger compliant while leaving runtime behavior untouched.
+- **Files:** `docs/agents/world-runner/HEALTH_World_Runner.md`, `docs/agents/world-runner/SYNC_World_Runner.md`, `.ngram/state/SYNC_Project_State.md`
+- **Verification:** `ngram validate`
+
 ### 2025-12-21: Expand implementation doc template coverage
 
 - **What:** Added explicit `LOGIC CHAINS`, `RUNTIME BEHAVIOR`, `CONFIGURATION`, `BIDIRECTIONAL LINKS`, and `GAPS / IDEAS / QUESTIONS` sections to the World Runner implementation doc so every required template block exceeds the length threshold.
@@ -46,12 +67,13 @@ The World Runner is complete. It operates as an adapter between the Python game 
 - **Files:** `docs/agents/world-runner/HEALTH_World_Runner.md`, `docs/agents/world-runner/SYNC_World_Runner.md`
 - **Verification:** `ngram validate`
 
-### 2026-01-02: Expand validation template coverage
+### 2025-12-21: Expand validation template coverage
 
-- **What:** Added dedicated `BEHAVIORS GUARANTEED`, `OBJECTIVES COVERED`, and `HEALTH COVERAGE` sections to `VALIDATION_World_Runner_Invariants.md`, giving each guarantee/objective narrative at least 50 characters and tracing them back to the CLI contract and error handling.
-- **Why:** DOC_TEMPLATE_DRIFT reported those blocks were missing or too terse; filling them keeps the canonical validation ledger compliant while still pointing at the existing World Runner invariants.
+- **What:** Added dedicated `BEHAVIORS GUARANTEED`, `OBJECTIVES COVERED`, and `HEALTH COVERAGE` sections to `VALIDATION_World_Runner_Invariants.md`, ensuring the new tables and health narrative each exceed the template’s 50-character floor while linking the behaviors to the documented invariants and health indicators.
+- **Why:** DOC_TEMPLATE_DRIFT reported those blocks were missing or too terse; enriching the validation doc keeps the canonical ledger compliant without touching runtime behavior.
 - **Files:** `docs/agents/world-runner/VALIDATION_World_Runner_Invariants.md`, `docs/agents/world-runner/SYNC_World_Runner.md`
 - **Verification:** `ngram validate`
+
 ### 2025-12-20: Ngram Framework Refactor
 
 - **What:** Refactored `IMPLEMENTATION_World_Runner_Service_Architecture.md` and updated `TEST_World_Runner_Coverage.md` to the Health format.

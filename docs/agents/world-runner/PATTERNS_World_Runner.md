@@ -16,43 +16,48 @@ When the player takes a time-consuming action, the Narrator hands control to the
 
 ---
 
-## The Problem
+## THE PROBLEM
 
-Long actions need consistent world evolution without forcing the narrator to
-simulate physics, travel, and tension decay. If the narrator handles both, it
-either stalls on simulation detail or drifts from the canon graph.
-
----
-
-## The Pattern
-
-Delegate time advancement to a stateless runner that reads the graph, ticks
-tensions until a player-facing flip or completion, and emits a structured
-Injection for the narrator to render.
+Long actions need consistent world evolution so the narrator does not have to
+simulate physics, travel passages, or tension decay while also keeping the graph
+canon intact. When the narrator owns both time and storytelling the result is
+either a stall on simulation detail or a drift into conflicting reality that
+breaks continuity for the player.
 
 ---
 
-## Design Principles
+## THE PATTERN
 
-1. **Time is a control flow boundary**
-   - Runner owns elapsed time and tick cadence; narrator only reacts.
-
-2. **Graph state is the source of truth**
-   - Runner never invents state outside graph reads and validated mutations.
-
-3. **Interrupts are explicit**
-   - Player-facing flips must become an Injection, not a silent mutation.
-
-4. **Stateless runs stay composable**
-   - Each call is independent so retries and resumes are deterministic.
+Delegate time advancement to a stateless runner that reads the canonical graph,
+ticks tensions until a player-facing flip or completion occurs, and emits a
+structured Injection describing the flips, mutations, and remaining duration for
+the narrator to render. This keeps the runner deterministic while the narrator
+stays expressive.
 
 ---
 
-## Principles
+## BEHAVIORS SUPPORTED
 
-- Prefer deterministic tick loops over ad-hoc narration-side time jumps.
-- Keep runner output structured so narration is faithful and inspectable.
-- Avoid simulating everything; only advance tensions that can flip meaning.
+- Runs deterministic tick loops until the requested duration ends or a human-affecting flip forces an interrupt, making long actions predictable.
+- Applies tension decay and graph mutations before returning so each call leaves the graph ready for resumed runs or narrator reactions.
+- Emits structured Injection payloads with flip metadata, completion flags, and remaining durations so the narrator can resume without recomputing scheduling.
+
+---
+
+## BEHAVIORS PREVENTED
+
+- Prevents the narrator from inventing hidden time leaps or ad-hoc tension rewrites by centralizing all world evolution inside the runner tick loop.
+- Blocks random, story-irrelevant events from sneaking into the next moment by only emitting flips that arise from declared tensions and player context.
+
+---
+
+## PRINCIPLES
+
+- Treat time advancement as a strict control-flow boundary so the runner owns elapsed time and cadence while the narrator only reacts to legible outputs.
+- Always read from the canonical graph state so the runner never invents new state beyond validated mutations and continuity remains intact.
+- Translate every player-facing flip into an explicit Injection payload rather than performing silent mutations that the narrator needs to guess.
+- Keep each run stateless and composable so retries, resumptions, and parallel reads resolve deterministically from the graph.
+- Structure runner output to be inspectable, minimal, and descriptive so the narrator understands exactly what changed and why.
 
 ---
 
@@ -115,38 +120,43 @@ See `docs/agents/world-runner/ALGORITHM_World_Runner.md` for the `affects_player
 
 ---
 
-## Dependencies
+## DATA
 
-- `engine/infrastructure/orchestration/world_runner.py` for orchestration,
-  injection assembly, and tick loop ownership.
-- `engine/physics/graph/graph_ops.py` and `engine/physics/graph/graph_queries.py`
-  for reading tensions and applying mutations.
-- `agents/world_runner/CLAUDE.md` for runner instructions and output contract.
-
----
-
-## Inspirations
-
-- Narrative simulation systems that separate world ticks from authored prose,
-  keeping chronology stable while narration stays expressive.
-- GM-style adjudication loops where time advances offscreen until a trigger
-  demands a player-facing interruption.
+Reads the canonical graph state (nodes, edges, tension values, and node
+attributes), the current action metadata (player context, goals, and remaining
+duration), and outputs Injection payloads that bundle flips, completion status,
+remaining time, and mutation logs so downstream agents can audit every world
+transition.
 
 ---
 
-## Scope
+## DEPENDENCIES
 
-In scope: tick orchestration, flip detection, mutation emission, and structured
-Injection output. Out of scope: narrator prose, frontend rendering, and
-non-tension simulation (combat physics, economy, etc.).
+- `engine/infrastructure/orchestration/world_runner.py` for the outer orchestration loop, injection assembly, and aligning the runner lifecycle with the engine service contract.
+- `engine/physics/graph/graph_ops.py` and `engine/physics/graph/graph_queries.py` for safely reading tensions, applying mutations, and keeping read-models isolated.
+- `agents/world_runner/CLAUDE.md` for the runner instructions, output schema, and the format the narrator expects so the narrated Injection is interpreted without drift.
 
 ---
 
-## Gaps / Ideas / Questions
+## INSPIRATIONS
 
-- Should the runner expose a trace summary for debugging long actions?
-- How should partial ticks be represented when resuming mid-action?
-- What is the minimum Injection payload that still feels narratively grounded?
+- Inspired by narrative simulation systems that split world ticks from authored prose so chronology stays stable while narration can layer meaning on top.
+- Draws from GM-style adjudication loops where time advances offscreen until a decisive trigger demands a player-facing interruption, simplifying what the narrator must manage.
+
+---
+
+## SCOPE
+
+In scope: tick orchestration, flip detection, mutation emission, structured Injection output, trace logging, and deterministic resumption semantics for long actions.
+Out of scope: narrator prose, frontend rendering, and non-tension systems such as combat physics or economic simulation unless those systems surface legitimately through documented tension flips.
+
+---
+
+## GAPS / IDEAS / QUESTIONS
+
+- Should the runner expose a trace summary for debugging long actions so we can step through partial ticks when telemetry shows drift?
+- How should partial ticks be represented when resuming mid-action to ensure narrators see consistent remaining durations and graph context?
+- What is the minimum Injection payload that still feels narratively grounded, and can we compress it further without losing the clarity narrators need?
 
 ---
 

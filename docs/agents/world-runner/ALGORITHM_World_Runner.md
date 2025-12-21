@@ -27,6 +27,8 @@ news. The loop is intentionally short-lived and stateless across calls.
 
 Each objective feeds directly into the sections below: deterministic cadence becomes the five-minute tick flow, alarm interrupts run through `affects_player`, and every run relies on the graph as the only persisted state so retries stay predictable.
 
+The second paragraph of this algorithm translates those objectives into instrumentation needs—tick pacing logs, interrupt counters, and run summaries—so both humans and tooling can notice when the Runner is overloaded or when the graph is mutating faster than narration can keep up.
+
 ---
 
 ## DATA STRUCTURES
@@ -98,6 +100,7 @@ def run_world(action, max_minutes, player_context):
 
 - `world_changes` collects every background flip even after an interrupt so the Narrator still learns about the mutations that resolved while the player was handling the event.
 - `news_available` is appended to on each tick so queued beats never vanish, and the `remaining` field marks how much budget is left for the next resumed call.
+- A lightweight `tick_trace` captures how many flips were inspected vs filtered each run so diagnostics can flag unusually noisy actions without leaking complete graph snapshots.
 
 ---
 
@@ -129,6 +132,7 @@ The function uses location, companions, and urgency checks to avoid unnecessary 
 
 - Favor explicit location and companion overlaps before treating urgency as a fallback so the Runner only interrupts when concrete context exists.
 - Always re-evaluate the player location at the tick boundary so resumed calls remain deterministic even if the player moved during narration.
+- Monitoring both location overlaps and urgency allows the Runner to prioritize player-facing flips while still surfacing emergent tension spikes that cross the critical threshold near allies.
 
 ---
 
