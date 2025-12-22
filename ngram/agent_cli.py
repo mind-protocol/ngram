@@ -1,9 +1,14 @@
+# DOCS: docs/ngram_cli_core/OBJECTIFS_ngram_cli_core.md
+import os
+import random
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Optional
 
-AGENT_CHOICES = ("gemini", "claude", "codex")
-DEFAULT_AGENT = "claude"
+AGENT_CHOICES = ("gemini", "claude", "codex", "all")
+DEFAULT_AGENT = "all"
+DEFAULT_CODEX_MODEL = "gpt-5.1-codex-mini"
+DEFAULT_CLAUDE_MODEL = "claude-sonnet-4-5"
 
 
 @dataclass(frozen=True)
@@ -30,9 +35,15 @@ def build_agent_command(
     add_dir: Optional[Path] = None,
     allowed_tools: Optional[str] = None,
     use_dangerous: bool = True,
-    model_name: Optional[str] = None, # New: Optional model name for Gemini
+    model_name: Optional[str] = None, # Optional model override for providers that support it
 ) -> AgentCommand:
     agent = normalize_agent(agent)
+
+    # Handle "all" by picking a random provider (excluding "all" itself)
+    if agent == "all":
+        providers = ["gemini", "claude", "codex"]
+        agent = random.choice(providers)
+
     if agent == "gemini":
         # Use internal Gemini adapter
         import sys
@@ -48,10 +59,16 @@ def build_agent_command(
         
         if model_name: # Pass model name if specified
             cmd.extend(["--model-name", model_name])
+
+        if add_dir:
+            cmd.extend(["--project-dir", str(add_dir)])
         
         return AgentCommand(cmd=cmd)
     if agent == "claude":
         cmd = ["claude"]
+        # Use specified model or default to Sonnet
+        claude_model = model_name or os.getenv("CLAUDE_MODEL") or DEFAULT_CLAUDE_MODEL
+        cmd.extend(["--model", claude_model])
         if continue_session:
             cmd.append("--continue")
         cmd.extend(["-p", prompt])
@@ -68,7 +85,8 @@ def build_agent_command(
         return AgentCommand(cmd=cmd)
 
     combined_prompt = prompt if not system_prompt else f"{system_prompt}\n\n{prompt}"
-    cmd = ["codex", "exec"]
+    codex_model = model_name or os.getenv("CODEX_MODEL") or DEFAULT_CODEX_MODEL
+    cmd = ["codex", "exec", "--model", codex_model]
     if stream_json:
         cmd.append("--json")
     if use_dangerous:

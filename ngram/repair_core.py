@@ -11,9 +11,14 @@ DOCS: docs/cli/core/PATTERNS_Why_CLI_Over_Copy.md
 """
 
 import asyncio
+import concurrent.futures
 import json
+import logging
+import random
+import shutil
 import subprocess
 import time
+import uuid
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Awaitable, Callable, Dict, List, Optional
@@ -21,6 +26,8 @@ from typing import Any, Awaitable, Callable, Dict, List, Optional
 from .agent_cli import build_agent_command, normalize_agent
 from .doctor_types import DoctorConfig
 from .doctor_files import save_doctor_config
+
+logger = logging.getLogger(__name__)
 
 
 # Symbols and emojis per issue type
@@ -182,7 +189,6 @@ ISSUE_PRIORITY = {
     "MONOLITH": 2,           # Blocks everything
     "INCOMPLETE_IMPL": 3,    # Code before docs
     "STUB_IMPL": 4,          # Also code
-    "DOC_DUPLICATION": 5,    # Fix content
     "INCOMPLETE_CHAIN": 6,   # Structural docs
     "YAML_DRIFT": 7,         # Config alignment
     "UNDOCUMENTED": 8,       # New docs needed
@@ -199,11 +205,14 @@ ISSUE_PRIORITY = {
     "ORPHAN_DOCS": 18,       # Cleanup
     "MISSING_TESTS": 19,     # Tests last
     "LARGE_DOC_MODULE": 20,  # Info only
-    "COMPONENT_NO_STORIES": 21,
+    "DOC_DUPLICATION": 30,    # Lower priority
+    "COMPONENT_NO_STORIES": 31,
     "HOOK_UNDOC": 22,
     "MAGIC_VALUES": 23,
     "LONG_PROMPT": 24,
     "LONG_SQL": 25,
+    "LEGACY_MARKER": 26,     # Convert old formats
+    "UNRESOLVED_QUESTION": 27,  # Investigate questions
     "LOG_ERROR": 90,
     "HARDCODED_CONFIG": 99,  # Often false positive, last
 }
@@ -252,6 +261,7 @@ class RepairResult:
     duration_seconds: float
     error: Optional[str] = None
     decisions_made: Optional[List[Dict[str, str]]] = None
+    provider_used: Optional[str] = None  # Actual provider used (resolved from "all")
 
 
 @dataclass
@@ -536,7 +546,7 @@ def parse_decisions_from_output(output: str) -> List[Dict[str, str]]:
 
 
 def parse_stream_json_line(line: str) -> Optional[str]:
-    """Parse a single JSON line from Claude stream output, return readable text."""
+    """Parse a single JSON line from agent stream output, return readable text."""
     try:
         data = json.loads(line)
         msg_type = data.get("type", "")
@@ -547,36 +557,53 @@ def parse_stream_json_line(line: str) -> Optional[str]:
             if delta.get("type") == "text_delta":
                 return delta.get("text", "")
 
-        # Handle tool use results
-        elif msg_type == "content_block_start":
-            content = data.get("content_block", {})
-            if content.get("type") == "tool_use":
+        # Handle tool use start
+        elif msg_type == "content_block_start" or msg_type == "tool_code":
+            if msg_type == "content_block_start":
+                content = data.get("content_block", {})
                 tool_name = content.get("name", "")
                 tool_input = content.get("input", {})
-                if tool_input:
-                    # Show key params briefly
-                    params = []
-                    for k, v in list(tool_input.items())[:2]:
-                        val = str(v)[:40] + "..." if len(str(v)) > 40 else str(v)
-                        params.append(f"{k}={val}")
-                    param_str = ", ".join(params)
-                    return f"\n**🔧 {tool_name}**(`{param_str}`)\n"
-                return f"\n**🔧 {tool_name}**\n"
+            else:
+                tool_name = data.get("name", "")
+                tool_input = data.get("args", {})
+
+            if tool_input:
+                # Show key params briefly
+                params = []
+                for k, v in list(tool_input.items())[:2]:
+                    val = str(v)[:40] + "..." if len(str(v)) > 40 else str(v)
+                    params.append(f"{k}={val}")
+                param_str = ", ".join(params)
+                return f"\n**🔧 {tool_name}**(`{param_str}`)\n"
+            return f"\n**🔧 {tool_name}**\n"
 
         # Handle final assistant message (fallback)
         elif msg_type == "assistant":
             message = data.get("message", {})
-            for content in message.get("content", []):
-                if content.get("type") == "text":
-                    return content.get("text", "")
+            content_list = message.get("content", [])
+            if content_list and isinstance(content_list, list):
+                for content in content_list:
+                    if content.get("type") == "text":
+                        return content.get("text", "")
+            return None
 
-        # Handle result messages
-        elif msg_type == "result":
-            result = data.get("result", "")
-            if result:
-                return f"[Result: {result[:100]}...]" if len(result) > 100 else f"[Result: {result}]"
+        # Handle tool results
+        elif msg_type == "result" or msg_type == "tool_result":
+            res_val = data.get("result", "")
+            if res_val:
+                res_str = str(res_val)
+                return f"[Result: {res_str[:100]}...]" if len(res_str) > 100 else f"[Result: {res_str}]"
+            return None
+
+        # Handle errors
+        elif msg_type == "error":
+            code = data.get("code", "UNKNOWN")
+            message = data.get("message", "Unknown error")
+            return f"\n**❌ ERROR ({code})**: {message}\n"
 
     except json.JSONDecodeError:
+        pass
+    except Exception:
         pass
     return None
 
@@ -586,31 +613,16 @@ async def spawn_repair_agent_async(
     target_dir: Path,
     on_output: Callable[[str], Awaitable[None]],
     instructions: Dict[str, Any],
-    config: DoctorConfig, # New: DoctorConfig to manage fallback status
+    config: DoctorConfig,
     github_issue_number: Optional[int] = None,
     escalation_decisions: Optional[List[EscalationDecision]] = None,
     agent_id: Optional[str] = None,
     session_dir: Optional[Path] = None,
     agent_symbol: Optional[str] = None,
-    agent_provider: str = "claude",
+    agent_provider: str = "codex",
 ) -> RepairResult:
     """
     Async version of spawn_repair_agent for TUI integration.
-
-    Args:
-        issue: The DoctorIssue to fix
-        target_dir: Project directory
-        on_output: Async callback for each output line
-        instructions: Instructions from get_issue_instructions()
-        github_issue_number: Optional GitHub issue number
-        escalation_decisions: Optional user decisions for ESCALATION issues
-        agent_id: Unique identifier for this agent
-        session_dir: Repair session directory (e.g., .ngram/repairs/2024-01-15_14-30-00/)
-        agent_symbol: Symbol for this agent (e.g., "ninja" for 🥷)
-        agent_provider: Agent provider name (claude or codex)
-
-    Returns:
-        RepairResult with success status and output
     """
     # Handle ESCALATION decisions
     if issue.issue_type == "ESCALATION" and escalation_decisions:
@@ -629,6 +641,10 @@ async def spawn_repair_agent_async(
         )
 
     agent_provider = normalize_agent(agent_provider)
+    # Resolve "all" to actual provider BEFORE building command so we can track it
+    if agent_provider == "all":
+        agent_provider = random.choice(["gemini", "claude", "codex"])
+
     prompt = build_agent_prompt(issue, instructions, target_dir, github_issue_number)
     system_prompt = AGENT_SYSTEM_PROMPT + get_learnings_content(target_dir)
 
@@ -636,7 +652,9 @@ async def spawn_repair_agent_async(
     GEMINI_FALLBACK_MODEL = "gemini-2.5-flash"
 
     # Determine Gemini model, with fallback logic
-    current_gemini_model = config.gemini_model_fallback_status.get(agent_id or "default_repair", GEMINI_PRIMARY_MODEL)
+    fallback_key = agent_id or "default_repair"
+    current_gemini_model = config.gemini_model_fallback_status.get(fallback_key, GEMINI_PRIMARY_MODEL)
+    
     current_attempt = 0
     max_attempts = 2 if agent_provider == "gemini" else 1
     text_output = []
@@ -644,45 +662,38 @@ async def spawn_repair_agent_async(
 
     # Outer loop for model fallback retry
     try:
-        while True:
+        while current_attempt < max_attempts:
+            current_attempt += 1
+            rate_limit_detected = [False] # Use list for closure modification
+
             try:
                 agent_cmd = build_agent_command(
                     agent_provider,
                     prompt=prompt,
                     system_prompt=system_prompt,
-                    stream_json=(agent_provider == "claude"),
+                    stream_json=(agent_provider in ("claude", "gemini")),
                     continue_session=False,
-                    model_name=current_gemini_model if agent_provider == "gemini" else None, # Pass model name
+                    model_name=current_gemini_model if agent_provider == "gemini" else None,
+                    add_dir=target_dir,
                 )
 
                 start_time = time.time()
                 text_output = []  # Reset text_output for each attempt
 
-                import shutil
-
             except Exception as e:
-                logger.error(f"Error during agent command build or execution: {e}")
-                current_attempt += 1
-                if agent_provider == "gemini" and current_gemini_model != GEMINI_FALLBACK_MODEL:
-                    current_gemini_model = GEMINI_FALLBACK_MODEL
-                    config.gemini_model_fallback_status[agent_id or "default_repair"] = current_gemini_model
+                logger.error(f"Error during agent command build: {e}")
                 if current_attempt >= max_attempts:
-                    logger.error(f"Max attempts ({max_attempts}) reached for {issue.path}. Giving up.")
                     raise
-                continue  # Retry outer while loop
+                continue
 
             # Create agent directory within session folder
-            # Structure: .ngram/repairs/{timestamp}/{agent_symbol}/
             if session_dir and agent_symbol:
-                # Use symbol name as folder (e.g., "ninja" for 🥷)
                 agent_dir = session_dir / agent_symbol
             elif session_dir and agent_id:
                 agent_dir = session_dir / agent_id
             elif agent_id:
-                # Fallback to old structure
                 agent_dir = target_dir / ".ngram" / "agents" / "repair" / agent_id
             else:
-                import uuid
                 agent_dir = target_dir / ".ngram" / "agents" / "repair" / f"agent-{uuid.uuid4().hex[:8]}"
 
             agent_dir.mkdir(parents=True, exist_ok=True)
@@ -699,7 +710,7 @@ async def spawn_repair_agent_async(
             elif claude_md_src.exists():
                 agents_md_dst.write_text(claude_md_src.read_text())
 
-            # Write issue info to agent folder for reference
+            # Write issue info to agent folder
             issue_info = agent_dir / "ISSUE.md"
             issue_info.write_text(f"""# Repair Task
 
@@ -716,20 +727,16 @@ async def spawn_repair_agent_async(
 
             head_before = _get_git_head(target_dir)
 
-            # Run subprocess in thread pool to keep UI responsive
-            import subprocess as sync_subprocess
-            import concurrent.futures
-
             def run_agent_sync():
                 """Run agent synchronously in thread, return output lines."""
                 output_lines = []
                 try:
-                    proc = sync_subprocess.Popen(
+                    proc = subprocess.Popen(
                         agent_cmd.cmd,
                         cwd=agent_dir,
-                        stdout=sync_subprocess.PIPE,
-                        stderr=sync_subprocess.STDOUT,
-                        stdin=sync_subprocess.PIPE if agent_cmd.stdin else None,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.STDOUT,
+                        stdin=subprocess.PIPE if agent_cmd.stdin else None,
                         text=False,
                     )
                     if agent_cmd.stdin:
@@ -740,6 +747,11 @@ async def spawn_repair_agent_async(
                         line_str = line.decode(errors='replace').strip()
                         if not line_str:
                             continue
+                        
+                        # Detect rate limit error in Gemini JSON output
+                        if '"code": "RATE_LIMIT_EXCEEDED"' in line_str:
+                            rate_limit_detected[0] = True
+
                         parsed = parse_stream_json_line(line_str)
                         if parsed:
                             output_lines.append(parsed)
@@ -757,15 +769,23 @@ async def spawn_repair_agent_async(
                 future = loop.run_in_executor(pool, run_agent_sync)
                 last_callback = time.time()
                 while not future.done():
-                    await asyncio.sleep(0.5)  # Yield to UI every 500ms
+                    await asyncio.sleep(0.5)
                     now = time.time()
                     if (now - last_callback) > 5.0:
-                        await on_output("")  # Heartbeat
+                        await on_output("")
                         last_callback = now
 
                 text_output, returncode = await asyncio.wrap_future(future)
-            duration = time.time() - start_time
+            
+            # Check for rate limit fallback
+            if rate_limit_detected[0] and agent_provider == "gemini" and current_gemini_model == GEMINI_PRIMARY_MODEL:
+                logger.warning(f"Rate limit hit for Gemini. Falling back to {GEMINI_FALLBACK_MODEL} and retrying.")
+                current_gemini_model = GEMINI_FALLBACK_MODEL
+                config.gemini_model_fallback_status[fallback_key] = current_gemini_model
+                save_doctor_config(target_dir, config)
+                continue
 
+            duration = time.time() - start_time
             head_after = _get_git_head(target_dir)
             readable_output = "\n".join(text_output)
             success = bool(head_before and head_after and head_before != head_after)
@@ -776,7 +796,6 @@ async def spawn_repair_agent_async(
                 gemini_md_path = agent_dir / "GEMINI.md"
                 if gemini_md_path.exists():
                     gemini_md_path.unlink()
-                    print(f"Cleaned up: Deleted {gemini_md_path}")
 
             error = None
             if returncode != 0:
@@ -792,6 +811,7 @@ async def spawn_repair_agent_async(
                 duration_seconds=duration,
                 error=error,
                 decisions_made=decisions if decisions else None,
+                provider_used=agent_provider,
             )
 
     except asyncio.TimeoutError:
@@ -802,8 +822,10 @@ async def spawn_repair_agent_async(
             agent_output="\n".join(text_output),
             duration_seconds=600,
             error="Agent timed out after 10 minutes",
+            provider_used=agent_provider,
         )
     except Exception as e:
+        logger.error(f"Repair agent failed: {e}")
         return RepairResult(
             issue_type=issue.issue_type,
             target_path=issue.path,
@@ -811,4 +833,5 @@ async def spawn_repair_agent_async(
             agent_output="\n".join(text_output),
             duration_seconds=time.time() - start_time,
             error=str(e),
+            provider_used=agent_provider,
         )

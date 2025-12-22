@@ -113,26 +113,40 @@ async def _run_agent_message(app: "NgramApp", message: str, response_widget, sto
 
     async def run_agent(response_widget) -> tuple[bool, str]:
         """Run agent and return (success, response). Updates response_widget as content arrives."""
+        import random
+
+        # Pick an available provider (respect rate limits)
+        provider = app.agent_provider
+        rate_limited = getattr(app, '_rate_limited_providers', set())
+
+        if provider == "all" or provider in rate_limited:
+            available = [p for p in ["claude", "gemini", "codex"] if p not in rate_limited]
+            if available:
+                provider = random.choice(available)
+            elif provider in rate_limited:
+                # All providers rate limited, try claude anyway
+                provider = "claude"
+
         system_prompt = ""
         if learnings_file:
-            if app.agent_provider == "claude":
+            if provider == "claude":
                 system_prompt = str(learnings_file)
             else:
                 system_prompt = learnings_file.read_text()
 
         prompt_text = message
-        if app.agent_provider != "claude":
+        if provider != "claude":
             prompt_text = _build_codex_history_prompt(app, message)
 
         allowed_tools = "Bash(*) Read(*) Edit(*) Write(*) Glob(*) Grep(*) WebFetch(*) WebSearch(*) NotebookEdit(*) Task(*) TodoWrite(*)"
         agent_cmd = build_agent_command(
-            app.agent_provider,
+            provider,
             prompt=prompt_text,
             system_prompt=system_prompt,
-            stream_json=(app.agent_provider == "claude"),
+            stream_json=(provider == "claude"),
             continue_session=not app._manager_force_new_session,
             add_dir=app.target_dir,
-            allowed_tools=allowed_tools if app.agent_provider == "claude" else None,
+            allowed_tools=allowed_tools if provider == "claude" else None,
         )
         app._manager_force_new_session = False
 
@@ -351,7 +365,11 @@ async def _run_agent_message(app: "NgramApp", message: str, response_widget, sto
 def _build_review_prompt(agent, result, output_tail: str) -> str:
     """Build prompt for manager to review completed agent."""
     status = "SUCCESS" if result.success else f"FAILED: {result.error or 'unknown'}"
-    return f"""Agent {agent.symbol} completed repair task.
+    retry_note = ""
+    if agent.retry_count > 0:
+        retry_note = f"\n(This is retry #{agent.retry_count} after feedback)"
+
+    return f"""Agent {agent.symbol} completed repair task.{retry_note}
 
 Issue: {agent.issue_type}
 Target: {agent.target_path}
@@ -368,11 +386,16 @@ Please review this repair:
 Agent output (last 2000 chars):
 ```
 {output_tail}
-```"""
+```
+
+**If the fix is incomplete or incorrect**, respond with:
+NEEDS_CORRECTION: <your feedback to the agent explaining what needs to be fixed>
+
+If the fix looks good, just provide your summary. Do not include NEEDS_CORRECTION if no correction is needed."""
 
 
-async def _run_manager_review(app: "NgramApp", prompt: str, agent_info: dict = None) -> None:
-    """Run manager review in background, display result and save to log."""
+async def _run_manager_review(app: "NgramApp", prompt: str, agent_info: dict = None) -> str:
+    """Run manager review in background, display result and save to log. Returns review text."""
     from datetime import datetime
 
     manager = app.query_one("#manager-panel")
@@ -388,7 +411,8 @@ async def _run_manager_review(app: "NgramApp", prompt: str, agent_info: dict = N
     # Run with --continue to maintain session
     await _run_agent_message(app, prompt, response_widget, stop_animation)
 
-    # Save review to repair log
+    # Extract review content
+    review_content = ""
     try:
         review_content = response_widget.renderable if hasattr(response_widget, 'renderable') else str(response_widget)
         # Clean up rich markup for plain text
@@ -412,3 +436,194 @@ async def _run_manager_review(app: "NgramApp", prompt: str, agent_info: dict = N
             f.write(entry)
     except Exception:
         pass  # Don't fail on logging errors
+
+    return str(review_content)
+
+
+def _parse_correction_feedback(review_text: str) -> str | None:
+    """Parse NEEDS_CORRECTION feedback from manager review.
+
+    Returns the feedback text if found, None otherwise.
+    """
+    # Look for NEEDS_CORRECTION: pattern
+    for line in review_text.split('\n'):
+        if line.strip().startswith("NEEDS_CORRECTION:"):
+            feedback = line.split("NEEDS_CORRECTION:", 1)[1].strip()
+            # Also capture any following lines that might be part of the feedback
+            return feedback
+
+    # Also check for multi-line format
+    if "NEEDS_CORRECTION:" in review_text:
+        parts = review_text.split("NEEDS_CORRECTION:", 1)
+        if len(parts) > 1:
+            # Take everything after the marker, up to 500 chars
+            feedback = parts[1].strip()[:500]
+            return feedback
+
+    return None
+
+
+async def _relaunch_agent_with_feedback(
+    app: "NgramApp",
+    agent,
+    feedback: str,
+) -> None:
+    """Relaunch an agent with correction feedback using --continue."""
+    import asyncio
+    from pathlib import Path
+    from ..agent_cli import build_agent_command
+
+    manager = app.query_one("#manager-panel")
+    agent_container = app.query_one("#agent-container")
+
+    # Limit retries
+    max_retries = 2
+    if agent.retry_count >= max_retries:
+        manager.add_message(f"[yellow]{agent.symbol} Max retries ({max_retries}) reached, skipping further corrections[/]")
+        return
+
+    # Check if we have the agent directory for continuation
+    if not agent.agent_dir or not Path(agent.agent_dir).exists():
+        manager.add_message(f"[yellow]{agent.symbol} Cannot continue - agent directory not available[/]")
+        return
+
+    # Increment retry count
+    agent.retry_count += 1
+    agent.status = "running"
+    agent.error = None
+    agent.output_buffer = []
+
+    manager.add_message(f"[cyan]{agent.symbol} Relaunching with feedback (attempt {agent.retry_count})...[/]")
+
+    # Build continuation prompt
+    continuation_prompt = f"""The manager reviewed your work and found issues. Please correct them.
+
+**Manager Feedback:**
+{feedback}
+
+Please address the feedback and complete the fix. When done, commit your changes.
+"""
+
+    # Determine provider (prefer the one used before)
+    provider = agent.provider or app.agent_provider
+    if provider == "all":
+        import random
+        provider = random.choice(["gemini", "claude", "codex"])
+
+    # Build command with --continue
+    agent_cmd = build_agent_command(
+        provider,
+        prompt=continuation_prompt,
+        stream_json=(provider in ("claude", "gemini")),
+        continue_session=True,  # This is the key - use --continue
+        add_dir=app.target_dir,
+    )
+
+    # Add shimmer for running agent
+    task_desc = f"Correcting {agent.issue_type}: {agent.target_path}"
+    agent_container.add_shimmer_agent(agent.id, agent.symbol, task_desc)
+
+    # Run the agent asynchronously
+    async def run_continuation():
+        import subprocess
+        import time
+        from ..repair_core import RepairResult, _get_git_head, parse_stream_json_line
+
+        start_time = time.time()
+        head_before = _get_git_head(app.target_dir)
+        text_output = []
+
+        try:
+            proc = await asyncio.create_subprocess_exec(
+                *agent_cmd.cmd,
+                cwd=agent.agent_dir,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.STDOUT,
+                stdin=asyncio.subprocess.PIPE if agent_cmd.stdin else None,
+            )
+
+            if agent_cmd.stdin and proc.stdin:
+                proc.stdin.write((agent_cmd.stdin + "\n").encode())
+                await proc.stdin.drain()
+                proc.stdin.close()
+
+            if proc.stdout:
+                async for line in proc.stdout:
+                    line_str = line.decode(errors='replace').strip()
+                    if line_str:
+                        parsed = parse_stream_json_line(line_str)
+                        if parsed:
+                            text_output.append(parsed)
+                            agent.append_output(parsed)
+                        elif not line_str.startswith("{"):
+                            text_output.append(line_str)
+                            agent.append_output(line_str)
+
+            await proc.wait()
+
+            duration = time.time() - start_time
+            head_after = _get_git_head(app.target_dir)
+            readable_output = "\n".join(text_output)
+            success = bool(head_before and head_after and head_before != head_after)
+
+            error = None
+            if proc.returncode != 0:
+                error = f"Exit code: {proc.returncode}"
+            elif not success:
+                error = "No git commit detected"
+
+            result = RepairResult(
+                issue_type=agent.issue_type,
+                target_path=agent.target_path,
+                success=success,
+                agent_output=readable_output,
+                duration_seconds=duration,
+                error=error,
+                provider_used=provider,
+            )
+
+            # Update agent status
+            agent.status = "completed" if result.success else "failed"
+            agent.error = result.error
+
+            # Stop shimmer
+            if result.success:
+                final_text = f"[green]✓[/] {agent.symbol} [green]Done[/] [dim]{agent.issue_type} (retry {agent.retry_count})[/]"
+            else:
+                final_text = f"[red]✗[/] {agent.symbol} [red]Failed[/] [dim]{result.error or 'unknown'}[/]"
+            agent_container.stop_shimmer_agent(agent.id, final_text)
+
+            if result.success:
+                manager.add_message(f"[green]{agent.symbol} Correction successful![/]")
+            else:
+                manager.add_message(f"[red]{agent.symbol} Correction failed: {result.error or 'unknown'}[/]")
+
+            return result
+
+        except Exception as e:
+            agent.status = "failed"
+            agent.error = str(e)
+            agent_container.stop_shimmer_agent(agent.id, f"[red]✗[/] {agent.symbol} [red]Error[/] [dim]{e}[/]")
+            manager.add_message(f"[red]{agent.symbol} Continuation error: {e}[/]")
+            return None
+
+    # Run continuation
+    result = await run_continuation()
+
+    # If still not successful and we have retries left, manager can review again
+    if result and not result.success and agent.retry_count < max_retries:
+        # Queue another review
+        from .commands_agent import _build_review_prompt, _run_manager_review
+        output_tail = agent.get_output()[-2000:]
+        prompt = _build_review_prompt(agent, result, output_tail)
+        agent_info = {
+            "symbol": agent.symbol,
+            "issue_type": agent.issue_type,
+            "target": agent.target_path,
+        }
+        review_text = await _run_manager_review(app, prompt, agent_info)
+
+        # Check if manager wants another correction
+        new_feedback = _parse_correction_feedback(review_text)
+        if new_feedback:
+            await _relaunch_agent_with_feedback(app, agent, new_feedback)

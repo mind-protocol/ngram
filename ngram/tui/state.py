@@ -109,6 +109,11 @@ class AgentHandle:
     start_time: float = field(default_factory=time.time)
     process: Optional[asyncio.subprocess.Process] = None
     error: Optional[str] = None
+    # For manager feedback / agent continuation
+    agent_dir: Optional[Path] = None  # Working directory for --continue
+    provider: Optional[str] = None  # Provider used (gemini/claude/codex)
+    issue: Optional[Any] = None  # Original DoctorIssue for retry
+    retry_count: int = 0  # How many times agent was relaunched with feedback
 
     @property
     def duration(self) -> float:

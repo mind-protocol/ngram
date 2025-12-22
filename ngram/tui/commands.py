@@ -279,6 +279,9 @@ async def handle_repair(app: "NgramApp", args: str) -> None:
     app._repair_session_dir = session_dir
     manager.add_message(f"[dim]Session: .ngram/repairs/{timestamp}/[/]")
 
+    # Reset rate-limited providers for new session
+    app._rate_limited_providers = set()
+
     # Run doctor to find issues (load config from .ngramignore)
     try:
         loop = asyncio.get_event_loop()
@@ -345,7 +348,9 @@ async def handle_repair(app: "NgramApp", args: str) -> None:
     # Store issue queue on app for agent completion to pull from
     from ..repair_instructions import get_issue_instructions
 
-    max_agents = 3
+    # Set default concurrency to 6 when model is "all"
+    max_agents = 6 if app.agent_provider == "all" else 3
+    
     app._repair_queue = list(all_issues[max_agents:])  # Remaining issues
     app._repair_total = len(all_issues)
     app._repair_agent_index = max_agents  # Next agent index for symbol
@@ -476,17 +481,27 @@ async def _spawn_agent(app: "NgramApp", issue, agent_index: int, config) -> None
     # Get session dir if available
     session_dir = getattr(app, '_repair_session_dir', None)
 
+    # Calculate agent directory path
+    if session_dir:
+        agent_dir = session_dir / folder_name
+    else:
+        agent_dir = app.target_dir / ".ngram" / "agents" / "repair" / agent_id
+
     agent = AgentHandle(
         id=agent_id,
         issue_type=issue.issue_type,
         target_path=issue.path,
         symbol=symbol,
+        issue=issue,  # Store original issue for retry
+        agent_dir=agent_dir,  # Store agent dir for --continue
+        provider=app.agent_provider,  # Store provider used
     )
     app.state.add_agent(agent)
     agent_container.add_agent(agent)
 
-    # Log agent start to summary
-    agent_container.add_summary(f"[yellow]▶[/] {symbol} [bold]{issue.issue_type}[/] [dim]{issue.path}[/]")
+    # Add shimmering status line for running agent
+    task_desc = f"Fixing {issue.issue_type}: {issue.path}"
+    agent_container.add_shimmer_agent(agent_id, symbol, task_desc)
 
     # Get instructions
     instructions = get_issue_instructions(issue, app.target_dir)
@@ -529,23 +544,49 @@ async def _run_agent(app: "NgramApp", agent, issue, instructions: dict, on_outpu
 
         agent.status = "completed" if result.success else "failed"
         agent.error = result.error
+        # Update provider with actual provider used (resolved from "all")
+        if result.provider_used:
+            agent.provider = result.provider_used
 
-        # Check for rate limit errors - stop repair loop if detected
+        # Check for rate limit errors - switch to another model
         is_rate_limited = (not result.success) and _output_indicates_rate_limit(result.agent_output)
 
         if is_rate_limited:
-            agent_container.add_summary(f"[red]⛔ RATE LIMIT - stopping repair[/]")
-            manager.add_message("[red]Rate limit hit - repair stopped. Wait or switch agents.[/]")
-            # Clear the queue to stop further agents
-            if hasattr(app, '_repair_queue'):
-                app._repair_queue.clear()
+            # Stop shimmer with rate limit status (use orange for better visibility)
+            actual_provider = result.provider_used or app.agent_provider
+            agent_container.stop_shimmer_agent(agent.id, f"[dark_orange]⚠[/] {agent.symbol} [dark_orange]Rate limit ({actual_provider})[/]")
+
+            # Track rate-limited providers in app state (use actual provider from result)
+            if not hasattr(app, '_rate_limited_providers'):
+                app._rate_limited_providers = set()
+            app._rate_limited_providers.add(actual_provider)
+
+            # Find next available provider
+            all_providers = ["gemini", "claude", "codex"]
+            available = [p for p in all_providers if p not in app._rate_limited_providers]
+
+            if available:
+                app.agent_provider = available[0]
+                agent_container.add_summary(f"[dark_orange]⚠ RATE LIMIT on {actual_provider} - switching to {app.agent_provider}[/]")
+                manager.add_message(f"[bold]Rate limit on {actual_provider} - switching to {app.agent_provider}[/]")
+
+                # Re-queue the failed issue at the front
+                if hasattr(app, '_repair_queue'):
+                    app._repair_queue.insert(0, issue)
+            else:
+                # All providers rate limited
+                agent_container.add_summary(f"[red]⛔ ALL PROVIDERS RATE LIMITED - stopping repair[/]")
+                manager.add_message("[red]All providers rate limited - repair stopped. Wait and retry later.[/]")
+                if hasattr(app, '_repair_queue'):
+                    app._repair_queue.clear()
             return
 
-        # Log to summary
+        # Stop shimmer and show final status
         if result.success:
-            agent_container.add_summary(f"[green]✓[/] {agent.symbol} [green]Done[/] [dim]{agent.issue_type}[/]")
+            final_text = f"[green]✓[/] {agent.symbol} [green]Done[/] [dim]{agent.issue_type}[/]"
         else:
-            agent_container.add_summary(f"[red]✗[/] {agent.symbol} [red]Failed[/] [dim]{result.error or 'unknown'}[/]")
+            final_text = f"[red]✗[/] {agent.symbol} [red]Failed[/] [dim]{result.error or 'unknown'}[/]"
+        agent_container.stop_shimmer_agent(agent.id, final_text)
 
         # Supervisor check
         await app.supervisor.on_agent_complete(agent)
@@ -584,7 +625,8 @@ async def _run_agent(app: "NgramApp", agent, issue, instructions: dict, on_outpu
         agent.status = "failed"
         agent.error = str(e)
         result = None  # No result on exception
-        agent_container.add_summary(f"[red]✗[/] {agent.symbol} [red]Error[/] [dim]{e}[/]")
+        # Stop shimmer with error status
+        agent_container.stop_shimmer_agent(agent.id, f"[red]✗[/] {agent.symbol} [red]Error[/] [dim]{e}[/]")
         manager.add_message(f"[red]{agent.symbol} Error: {e}[/]")
         app.conversation.add_message("system", f"Repair {agent.symbol} error: {e}")
 
@@ -633,7 +675,12 @@ async def _spawn_next_from_queue(app: "NgramApp") -> None:
 
 async def _manager_review_agent(app: "NgramApp", agent, result) -> None:
     """Background task to have manager review agent completion."""
-    from .commands_agent import _build_review_prompt, _run_manager_review
+    from .commands_agent import (
+        _build_review_prompt,
+        _run_manager_review,
+        _parse_correction_feedback,
+        _relaunch_agent_with_feedback,
+    )
 
     try:
         # Get last 2000 chars of output
@@ -646,7 +693,14 @@ async def _manager_review_agent(app: "NgramApp", agent, result) -> None:
             "issue_type": agent.issue_type,
             "target": agent.target_path,
         }
-        await _run_manager_review(app, prompt, agent_info)
+        review_text = await _run_manager_review(app, prompt, agent_info)
+
+        # Check if manager wants correction
+        feedback = _parse_correction_feedback(review_text)
+        if feedback:
+            app.log_error(f"Manager requested correction for {agent.symbol}: {feedback[:100]}...")
+            await _relaunch_agent_with_feedback(app, agent, feedback)
+
     except Exception as e:
         app.log_error(f"Manager review failed: {e}")
 
