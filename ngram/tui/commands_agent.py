@@ -320,13 +320,33 @@ async def _run_agent_message(app: "NgramApp", message: str, response_widget, sto
             stderr_output = "".join(stderr_chunks)[:500] if stderr_chunks else ""
             if stderr_output:
                 app.log_error(f"Agent stderr: {stderr_output}")
+                # Detect rate limit in stderr and add provider to blocked set
+                stderr_lower = stderr_output.lower()
+                if any(m in stderr_lower for m in ("429", "rate_limit", "resource_exhausted", "quota")):
+                    rate_limited = getattr(app, '_rate_limited_providers', set())
+                    if provider not in rate_limited:
+                        app._rate_limited_providers = rate_limited | {provider}
+                        app.log_error(f"Rate limit detected for {provider}, added to blocked set")
             elif process.returncode != 0:
                 app.log_error(f"Agent process exited with code {process.returncode}")
 
         return process.returncode == 0, "".join(response_parts)
 
     try:
-        success, response = await run_agent(response_widget=response_widget)
+        # Retry loop for rate limit handling
+        max_retries = 3
+        for attempt in range(max_retries):
+            success, response = await run_agent(response_widget=response_widget)
+
+            # Check if we hit a rate limit and should retry
+            rate_limited = getattr(app, '_rate_limited_providers', set())
+            available = [p for p in ["claude", "gemini", "codex"] if p not in rate_limited]
+
+            if not success and not response and available and attempt < max_retries - 1:
+                # Rate limit likely hit, retry with different provider
+                await asyncio.sleep(0.5)  # Brief pause before retry
+                continue
+            break
 
         # Always stop animation after agent completes
         stop_animation["flag"] = True
