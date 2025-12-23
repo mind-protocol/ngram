@@ -88,24 +88,33 @@ Deliverables:
 
 | Date | Change |
 |------|--------|
+| 2025-12-23 | Resolved E1-E4: Engine API verified, Pydantic chosen, file-level, two-pass |
+| 2025-12-23 | Added ENGINE API MAPPING section with node/link method signatures |
+| 2025-12-23 | Added mechanisms doc escalations (D1-D7, Q1-Q9) to doc chain with phase tags |
 | 2025-12-23 | Defined 6-phase implementation plan |
 | 2025-12-23 | Analyzed engine reuse (40% reuse, 60% new) |
 | 2025-12-23 | Reviewed all escalations with recommendations |
 | 2024-12-23 | Created full doc chain (OBJECTIVES → VALIDATION) |
 | 2024-12-23 | Created mapping.yaml v2.0 with 9 link types |
-| 2024-12-23 | Added escalations/propositions to all docs |
 
 ---
 
 ## OPEN DECISIONS
 
-| Decision | Options | Leaning |
-|----------|---------|---------|
-| Space granularity | per module / per objective / per feature | Start with module |
-| Agent count | fixed 6 / dynamic | Start fixed |
-| Goal completion | physics decay / explicit close | Physics decay |
-| Ingest trigger | manual / file watcher / git hook | Manual first |
-| Type inference | heuristics / LLM | Heuristics first |
+| Decision | Options | Leaning | Phase |
+|----------|---------|---------|-------|
+| Space granularity | per module / per objective / per feature | Start with module | 1 |
+| Agent count | fixed 6 / dynamic | Start fixed | 3 |
+| Goal completion | physics decay / explicit close | Physics decay | 2 |
+| Ingest trigger | manual / file watcher / git hook | Manual first | 1 |
+| Type inference | heuristics / LLM | Heuristics first | 3 |
+| [D1] Agent query mechanism | engine.get_context() / direct graph / physics-aware | engine.get_context() | 2 |
+| [D2] Speed in multiplayer | global speed / per-actor | Global speed | 6 |
+| [D3] Running agent injection | inject / queue / interrupt | Queue | 3 |
+| [D4] Agent space assignment | config / root / dynamic | Config in agents.yaml | 3 |
+| [D5] Opening message | moment only / + summary / full dump | Moment + summary | 3 |
+| [D6] Module naming | mapping.yaml / conventions / LLM | mapping.yaml globs | 1 |
+| [D7] Human query mechanism | CLI / API / physics-aware | CLI first | 2 |
 
 ---
 
@@ -117,13 +126,48 @@ None currently. Ready for implementation.
 
 ## NEXT STEPS (Phase 1)
 
-1. **Resolve Phase 1 escalations** — Engine API verification, mapping parser
+1. ~~**Resolve Phase 1 escalations**~~ — ✅ E1-E4 resolved
 2. **Create building/ package** — `__init__.py`, directory structure
-3. **Implement mapping loader** — `config/mapping.py` with pydantic models
+3. **Implement mapping loader** — `config/mapping.py` with Pydantic models
 4. **Implement discover** — `ingest/discover.py` file pattern matching
 5. **Implement parse** — `ingest/parse.py` doc parsing, marker extraction
-6. **Implement create** — `ingest/create.py` engine API calls
+6. **Implement create** — `ingest/create.py` engine API calls + Space→Narrative link
 7. **Test with docs/building/** — verify 8 docs become Narratives
+
+---
+
+## ENGINE API MAPPING (Verified)
+
+### Node Creation
+
+| mapping.yaml | Engine Method | Key Args |
+|--------------|---------------|----------|
+| `Space` | `GraphOps.add_place()` | `id, name, type, weight, energy` |
+| `Narrative` | `GraphOps.add_narrative()` | `id, name, content, type, weight` |
+| `Thing` | `GraphOps.add_thing()` | `id, name, type, weight, energy` |
+| `Actor` | `GraphOps.add_character()` | `id, name, type, weight, energy` |
+
+### Link Creation
+
+| mapping.yaml | Engine Method | Notes |
+|--------------|---------------|-------|
+| `contains` (Space→Space) | `add_contains()` | Exists |
+| `contains` (Space→Narrative) | Custom cypher | Need to add |
+| `relates` | `add_narrative_link()` | `supports, contradicts, elaborates` |
+| `about` | `add_about()` | `moment_id, target_id, weight` |
+
+### Gap: Space→Narrative Containment
+
+Current `add_contains()` only handles Space→Space. For Phase 1, add custom:
+
+```python
+def add_narrative_to_space(space_id: str, narrative_id: str):
+    cypher = """
+    MATCH (s:Space {id: $space_id})
+    MATCH (n:Narrative {id: $narr_id})
+    MERGE (s)-[:CONTAINS]->(n)
+    """
+```
 
 ---
 
@@ -131,19 +175,23 @@ None currently. Ready for implementation.
 
 ### For Phase 1 Implementation
 
-**Blocking escalations to resolve first:**
-1. Verify engine API — do `engine.create_space()`, `engine.create_narrative()` exist?
-2. Choose mapping parser approach — pydantic recommended
+**Resolved:**
+- ✅ Engine API verified — `add_place`, `add_narrative`, `add_thing` exist
+- ✅ Mapping parser — use Pydantic
 
-**Then build:**
-- `building/config/mapping.py` — load + validate mapping.yaml
-- `building/ingest/discover.py` — glob patterns from mapping
-- `building/ingest/parse.py` — markdown parsing, marker extraction
-- `building/ingest/create.py` — engine API calls
+**Remaining decisions:**
+- Section granularity — start file-level
+- Link timing — two-pass (nodes first, then links)
+
+**Build order:**
+1. `building/config/mapping.py` — load + validate mapping.yaml
+2. `building/ingest/discover.py` — glob patterns from mapping
+3. `building/ingest/parse.py` — markdown parsing, marker extraction
+4. `building/ingest/create.py` — engine API calls + custom Space→Narrative link
 
 ### For Human
 
-Phase 1 escalations need decisions (see below).
+Review remaining escalations: E2-E4 (parser, granularity, link timing).
 
 ---
 
@@ -151,21 +199,21 @@ Phase 1 escalations need decisions (see below).
 
 ### Phase 1 TODOs
 
-<!-- @ngram:todo Verify engine.create_space() API exists and signature -->
-<!-- @ngram:todo Verify engine.create_narrative() API exists and signature -->
+<!-- @ngram:done Verify engine API exists and signatures -->
 <!-- @ngram:todo Create building/ package directory structure -->
-<!-- @ngram:todo Implement mapping.py with pydantic models -->
+<!-- @ngram:todo Implement mapping.py with Pydantic models -->
 <!-- @ngram:todo Implement discover.py file pattern matching -->
 <!-- @ngram:todo Implement parse.py markdown + marker extraction -->
 <!-- @ngram:todo Implement create.py engine API calls -->
+<!-- @ngram:todo Add Space→Narrative containment link method -->
 <!-- @ngram:todo Test ingest with docs/building/ -->
 
 ### Phase 1 Escalations
 
-<!-- @ngram:escalation Engine API not verified — need to check actual signatures for create_space, create_narrative, create_thing, create_link -->
-<!-- @ngram:escalation Mapping parser choice — pydantic vs raw dict. Recommendation: pydantic for validation -->
-<!-- @ngram:escalation Section extraction granularity — one Narrative per file or per ## heading? Recommendation: start with file level -->
-<!-- @ngram:escalation Link creation during ingest — when to create contains/relates links? Same pass or separate? -->
+<!-- @ngram:resolved E1 Engine API verified — add_place, add_narrative, add_thing, add_character exist. Gap: Space→Narrative containment needs custom cypher. -->
+<!-- @ngram:resolved E2 Mapping parser — use Pydantic models for validation -->
+<!-- @ngram:resolved E3 Section granularity — start file-level, defer section extraction -->
+<!-- @ngram:resolved E4 Link timing — two-pass (all nodes, then all links) -->
 
 ### Future Phase TODOs
 
