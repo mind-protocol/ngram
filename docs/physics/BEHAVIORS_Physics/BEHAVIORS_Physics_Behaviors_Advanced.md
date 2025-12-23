@@ -124,7 +124,7 @@ News can arrive.
 ```
 Player at camp.
 York under siege (World Runner processing).
-Tension in York crosses threshold.
+Pressure in York crosses threshold.
 "City falls" moment actualizes in York.
 News moment generated: "A rider from York. The city has fallen."
 News travels to player's location.
@@ -160,7 +160,7 @@ Then: clarity. A moment demands attention.
 - Screen sharpens (freeze)
 - Silence — 300-500ms pause
 - Nothing displays
-- Tension in the gap
+- Suspense in the gap
 
 **Phase 3: Arrival (1x)**
 - Crystal clear, full color
@@ -176,7 +176,7 @@ The pause is where dread lives. "Something's happening."
 | Direct address | Player character's name in REFERENCES |
 | Combat | Moment with action: attack becomes canon |
 | Major arrival | Character with importance > 0.7 enters scene |
-| Tension boils | Detected tension pressure > 0.9 (computed from structure) |
+| Energy spike | Narrative energy pressure > 0.9 (computed from contradictions and energy concentration) |
 | Decision point | Moment with multiple CAN_LEAD_TO from player |
 | Discovery | Narrative node created with player in WITNESSED_BY |
 | Danger | Moment with THREATENS → player or companion |
@@ -260,10 +260,26 @@ produced by the canon and display pipeline.
 
 ## MARKERS
 
-<!-- @ngram:escalation How should energy routing behave when a named character is present -->
-  but asleep or otherwise unavailable to respond?
-<!-- @ngram:escalation Should action queue pacing slow under 1x to keep responses legible -->
-  while still honoring sequential action resolution?
+<!-- @ngram:escalation
+title: "How should energy routing behave when a named character is present but asleep or otherwise unavailable to respond?"
+priority: 5
+response:
+  status: resolved
+  choice: "Moment node with duration + strong link"
+  behavior: |
+    SLEEP: Create moment node (action: sleeps) with duration. Strong link (high conductivity) absorbs player focus. Cognition still allowed (dreams, internal thoughts can surface).
+    UNCONSCIOUS: Creates contradicts links to block action potentials. Character cannot respond but graph still routes energy through them.
+  notes: "2025-12-23: Resolved by Nicolas."
+-->
+<!-- @ngram:escalation
+title: "Should action queue pacing slow under 1x to keep responses legible?"
+priority: 5
+response:
+  status: resolved
+  choice: "N/A - handled by moment duration"
+  behavior: "Each moment has a duration attribute (5s minimum). Pacing is controlled per-moment, not at queue level."
+  notes: "2025-12-23: Resolved by Nicolas."
+-->
 <!-- @ngram:proposition Add a visible "waiting" affordance that explains when no potentials -->
   are above threshold, instead of relying solely on narrated silence.
 

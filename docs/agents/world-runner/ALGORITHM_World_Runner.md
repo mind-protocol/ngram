@@ -146,11 +146,11 @@ The function uses location, companions, and urgency checks to avoid unnecessary 
 
 ## Algorithm Steps (Condensed)
 
-1. **Tick:** Update tension pressure, narrative weight, and decay.
-2. **Detect flips:** Tensions over breaking point become flip candidates.
+1. **Tick:** Update pressure, narrative weight, and decay.
+2. **Detect flips:** Pressure points over breaking point become flip candidates.
 3. **Process flips:**
    - Player-affecting flip → generate `Event` and return interrupted Injection.
-   - Non-player flip → create narratives/beliefs/tensions as background changes.
+   - Non-player flip → create narratives/beliefs as background changes.
 4. **Propagate news:** News spreads based on time and significance.
 5. **Return Injection:** Completed or interrupted with world changes and news.
 

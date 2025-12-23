@@ -14,7 +14,7 @@ VERIFIED: 2025-12-20 against local tree
 PATTERNS:
   - ./PATTERNS_Attention_Energy_Split.md
   - ../../engine/moment-graph-engine/PATTERNS_Player_DMZ.md
-  - ../../engine/moment-graph-engine/PATTERNS_Void_Tension.md
+  - ../../engine/moment-graph-engine/PATTERNS_Void_Pressure.md
   - ../../engine/moment-graph-engine/PATTERNS_Simultaneity_And_Contradiction.md
   - ../../engine/moment-graph-engine/PATTERNS_Instant_Traversal_Moment_Graph.md
 
@@ -46,7 +46,7 @@ IMPL:
 | B3 | Interrupt on focus reconfiguration | Locks binary interrupt rule |
 | B4 | Non-interrupt flips keep acceleration | Prevents cooldown heuristics |
 | B5 | CONTRADICTS visibility interrupts | Guarantees contradiction awareness |
-| B6 | Void tension can create a sink | Ensures void remains local and player-linked |
+| B6 | Void pressure can create a sink | Ensures void remains local and player-linked |
 
 ## INVARIANTS (MUST ALWAYS HOLD)
 
@@ -129,7 +129,7 @@ DMZ = N_k(current_view(player)) with whitelisted link types.
 
 **Checked by:** write interceptor that rejects DMZ writes
 
-### V8: Void Tension Visibility Rule
+### V8: Void Pressure Visibility Rule
 
 ```
 A narrative_void moment MUST NOT surface unless it is linked into player neighborhood.

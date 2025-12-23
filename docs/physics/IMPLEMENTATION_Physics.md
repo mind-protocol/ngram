@@ -106,8 +106,8 @@ The tick is the orchestrator; it does not store state beyond an ephemeral contex
 
 ### Logic Chains
 
-- **Flip detection:** Tension/energy crosses threshold → `TickResult.flips` → orchestrator dispatch → handler output.
-- **Action queue:** Action moment actualizes → queued by `process_actions` → updates graph (AT, possession, tension) → cascade occurs.
+- **Flip detection:** Energy crosses threshold → `TickResult.flips` → orchestrator dispatch → handler output.
+- **Action queue:** Action moment actualizes → queued by `process_actions` → updates graph (AT, possession, pressure) → cascade occurs.
 - **Drama cascade:** One actualization energizes witnesses → new flips follow (B8 behavior).
 
 ---

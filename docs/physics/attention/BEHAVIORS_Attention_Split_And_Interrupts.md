@@ -72,7 +72,7 @@ WHEN:   CONTRADICTS becomes visible
 THEN:   interrupt = YES
 ```
 
-### B6: Void Tension Can Create a Sink
+### B6: Void Pressure Can Create a Sink
 
 ```
 GIVEN:  time_since_last_spoken exceeds threshold

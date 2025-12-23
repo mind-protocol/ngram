@@ -60,7 +60,7 @@ Build **two repos**: a **Studio Platform** (ngram) that provides graph physics, 
 ### 1.2 Graph is Physics, Not Links-as-Glue
 - Relationships are expressed as **Narratives**, not bare edges like RELATED_TO.
 - Edges that exist are functional primitives (BELIEF, THEN, PRESENT, ATTACHED_TO, etc.).
-- “Tension/Pressure” is not a node type; it is a **computed field** arising from:
+- "Pressure" is not a node type; it is a **computed field** arising from:
   - conflicting beliefs about narratives,
   - narrative links marked contradicts/supports,
   - and energy concentration.
@@ -243,7 +243,7 @@ This replaces “doctor loop” and “overmind” with substrate-native observa
 6) Flip when gates trigger (adaptive thresholds)
 7) Canonize results (THEN chain, narrative updates, new moments)
 
-### 7.3 Pressure / Tension (Computed, Not Stored)
+### 7.3 Pressure (Computed, Not Stored)
 Pressure emerges when:
 - high-confidence beliefs support an invariant narrative
 - and high-confidence beliefs support an observation narrative

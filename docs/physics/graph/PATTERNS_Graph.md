@@ -44,7 +44,7 @@ This keeps the graph honest and avoids creating a second, hidden state layer.
 
 ### Principle 2: Pressure must resolve
 
-Tensions grow until they flip, forcing releases that move the world forward.
+Pressure grows until it flips, forcing releases that move the world forward.
 Slow build and sudden break are the default rhythm of graph-driven drama.
 
 ### Principle 3: Attention is scarce
@@ -105,7 +105,7 @@ The graph is larger than any context window. Energy determines what makes it int
 | High | This matters now |
 | Low | This exists but sleeps |
 
-Without energy mechanics, the LLM would drown in irrelevant narratives or miss critical tensions. Energy is how the story knows its own focus.
+Without energy mechanics, the LLM would drown in irrelevant narratives or miss critical pressure points. Energy is how the story knows its own focus.
 
 ---
 
@@ -125,7 +125,7 @@ A narrative becomes important because:
 
 ## Pressure Requires Release
 
-Tensions don't resolve gradually. They accumulate until they break.
+Pressure doesn't resolve gradually. It accumulates until it breaks.
 
 This creates drama:
 1. **Slow build** — pressure rising
@@ -160,7 +160,7 @@ The system operates near critical threshold.
 | Too stable | Nothing happens, boring |
 | Too chaotic | Everything breaks constantly, meaningless |
 
-**The sweet spot:** enough tension that breaks feel earned, enough stability that builds feel meaningful.
+**The sweet spot:** enough pressure that breaks feel earned, enough stability that builds feel meaningful.
 
 The Narrator adjusts focus to maintain criticality.
 

@@ -36,7 +36,7 @@ interface SceneContext {
   time: TimeContext;
   present: CharacterBrief[];
   active_narratives: ActiveNarrative[];
-  tensions: TensionBrief[];
+  pressure_points: PressureBrief[];
   player_state: PlayerState;
 }
 ```
@@ -50,7 +50,7 @@ interface WorldInjection {
   time_since_last: string;
   breaks: Break[];
   news_arrived?: NewsItem[];
-  tension_changes?: Record<string, string>;
+  pressure_changes?: Record<string, string>;
   interruption?: Interruption | null;
   atmosphere_shift?: string;
   narrator_notes?: string;

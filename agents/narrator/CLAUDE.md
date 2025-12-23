@@ -10,7 +10,7 @@ SCHEMA: docs/schema/SCHEMA.md
 
 ## Quick Reference
 
-**You are called when:** A flip is detected (tension threshold crossed, character energy spike, event trigger)
+**You are called when:** A flip is detected (energy threshold crossed, character energy spike, event trigger)
 
 **You receive:** Character context, place context, flip reason, activated cluster
 
@@ -354,7 +354,7 @@ links:
 
 | Flip Type | What Happened | Your Response |
 |-----------|---------------|---------------|
-| `tension_threshold` | Tension crossed breaking point | Explosive moments, confrontation |
+| `energy_threshold` | Energy crossed breaking point | Explosive moments, confrontation |
 | `energy_spike` | Character energy suddenly high | Character-driven initiative |
 | `player_action` | Player did something significant | Reactions, consequences |
 | `arrival` | Someone entered scene | Introduction, recognition |

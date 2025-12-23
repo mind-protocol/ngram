@@ -28,7 +28,7 @@ The graph exhibits five observable behaviors:
 | Energy Flow | Companions' narratives stay hot; distant lords' narratives go cold |
 | Propagation | Related narratives heat up together; contradictions both intensify |
 | Decay | Unattended narratives fade; core oaths persist |
-| Pressure | Tensions build toward breaking; some scheduled, some gradual |
+| Pressure | Pressure builds toward breaking; some scheduled, some gradual |
 | Flips | Things break; consequences cascade |
 
 ---
@@ -53,7 +53,7 @@ players and agents, independent of UI framing, across ticks and flips.
 
 **Why:** Character energy = relationship × proximity. Approach changes proximity. Energy follows.
 
-**Emergent:** Travel toward an enemy creates tension automatically. No one decided this.
+**Emergent:** Travel toward an enemy creates pressure automatically. No one decided this.
 
 ---
 
@@ -120,7 +120,7 @@ players and agents, independent of UI framing, across ticks and flips.
 
 ---
 
-## Behavior: Tensions Build Toward Breaking
+## Behavior: Pressure Builds Toward Breaking
 
 **Expected:** Pressure accumulates until something breaks.
 
@@ -142,7 +142,7 @@ players and agents, independent of UI framing, across ticks and flips.
 | Day 14 dawn | High — "today" |
 | Day 14 noon | Maximum — breaks if not resolved |
 
-**Why:** Scheduled tensions create deadlines you can feel.
+**Why:** Scheduled pressure creates deadlines you can feel.
 
 **Emergent:** "Three days away" feels distant. "Tomorrow" feels immediate.
 
@@ -155,7 +155,7 @@ players and agents, independent of UI framing, across ticks and flips.
 | Example | Expected Cascade |
 |---------|------------------|
 | Edmund loses Malet's favor | Creates "Edmund is vulnerable" |
-| Rolf sees opportunity | Pushes Rolf's vengeance tension over threshold |
+| Rolf sees opportunity | Pushes Rolf's vengeance pressure over threshold |
 | Rolf acts | Second break — confrontation |
 
 **Why:** New narratives from breaks inject energy. Energy propagates. Thresholds crossed.
@@ -166,7 +166,7 @@ players and agents, independent of UI framing, across ticks and flips.
 
 ## Behavior: System Stays Near Criticality
 
-**Expected:** Always some tension hot. Always some breaks possible. Not boring. Not chaotic.
+**Expected:** Always some pressure hot. Always some breaks possible. Not boring. Not chaotic.
 
 | Measure | Healthy Range |
 |---------|---------------|
@@ -177,7 +177,7 @@ players and agents, independent of UI framing, across ticks and flips.
 **If too cold:** Decay slows. System heats up.
 **If too hot:** Decay speeds up. System cools down.
 
-**Emergent:** The story maintains tension without intervention.
+**Emergent:** The story maintains pressure without intervention.
 
 ---
 
@@ -196,7 +196,7 @@ players and agents, independent of UI framing, across ticks and flips.
 
 | Trigger | What Changes |
 |---------|--------------|
-| Tension breaks | New narrative created; witnesses believe it |
+| Pressure breaks | New narrative created; witnesses believe it |
 | News travels | Character gains belief link |
 | Character moves | Proximity changes; energy follows next tick |
 
@@ -207,7 +207,7 @@ players and agents, independent of UI framing, across ticks and flips.
 ## Summary: What To Expect
 
 1. **Nearby companions dominate** — their narratives stay hot
-2. **Approach creates tension** — proximity change = energy change
+2. **Approach creates pressure** — proximity change = energy change
 3. **Contradictions heat together** — debates are bidirectional
 4. **Clusters share fate** — doubt one, doubt all
 5. **Old truths fade** — supersession drains the original
@@ -221,7 +221,7 @@ players and agents, independent of UI framing, across ticks and flips.
 
 ## INPUTS / OUTPUTS
 
-**Inputs:** graph topology, link strengths, proximity updates, tension
+**Inputs:** graph topology, link strengths, proximity updates, pressure
 schedules, tick cadence, and newly created narratives from handlers.
 
 **Outputs:** updated energy/pressure levels, flip events, cascade-triggered
@@ -257,10 +257,29 @@ views without making agents responsible for writing in new values.
 
 ## MARKERS
 
-<!-- @ngram:escalation How should energy routing behave when a nearby character is -->
-  incapacitated but still linked by proximity?
-<!-- @ngram:escalation What normalization strategy best prevents dense clusters from -->
-  drowning out sparse but high-stakes narratives?
+<!-- @ngram:escalation
+title: "How should energy routing behave when a nearby character is incapacitated but still linked by proximity?"
+priority: 5
+response:
+  status: resolved
+  choice: "Contradicts links block actions, energy still routes"
+  behavior: "Incapacitated character gets contradicts links to action potentials. Energy still flows through them (they're present, witnessed). They cannot respond but absorb focus. See also: BEHAVIORS_Physics_Behaviors_Advanced.md for sleep/unconscious."
+  notes: "2025-12-23: Resolved by Nicolas."
+-->
+<!-- @ngram:escalation
+title: "What normalization strategy best prevents dense clusters from drowning out sparse but high-stakes narratives?"
+priority: 5
+response:
+  status: resolved
+  choice: "Handled by existing weight/conductivity/decay mechanics"
+  behavior: |
+    No special normalization needed. Existing mechanisms solve this:
+    - Node weight (unbounded): high-stakes nodes get high weight → high inertia → retain energy
+    - Link conductivity (0-1): oath links 0.9, gossip links 0.3 → energy flows where it matters
+    - Decay: dense clusters have more surface area → dissipate faster
+    - Sparse high-stakes: few links + high weight = energy stays concentrated
+  notes: "2025-12-23: Resolved by Nicolas. Weight + conductivity already handle this."
+-->
 <!-- @ngram:proposition Add a diagnostic view that highlights the top three pressure drivers -->
   during each tick for debugging and balancing.
 

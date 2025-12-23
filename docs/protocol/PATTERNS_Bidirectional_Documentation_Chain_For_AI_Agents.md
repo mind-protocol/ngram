@@ -75,7 +75,7 @@ Structure is consistent — agents can predict where things are.
 
 ```
 # Descriptive names
-PATTERNS_Narrative_Tension_As_Structural_Pressure.md
+PATTERNS_Narrative_Pressure_As_Structural_Force.md
 
 # Not
 patterns.md

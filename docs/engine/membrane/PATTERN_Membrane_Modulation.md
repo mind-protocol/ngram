@@ -126,7 +126,7 @@ Why this matters: prevents stagnation without introducing fiat outcomes.
 | Source | Type | Purpose / Description |
 |--------|------|-----------------------|
 | Aggregated moment stats | OTHER | Possible/active ratios, density, surprise proxies |
-| Tension summaries | OTHER | Dominant tension id, pressure, age |
+| Pressure summaries | OTHER | Dominant pressure id, value, age |
 | Membrane state | OTHER | Bounded, non-canon momentum counters |
 | Runtime parameters | OTHER | Current surface/decay/transfer defaults |
 

@@ -83,7 +83,7 @@ Returns the information chain—how knowledge moved from person to person. A sec
 ### False beliefs - what characters believe that isn't true
 **Quality: 10/10**
 
-Returns dramatic irony gold—characters who are certain of things that are actually false. A character might believe their brother is dead (truth: 0.2, he's actually alive in hiding) or that the Normans are planning to retreat (truth: 0.1, they're actually reinforcing). The player knows the truth; watching characters act on lies creates tension, tragedy, and sometimes dark comedy.
+Returns dramatic irony gold—characters who are certain of things that are actually false. A character might believe their brother is dead (truth: 0.2, he's actually alive in hiding) or that the Normans are planning to retreat (truth: 0.1, they're actually reinforcing). The player knows the truth; watching characters act on lies creates drama, tragedy, and sometimes dark comedy.
 
 ### Common knowledge - narratives believed by 3+ characters
 **Quality: 7/10**
@@ -170,17 +170,7 @@ Returns food, salt, horses, medicine—the logistics of survival. York's grain s
 
 ---
 
-## NARRATIVES & TENSIONS
-
-### All active tensions and their pressure levels
-**Quality: 10/10**
-
-Returns the ticking clocks—every unresolved conflict with its current pressure and breaking point. The confrontation with Cumin at 0.7/0.9, the Danish intervention at 0.4/0.8, the food shortage at 0.5/0.7. This is your pacing dashboard, showing what's about to explode and what's still building.
-
-### Tensions near breaking point
-**Quality: 10/10**
-
-Returns imminent crises—tensions above 0.7 pressure that could trigger at any moment. These demand immediate narrator attention; something must happen soon. The pressure has built too high; the dam is about to break. Plan accordingly or be swept away.
+## NARRATIVES
 
 ### Oaths - binding promises
 **Quality: 9/10**
@@ -229,7 +219,7 @@ Returns the gossip network mapped onto relationships—who has heard stories abo
 ### Characters at same location with conflicting beliefs
 **Quality: 10/10**
 
-Returns confrontations waiting to happen—two characters in the same place who believe contradictory things. If Aldric (who believes Gospatric is trustworthy) is in the same room as Wulfric (who believes Gospatric betrayed them), tension is inevitable. These are your drama generators, your scene conflict engines.
+Returns confrontations waiting to happen—two characters in the same place who believe contradictory things. If Aldric (who believes Gospatric is trustworthy) is in the same room as Wulfric (who believes Gospatric betrayed them), conflict is inevitable. These are your drama generators, your scene conflict engines.
 
 ### The information brokers - who knows the most
 **Quality: 8/10**
@@ -283,7 +273,7 @@ Returns your party—all living companions with their personality traits and cur
 ### Active threats overview
 **Quality: 9/10**
 
-Returns danger levels—tensions above 50% pressure with percentage to breaking. Cumin's march north at 78%, the food shortage at 62%, the spy in the camp at 55%. This is your threat board, your strategic situational awareness.
+Returns danger levels—pressure points above 50% with percentage to breaking. Cumin's march north at 78%, the food shortage at 62%, the spy in the camp at 55%. This is your threat board, your strategic situational awareness.
 
 ### Who might betray us?
 **Quality: 8/10**
@@ -326,7 +316,7 @@ Returns emotional geography—places grouped by their prevailing mood. Hostile p
 ### Count all nodes by type
 **Quality: 4/10**
 
-Returns totals—how many characters, places, things, narratives, tensions exist in the graph. Character: 45, Place: 112, Thing: 33, Narrative: 87, Tension: 12. Useful for verifying data loading, not for gameplay.
+Returns totals—how many characters, places, things, narratives exist in the graph. Character: 45, Place: 112, Thing: 33, Narrative: 87. Useful for verifying data loading, not for gameplay.
 
 ### Count all relationships by type
 **Quality: 4/10**

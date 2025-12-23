@@ -51,7 +51,7 @@ the graph continues operating with intact integrity guarantees.
 
 Graph behavior should remain legible and deterministic for the same inputs:
 energy flow, pressure buildup, and propagation must produce repeatable
-surfaces for Voices and narrative tension. Properties here are observed in
+surfaces for Voices and narrative pressure. Properties here are observed in
 gameplay, not only in low-level graph queries.
 
 # =============================================================================
@@ -188,7 +188,7 @@ vision_moments:
   
   "The world moved":
     description: "You arrive somewhere and hear about events that happened without you."
-    mechanism: World Runner processes distant tensions → news propagates
+    mechanism: World Runner processes distant pressure → news propagates
     status: covered
   
   "Everything led here":
@@ -325,7 +325,7 @@ behaviors:
       You weren't there — but it happened. The world didn't wait.
     
     mechanism: |
-      World Runner processes distant tensions during travel
+      World Runner processes distant pressure during travel
       → creates narratives of events
       → news propagates via character beliefs
       → on arrival, Narrator surfaces "what you missed"
@@ -345,8 +345,8 @@ behaviors:
       not a boss waiting in a room.
     
     mechanism: |
-      Antagonists have beliefs → beliefs create tensions
-      → tensions break on their own timeline
+      Antagonists have beliefs → beliefs create pressure
+      → pressure breaks on its own timeline
       → World Runner creates narratives of their actions
       → propagates as news you eventually hear
     
@@ -379,7 +379,7 @@ behaviors:
   
   contradiction_unresolved:
     id: B07
-    category: narrative_tension
+    category: narrative_pressure
     
     gameplay: |
       You heard Edmund saved the family. But you KNOW he betrayed you.
@@ -390,7 +390,7 @@ behaviors:
       → contradiction link heats both sides (bidirectional, factor 0.3)
       → neither fades
       → both surface as Voices
-      → tension persists until player acts or chooses
+      → pressure persists until player acts or chooses
     
     failure_looks_like: |
       One version dominates immediately.
@@ -398,7 +398,7 @@ behaviors:
   
   loyalty_cluster:
     id: B08
-    category: narrative_tension
+    category: narrative_pressure
     
     gameplay: |
       When you doubt Aldric's oath, you start doubting everything about him —
@@ -417,7 +417,7 @@ behaviors:
   
   old_news_fades:
     id: B09
-    category: narrative_tension
+    category: narrative_pressure
     
     gameplay: |
       You used to obsess about where Edmund was. Now you know he fled York.
@@ -435,7 +435,7 @@ behaviors:
   
   belief_shattered:
     id: B10
-    category: narrative_tension
+    category: narrative_pressure
     
     gameplay: |
       You believed Edmund betrayed you. Everything pointed to it.
@@ -453,7 +453,7 @@ behaviors:
     
     failure_looks_like: |
       Revelations feel like new information, not paradigm shifts.
-      Old beliefs persist alongside new ones without tension.
+      Old beliefs persist alongside new ones without pressure.
 
   # ---------------------------------------------------------------------------
   # COMPANION DEPTH
@@ -568,7 +568,7 @@ behaviors:
       The story has momentum.
     
     mechanism: |
-      Criticality feedback keeps some tensions hot
+      Criticality feedback keeps some pressure points hot
       → decay_rate adjusts to maintain pressure distribution
       → at least one narrative cluster near breaking
       → player feels impending drama
@@ -609,7 +609,7 @@ behaviors:
       Break creates narratives
       → new believers pump energy
       → propagates to related narratives
-      → other tensions affected
+      → other pressure points affected
       → possible cascade (max depth 5)
     
     failure_looks_like: |
@@ -649,7 +649,7 @@ behaviors:
       If you prepared, it's merely tense.
     
     mechanism: |
-      Hybrid tension has floor (scheduled) + variable (event-driven)
+      Hybrid pressure has floor (scheduled) + variable (event-driven)
       → deadline guaranteed
       → severity depends on accumulated pressure from actions
     
@@ -867,9 +867,9 @@ tests:
   
   - id: T04
     behavior: B04 (world_moved)
-    scenario: "Player travels 3 days. Distant tension breaks during travel."
+    scenario: "Player travels 3 days. Distant pressure breaks during travel."
     setup:
-      - tension_feud pressure at 0.88
+      - pressure_feud level at 0.88
       - Player traveling (not near feud location)
     steps:
       - Simulate 3 days travel
@@ -880,16 +880,16 @@ tests:
   
   - id: T05
     behavior: B05 (antagonist_acts)
-    scenario: "Edmund has active tensions. Player is elsewhere."
+    scenario: "Edmund has active pressure points. Player is elsewhere."
     setup:
       - Edmund in York
-      - tension_edmund_position pressure at 0.85
+      - pressure_edmund_position level at 0.85
       - Player in North (not traveling to York)
     steps:
       - Simulate 5 days
       - Check for breaks involving Edmund
       - Check for new narratives about Edmund's actions
-    expected: "Edmund's tensions break. New narratives show his actions."
+    expected: "Edmund's pressure breaks. New narratives show his actions."
     assertion: narratives_about_edmund_actions.count > 0
   
   - id: T06
@@ -1037,14 +1037,14 @@ tests:
   
   - id: T16
     behavior: B16 (something_simmers)
-    scenario: "At least one tension near breaking."
+    scenario: "At least one pressure point near breaking."
     setup:
       - Normal graph state
     steps:
       - Run 20 ticks
-      - Count tensions with pressure > 0.7
-    expected: "At least one tension is 'hot'."
-    assertion: count(tension.pressure > 0.7) >= 1
+      - Count pressure points with level > 0.7
+    expected: "At least one pressure point is 'hot'."
+    assertion: count(pressure.level > 0.7) >= 1
   
   - id: T17
     behavior: B17 (no_explosion_freeze)
@@ -1061,14 +1061,14 @@ tests:
     behavior: B18 (breaks_ripple)
     scenario: "Break affects other tensions."
     setup:
-      - tension_A at 0.88, tension_B at 0.85
+      - pressure_A at 0.88, pressure_B at 0.85
       - Breaking A creates narrative that supports B's narratives
     steps:
-      - Force tension_A to break
+      - Force pressure_A to break
       - Run 3 ticks
-      - Check tension_B pressure
-    expected: "Tension_B pressure increased. May have flipped."
-    assertion: tension_B.pressure[after] > tension_B.pressure[before]
+      - Check pressure_B level
+    expected: "Pressure_B level increased. May have flipped."
+    assertion: pressure_B.level[after] > pressure_B.level[before]
 
   # ---------------------------------------------------------------------------
   # TIME & PRESSURE
@@ -1076,9 +1076,9 @@ tests:
   
   - id: T19
     behavior: B19 (deadline_feels_real)
-    scenario: "Scheduled tension jumps at checkpoints."
+    scenario: "Scheduled pressure jumps at checkpoints."
     setup:
-      - tension_scheduled with progression:
+      - pressure_scheduled with progression:
         - Day 12: 0.2
         - Day 13: 0.5
         - Day 14: 0.8
@@ -1094,9 +1094,9 @@ tests:
   
   - id: T20
     behavior: B20 (deadline_severity_varies)
-    scenario: "Hybrid tension exceeds floor via events."
+    scenario: "Hybrid pressure exceeds floor via events."
     setup:
-      - tension_hybrid with floor 0.5 at Day 12
+      - pressure_hybrid with floor 0.5 at Day 12
       - Current pressure 0.5
     steps:
       - Inject events that add 0.25 pressure
@@ -1158,7 +1158,7 @@ tests:
     scenario: "System recovers from cold state."
     setup:
       - Force low energy state (all narratives energy < 0.1)
-      - All tensions pressure < 0.2
+      - All pressure points level < 0.2
     steps:
       - Run 20 ticks
       - Check decay_rate changes
@@ -1166,14 +1166,14 @@ tests:
     expected: "Decay_rate decreased. Pressures rose."
     assertion: >
       decay_rate < initial_decay_rate AND
-      avg(tension.pressure) > 0.3
+      avg(pressure.level) > 0.3
   
   - id: T25
     behavior: B17 (criticality_hot_dampening)
     scenario: "System cools from hot state."
     setup:
       - Force high energy state (many narratives energy > 2.0)
-      - Multiple tensions pressure > 0.8
+      - Multiple pressure points level > 0.8
     steps:
       - Run 20 ticks
       - Check decay_rate changes
@@ -1191,10 +1191,10 @@ tests:
     behavior: B18 (cascade_depth_limit)
     scenario: "Cascades stop at max depth."
     setup:
-      - Chain of 10 tensions that could cascade
+      - Chain of 10 pressure points that could cascade
       - Each break creates narrative that pushes next over threshold
     steps:
-      - Trigger first tension
+      - Trigger first pressure point
       - Count total breaks
     expected: "Cascade stops at max_depth (5)."
     assertion: break_count <= 5
@@ -1254,7 +1254,7 @@ summary:
   categories:
     presence_proximity: 3 behaviors, 3 tests
     living_world: 3 behaviors, 3 tests
-    narrative_tension: 4 behaviors, 4 tests
+    narrative_pressure: 4 behaviors, 4 tests
     companion_depth: 4 behaviors, 4 tests
     system_health: 4 behaviors, 6 tests
     time_pressure: 2 behaviors, 2 tests

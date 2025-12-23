@@ -121,7 +121,7 @@ High salience = surfaces, dominates attention, triggers events.
 | `energy` | float | Current activation (0.01 - 5.0) |
 | `tone` | string? | `bitter`, `hopeful`, `urgent`, etc. |
 | `tick_created` | int | When created |
-| `tick_spoken` | int? | When actualized |
+| `tick_resolved` | int? | When actualized |
 
 ---
 
@@ -178,8 +178,8 @@ High salience = surfaces, dominates attention, triggers events.
 
 Semantic meaning lives in narrative typing, not special link types.
 
-| Narrative Type | Special Fields | Tension Pattern |
-|----------------|----------------|-----------------|
+| Narrative Type | Special Fields | Pressure Pattern |
+|----------------|----------------|------------------|
 | `fact` | — | — |
 | `belief` | — | Contradiction |
 | `oath` | `conditions: str[]` | Conditions met |
@@ -206,7 +206,7 @@ narr_debt_to_merchant ──[ABOUT]──> merchant
 narr_debt_to_merchant ──[ABOUT]──> player
 ```
 
-Tension detection queries this structure — no special OWES/OWED_BY links needed.
+Pressure detection queries this structure — no special OWES/OWED_BY links needed.
 
 ---
 
@@ -548,10 +548,10 @@ def compute_intensity_modifier(context):
     """
     base = 1.0
 
-    # Tension pressure
-    active_tensions = detect_tensions()
-    max_pressure = max([t['pressure'] for t in active_tensions], default=0)
-    base += max_pressure * 0.5  # Up to +0.5 from tension
+    # Narrative pressure (from contradictions and energy)
+    pressure_contexts = detect_narrative_pressure()
+    max_pressure = max([p['pressure'] for p in pressure_contexts], default=0)
+    base += max_pressure * 0.5  # Up to +0.5 from narrative pressure
 
     # Danger
     if context.danger_level:
@@ -582,7 +582,7 @@ def record_moment(moment):
 
 **Examples:**
 - Learn something during battle → Stronger imprint
-- Confession during high tension → More impactful
+- Confession during high narrative pressure → More impactful
 - Casual mention during calm → Normal strength change
 - Traumatic revelation → 2x strength effect
 
@@ -816,23 +816,23 @@ def world_event_injection(event):
 
 ---
 
-### S4: Tension Pressure (Structural)
+### S4: Narrative Pressure (Structural)
 
-Detected tensions inject energy into related narratives.
+Detected narrative pressure (from contradictions and energy concentration) draws energy toward crisis points.
 
 ```python
-def tension_injection(tensions):
+def narrative_pressure_injection(pressure_contexts):
     """
-    Structural tensions push energy toward crisis.
+    Structural pressure pushes energy toward crisis.
     Not created from nothing — drawn from participants.
     """
-    for tension in tensions:
-        pressure = tension['pressure']
+    for context in pressure_contexts:
+        pressure = context['pressure']
 
-        if pressure > 0.3:  # Only meaningful tensions
+        if pressure > 0.3:  # Only meaningful pressure
             # Draw energy from involved characters
-            characters = tension['characters']
-            draw_per_char = pressure * TENSION_DRAW  # 0.2
+            characters = context['characters']
+            draw_per_char = pressure * PRESSURE_DRAW  # 0.2
 
             total_drawn = 0
             for char in characters:
@@ -841,12 +841,12 @@ def tension_injection(tensions):
                 total_drawn += drawn
 
             # Inject into related narratives
-            narratives = tension['narratives']
+            narratives = context['narratives']
             for narrative in narratives:
                 narrative.energy += total_drawn / len(narratives)
 ```
 
-**Why:** Tension doesn't create energy — it concentrates it. The participants feel drained because their energy is being pulled into the crisis.
+**Why:** Narrative pressure doesn't create energy — it concentrates it. The participants feel drained because their energy is being pulled into the crisis.
 
 ---
 
@@ -909,7 +909,7 @@ def moment_actualization(moment):
         for narrative in attached:
             narrative.energy -= cost_per_narrative
 
-    moment.status = 'spoken'
+    moment.status = 'completed'
 ```
 
 **Why:** Speaking takes effort. The moment doesn't come from nowhere — it draws from those who produced it.
@@ -1242,8 +1242,8 @@ def actualize_moment(moment):
     moment.energy -= cost
 
     # Status change
-    moment.status = 'spoken'
-    moment.tick_spoken = current_tick
+    moment.status = 'completed'
+    moment.tick_resolved = current_tick
 
     # Remaining energy decays normally from here
 ```
@@ -1372,15 +1372,15 @@ def energy_tick():
     for link in graph.can_lead_to_links:
         transfer_can_lead_to(link)
 
-    # 5. Tension injection (structural pressure)
-    tensions = detect_tensions()
-    tension_injection(tensions)
+    # 5. Narrative pressure injection (structural pressure)
+    pressure_contexts = detect_narrative_pressure()
+    narrative_pressure_injection(pressure_contexts)
 
     # 6. Decay (energy leaves system)
     apply_decay()
 
-    # 7. Detect breaks
-    breaks = [t for t in tensions if is_unsustainable(t)]
+    # 7. Detect energy threshold crossings
+    breaks = [p for p in pressure_contexts if is_unsustainable(p)]
 
     return breaks
 
@@ -1422,7 +1422,7 @@ def get_moment_decay_rate(status):
     return {
         'possible': 0.02,
         'active': 0.01,
-        'spoken': 0.03,
+        'completed': 0.03,
         'dormant': 0.005,
         'decayed': 0.0
     }.get(status, 0.02)
@@ -1582,7 +1582,7 @@ Because:
 
 If Edmund dies → no pump → his side cools → argument fades.
 
-### "Approach Creates Tension"
+### "Approach Creates Pressure"
 
 Not because we compute proximity. Because physical presence changes who pumps where.
 
@@ -1593,7 +1593,7 @@ Not because we compute proximity. Because physical presence changes who pumps wh
 5. Player's attention on Edmund → energy injection
 6. Edmund's narratives heat up (via ABOUT reverse flow)
 7. Contradiction with player's beliefs gets energy from both sides
-8. Structural tension detected (both believers present + hot narratives)
+8. Structural narrative pressure detected (both believers present + hot narratives)
 9. Break becomes inevitable
 
 **The AT link changing is the trigger.** Energy flow does the rest.
@@ -1608,7 +1608,7 @@ Not because hidden timer. Because neglected narratives still get pumped.
 4. But creditor keeps pumping → narrative stays warm
 5. Creditor travels toward player (AT link changes)
 6. Now both present → can interact
-7. Tension detection finds: debt narrative hot + creditor present + debtor present
+7. Pressure detection finds: debt narrative hot + creditor present + debtor present
 8. Break: creditor demands payment
 
 **You can't make someone else stop caring by ignoring them.**
@@ -1620,7 +1620,7 @@ Not because NPCs have complex AI.
 Because:
 1. Every character pumps into what they believe
 2. Energy flows through narrative network
-3. Tensions emerge from structure
+3. Pressure emerges from structure
 4. Moments surface based on weight
 5. The system has its own metabolism
 
@@ -1792,8 +1792,8 @@ def record_to_canon(moment, previous_moment=None):
     Moment becomes canon. Everything follows from this.
     """
     # 1. Status change
-    moment.status = 'spoken'
-    moment.tick_spoken = current_tick
+    moment.status = 'completed'
+    moment.tick_resolved = current_tick
 
     # 2. Energy cost (actualization)
     moment.energy *= (1 - ACTUALIZATION_COST)
@@ -2000,7 +2000,7 @@ def push_to_display(moment):
 
 That's not a problem. That's a scene. The consequences play out:
 - Struggle moment generated
-- Tension increases
+- Narrative pressure increases
 - Drama emerges
 
 Canon Holder does NOT block simultaneous actions. It records them both.
@@ -2061,7 +2061,7 @@ Most "conflicts" are actually drama to embrace.
 - Generate content (that's Handlers)
 - Compute energy flow (that's Physics tick)
 - Block drama (simultaneous actions are fine)
-- Store tension (tension is computed)
+- Store pressure (pressure is computed from structure)
 - Decide what should happen (that's Physics + Handlers)
 
 Canon Holder only: record, link, trigger, notify.
@@ -2087,15 +2087,15 @@ Four agents at three levels.
 async def runner_tick():
     energy_tick()
 
-    # Detect and process breaks
-    tensions = detect_tensions()
-    breaks = [t for t in tensions if is_unsustainable(t)]
+    # Detect and process energy threshold crossings
+    pressure_contexts = detect_narrative_pressure()
+    breaks = [p for p in pressure_contexts if is_unsustainable(p)]
 
     while breaks:
-        for tension in breaks:
-            await narrator_break(tension)  # Narrator generates consequences
-        tensions = detect_tensions()
-        breaks = [t for t in tensions if is_unsustainable(t)]
+        for pressure_ctx in breaks:
+            await narrator_break(pressure_ctx)  # Narrator generates consequences
+        pressure_contexts = detect_narrative_pressure()
+        breaks = [p for p in pressure_contexts if is_unsustainable(p)]
 
     # Scheduled events
     for event in get_due_events(current_tick):
@@ -2126,9 +2126,9 @@ async def narrator_backstory(query_moment):
     query_moment.query_filled = True
 
 
-async def narrator_break(tension):
-    """Tension broke → generate consequences."""
-    result = await llm(break_prompt(tension))
+async def narrator_break(pressure_context):
+    """Energy threshold crossed → generate consequences."""
+    result = await llm(break_prompt(pressure_context))
 
     for consequence in result.consequences:
         create_moment(consequence, status='possible', weight=0.7, energy=0.9)
@@ -2219,7 +2219,7 @@ def on_player_input(text):
 | Use functions for physical gating | Link attributes (presence_required, AT) |
 | Arbitrary dampening | Hides broken dynamics |
 | Magic thresholds | "0.7" means nothing without structure |
-| Author tensions | Tensions emerge, aren't declared |
+| Author pressure manually | Pressure emerges from contradictions and energy |
 
 ---
 
@@ -2330,10 +2330,10 @@ def create_player_moment(parsed: ParseResult, player: Character, location: Place
             id: $id,
             text: $text,
             type: 'dialogue',
-            status: 'spoken',
+            status: 'completed',
             weight: 1.0,
             tick_created: $tick,
-            tick_spoken: $tick
+            tick_resolved: $tick
         })
     """, id=moment_id, text=parsed.text, tick=current_tick())
 
@@ -2644,9 +2644,9 @@ def gather_relevant_facts(asker_id: str, question: str) -> ExistingFacts:
     # Historical events character witnessed
     facts.history = query("""
         MATCH (m:Moment)-[:ATTACHED_TO]->(c:Character {id: $id})
-        WHERE m.status = 'spoken'
+        WHERE m.status = 'completed'
         RETURN m
-        ORDER BY m.tick_spoken
+        ORDER BY m.tick_resolved
         LIMIT 20
     """, id=asker_id)
 
@@ -3036,8 +3036,8 @@ def is_interrupt(moment: Moment) -> bool:
     if is_major_arrival(moment):
         return True
 
-    # Tension threshold crossed
-    if tension_boiling_over(moment):
+    # Energy threshold crossed (narrative pressure)
+    if narrative_pressure_critical(moment):
         return True
 
     # Decision point (player choices available)
@@ -3062,7 +3062,7 @@ def is_interrupt(moment: Moment) -> bool:
 | Direct address | Player character's name in REFERENCES link |
 | Combat | Moment with `action: attack` becomes canon |
 | Major arrival | Character with importance > 0.7 enters scene |
-| Tension boils | Detected tension pressure > 0.9 (computed from structure) |
+| Energy spike | Detected narrative pressure > 0.9 (computed from contradictions and energy) |
 | Decision point | Moment with multiple CAN_LEAD_TO from player |
 | Discovery | Narrative node created with player in ATTACHED_TO |
 | Danger | Moment with THREATENS → player or companion |
@@ -3108,7 +3108,7 @@ async def execute_snap(interrupt_moment: Moment):
 - Screen sharpens (freeze)
 - Silence — 300-500ms pause
 - Nothing displays
-- Tension in the gap
+- Suspense in the gap
 
 **Phase 3: Arrival (1x)**
 - Crystal clear, full color
@@ -3226,11 +3226,11 @@ def get_skipped_moments(time_range: TimeRange) -> List[Moment]:
     """
     return query("""
         MATCH (m:Moment)
-        WHERE m.status = 'spoken'
-          AND m.tick_spoken >= $start
-          AND m.tick_spoken <= $end
+        WHERE m.status = 'completed'
+          AND m.tick_resolved >= $start
+          AND m.tick_resolved <= $end
         RETURN m
-        ORDER BY m.tick_spoken
+        ORDER BY m.tick_resolved
     """, start=time_range.start, end=time_range.end)
 ```
 
@@ -3304,12 +3304,12 @@ def set_speed(new_speed: str):
 #### `TickResult` (engine/physics/tick.py)
 
 ```
-flips: List[Dict[str, Any]]      # Flips detected from tensions
+flips: List[Dict[str, Any]]      # Energy threshold crossings detected
 energy_total: float              # Sum of narrative energies
-avg_pressure: float              # Mean tension pressure
+avg_pressure: float              # Mean narrative pressure (computed)
 decay_rate_used: float           # Current decay_rate after criticality adjustment
 narratives_updated: int          # Count of narratives updated
-tensions_updated: int            # Count of tensions updated
+pressure_contexts_detected: int  # Count of high-pressure narrative contexts
 moments_decayed: int             # Count of moments decayed this tick
 ```
 
@@ -3319,24 +3319,24 @@ moments_decayed: int             # Count of moments decayed this tick
 Dict[narrative_id: str, energy: float]
 ```
 
-#### `tension` record (GraphQueries results)
+#### `pressure_context` (computed from narrative contradictions)
 
 ```
-id: str
-pressure: float
-pressure_type: str               # gradual | hybrid | other
-base_rate: float                 # pressure accumulation rate
-breaking_point: float            # flip threshold
-narratives: List[str]            # narrative ids contributing
+id: str                          # identifier for this pressure context
+pressure: float                  # computed from energy and contradictions
+narratives: List[str]            # narrative ids involved in pressure
+characters: List[str]            # characters with conflicting beliefs
 ```
+
+Note: Pressure is computed on-demand from narrative energy, contradictions, and belief conflicts, not stored as separate entities.
 
 #### `moment` lifecycle fields (Moment schema)
 
 ```
 status: possible | active | spoken | dormant | decayed
 weight: float                    # 0.0-1.0
-tick_spoken: int
-tick_decayed: int
+tick_resolved: int
+tick_resolved: int
 ```
 
 ### ALGORITHM: Mechanisms by Function
@@ -3390,28 +3390,28 @@ new_energy = max(MIN_WEIGHT, energy * (1 - effective_decay))
 
 #### M6: Criticality Thermostat
 
-**Function:** `GraphTick._adjust_criticality()`  
-**Inputs:** tensions from `GraphQueries.get_all_tensions()`  
-**Logic:** Adjust `self.decay_rate` based on `avg_pressure` and `max_pressure`  
+**Function:** `GraphTick._adjust_criticality()`
+**Inputs:** pressure contexts from `detect_narrative_pressure()`
+**Logic:** Adjust `self.decay_rate` based on `avg_pressure` and `max_pressure`
 **Output:** Updated `self.decay_rate`
 
-#### M7: Tension Pressure Accumulation
+#### M7: Narrative Pressure Detection
 
-**Function:** `GraphTick._tick_pressures()`  
-**Inputs:** elapsed_minutes, tension list, narrative weights + focus  
-**Logic:**  
+**Function:** `detect_narrative_pressure()`
+**Inputs:** narrative energies, contradiction links, belief conflicts
+**Logic:**
 ```
-increase = elapsed_minutes * base_rate * avg_focus * max_weight
-new_pressure = min(1.0, current_pressure + increase)
+pressure = (energy_concentration * contradiction_strength * belief_conflict)
+context = {narratives, characters, pressure}
 ```
-**Output:** Tension list with updated pressures, plus writes to graph
+**Output:** List of pressure contexts (computed, not stored)
 
-#### M8: Flip Detection (Breaking Point)
+#### M8: Energy Threshold Detection
 
-**Function:** `GraphTick._detect_flips()`  
-**Inputs:** tensions with `pressure` and `breaking_point`  
-**Logic:** `pressure >= breaking_point` ⇒ flip record  
-**Output:** List of flips (no direct moment writes)
+**Function:** `GraphTick._detect_energy_thresholds()`
+**Inputs:** pressure contexts with computed pressure values
+**Logic:** `pressure >= threshold` (adaptive gate) ⇒ threshold crossing
+**Output:** List of threshold crossings (no direct moment writes)
 
 #### M9: Moment Lifecycle Decay (Per Tick)
 
@@ -3517,9 +3517,9 @@ Narrative propagation (RELATES_TO)
     ↓
 Narrative decay + weight write
     ↓
-Tension pressure tick
+Narrative pressure detection (computed)
     ↓
-Flip detection
+Energy threshold detection
     ↓
 Orchestrator handlers (external)
 ```
@@ -3528,15 +3528,15 @@ Moment lifecycle decay runs alongside the above during GraphTick.
 
 ### COMPLEXITY
 
-**Time:**  
-O(C + B + N + L + T + M)  
-Where C=characters, B=beliefs, N=narratives, L=RELATES_TO links, T=tensions, M=possible moments.
+**Time:**
+O(C + B + N + L + P + M)
+Where C=characters, B=beliefs, N=narratives, L=RELATES_TO links, P=pressure contexts (computed), M=possible moments.
 
-**Space:**  
-O(N + T) for energy + pressure caches.
+**Space:**
+O(N + P) for energy + pressure caches (pressure contexts are computed on-demand).
 
 **Bottlenecks:**
-- Cypher reads per narrative in `_decay_energy()` and `_tick_pressures()`
+- Cypher reads per narrative in `_decay_energy()` and pressure detection
 - Large moment sets in `decay_moments()` without indexing
 
 ### HELPER FUNCTIONS
@@ -3567,7 +3567,7 @@ O(N + T) for energy + pressure caches.
 | `engine/physics/graph/graph_queries.py` | `get_character_beliefs()` | Belief weights |
 | `engine/physics/graph/graph_queries.py` | `get_narratives_about()` | Narratives about character |
 | `engine/physics/graph/graph_queries.py` | `get_path_between()` | Travel distance |
-| `engine/physics/graph/graph_queries.py` | `get_all_tensions()` | Tension state |
+| `engine/physics/graph/graph_queries.py` | `detect_narrative_pressure()` | Computed pressure contexts |
 | `engine/physics/graph/graph_queries.py` | `get_narrative()` | Narrative type/focus |
 | `engine/physics/graph/graph_ops_moments.py` | `decay_moments()` | Moment decay writes |
 | `engine/moment_graph/queries.py` | `find_click_targets()` | Traversal targets |
@@ -3589,4 +3589,4 @@ O(N + T) for energy + pressure caches.
 <!-- @ngram:todo Verify whether read-side energy injection is intended as physics or UX. -->
 <!-- @ngram:todo Clarify ownership between `MomentTraversal.handle_click()` and `GraphOps.handle_click()` to avoid double paths. -->
 <!-- @ngram:proposition Batch narrative reads in `_decay_energy()` to reduce query count. -->
-<!-- @ngram:escalation Should tension pressure also consider narrative energy, not only weight? -->
+<!-- @ngram:escalation Should narrative pressure computation consider both energy and weight, or only one? -->

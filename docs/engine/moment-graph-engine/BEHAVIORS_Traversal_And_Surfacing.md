@@ -44,7 +44,7 @@ IMPL:            ../../../engine/moment_graph/__init__.py
 Inputs:
 - Player/moment identifiers, click words, and tick counters.
 - Presence context (location, characters, things).
-- Tension pressure values.
+- Energy pressure values.
 
 Outputs:
 - Moment/transition payloads for rendering.

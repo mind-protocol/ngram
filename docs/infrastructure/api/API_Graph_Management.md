@@ -81,7 +81,7 @@ Get graph metadata and statistics.
     "name": "pt_abc123",
     "node_count": 52,
     "edge_count": 134,
-    "node_types": ["Character", "Place", "Narrative", "Tension", "Moment"],
+    "node_types": ["Actor", "Space", "Thing", "Narrative", "Moment"],
     "edge_types": ["AT", "BELIEVES", "RELATES_TO", "FOLLOWS"]
 }
 ```

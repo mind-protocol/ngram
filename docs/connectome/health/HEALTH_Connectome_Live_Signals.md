@@ -27,7 +27,7 @@ OBJECTIFS:
 PATTERNS:
   - PATTERNS_Attention_Energy_Split.md
   - PATTERNS_Interrupt_By_Focus_Reconfiguration.md
-  - PATTERNS_Void_Tension.md
+  - PATTERNS_Void_Pressure.md
   - PATTERNS_Player_DMZ.md
   - PATTERNS_Simultaneity_And_Contradiction.md
   - PATTERNS_Membrane_Modulation.md

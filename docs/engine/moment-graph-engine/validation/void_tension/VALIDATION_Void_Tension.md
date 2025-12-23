@@ -1,4 +1,4 @@
-# Moment Graph Engine — Validation: Void Tension (Stub)
+# Moment Graph Engine — Validation: Void Pressure (Stub)
 
 ```
 STATUS: DRAFT
@@ -12,13 +12,13 @@ VERIFIED: 2025-12-20 against local tree
 
 ```
 PATTERNS:
-  - ../../PATTERNS_Void_Tension.md
+  - ../../PATTERNS_Void_Pressure.md
 
 BEHAVIORS:
-  - ../../BEHAVIORS_Void_Tension.md (planned)
+  - ../../BEHAVIORS_Void_Pressure.md (planned)
 
 THIS:
-  - VALIDATION_Void_Tension.md
+  - VALIDATION_Void_Pressure.md
 
 IMPL:
   - ../../../../../engine/physics/tick.py
@@ -104,7 +104,7 @@ SYMPTOM: pacing collapse
 ### Automated
 
 ```bash
-pytest tests/runtime/test_void_tension.py
+pytest tests/runtime/test_void_pressure.py
 ```
 
 ---
@@ -115,7 +115,7 @@ pytest tests/runtime/test_void_tension.py
 LAST_VERIFIED: 2025-12-20
 VERIFIED_AGAINST:
   impl: engine/physics/tick.py @ UNKNOWN
-  test: tests/runtime/test_void_tension.py @ UNKNOWN
+  test: tests/runtime/test_void_pressure.py @ UNKNOWN
 VERIFIED_BY: NOT RUN
 RESULT:
   VVOID1: NOT RUN
