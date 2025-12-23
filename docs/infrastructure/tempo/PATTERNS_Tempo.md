@@ -123,4 +123,12 @@ changes. The loop never generates content.
 <!-- @ngram:todo Define exact speed to interval mapping for v1. -->
 <!-- @ngram:todo Decide whether tempo state persists across restarts. -->
 <!-- @ngram:proposition Adaptive pacing based on graph load or queue size. -->
-<!-- @ngram:escalation Should pauses flush pending surfacing or freeze it? -->
+<!-- @ngram:escalation
+title: "Should pauses flush pending surfacing or freeze it?"
+priority: 5
+response:
+  status: resolved
+  choice: "Freeze"
+  behavior: "Pause = 0 ticks. No graph time passes, queue frozen as-is, resumes exactly where left off."
+  notes: "2025-12-23: Decided by Nicolas."
+-->

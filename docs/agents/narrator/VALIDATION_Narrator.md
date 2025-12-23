@@ -157,7 +157,7 @@ Linking these indicators to the same invariants keeps the doctor focused on the 
 
 ```
 LAST_VERIFIED: 2025-12-19
-VERIFIED_BY: ngram repair agent
+VERIFIED_BY: ngram work agent
 RESULT: Added missing SYNC status and expanded validation detail; runtime verification not run in this repair.
 ```
 

@@ -141,7 +141,7 @@ def check_canon_final():
     # Spoken moments cannot revert to possible
     assert query("""
         MATCH (m:Moment)
-        WHERE m.status = 'spoken' AND m.previous_status = 'possible'
+        WHERE m.status = 'completed' AND m.previous_status = 'possible'
         RETURN count(m)
     """) == 0  # This would require tracking previous_status
 
@@ -214,17 +214,17 @@ def check_status_consistency():
         RETURN count(m)
     """) == 0
 
-    # Spoken moments must have tick_spoken
+    # Spoken moments must have tick_resolved
     assert query("""
         MATCH (m:Moment)
-        WHERE m.status = 'spoken' AND m.tick_spoken IS NULL
+        WHERE m.status = 'completed' AND m.tick_resolved IS NULL
         RETURN count(m)
     """) == 0
 
-    # Decayed moments must have tick_decayed
+    # Decayed moments must have tick_resolved
     assert query("""
         MATCH (m:Moment)
-        WHERE m.status = 'decayed' AND m.tick_decayed IS NULL
+        WHERE m.status = 'decayed' AND m.tick_resolved IS NULL
         RETURN count(m)
     """) == 0
 ```
@@ -379,8 +379,8 @@ def check_drama_not_blocked():
     physics.tick()
 
     # Both should be canon
-    assert get_moment(moment_a).status == 'spoken'
-    assert get_moment(moment_b).status == 'spoken'
+    assert get_moment(moment_a).status == 'completed'
+    assert get_moment(moment_b).status == 'completed'
 
     # Action processing handles the conflict, not canon holder
 ```
@@ -399,7 +399,7 @@ def check_true_mutex():
     physics.tick()
 
     # Only one should canonize (higher weight)
-    assert get_moment(travel_east).status == 'spoken'
+    assert get_moment(travel_east).status == 'completed'
     assert get_moment(travel_west).status == 'possible'  # Returns to potential
 ```
 
@@ -421,7 +421,7 @@ def check_display_independence():
     assert not was_displayed(moment)
 
     # But is canon
-    assert get_moment(moment).status == 'spoken'
+    assert get_moment(moment).status == 'completed'
     assert has_then_links(moment)
 ```
 

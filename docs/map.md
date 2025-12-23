@@ -1,18 +1,18 @@
 # Repository Map: ngram
 
-*Generated: 2025-12-22 19:22*
+*Generated: 2025-12-23 18:42*
 
-- **Files:** 529
-- **Directories:** 133
-- **Total Size:** 4.6M
-- **Doc Files:** 405
-- **Code Files:** 113
+- **Files:** 532
+- **Directories:** 130
+- **Total Size:** 4.8M
+- **Doc Files:** 404
+- **Code Files:** 117
 - **Areas:** 17 (docs/ subfolders)
-- **Modules:** 49 (subfolders in areas)
-- **DOCS Links:** 72 (0.64 avg per code file)
+- **Modules:** 44 (subfolders in areas)
+- **DOCS Links:** 72 (0.62 avg per code file)
 
-- markdown: 405
-- python: 86
+- markdown: 404
+- python: 90
 - tsx: 13
 - typescript: 11
 - css: 2
@@ -24,8 +24,8 @@
 │   │   └── CLAUDE.md (9.8K)
 │   └── world_runner/ (28.0K)
 │       └── CLAUDE.md (28.0K)
-├── app/ (95.1K)
-│   ├── api/ (7.5K)
+├── app/ (97.3K)
+│   ├── api/ (9.7K)
 │   │   ├── connectome/ (6.3K)
 │   │   │   ├── graph/ (1.7K)
 │   │   │   │   └── route.ts (1.7K)
@@ -33,8 +33,8 @@
 │   │   │   │   └── route.ts (1.6K) →
 │   │   │   └── search/ (3.0K)
 │   │   │       └── route.ts (3.0K)
-│   │   └── sse/ (1.2K)
-│   │       └── route.ts (1.2K)
+│   │   └── sse/ (3.4K)
+│   │       └── route.ts (3.4K)
 │   ├── connectome/ (84.9K)
 │   │   ├── components/ (71.3K)
 │   │   │   ├── edge_kit/ (8.5K)
@@ -66,7 +66,7 @@
 │   │   └── (..1 more files)
 │   ├── globals.css (1.9K)
 │   └── (..2 more files)
-├── docs/ (2.5M)
+├── docs/ (2.6M)
 │   ├── agents/ (217.4K)
 │   │   ├── narrator/ (112.3K)
 │   │   │   ├── archive/ (20.5K)
@@ -82,7 +82,7 @@
 │   │   │   ├── TOOL_REFERENCE.md (3.2K)
 │   │   │   ├── VALIDATION_Narrator.md (8.6K)
 │   │   │   └── (..4 more files)
-│   │   └── world-runner/ (105.0K)
+│   │   └── world-runner/ (105.1K)
 │   │       ├── archive/ (23.7K)
 │   │       │   └── SYNC_archive_2024-12.md (23.7K)
 │   │       ├── ALGORITHM_World_Runner.md (11.3K)
@@ -96,27 +96,32 @@
 │   │       ├── TOOL_REFERENCE.md (4.3K)
 │   │       ├── VALIDATION_World_Runner_Invariants.md (6.3K)
 │   │       └── (..1 more files)
-│   ├── api/ (4.5K)
-│   │   └── sse/ (4.5K)
-│   │       ├── OBJECTIFS_SSE_API.md (1.2K)
+│   ├── api/ (22.2K)
+│   │   └── sse/ (22.2K)
+│   │       ├── ALGORITHM_SSE_API.md (3.2K)
+│   │       ├── BEHAVIORS_SSE_API.md (2.5K)
+│   │       ├── HEALTH_SSE_API.md (4.0K)
+│   │       ├── IMPLEMENTATION_SSE_API.md (3.7K)
+│   │       ├── OBJECTIVES_SSE_API.md (1.2K)
 │   │       ├── PATTERNS_SSE_API.md (2.6K)
-│   │       └── SYNC_SSE_API.md (644)
-│   ├── architecture/ (56.1K)
-│   │   └── cybernetic_studio_architecture/ (56.1K)
+│   │       ├── SYNC_SSE_API.md (1.3K)
+│   │       └── VALIDATION_SSE_API.md (3.7K)
+│   ├── architecture/ (56.8K)
+│   │   └── cybernetic_studio_architecture/ (56.8K)
 │   │       ├── ALGORITHM_Cybernetic_Studio_Process_Flow.md (4.4K)
 │   │       ├── BEHAVIORS_Cybernetic_Studio_System_Behaviors.md (7.4K)
 │   │       ├── HEALTH_Cybernetic_Studio_Health_Checks.md (7.6K)
 │   │       ├── IMPLEMENTATION_Cybernetic_Studio_Code_Structure.md (8.4K)
-│   │       ├── OBJECTIFS_Cybernetic_Studio_Architecture_Goals.md (798)
+│   │       ├── OBJECTIVES_Cybernetic_Studio_Architecture_Goals.md (798)
 │   │       ├── PATTERNS_Cybernetic_Studio_Architecture.md (16.1K)
-│   │       ├── SYNC_Cybernetic_Studio_Architecture_State.md (6.3K)
+│   │       ├── SYNC_Cybernetic_Studio_Architecture_State.md (7.0K)
 │   │       └── VALIDATION_Cybernetic_Studio_Architectural_Invariants.md (5.0K)
-│   ├── cli/ (137.8K)
+│   ├── cli/ (138.3K)
 │   │   ├── archive/ (5.4K)
 │   │   │   ├── SYNC_CLI_Development_State_archive_2025-12.md (581)
 │   │   │   ├── SYNC_CLI_State_Archive_2025-12.md (4.3K)
 │   │   │   └── (..1 more files)
-│   │   ├── core/ (68.8K)
+│   │   ├── core/ (69.2K)
 │   │   │   ├── ALGORITHM_CLI_Command_Execution_Logic/ (8.0K)
 │   │   │   │   └── ALGORITHM_Overview.md (8.0K)
 │   │   │   ├── IMPLEMENTATION_CLI_Code_Architecture/ (24.4K)
@@ -130,7 +135,7 @@
 │   │   │   │       └── IMPLEMENTATION_Code_Structure.md (8.0K)
 │   │   │   ├── BEHAVIORS_CLI_Command_Effects.md (7.6K)
 │   │   │   ├── HEALTH_CLI_Command_Test_Coverage.md (6.8K)
-│   │   │   ├── PATTERNS_Why_CLI_Over_Copy.md (6.0K)
+│   │   │   ├── PATTERNS_Why_CLI_Over_Copy.md (6.4K)
 │   │   │   ├── SYNC_CLI_Development_State.md (10.3K)
 │   │   │   └── VALIDATION_CLI_Instruction_Invariants.md (5.7K)
 │   │   ├── prompt/ (39.8K)
@@ -144,8 +149,8 @@
 │   │   ├── ALGORITHM_CLI_Command_Execution_Logic.md (4.7K)
 │   │   ├── BEHAVIORS_CLI_Module_Command_Surface_Effects.md (770)
 │   │   ├── HEALTH_CLI_Module_Verification.md (602)
-│   │   ├── IMPLEMENTATION_CLI_Code_Architecture.md (13.3K)
-│   │   ├── OBJECTIFS_Cli_Goals.md (690)
+│   │   ├── IMPLEMENTATION_CLI_Code_Architecture.md (13.4K)
+│   │   ├── OBJECTIVES_Cli_Goals.md (690)
 │   │   ├── PATTERNS_CLI_Module_Overview_And_Scope.md (1.0K)
 │   │   ├── VALIDATION_CLI_Module_Invariants.md (732)
 │   │   ├── modules.md (1.8K)
@@ -153,13 +158,13 @@
 │   ├── concepts/ (1.3K)
 │   │   └── tempo-controller/ (1.3K)
 │   │       └── CONCEPT_Tempo_Controller.md (1.3K)
-│   ├── connectome/ (583.3K)
+│   ├── connectome/ (603.7K)
 │   │   ├── edge_kit/ (57.1K)
 │   │   │   ├── ALGORITHM_Connectome_Edge_Kit_Edge_Rendering_Pulse_Shine_And_Label_Placement_Rules.md (4.0K)
 │   │   │   ├── BEHAVIORS_Connectome_Edge_Kit_Readable_Directional_And_Truthful_Link_Effects.md (7.3K)
 │   │   │   ├── HEALTH_Connectome_Edge_Kit_Runtime_Verification_Of_Link_Visibility_And_Semantic_Styling.md (7.3K)
 │   │   │   ├── IMPLEMENTATION_Connectome_Edge_Kit_Component_Map_And_Render_Tokens.md (13.5K)
-│   │   │   ├── OBJECTIFS_Edge_Kit_Goals.md (710)
+│   │   │   ├── OBJECTIVES_Edge_Kit_Goals.md (710)
 │   │   │   ├── PATTERNS_Connectome_Edge_Kit_Color_Coded_Trigger_Typed_Directional_Link_Styling_Patterns.md (7.6K)
 │   │   │   ├── SYNC_Connectome_Edge_Kit_Sync_Current_State.md (10.4K)
 │   │   │   └── VALIDATION_Connectome_Edge_Kit_Invariants_For_Color_Dash_And_Pulse_Truth.md (6.4K)
@@ -168,42 +173,47 @@
 │   │   │   ├── BEHAVIORS_Connectome_Event_Model_Observable_Event_Stream_Effects.md (4.9K)
 │   │   │   ├── HEALTH_Connectome_Event_Model_Runtime_Verification_And_Signal_Coverage.md (8.3K)
 │   │   │   ├── IMPLEMENTATION_Connectome_Event_Model_Code_Architecture_And_Schema.md (10.7K)
-│   │   │   ├── OBJECTIFS_Event_Model_Goals.md (722)
+│   │   │   ├── OBJECTIVES_Event_Model_Goals.md (722)
 │   │   │   ├── PATTERNS_Connectome_Event_Model_Contract_And_Normalization_Patterns.md (6.2K)
 │   │   │   ├── SYNC_Connectome_Event_Model_Sync_Current_State.md (1.6K)
 │   │   │   └── VALIDATION_Connectome_Event_Model_Invariants_And_Error_Conditions.md (4.9K)
 │   │   ├── feature_shell/ (1.8K)
-│   │   │   └── OBJECTIFS_Connectome_Feature_Shell.md (1.8K)
+│   │   │   └── OBJECTIVES_Connectome_Feature_Shell.md (1.8K)
 │   │   ├── flow_canvas/ (69.4K)
 │   │   │   ├── ALGORITHM_Connectome_Flow_Canvas_Layout_Zones_And_Edge_Label_Decluttering.md (8.3K)
 │   │   │   ├── BEHAVIORS_Connectome_Flow_Canvas_Readable_Stable_Interaction_Effects.md (4.5K)
 │   │   │   ├── HEALTH_Connectome_Flow_Canvas_Runtime_Verification_Of_Render_Stability_And_Perf_Budgets.md (11.4K)
 │   │   │   ├── IMPLEMENTATION_Connectome_Flow_Canvas_Code_Structure_With_React_Flow_And_Zones.md (12.6K)
-│   │   │   ├── OBJECTIFS_Flow_Canvas_Goals.md (722)
+│   │   │   ├── OBJECTIVES_Flow_Canvas_Goals.md (722)
 │   │   │   ├── PATTERNS_Connectome_Flow_Canvas_Pannable_Zoomable_Zoned_System_Map_Rendering_Patterns.md (9.1K)
 │   │   │   ├── SYNC_Connectome_Flow_Canvas_Sync_Current_State.md (17.4K)
 │   │   │   └── VALIDATION_Connectome_Flow_Canvas_Invariants_For_Readability_And_Stability.md (5.4K)
-│   │   ├── graph_api/ (6.1K)
-│   │   │   ├── OBJECTIFS_Graph_API.md (1.4K)
-│   │   │   └── PATTERNS_Graph_API.md (4.7K)
-│   │   ├── graphs/ (4.6K)
-│   │   │   ├── OBJECTIFS_Connectome_Graphs.md (1.4K)
+│   │   ├── graph_api/ (12.9K)
+│   │   │   ├── OBJECTIVES_Graph_API.md (1.4K)
+│   │   │   ├── PATTERNS_Graph_API.md (5.0K)
+│   │   │   └── SYNC_Graph_API.md (6.5K)
+│   │   ├── graphs/ (18.0K)
+│   │   │   ├── ALGORITHM_Proxying_Graph_Listing_CLI.md (3.7K)
+│   │   │   ├── BEHAVIORS_Listing_Available_Connectome_Graphs.md (2.2K)
+│   │   │   ├── IMPLEMENTATION_Connectome_Graph_Listing_API_Architecture.md (3.5K)
+│   │   │   ├── OBJECTIVES_Connectome_Graphs.md (1.4K)
 │   │   │   ├── PATTERNS_Connectome_Graphs.md (1.8K)
-│   │   │   └── SYNC_Connectome_Graphs_Sync_Current_State.md (1.4K)
+│   │   │   ├── SYNC_Connectome_Graphs_Sync_Current_State.md (1.4K)
+│   │   │   └── VALIDATION_Connectome_Graph_Listing_Invariants.md (3.9K)
 │   │   ├── health/ (9.1K)
 │   │   │   ├── CONNECTOME_HEALTH_PAYLOAD.md (965)
 │   │   │   ├── HEALTH_Connectome_Live_Signals.md (6.0K)
 │   │   │   ├── INTEGRATION_NOTES.md (1.3K)
-│   │   │   └── OBJECTIFS_Connectome_Health.md (836)
+│   │   │   └── OBJECTIVES_Connectome_Health.md (836)
 │   │   ├── health_panel/ (6.2K)
-│   │   │   ├── OBJECTIFS_Connectome_Health_Panel_Metrics_Display_And_Realtime_Feedback.md (1.5K)
+│   │   │   ├── OBJECTIVES_Connectome_Health_Panel_Metrics_Display_And_Realtime_Feedback.md (1.5K)
 │   │   │   └── PATTERNS_Connectome_Health_Panel_Live_Monitoring_And_Invariants_Visualization.md (4.7K)
 │   │   ├── log_panel/ (72.1K)
 │   │   │   ├── ALGORITHM_Connectome_Log_Panel_Log_Rendering_Duration_Coloring_And_Export.md (11.9K)
 │   │   │   ├── BEHAVIORS_Connectome_Log_Panel_Step_Clarity_And_Copyable_Audit_Trail_Effects.md (4.5K)
 │   │   │   ├── HEALTH_Connectome_Log_Panel_Runtime_Verification_Of_Log_Truth_And_Export_Integrity.md (15.4K)
 │   │   │   ├── IMPLEMENTATION_Connectome_Log_Panel_Component_Structure_And_Serializer_Integration.md (12.3K)
-│   │   │   ├── OBJECTIFS_Log_Panel_Goals.md (714)
+│   │   │   ├── OBJECTIVES_Log_Panel_Goals.md (714)
 │   │   │   ├── PATTERNS_Connectome_Log_Panel_Unified_Explain_And_Copyable_Event_Ledger_View_Patterns.md (6.1K)
 │   │   │   ├── SYNC_Connectome_Log_Panel_Sync_Current_State.md (15.5K)
 │   │   │   └── VALIDATION_Connectome_Log_Panel_Invariants_For_Truthful_Durations_And_Stable_Export.md (5.6K)
@@ -212,7 +222,7 @@
 │   │   │   ├── BEHAVIORS_Connectome_Node_Kit_Visible_Clarity_And_Trust_Effects.md (4.7K)
 │   │   │   ├── HEALTH_Connectome_Node_Kit_Runtime_Verification_Of_Node_State_And_Visual_Signal_Truth.md (21.2K)
 │   │   │   ├── IMPLEMENTATION_Connectome_Node_Kit_Component_Map_And_Styling_Tokens.md (13.2K)
-│   │   │   ├── OBJECTIFS_Node_Kit_Goals.md (710)
+│   │   │   ├── OBJECTIVES_Node_Kit_Goals.md (710)
 │   │   │   ├── PATTERNS_Connectome_Node_Kit_Typed_Language_Coded_Energy_Aware_Node_Rendering_Patterns.md (7.2K)
 │   │   │   ├── SYNC_Connectome_Node_Kit_Sync_Current_State.md (4.3K)
 │   │   │   ├── SYNC_Connectome_Node_Kit_Sync_Current_State_archive_2025-12.md (15.6K)
@@ -222,7 +232,7 @@
 │   │   │   ├── BEHAVIORS_Connectome_Page_Shell_Stable_Workflow_And_Mode_Control_Effects.md (1.1K)
 │   │   │   ├── HEALTH_Connectome_Page_Shell_Runtime_Verification_Of_Control_Semantics_And_Mode_Gating.md (1.1K)
 │   │   │   ├── IMPLEMENTATION_Connectome_Page_Shell_Nextjs_Route_And_Component_Wiring.md (1.0K)
-│   │   │   ├── OBJECTIFS_Page_Shell_Goals.md (718)
+│   │   │   ├── OBJECTIVES_Page_Shell_Goals.md (718)
 │   │   │   ├── PATTERNS_Connectome_Page_Shell_Route_Composition_And_User_Control_Surface_Patterns.md (5.4K)
 │   │   │   ├── SYNC_Connectome_Page_Shell_Sync_Current_State.md (2.1K)
 │   │   │   └── VALIDATION_Connectome_Page_Shell_Invariants_For_Control_Correctness_And_No_Drift.md (1.1K)
@@ -231,19 +241,19 @@
 │   │   │   ├── BEHAVIORS_Connectome_Runtime_Engine_User_Controlled_Traversal_Effects.md (6.5K)
 │   │   │   ├── HEALTH_Connectome_Runtime_Engine_Runtime_Verification_Of_Pacing_And_Order.md (16.4K)
 │   │   │   ├── IMPLEMENTATION_Connectome_Runtime_Engine_Code_Structure_And_Control_Surface.md (12.6K)
-│   │   │   ├── OBJECTIFS_Runtime_Engine_Goals.md (734)
+│   │   │   ├── OBJECTIVES_Runtime_Engine_Goals.md (734)
 │   │   │   ├── PATTERNS_Connectome_Runtime_Engine_Stepper_And_Realtime_Traversal_Control_Patterns.md (11.7K)
 │   │   │   ├── SYNC_Connectome_Runtime_Engine_Sync_Current_State.md (14.9K)
 │   │   │   └── VALIDATION_Connectome_Runtime_Engine_Invariants_For_Stepper_And_Realtime.md (6.3K)
-│   │   ├── search_api/ (10.3K)
-│   │   │   ├── OBJECTIFS_Connectome_Search_API_Objectives.md (2.2K)
-│   │   │   └── PATTERNS_Connectome_Search_API_Design_Patterns.md (8.1K)
+│   │   ├── search_api/ (10.5K)
+│   │   │   ├── OBJECTIVES_Connectome_Search_API_Objectives.md (2.2K)
+│   │   │   └── PATTERNS_Connectome_Search_API_Design_Patterns.md (8.3K)
 │   │   ├── state_store/ (95.4K)
 │   │   │   ├── ALGORITHM_Connectome_State_Store_Atomic_Commits_For_Step_Releases_And_Realtime.md (10.1K)
 │   │   │   ├── BEHAVIORS_Connectome_State_Store_Observable_State_Consistency_Effects.md (5.8K)
 │   │   │   ├── HEALTH_Connectome_State_Store_Runtime_Verification_Of_Ledger_And_Timer_Correctness.md (33.4K)
 │   │   │   ├── IMPLEMENTATION_Connectome_State_Store_Code_Structure_And_Zustand_Actions.md (10.6K)
-│   │   │   ├── OBJECTIFS_State_Store_Goals.md (722)
+│   │   │   ├── OBJECTIVES_State_Store_Goals.md (722)
 │   │   │   ├── PATTERNS_Connectome_State_Store_Single_Source_Of_Truth_For_Events_Focus_And_Timers.md (8.9K)
 │   │   │   ├── SYNC_Connectome_State_Store_Sync_Current_State.md (4.4K)
 │   │   │   ├── SYNC_Connectome_State_Store_Sync_Current_State_archive_2025-12.md (15.9K)
@@ -253,7 +263,7 @@
 │   │   │   ├── BEHAVIORS_Connectome_Telemetry_Adapter_Realtime_Ingestion_Buffering_And_Backpressure_Effects.md (3.1K)
 │   │   │   ├── HEALTH_Connectome_Telemetry_Adapter_Runtime_Verification_Of_Stream_Integrity_And_Buffer_Bounds.md (3.8K)
 │   │   │   ├── IMPLEMENTATION_Connectome_Telemetry_Adapter_Code_Structure_For_Sse_And_Snapshot_Docking.md (4.2K)
-│   │   │   ├── OBJECTIFS_Telemetry_Adapter_Goals.md (746)
+│   │   │   ├── OBJECTIVES_Telemetry_Adapter_Goals.md (746)
 │   │   │   ├── PATTERNS_Connectome_Telemetry_Adapter_Sse_To_FlowEvent_Normalization_Docking_Patterns.md (5.1K)
 │   │   │   ├── SYNC_Connectome_Telemetry_Adapter_Sync_Current_State.md (1.4K)
 │   │   │   └── VALIDATION_Connectome_Telemetry_Adapter_Invariants_For_No_Dropped_Events_And_Stable_Order.md (3.0K)
@@ -263,11 +273,11 @@
 │   │   ├── BEHAVIORS_Core_Utils_Helper_Effects.md (3.6K)
 │   │   ├── HEALTH_Core_Utils_Verification.md (7.4K)
 │   │   ├── IMPLEMENTATION_Core_Utils_Code_Architecture.md (8.3K)
-│   │   ├── OBJECTIFS_Core_Utils_Goals.md (718)
+│   │   ├── OBJECTIVES_Core_Utils_Goals.md (718)
 │   │   ├── PATTERNS_Core_Utils_Functions.md (2.2K)
 │   │   ├── SYNC_Core_Utils_State.md (4.3K)
 │   │   └── VALIDATION_Core_Utils_Invariants.md (3.6K)
-│   ├── engine/ (124.7K)
+│   ├── engine/ (126.1K)
 │   │   ├── membrane/ (32.7K)
 │   │   │   ├── ALGORITHM_Membrane_Modulation.md (4.3K)
 │   │   │   ├── BEHAVIORS_Membrane_Modulation.md (4.5K)
@@ -277,14 +287,14 @@
 │   │   │   ├── PATTERN_Membrane_Modulation.md (5.1K)
 │   │   │   ├── SYNC_Membrane_Modulation.md (3.2K)
 │   │   │   └── VALIDATION_Membrane_Modulation.md (3.3K)
-│   │   ├── models/ (42.8K)
-│   │   │   ├── ALGORITHM_Models.md (6.0K)
+│   │   ├── models/ (44.3K)
+│   │   │   ├── ALGORITHM_Models.md (6.3K)
 │   │   │   ├── BEHAVIORS_Models.md (4.0K)
 │   │   │   ├── HEALTH_Models.md (4.4K)
-│   │   │   ├── IMPLEMENTATION_Models.md (10.9K)
-│   │   │   ├── PATTERNS_Models.md (6.8K)
+│   │   │   ├── IMPLEMENTATION_Models.md (11.4K)
+│   │   │   ├── PATTERNS_Models.md (7.2K)
 │   │   │   ├── SYNC_Models.md (5.6K)
-│   │   │   └── VALIDATION_Models.md (5.1K)
+│   │   │   └── VALIDATION_Models.md (5.3K)
 │   │   ├── moment-graph-engine/ (31.1K)
 │   │   │   ├── validation/ (6.5K)
 │   │   │   │   ├── player_dmz/ (2.4K)
@@ -313,24 +323,25 @@
 │   │   ├── BEHAVIORS_Engine.md (865)
 │   │   ├── HEALTH_Engine.md (515)
 │   │   ├── IMPLEMENTATION_Engine.md (848)
-│   │   ├── OBJECTIFS_Engine_Goals.md (702)
+│   │   ├── OBJECTIVES_Engine_Goals.md (702)
 │   │   ├── PATTERNS_Engine.md (1.1K)
 │   │   ├── SYNC_Engine.md (802)
 │   │   └── VALIDATION_Engine.md (666)
-│   ├── frontend/ (17.6K)
-│   │   └── app_shell/ (17.6K)
-│   │       ├── OBJECTIFS_App_Shell.md (2.2K)
+│   ├── frontend/ (21.2K)
+│   │   └── app_shell/ (21.2K)
+│   │       ├── BEHAVIORS_App_Shell.md (3.3K)
+│   │       ├── OBJECTIVES_App_Shell.md (2.2K)
 │   │       ├── PATTERNS_App_Shell.md (7.9K)
-│   │       └── SYNC_App_Shell_State.md (7.6K)
-│   ├── infrastructure/ (158.2K)
-│   │   ├── api/ (69.9K)
+│   │       └── SYNC_App_Shell_State.md (7.8K)
+│   ├── infrastructure/ (159.6K)
+│   │   ├── api/ (70.2K)
 │   │   │   ├── ALGORITHM_Api.md (19.9K)
 │   │   │   ├── ALGORITHM_Player_Input_Flow.md (7.3K)
 │   │   │   ├── API_Graph_Management.md (4.3K)
 │   │   │   ├── BEHAVIORS_Api.md (2.2K)
 │   │   │   ├── HEALTH_Api.md (3.7K)
 │   │   │   ├── IMPLEMENTATION_Api.md (7.8K)
-│   │   │   ├── PATTERNS_Api.md (2.9K)
+│   │   │   ├── PATTERNS_Api.md (3.1K)
 │   │   │   ├── SYNC_Api.md (4.0K)
 │   │   │   ├── SYNC_Api_archive_2025-12.md (13.9K)
 │   │   │   ├── VALIDATION_Api.md (2.4K)
@@ -342,52 +353,58 @@
 │   │   │   ├── BEHAVIORS_Scene_Memory.md (5.0K)
 │   │   │   ├── HEALTH_Scene_Memory.md (518)
 │   │   │   ├── IMPLEMENTATION_Scene_Memory.md (5.5K)
-│   │   │   ├── OBJECTIFS_Scene_Memory_Goals.md (726)
+│   │   │   ├── OBJECTIVES_Scene_Memory_Goals.md (726)
 │   │   │   ├── PATTERNS_Scene_Memory.md (4.7K)
 │   │   │   ├── SYNC_Scene_Memory.md (6.0K)
 │   │   │   ├── SYNC_Scene_Memory_archive_2025-12.md (15.2K)
 │   │   │   ├── TEST_Scene_Memory.md (3.4K)
 │   │   │   └── VALIDATION_Scene_Memory.md (5.1K)
-│   │   ├── tempo/ (27.9K)
+│   │   ├── tempo/ (29.0K)
 │   │   │   ├── ALGORITHM_Tempo_Controller.md (3.1K)
 │   │   │   ├── BEHAVIORS_Tempo.md (3.0K)
 │   │   │   ├── HEALTH_Tempo.md (4.9K)
-│   │   │   ├── IMPLEMENTATION_Tempo.md (7.0K)
-│   │   │   ├── OBJECTIFS_Tempo_Goals.md (698)
-│   │   │   ├── PATTERNS_Tempo.md (3.3K)
-│   │   │   ├── SYNC_Tempo.md (3.3K)
+│   │   │   ├── IMPLEMENTATION_Tempo.md (7.3K)
+│   │   │   ├── OBJECTIVES_Tempo_Goals.md (698)
+│   │   │   ├── PATTERNS_Tempo.md (3.6K)
+│   │   │   ├── SYNC_Tempo.md (4.0K)
 │   │   │   └── VALIDATION_Tempo.md (2.6K)
 │   │   └── wsl-autostart.md (3.2K)
 │   ├── llm_agents/ (80.0K)
 │   │   ├── ALGORITHM_Gemini_Stream_Flow.md (5.7K)
 │   │   ├── BEHAVIORS_Gemini_Agent_Output.md (5.8K)
-│   │   ├── HEALTH_LLM_Agent_Coverage.md (13.8K)
+│   │   ├── HEALTH_LLM_Agent_Coverage.md (13.9K)
 │   │   ├── IMPLEMENTATION_LLM_Agent_Code_Architecture.md (16.1K)
-│   │   ├── OBJECTIFS_Llm_Agents_Goals.md (718)
+│   │   ├── OBJECTIVES_Llm_Agents_Goals.md (718)
 │   │   ├── PATTERNS_Provider_Specific_LLM_Subprocesses.md (5.3K)
 │   │   ├── SYNC_LLM_Agents_State.md (3.6K)
 │   │   ├── SYNC_LLM_Agents_State_archive_2025-12.md (20.8K)
 │   │   └── VALIDATION_Gemini_Agent_Invariants.md (8.1K)
-│   ├── ngram_cli_core/ (7.2K)
-│   │   ├── OBJECTIFS_ngram_cli_core.md (2.0K)
+│   ├── ngram_cli_core/ (15.4K)
+│   │   ├── ALGORITHM_ngram_cli_core.md (4.5K)
+│   │   ├── BEHAVIORS_ngram_cli_core.md (3.7K)
+│   │   ├── OBJECTIVES_ngram_cli_core.md (2.0K)
 │   │   ├── PATTERNS_ngram_cli_core.md (3.0K)
 │   │   └── SYNC_ngram_cli_core.md (2.1K)
-│   ├── ngram_feature/ (2.4K)
-│   │   ├── OBJECTIFS_Ngram_Feature.md (533)
+│   ├── ngram_feature/ (15.8K)
+│   │   ├── ALGORITHM_Ngram_Feature_Placeholder_Page.md (5.8K)
+│   │   ├── BEHAVIORS_Ngram_Feature_Placeholder_Page.md (2.6K)
+│   │   ├── OBJECTIVES_Ngram_Feature.md (533)
 │   │   ├── PATTERNS_Ngram_Feature.md (701)
-│   │   └── SYNC_Ngram_Feature_State.md (1.2K)
-│   ├── physics/ (353.8K)
-│   │   ├── BEHAVIORS_Physics/ (14.6K)
-│   │   │   ├── BEHAVIORS_Physics_Behaviors_Advanced.md (8.2K)
+│   │   ├── SYNC_Ngram_Feature_State.md (1.2K)
+│   │   └── VALIDATION_Ngram_Feature_Placeholder_Page.md (5.0K)
+│   ├── physics/ (376.1K)
+│   │   ├── BEHAVIORS_Physics/ (15.3K)
+│   │   │   ├── BEHAVIORS_Physics_Behaviors_Advanced.md (8.9K)
 │   │   │   └── BEHAVIORS_Physics_Overview.md (6.4K)
 │   │   ├── VALIDATION_Physics/ (20.8K)
 │   │   │   ├── VALIDATION_Physics_Invariants.md (18.4K)
 │   │   │   └── VALIDATION_Physics_Procedures.md (2.4K)
-│   │   ├── algorithms/ (106.7K)
+│   │   ├── algorithms/ (126.0K)
 │   │   │   ├── ALGORITHM_Physics_Energy_Flow_Sources_Sinks_And_Moment_Dynamics.md (985)
 │   │   │   ├── ALGORITHM_Physics_Energy_Mechanics_And_Link_Semantics.md (101.6K)
 │   │   │   ├── ALGORITHM_Physics_Handler_And_Input_Processing_Flows.md (915)
 │   │   │   ├── ALGORITHM_Physics_Mechanisms.md (1.4K)
+│   │   │   ├── ALGORITHM_Physics_Schema_v1.1_Energy_Physics.md (19.3K)
 │   │   │   ├── ALGORITHM_Physics_Speed_Control_And_Display_Filtering.md (898)
 │   │   │   └── ALGORITHM_Physics_Tick_Cycle_Gating_Flips_And_Dispatch.md (932)
 │   │   ├── archive/ (24.6K)
@@ -403,10 +420,10 @@
 │   │   │   ├── SYNC_Attention_Energy_Split.md (1.0K)
 │   │   │   ├── VALIDATION_Attention_Split_And_Interrupts.md (8.3K)
 │   │   │   └── (..1 more files)
-│   │   ├── graph/ (117.5K)
+│   │   ├── graph/ (118.6K)
 │   │   │   ├── archive/ (17.6K)
 │   │   │   │   └── ALGORITHM_Energy_Flow_archived_2025-12-20.md (17.6K)
-│   │   │   ├── BEHAVIORS_Graph.md (8.6K)
+│   │   │   ├── BEHAVIORS_Graph.md (9.7K)
 │   │   │   ├── PATTERNS_Graph.md (4.9K)
 │   │   │   ├── SYNC_Graph.md (8.6K)
 │   │   │   ├── SYNC_Graph_archive_2025-12.md (33.8K)
@@ -420,21 +437,21 @@
 │   │   ├── BEHAVIORS_Physics.md (1.4K)
 │   │   ├── HEALTH_Physics.md (6.7K)
 │   │   ├── IMPLEMENTATION_Physics.md (6.4K)
-│   │   ├── OBJECTIFS_Physics_Goals.md (706)
+│   │   ├── OBJECTIVES_Physics_Goals.md (706)
 │   │   ├── PATTERNS_Physics.md (9.3K)
-│   │   ├── SYNC_Physics.md (1.7K)
+│   │   ├── SYNC_Physics.md (2.9K)
 │   │   └── VALIDATION_Physics.md (1.1K)
-│   ├── protocol/ (105.7K)
+│   ├── protocol/ (107.0K)
 │   │   ├── ALGORITHM/ (2.5K)
 │   │   │   └── ALGORITHM_Protocol_Process_Flow.md (2.5K)
 │   │   ├── IMPLEMENTATION/ (5.5K)
 │   │   │   └── IMPLEMENTATION_Protocol_File_Structure.md (5.5K)
 │   │   ├── archive/ (839)
 │   │   │   └── SYNC_Archive_2024-12.md (839)
-│   │   ├── doctor/ (54.3K)
+│   │   ├── doctor/ (54.5K)
 │   │   │   ├── ALGORITHM_Project_Health_Doctor.md (17.3K)
 │   │   │   ├── BEHAVIORS_Project_Health_Doctor.md (9.3K)
-│   │   │   ├── HEALTH_Project_Health_Doctor.md (5.0K)
+│   │   │   ├── HEALTH_Project_Health_Doctor.md (5.3K)
 │   │   │   ├── IMPLEMENTATION_Project_Health_Doctor.md (5.7K)
 │   │   │   ├── PATTERNS_Project_Health_Doctor.md (4.0K)
 │   │   │   ├── SYNC_Project_Health_Doctor.md (7.8K)
@@ -444,91 +461,66 @@
 │   │   │   ├── PATTERNS_Agent_Trace_Logging.md (3.6K)
 │   │   │   └── SYNC_Agent_Trace_Logging.md (2.1K)
 │   │   ├── ALGORITHM_Protocol_Core_Mechanics.md (569)
-│   │   ├── BEHAVIORS_Observable_Protocol_Effects.md (6.7K)
+│   │   ├── BEHAVIORS_Observable_Protocol_Effects.md (7.3K)
 │   │   ├── HEALTH_Protocol_Verification.md (5.6K)
 │   │   ├── IMPLEMENTATION_Protocol_System_Architecture.md (697)
-│   │   ├── OBJECTIFS_Protocol_Goals.md (710)
+│   │   ├── OBJECTIVES_Protocol_Goals.md (710)
 │   │   ├── PATTERNS_Bidirectional_Documentation_Chain_For_AI_Agents.md (5.1K)
 │   │   ├── SYNC_Protocol_Current_State.md (8.0K)
-│   │   └── VALIDATION_Protocol_Invariants.md (5.8K)
-│   ├── schema/ (86.8K)
-│   │   ├── SCHEMA/ (6.6K)
-│   │   │   ├── SCHEMA_Links.md (1.6K)
-│   │   │   ├── SCHEMA_Nodes.md (2.9K)
-│   │   │   ├── SCHEMA_Overview.md (1.0K)
-│   │   │   └── SCHEMA_Tensions.md (1.1K)
-│   │   ├── SCHEMA_Moments/ (3.3K)
-│   │   │   ├── SCHEMA_Moments_Links.md (1.2K)
-│   │   │   ├── SCHEMA_Moments_Node.md (893)
-│   │   │   ├── SCHEMA_Moments_Overview.md (784)
-│   │   │   └── (..1 more files)
-│   │   ├── graph-health/ (11.6K)
-│   │   │   ├── PATTERNS_Graph_Health_Validation.md (3.7K)
-│   │   │   ├── SYNC_Graph_Health.md (3.9K)
-│   │   │   └── SYNC_Graph_Health_archive_2025-12.md (4.0K)
-│   │   ├── link-axes/ (25.2K)
-│   │   │   ├── BEHAVIORS_Link_Axes.md (1.9K)
-│   │   │   ├── PATTERNS_Link_Axes_Not_Types.md (2.6K)
-│   │   │   ├── SCHEMA_Link_Axes.md (14.7K)
-│   │   │   ├── SYNC_Link_Axes.md (2.9K)
-│   │   │   └── VALIDATION_Link_Axes.md (3.0K)
-│   │   ├── models/ (27.3K)
-│   │   │   ├── PATTERNS_Pydantic_Schema_Models.md (1.4K)
-│   │   │   ├── SYNC_Schema_Models.md (1.5K)
-│   │   │   └── SYNC_Schema_Models_archive_2025-12.md (24.4K)
-│   │   ├── ALGORITHM_Schema_Module_Doc_Routing.md (678)
-│   │   ├── BEHAVIORS_Schema_Module_Observable_Schema_Effects.md (689)
-│   │   ├── HEALTH_Schema_Module_Verification.md (605)
-│   │   ├── IMPLEMENTATION_Schema_Module_Doc_Structure.md (639)
-│   │   ├── OBJECTIFS_Schema_Goals.md (702)
-│   │   ├── PATTERNS_Schema_Module_Overview_And_Ownership.md (681)
-│   │   ├── SCHEMA_Code.md (4.5K)
-│   │   ├── SYNC_Schema_Module_Current_State.md (520)
-│   │   ├── VALIDATION_Graph.md (3.1K)
-│   │   └── (..2 more files)
+│   │   └── VALIDATION_Protocol_Invariants.md (6.2K)
+│   ├── schema/ (67.9K)
+│   │   ├── ALGORITHM_Schema.md (6.6K)
+│   │   ├── BEHAVIORS_Schema.md (4.9K)
+│   │   ├── HEALTH_Schema.md (9.0K)
+│   │   ├── IMPLEMENTATION_Schema.md (10.3K)
+│   │   ├── MIGRATION_Schema_Alignment.md (9.2K)
+│   │   ├── OBJECTIVES_Schema.md (3.0K)
+│   │   ├── PATTERNS_Schema.md (2.5K)
+│   │   ├── SYNC_Schema.md (9.6K)
+│   │   └── VALIDATION_Schema.md (12.8K)
 │   ├── tools/ (57.6K)
 │   │   ├── ALGORITHM_Tools.md (6.7K)
 │   │   ├── BEHAVIORS_Tools.md (4.8K)
 │   │   ├── HEALTH_Tools.md (10.8K)
 │   │   ├── IMPLEMENTATION_Tools.md (7.4K)
-│   │   ├── OBJECTIFS_Tools_Goals.md (698)
+│   │   ├── OBJECTIVES_Tools_Goals.md (698)
 │   │   ├── PATTERNS_Tools.md (5.9K)
 │   │   ├── SYNC_Tools.md (16.3K)
 │   │   └── VALIDATION_Tools.md (5.1K)
-│   ├── tui/ (63.0K)
+│   ├── tui/ (64.3K)
 │   │   ├── IMPLEMENTATION_TUI_Code_Architecture/ (9.9K)
 │   │   │   └── IMPLEMENTATION_TUI_Code_Architecture_Structure.md (9.9K)
 │   │   ├── archive/ (8.0K)
 │   │   │   ├── IMPLEMENTATION_Archive_2024-12.md (2.5K)
 │   │   │   ├── SYNC_TUI_State_Archive_2025-12.md (5.2K)
 │   │   │   └── (..1 more files)
-│   │   ├── ALGORITHM_TUI_Widget_Interaction_Flow.md (6.3K)
+│   │   ├── ALGORITHM_TUI_Widget_Interaction_Flow.md (6.6K)
 │   │   ├── BEHAVIORS_TUI_Interactions.md (6.9K)
-│   │   ├── HEALTH_TUI_Component_Test_Coverage.md (6.2K)
+│   │   ├── HEALTH_TUI_Component_Test_Coverage.md (6.5K)
 │   │   ├── IMPLEMENTATION_TUI_Code_Architecture.md (3.8K)
-│   │   ├── OBJECTIFS_TUI.md (1.4K)
-│   │   ├── OBJECTIFS_Tui_Goals.md (690)
+│   │   ├── OBJECTIVES_TUI.md (1.4K)
+│   │   ├── OBJECTIVES_Tui_Goals.md (690)
 │   │   ├── PATTERNS_TUI.md (2.9K)
-│   │   ├── PATTERNS_TUI_Modular_Interface_Design.md (5.2K)
-│   │   ├── SYNC_TUI_Development_Current_State.md (6.9K)
-│   │   └── VALIDATION_TUI_User_Interface_Invariants.md (4.8K)
+│   │   ├── PATTERNS_TUI_Modular_Interface_Design.md (5.4K)
+│   │   ├── SYNC_TUI_Development_Current_State.md (7.1K)
+│   │   └── VALIDATION_TUI_User_Interface_Invariants.md (5.1K)
 │   ├── SYNC_Project_Repository_Map.md (5.5K)
 │   ├── SYNC_Project_Repository_Map_archive_2025-12.md (53.3K)
-│   └── map.md (347.5K)
-├── engine/ (736.8K)
-│   ├── graph/ (119.4K)
-│   │   └── health/ (119.4K)
-│   │       ├── README.md (3.4K)
-│   │       ├── check_health.py (14.1K) →
-│   │       ├── example_queries.cypher (18.2K)
+│   └── map.md (352.1K)
+├── engine/ (789.4K)
+│   ├── graph/ (122.0K)
+│   │   └── health/ (122.0K)
+│   │       ├── README.md (3.3K)
+│   │       ├── check_health.py (16.0K) →
+│   │       ├── example_queries.cypher (18.0K)
 │   │       ├── lint_terminology.py (14.9K) →
 │   │       ├── query_outputs.md (23.3K)
 │   │       ├── query_results.md (16.2K)
-│   │       └── test_schema.py (29.3K)
-│   ├── infrastructure/ (164.5K)
-│   │   ├── api/ (94.4K)
-│   │   │   ├── app.py (27.9K) →
-│   │   │   ├── graphs.py (15.0K) →
+│   │       └── test_schema.py (30.1K)
+│   ├── infrastructure/ (168.4K)
+│   │   ├── api/ (94.6K)
+│   │   │   ├── app.py (28.1K) →
+│   │   │   ├── graphs.py (14.9K) →
 │   │   │   ├── moments.py (17.7K)
 │   │   │   ├── playthroughs.py (24.2K) →
 │   │   │   ├── sse_broadcast.py (2.8K) →
@@ -539,63 +531,67 @@
 │   │   ├── embeddings/ (7.2K)
 │   │   │   ├── __init__.py (501) →
 │   │   │   └── service.py (6.7K) →
-│   │   ├── memory/ (19.6K)
+│   │   ├── memory/ (19.7K)
 │   │   │   ├── moment_processor.py (19.4K) →
 │   │   │   └── (..1 more files)
-│   │   ├── orchestration/ (41.4K)
+│   │   ├── orchestration/ (42.5K)
 │   │   │   ├── __init__.py (522)
-│   │   │   ├── agent_cli.py (6.2K)
-│   │   │   ├── narrator.py (6.6K) →
+│   │   │   ├── agent_cli.py (7.0K)
+│   │   │   ├── narrator.py (6.9K) →
 │   │   │   ├── orchestrator.py (19.3K)
 │   │   │   └── world_runner.py (8.8K) →
-│   │   └── tempo/ (1.7K)
-│   │       ├── tempo_controller.py (1.6K)
+│   │   └── tempo/ (4.3K)
+│   │       ├── tempo_controller.py (4.1K)
 │   │       └── (..1 more files)
 │   ├── membrane/ (3.3K)
 │   │   ├── __init__.py (517)
 │   │   ├── functions.py (1.3K)
 │   │   ├── provider.py (665)
 │   │   └── (..2 more files)
-│   ├── models/ (32.7K)
-│   │   ├── __init__.py (2.2K) →
-│   │   ├── base.py (12.3K)
-│   │   ├── links.py (7.2K)
-│   │   └── nodes.py (11.0K) →
+│   ├── migrations/ (8.8K)
+│   │   ├── migrate_001_schema_alignment.py (5.4K)
+│   │   ├── migrate_tick_to_tick_created.py (3.3K)
+│   │   └── (..1 more files)
+│   ├── models/ (42.1K)
+│   │   ├── __init__.py (2.8K) →
+│   │   ├── base.py (12.9K)
+│   │   ├── links.py (13.6K)
+│   │   └── nodes.py (12.8K) →
 │   ├── moment_graph/ (30.9K)
 │   │   ├── __init__.py (541) →
 │   │   ├── queries.py (15.8K) →
 │   │   ├── surface.py (6.8K)
-│   │   └── traversal.py (7.7K) →
+│   │   └── traversal.py (7.8K) →
 │   ├── moments/ (896)
 │   │   └── __init__.py (896) →
-│   ├── physics/ (238.4K)
-│   │   ├── graph/ (197.7K)
+│   ├── physics/ (266.1K)
+│   │   ├── graph/ (201.1K)
 │   │   │   ├── graph_interface.py (5.5K) →
-│   │   │   ├── graph_ops.py (28.7K) →
-│   │   │   ├── graph_ops_apply.py (30.4K)
+│   │   │   ├── graph_ops.py (28.6K) →
+│   │   │   ├── graph_ops_apply.py (30.5K)
 │   │   │   ├── graph_ops_links.py (19.9K)
 │   │   │   ├── graph_ops_moments.py (20.0K)
 │   │   │   ├── graph_ops_read_only_interface.py (8.9K) →
 │   │   │   ├── graph_queries.py (30.4K)
-│   │   │   ├── graph_queries_moments.py (19.3K) →
+│   │   │   ├── graph_queries_moments.py (19.5K) →
 │   │   │   ├── graph_queries_search.py (12.9K) →
-│   │   │   ├── graph_query_utils.py (9.1K) →
+│   │   │   ├── graph_query_utils.py (12.5K) →
 │   │   │   └── (..5 more files)
 │   │   ├── attention_split_sink_mass_distribution_mechanism.py (4.1K)
 │   │   ├── cluster_energy_monitor.py (2.6K)
-│   │   ├── constants.py (3.7K)
+│   │   ├── constants.py (7.5K)
 │   │   ├── contradiction_pressure_from_negative_polarity_mechanism.py (2.3K)
 │   │   ├── display_snap_transition_checker.py (3.3K)
 │   │   ├── monitoring.py (3.2K)
 │   │   ├── primes_lag_and_half_life_decay_mechanism.py (2.4K)
-│   │   ├── tick.py (18.6K) →
+│   │   ├── tick.py (39.1K) →
 │   │   └── (..1 more files)
 │   ├── scripts/ (3.6K)
 │   │   └── inject_to_narrator.py (3.6K) →
-│   ├── tests/ (134.3K)
-│   │   ├── test_e2e_moment_graph.py (16.7K)
-│   │   ├── test_moment.py (10.7K)
-│   │   ├── test_moment_graph.py (33.3K)
+│   ├── tests/ (134.7K)
+│   │   ├── test_e2e_moment_graph.py (16.8K)
+│   │   ├── test_moment.py (10.8K)
+│   │   ├── test_moment_graph.py (33.4K)
 │   │   ├── test_moment_lifecycle.py (11.5K)
 │   │   ├── test_moments_api.py (16.5K)
 │   │   ├── test_narrator_integration.py (16.5K)
@@ -605,10 +601,10 @@
 │   │   ├── test_spec_consistency.py (18.7K)
 │   │   └── (..2 more files)
 │   └── init_db.py (8.7K)
-├── ngram/ (706.0K)
+├── ngram/ (745.4K)
 │   ├── llms/ (12.6K)
 │   │   └── gemini_agent.py (12.6K) →
-│   ├── tui/ (182.1K)
+│   ├── tui/ (183.3K)
 │   │   ├── styles/ (18.7K)
 │   │   │   ├── theme.tcss (9.2K)
 │   │   │   └── theme_light.tcss (9.6K)
@@ -624,26 +620,26 @@
 │   │   ├── app_core.py (28.4K) →
 │   │   ├── app_manager.py (11.0K) →
 │   │   ├── commands.py (32.1K) →
-│   │   ├── commands_agent.py (26.4K) →
+│   │   ├── commands_agent.py (27.6K) →
 │   │   ├── manager.py (9.9K) →
 │   │   ├── state.py (6.9K) →
 │   │   └── (..1 more files)
-│   ├── cli.py (20.5K) →
+│   ├── cli.py (23.7K) →
 │   ├── doctor_checks_content.py (31.3K) →
 │   ├── doctor_files.py (23.4K) →
 │   ├── doctor_report.py (24.1K)
-│   ├── init_cmd.py (19.2K) →
 │   ├── repair.py (25.5K) →
 │   ├── repair_core.py (30.5K) →
 │   ├── repair_instructions.py (31.3K) →
 │   ├── repo_overview.py (28.5K) →
+│   ├── status_cmd.py (31.1K) →
 │   ├── validate.py (29.4K) →
-│   └── (..28 more files)
-├── templates/ (153.2K)
-│   ├── ngram/ (146.3K)
-│   │   ├── agents/ (2.8K)
-│   │   │   └── manager/ (2.8K)
-│   │   │       └── CLAUDE.md (2.8K)
+│   └── (..30 more files)
+├── templates/ (153.7K)
+│   ├── ngram/ (146.8K)
+│   │   ├── agents/ (3.4K)
+│   │   │   └── manager/ (3.4K)
+│   │   │       └── CLAUDE.md (3.4K)
 │   │   ├── skills/ (13.0K)
 │   │   │   ├── SKILL_Create_Module_Documentation_Chain_From_Templates_And_Seed_Todos.md (1.4K)
 │   │   │   ├── SKILL_Debug_Investigate_And_Fix_Issues_With_Evidence_First.md (1.1K)
@@ -665,7 +661,7 @@
 │   │   │   ├── CONCEPT_TEMPLATE.md (1.1K)
 │   │   │   ├── HEALTH_TEMPLATE.md (14.2K)
 │   │   │   ├── IMPLEMENTATION_TEMPLATE.md (8.8K)
-│   │   │   ├── OBJECTIFS_TEMPLATE.md (544)
+│   │   │   ├── OBJECTIVES_TEMPLATE.md (544)
 │   │   │   ├── PATTERNS_TEMPLATE.md (2.9K)
 │   │   │   ├── SYNC_TEMPLATE.md (3.1K)
 │   │   │   ├── TOUCHES_TEMPLATE.md (1.6K)
@@ -688,7 +684,9 @@
 │   ├── GEMINI_SYSTEM_PROMPT_ADDITION.md (2.4K)
 │   ├── ngramignore (839)
 │   └── (..1 more files)
-├── tools/ (22.2K)
+├── tools/ (29.0K)
+│   ├── archive/ (2.4K)
+│   │   └── migrate_schema_v11.py (2.4K)
 │   ├── systemd/ (3.3K)
 │   │   └── user/ (3.3K)
 │   │       ├── blood-fe.service (581)
@@ -698,13 +696,14 @@
 │   │       ├── ngrok-falkor.service (552)
 │   │       └── (..1 more files)
 │   ├── connectome_doc_bundle_splitter_and_fence_rewriter.py (2.8K) →
+│   ├── migrate_v11_fields.py (4.4K)
 │   ├── run_stack.sh (2.4K)
 │   └── stream_dialogue.py (13.7K) →
 ├── .ngramignore (839)
 ├── AGENTS.md (26.2K)
 ├── CLAUDE.md (1.2K)
 ├── README.md (4.7K)
-├── map.md (348.4K)
+├── map.md (355.4K)
 ├── map_app.md (9.1K)
 ├── map_docs.md (148.0K)
 ├── map_docs_cli.md (12.5K)
@@ -757,7 +756,7 @@
 - ## 4. When You're Called
 - ## 5. Execution Interface
 - # Seeds and arc plans live in narrator_notes fields
-- # Get comprehensive details for each flipped tension and its related narratives
+- # Get comprehensive details for each flipped pressure and its related narratives
 - # Get current locations and statuses of all relevant characters
 - # Get character relationships (e.g., from BELIEVES links that might be strained)
 - # Natural language search (if needed for deeper contextualization)
@@ -776,7 +775,7 @@
 - # CONTAINS (hierarchy) — no attributes needed, relationship is binary
 - # place_york CONTAINS place_york_market CONTAINS place_merchants_hall CONTAINS place_back_room
 - # ROUTE (travel between settlements/regions) — computed from waypoints
-- ## Tensions
+- ## Pressures
 - ## Modifiers
 - ## Moment Links
 
@@ -784,7 +783,7 @@
 - `runGraphFetch()`
 - `GET()`
 
-**Docs:** `docs/connectome/graphs/OBJECTIFS_Connectome_Graphs.md`
+**Docs:** `docs/connectome/graphs/OBJECTIVES_Connectome_Graphs.md`
 
 **Definitions:**
 - `runListGraphs()`
@@ -797,6 +796,7 @@
 
 **Definitions:**
 - `formatEvent()`
+- `fetchDoctorHealth()`
 - `GET()`
 
 **Docs:** `docs/connectome/edge_kit/IMPLEMENTATION_Connectome_Edge_Kit_Component_Map_And_Render_Tokens.md`
@@ -1414,7 +1414,35 @@
 - ## MARKERS
 
 **Sections:**
-- # OBJECTIFS: SSE API Module
+- # ALGORITHM: SSE API Module
+- ## CHAIN:
+- ## ALGORITHM: Server-Sent Events (SSE) Stream Generation
+
+**Sections:**
+- # BEHAVIORS: SSE API Module
+- ## CHAIN:
+- ## BEHAVIORS: Server-Sent Event Stream
+
+**Code refs:**
+- `route.ts`
+
+**Sections:**
+- # HEALTH: SSE API Module
+- ## CHAIN:
+- ## HEALTH: Server-Sent Events (SSE) Stream Health Monitoring
+
+**Code refs:**
+- `Next.js`
+- `Node.js`
+- `route.ts`
+
+**Sections:**
+- # IMPLEMENTATION: SSE API Module
+- ## CHAIN:
+- ## IMPLEMENTATION: Server-Sent Events (SSE) API Code Architecture
+
+**Sections:**
+- # OBJECTIVES: SSE API Module
 - ## CHAIN:
 - ## OBJECTIVE:
 - ## KEY RESULTS:
@@ -1438,8 +1466,13 @@
 - # SYNC: SSE API Module
 - ## CHAIN:
 - ## CONTEXT:
-- ## STATUS: Documented
+- ## STATUS: CANONICAL
 - ## CHANGES:
+
+**Sections:**
+- # VALIDATION: SSE API Module
+- ## CHAIN:
+- ## VALIDATION: Server-Sent Events (SSE) Stream Validation
 
 **Sections:**
 - # ARCHITECTURE — Cybernetic Studio — Algorithm: Stimulus-to-Surface Flow
@@ -1491,7 +1524,7 @@
 - ## MARKERS
 
 **Sections:**
-- # OBJECTIFS — Cybernetic Studio Architecture
+- # OBJECTIVES — Cybernetic Studio Architecture
 - ## PRIMARY OBJECTIVES (ranked)
 - ## NON-OBJECTIVES
 - ## TRADEOFFS (canonical decisions)
@@ -1536,6 +1569,7 @@
 - ## CURRENT STATE
 - ## IN PROGRESS
 - ## RECENT CHANGES
+- ## GAPS
 - ## KNOWN ISSUES
 - ## HANDOFF: FOR AGENTS
 - ## HANDOFF: FOR HUMAN
@@ -2094,7 +2128,7 @@
 - ## MARKERS
 
 **Sections:**
-- # OBJECTIFS — Cli
+- # OBJECTIVES — Cli
 - ## PRIMARY OBJECTIVES (ranked)
 - ## NON-OBJECTIVES
 - ## TRADEOFFS (canonical decisions)
@@ -2222,7 +2256,7 @@
 - ## MARKERS
 
 **Sections:**
-- # OBJECTIFS — Edge Kit
+- # OBJECTIVES — Edge Kit
 - ## PRIMARY OBJECTIVES (ranked)
 - ## NON-OBJECTIVES
 - ## TRADEOFFS (canonical decisions)
@@ -2347,7 +2381,7 @@
 - ## MARKERS
 
 **Sections:**
-- # OBJECTIFS — Event Model
+- # OBJECTIVES — Event Model
 - ## PRIMARY OBJECTIVES (ranked)
 - ## NON-OBJECTIVES
 - ## TRADEOFFS (canonical decisions)
@@ -2391,7 +2425,7 @@
 - ## MARKERS
 
 **Sections:**
-- # OBJECTIFS — Connectome Feature Shell
+- # OBJECTIVES — Connectome Feature Shell
 - ## PRIMARY OBJECTIVES (ranked)
 - ## NON-OBJECTIVES
 - ## TRADEOFFS (canonical decisions)
@@ -2475,7 +2509,7 @@
 - ## MARKERS
 
 **Sections:**
-- # OBJECTIFS — Flow Canvas
+- # OBJECTIVES — Flow Canvas
 - ## PRIMARY OBJECTIVES (ranked)
 - ## NON-OBJECTIVES
 - ## TRADEOFFS (canonical decisions)
@@ -2543,7 +2577,7 @@
 - ## MARKERS
 
 **Sections:**
-- # OBJECTIFS — Connectome Graph API
+- # OBJECTIVES — Connectome Graph API
 - ## PRIMARY OBJECTIVES (ranked)
 - ## NON-OBJECTIVES
 - ## TRADEOFFS (canonical decisions)
@@ -2565,13 +2599,63 @@
 - ## DEPENDENCIES
 - ## INSPIRATIONS
 - ## SCOPE
+- ## API ENDPOINTS
 - ## MARKERS
+
+**Code refs:**
+- `app/api/connectome/graph/route.ts`
+- `route.ts`
+
+**Doc refs:**
+- `docs/connectome/graph_api/SYNC_Graph_API.md`
+
+**Sections:**
+- # Connectome Graph API — Sync: Current State
+- ## MATURITY
+- ## CURRENT STATE
+- ## IN PROGRESS
+- ## RECENT CHANGES
+- ## KNOWN ISSUES
+- ## HANDOFF: FOR AGENTS
+- ## HANDOFF: FOR HUMAN
+- ## TODO
+- # No specific tests found for this module. Integration tests would be appropriate.
+- # To test the API endpoint, one could run the Next.js app and make a GET request to /api/connectome/graph?graph=seed
+- ## CONSCIOUSNESS TRACE
+- ## POINTERS
+
+**Sections:**
+- # ALGORITHM: Proxying Graph Listing CLI
+- ## CHAIN
+- ## Overview
+- ## Algorithm Steps
+- ## Key Data Structures
+- ## Complexity Considerations
+
+**Sections:**
+- # BEHAVIORS: Listing Available Connectome Graphs
+- ## CHAIN
+- ## Overview
+- ## Behaviors
+
+**Code refs:**
+- `connectome_read_cli.py`
+- `route.ts`
+
+**Sections:**
+- # IMPLEMENTATION: Connectome Graph Listing API Architecture
+- ## CHAIN
+- ## Overview
+- ## Code Structure
+- ## File Responsibilities
+- ## Design Patterns
+- ## Data Flow
 
 **Code refs:**
 - `app/api/connectome/graphs/route.ts`
 
 **Sections:**
-- # OBJECTIFS: Connectome Graphs Module
+- # OBJECTIVES: Connectome Graphs Module
 - ## Context
 - ## Objectives
 - ## Non-Objectives
@@ -2592,7 +2676,7 @@
 - `app/api/connectome/graphs/route.ts`
 
 **Doc refs:**
-- `docs/connectome/graphs/OBJECTIFS_Connectome_Graphs.md`
+- `docs/connectome/graphs/OBJECTIVES_Connectome_Graphs.md`
 - `docs/connectome/graphs/PATTERNS_Connectome_Graphs.md`
 - `docs/connectome/graphs/SYNC_Connectome_Graphs_Sync_Current_State.md`
 
@@ -2602,6 +2686,17 @@
 - ## GAPS
 - ## CONFLICTS
 - ## CHAIN
+
+**Code refs:**
+- `connectome_read_cli.py`
+
+**Sections:**
+- # VALIDATION: Connectome Graph Listing Invariants
+- ## CHAIN
+- ## Overview
+- ## Invariants (Must Always Be True)
+- ## Verification Checks
+- ## Edge Cases and Failure Modes
 
 **Sections:**
 - # Connectome Health SSE Payload (v0)
@@ -2629,14 +2724,14 @@
 - ## Frontend wiring (minimal)
 
 **Sections:**
-- # OBJECTIFS — Connectome Health
+- # OBJECTIVES — Connectome Health
 - ## PRIMARY OBJECTIVES (ranked)
 - ## NON-OBJECTIVES
 - ## TRADEOFFS (canonical decisions)
 - ## SUCCESS SIGNALS (observable)
 
 **Sections:**
-- # OBJECTIFS — Connectome Health Panel: Metrics Display and Realtime Feedback
+- # OBJECTIVES — Connectome Health Panel: Metrics Display and Realtime Feedback
 - ## PRIMARY OBJECTIVES (ranked)
 - ## NON-OBJECTIVES
 - ## TRADEOFFS (canonical decisions)
@@ -2739,7 +2834,7 @@
 - ## MARKERS
 
 **Sections:**
-- # OBJECTIFS — Log Panel
+- # OBJECTIVES — Log Panel
 - ## PRIMARY OBJECTIVES (ranked)
 - ## NON-OBJECTIVES
 - ## TRADEOFFS (canonical decisions)
@@ -2895,7 +2990,7 @@
 - ## MARKERS
 
 **Sections:**
-- # OBJECTIFS — Node Kit
+- # OBJECTIVES — Node Kit
 - ## PRIMARY OBJECTIVES (ranked)
 - ## NON-OBJECTIVES
 - ## TRADEOFFS (canonical decisions)
@@ -2993,7 +3088,7 @@
 - ## NOTES
 
 **Sections:**
-- # OBJECTIFS — Page Shell
+- # OBJECTIVES — Page Shell
 - ## PRIMARY OBJECTIVES (ranked)
 - ## NON-OBJECTIVES
 - ## TRADEOFFS (canonical decisions)
@@ -3108,7 +3203,7 @@
 - ## MARKERS
 
 **Sections:**
-- # OBJECTIFS — Runtime Engine
+- # OBJECTIVES — Runtime Engine
 - ## PRIMARY OBJECTIVES (ranked)
 - ## NON-OBJECTIVES
 - ## TRADEOFFS (canonical decisions)
@@ -3183,7 +3278,7 @@
 - ## MARKERS
 
 **Sections:**
-- # OBJECTIFS — Connectome Search API
+- # OBJECTIVES — Connectome Search API
 - ## PRIMARY OBJECTIVES (ranked)
 - ## NON-OBJECTIVES
 - ## TRADEOFFS (canonical decisions)
@@ -3277,7 +3372,7 @@
 - ## AGENT OBSERVATIONS
 
 **Sections:**
-- # OBJECTIFS — State Store
+- # OBJECTIVES — State Store
 - ## PRIMARY OBJECTIVES (ranked)
 - ## NON-OBJECTIVES
 - ## TRADEOFFS (canonical decisions)
@@ -3393,7 +3488,7 @@
 - ## MARKERS
 
 **Sections:**
-- # OBJECTIFS — Telemetry Adapter
+- # OBJECTIVES — Telemetry Adapter
 - ## PRIMARY OBJECTIVES (ranked)
 - ## NON-OBJECTIVES
 - ## TRADEOFFS (canonical decisions)
@@ -3503,7 +3598,7 @@
 - ## MARKERS
 
 **Sections:**
-- # OBJECTIFS — Core Utils
+- # OBJECTIVES — Core Utils
 - ## PRIMARY OBJECTIVES (ranked)
 - ## NON-OBJECTIVES
 - ## TRADEOFFS (canonical decisions)
@@ -3764,9 +3859,6 @@
 - ## CONFIGURATION
 - ## BIDIRECTIONAL LINKS
 - ## MARKERS
-
-**Code refs:**
-- `base.py`
 
 **Sections:**
 - # Data Models — Patterns: Pydantic for Graph Schema Enforcement
@@ -4068,7 +4160,7 @@
 - ## NOTES
 
 **Sections:**
-- # OBJECTIFS — Engine
+- # OBJECTIVES — Engine
 - ## PRIMARY OBJECTIVES (ranked)
 - ## NON-OBJECTIVES
 - ## TRADEOFFS (canonical decisions)
@@ -4096,7 +4188,15 @@
 - `layout.tsx`
 
 **Sections:**
-- # OBJECTIFS — App Shell
+- # BEHAVIORS — App Shell: Observable Effects and User Interactions
+- ## CHAIN
+- ## CORE BEHAVIORS
+
+**Code refs:**
+- `layout.tsx`
+
+**Sections:**
+- # OBJECTIVES — App Shell
 - ## PRIMARY OBJECTIVES (ranked)
 - ## NON-OBJECTIVES
 - ## TRADEOFFS (canonical decisions)
@@ -4135,7 +4235,7 @@
 - `page.tsx`
 
 **Doc refs:**
-- `docs/frontend/app_shell/OBJECTIFS_App_Shell.md`
+- `docs/frontend/app_shell/OBJECTIVES_App_Shell.md`
 - `docs/frontend/app_shell/PATTERNS_App_Shell.md`
 - `docs/frontend/app_shell/SYNC_App_Shell_State.md`
 
@@ -4148,6 +4248,7 @@
 - ## KNOWN ISSUES
 - ## HANDOFF: FOR AGENTS
 - ## HANDOFF: FOR HUMAN
+- ## POINTERS
 - ## TODO
 - ## CONSCIOUSNESS TRACE
 
@@ -4387,7 +4488,7 @@
 - ## MARKERS
 
 **Sections:**
-- # OBJECTIFS — Scene-Memory
+- # OBJECTIVES — Scene-Memory
 - ## PRIMARY OBJECTIVES (ranked)
 - ## NON-OBJECTIVES
 - ## TRADEOFFS (canonical decisions)
@@ -4572,7 +4673,7 @@
 - ## MARKERS
 
 **Sections:**
-- # OBJECTIFS — Tempo
+- # OBJECTIVES — Tempo
 - ## PRIMARY OBJECTIVES (ranked)
 - ## NON-OBJECTIVES
 - ## TRADEOFFS (canonical decisions)
@@ -4724,7 +4825,7 @@
 - ## MARKERS
 
 **Sections:**
-- # OBJECTIFS — Llm Agents
+- # OBJECTIVES — Llm Agents
 - ## PRIMARY OBJECTIVES (ranked)
 - ## NON-OBJECTIVES
 - ## TRADEOFFS (canonical decisions)
@@ -4820,6 +4921,36 @@
 - ## MARKERS
 
 **Code refs:**
+- `ngram/cli.py`
+
+**Sections:**
+- # Ngram CLI Core — Algorithm: Command Parsing and Execution Logic
+- ## CHAIN
+- ## OVERVIEW
+- ## OBJECTIVES AND BEHAVIORS
+- ## DATA STRUCTURES
+- ## ALGORITHM: `execute_cli_command`
+- ## KEY DECISIONS
+- ## DATA FLOW
+- ## COMPLEXITY
+- ## HELPER FUNCTIONS
+- ## INTERACTIONS
+- ## MARKERS
+
+**Code refs:**
+- `ngram/cli.py`
+
+**Sections:**
+- # Ngram CLI Core — Behaviors: Observable Effects of CLI Commands
+- ## CHAIN
+- ## BEHAVIORS
+- ## OBJECTIVES SERVED
+- ## INPUTS / OUTPUTS
+- ## EDGE CASES
+- ## ANTI-BEHAVIORS
+- ## MARKERS
+
+**Code refs:**
 - `ngram/agent_cli.py`
 - `ngram/cli.py`
 - `ngram/context.py`
@@ -4832,7 +4963,7 @@
 - `docs/ngram_cli_core/PATTERNS_ngram_cli_core.md`
 
 **Sections:**
-- # ngram_cli_core — OBJECTIFS: Core CLI Functionality and Design Goals
+- # ngram_cli_core — OBJECTIVES: Core CLI Functionality and Design Goals
 - ## CHAIN
 - ## OBJECTIVE
 - ## CONSTRAINTS
@@ -4850,7 +4981,7 @@
 - `ngram/validate.py`
 
 **Doc refs:**
-- `docs/ngram_cli_core/OBJECTIFS_ngram_cli_core.md`
+- `docs/ngram_cli_core/OBJECTIVES_ngram_cli_core.md`
 
 **Sections:**
 - # ngram_cli_core — PATTERNS: Design and Implementation Conventions
@@ -4868,7 +4999,7 @@
 - `ngram/validate.py`
 
 **Doc refs:**
-- `docs/ngram_cli_core/OBJECTIFS_ngram_cli_core.md`
+- `docs/ngram_cli_core/OBJECTIVES_ngram_cli_core.md`
 - `docs/ngram_cli_core/PATTERNS_ngram_cli_core.md`
 - `docs/ngram_cli_core/SYNC_ngram_cli_core.md`
 
@@ -4877,8 +5008,37 @@
 - ## CHAIN
 - ## SYNC
 
+**Code refs:**
+- `app/ngram/page.ts`
+
 **Sections:**
-- # OBJECTIFS: Ngram Feature
+- # Ngram Feature — Algorithm: Delegated Rendering of Connectome Shell
+- ## CHAIN
+- ## OVERVIEW
+- ## OBJECTIVES AND BEHAVIORS
+- ## DATA STRUCTURES
+- ## ALGORITHM: `NgramPage()`
+- ## KEY DECISIONS
+- ## DATA FLOW
+- ## COMPLEXITY
+- ## HELPER FUNCTIONS
+- ## INTERACTIONS
+- ## MARKERS
+
+**Code refs:**
+- `app/ngram/page.ts`
+
+**Sections:**
+- # Ngram Feature — Behaviors: Placeholder Page Rendering Connectome Shell
+- ## CHAIN
+- ## BEHAVIORS
+- ## OBJECTIVES SERVED
+- ## INPUTS / OUTPUTS
+- ## EDGE CASES
+- ## ANTI-BEHAVIORS
+
+**Sections:**
+- # OBJECTIVES: Ngram Feature
 - ## Chain
 - ## 1. Purpose
 - ## 2. Current State
@@ -4903,6 +5063,26 @@
 - ## 1. Current Status
 - ## 2. Decisions
 - ## 3. Open Questions/Next Steps
+
+**Code refs:**
+- `app/ngram/page.ts`
+
+**Sections:**
+- # Ngram Feature — Validation: Placeholder Page Delegation
+- ## CHAIN
+- ## BEHAVIORS GUARANTEED
+- ## OBJECTIVES COVERED
+- ## INVARIANTS
+- ## PROPERTIES
+- ## ERROR CONDITIONS
+- ## HEALTH COVERAGE
+- ## VERIFICATION PROCEDURE
+- # No automated tests are currently defined for the NgramPage due to its placeholder nature.
+- # Future tests would involve:
+- # - Jest/React Testing Library: To assert that ConnectomePageShell is rendered.
+- # - Cypress/Playwright: To perform end-to-end tests for navigation and UI presence.
+- ## SYNC STATUS
+- ## MARKERS
 
 **Sections:**
 - # Physics — Behaviors: Extended Interactions
@@ -4982,8 +5162,8 @@
 - # No artificial caps on handler runs per tick
 - ## Graph State Invariants
 - # Status must be valid enum
-- # Spoken moments must have tick_spoken
-- # Decayed moments must have tick_decayed
+- # Spoken moments must have tick_resolved
+- # Decayed moments must have tick_resolved
 - # Weight must be 0-1
 - # CAN_SPEAK weight must be 0-1
 - # CAN_SPEAK must originate from Character
@@ -5095,7 +5275,7 @@
 - # Direct witness vs secondhand
 - # Higher cost = stronger commitment
 - # What beliefs motivated this action?
-- # Tension pressure
+- # Dramatic pressure
 - # Danger
 - # Emotional weight of moment
 - # All strength changes multiplied by intensity
@@ -5285,6 +5465,46 @@
 - # Physics — Algorithm: Mechanisms (Energy, Pressure, Surfacing)
 - ## CHAIN
 - ## CONSOLIDATION
+
+**Code refs:**
+- `diffusion_sim_v2.py`
+
+**Sections:**
+- # Physics — Algorithm: Schema v1.1 Energy Physics
+- ## CHAIN
+- ## CORE MODEL
+- ## MOMENT LIFECYCLE
+- ## ENERGY PHASES (Per Tick)
+- # No cap — decay handles runaway energy naturally
+- # Unified formula
+- # Transfer
+- # Link receives injection (tracks attention)
+- # Hebbian: color link with moment's emotions
+- # Base flow
+- # Apply path resistance from speaker
+- # Hebbian coloring
+- # Link energy decays fast (attention fades)
+- # Node energy decays based on weight
+- # Liquidate to all connected nodes
+- # Moment remains as graph bridge
+- ## PATH RESISTANCE
+- # Each edge: low conductivity = high resistance
+- # Total = sum of edge resistances on shortest path
+- ## EMOTION MECHANICS
+- # Inherit from source's current focused state
+- ## LINK CRYSTALLIZATION
+- # Create with inherited emotions
+- ## REDIRECT MECHANICS (Override)
+- # Find new targets
+- # Emotion proximity determines transfer rate
+- # Remainder "haunts" original narrative
+- ## AGENT RESPONSIBILITIES
+- ## EXAMPLE: Full Scene Trace
+- ## SCHEMA CHANGES (v1.1)
+- # No energy_capacity — decay handles runaway energy naturally
+- ## CONSTANTS
+- ## VALIDATION
+- ## MARKERS
 
 **Sections:**
 - # Physics — Algorithm: Speed Control And Display Filtering (consolidated)
@@ -5914,6 +6134,7 @@
 - `moment_graph/traversal.py`
 
 **Doc refs:**
+- `algorithms/ALGORITHM_Physics_Energy_Mechanics_And_Link_Semantics.md`
 - `docs/physics/PATTERNS_Physics.md`
 - `docs/physics/algorithms/ALGORITHM_Physics_Mechanisms.md`
 
@@ -5930,7 +6151,7 @@
 - ## GAPS / PROPOSITIONS
 
 **Sections:**
-- # OBJECTIFS — Physics
+- # OBJECTIVES — Physics
 - ## PRIMARY OBJECTIVES (ranked)
 - ## NON-OBJECTIVES
 - ## TRADEOFFS (canonical decisions)
@@ -5963,7 +6184,11 @@
 - ## The Philosophy
 - ## MARKERS
 
+**Code refs:**
+- `diffusion_sim_v2.py`
+
 **Doc refs:**
+- `algorithms/ALGORITHM_Physics_Schema_v1.1_Energy_Physics.md`
 - `docs/physics/IMPLEMENTATION_Physics.md`
 - `docs/physics/archive/SYNC_Physics_archive_2025-12.md`
 - `docs/physics/archive/SYNC_archive_2024-12.md`
@@ -6121,9 +6346,6 @@
 - `ngram/doctor_checks_sync.py`
 - `ngram/doctor_files.py`
 
-**Doc refs:**
-- `..ngram/state/SYNC_Project_Health.md`
-
 **Sections:**
 - # Project Health Doctor — Implementation: Code architecture and docking
 - ## CHAIN
@@ -6261,7 +6483,7 @@
 - ## ENTRY POINT
 
 **Sections:**
-- # OBJECTIFS — Protocol
+- # OBJECTIVES — Protocol
 - ## PRIMARY OBJECTIVES (ranked)
 - ## NON-OBJECTIVES
 - ## TRADEOFFS (canonical decisions)
@@ -6325,278 +6547,204 @@
 - ## SYNC STATUS
 - ## MARKERS
 
-**Sections:**
-- # Schema Links
-- ## Common Metrics
-- ## NARRATIVE -> NARRATIVE
-- ## CHARACTER -> PLACE (Presence)
-- ## CHARACTER -> THING (Possession)
-- ## THING -> PLACE (Location)
-- ## PLACE -> PLACE (Containment)
-- ## PLACE -> PLACE (Route)
-
-**Sections:**
-- # Schema Nodes
-- ## Common Metrics
-- ## CHARACTER
-- ## PLACE
-- ## THING
-- ## NARRATIVE
-
-**Doc refs:**
-- `docs/schema/SCHEMA_Moments/SCHEMA_Moments_Overview.md`
-
-**Sections:**
-- # Schema Overview
-- ## CHAIN
-- ## Scope
-- ## Core Principles (Concise)
-
-**Sections:**
-- # Schema Tensions
-- # Gradual
-- # Scheduled
-- # Hybrid
-
-**Sections:**
-- # Moment Links
-- ## CHARACTER -> MOMENT (SAID)
-- ## MOMENT -> PLACE (AT)
-- ## MOMENT -> MOMENT (THEN)
-- ## MOMENT -> TARGET (ATTACHED_TO)
-- ## MOMENT -> MOMENT (CAN_LEAD_TO)
-- ## MOMENT -> TARGET (REFERENCES)
-- ## MOMENT -> TARGET (TARGETS)
-- ## MOMENT -> TARGET (ANSWERED_BY)
-- ## MOMENT -> CHARACTER (THREATENS)
-
-**Sections:**
-- # Moment Node Schema
-
 **Code refs:**
-- `engine/db/graph_ops.py`
-
-**Doc refs:**
-- `docs/schema/SCHEMA/SCHEMA_Links.md`
-- `docs/schema/SCHEMA/SCHEMA_Nodes.md`
-
-**Sections:**
-- # Moments Schema Overview
-- ## CHAIN
-- ## Scope
-
-**Code refs:**
-- `check_health.py`
 - `engine/graph/health/check_health.py`
-- `test_schema.py`
 
 **Sections:**
-- # Graph Health — Patterns: Schema-Driven Validation And Query Artifacts
+- # Schema — Algorithm: Schema Loading and Validation Procedures
 - ## CHAIN
-- ## THE PROBLEM
-- ## THE PATTERN
-- ## PRINCIPLES
-- ## DEPENDENCIES
-- ## INSPIRATIONS
-- ## SCOPE
-- ## WHAT THIS DOES NOT SOLVE
+- ## OVERVIEW
+- ## OBJECTIVES AND BEHAVIORS
+- ## DATA STRUCTURES
+- ## ALGORITHM: Schema Loading
+- ## ALGORITHM: Graph Validation
+- # Check required fields
+- # Check enum values
+- ## KEY DECISIONS
+- ## DATA FLOW
+- ## COMPLEXITY
+- ## HELPER FUNCTIONS
+- ## INTERACTIONS
 - ## MARKERS
 
-**Code refs:**
-- `check_health.py`
-- `engine/graph/health/check_health.py`
-- `engine/graph/health/lint_terminology.py`
-- `engine/graph/health/test_schema.py`
-- `test_schema.py`
-
 **Sections:**
-- # Graph Health — Sync: Current State
-- ## CHAIN
-- ## MATURITY
-- ## CURRENT STATE
-- ## IN PROGRESS
-- ## KNOWN ISSUES
-- ## HANDOFF: FOR AGENTS
-- ## HANDOFF: FOR HUMAN
-- ## TODO
-- ## CONSCIOUSNESS TRACE
-- ## POINTERS
-- ## Agent Observations
-- ## ARCHIVE
-
-**Code refs:**
-- `engine/graph/health/check_health.py`
-
-**Sections:**
-- # Archived: SYNC_Graph_Health.md
-- ## RECENT CHANGES
-
-**Sections:**
-- # Schema — Behaviors: Link Axes Semantics
+- # Schema — Behaviors: Observable Effects of Schema Compliance
 - ## CHAIN
 - ## BEHAVIORS
+- ## OBJECTIVES SERVED
 - ## INPUTS / OUTPUTS
 - ## EDGE CASES
 - ## ANTI-BEHAVIORS
 - ## MARKERS
 
-**Doc refs:**
-- `docs/engine/moments/PATTERNS_Moments.md`
-- `docs/physics/PATTERNS_Physics.md`
-- `docs/schema/SCHEMA/SCHEMA_Links.md`
+**Code refs:**
+- `engine/graph/health/check_health.py`
 
 **Sections:**
-- # Schema — Patterns: Link Axes, Not Link Types
+- # Schema — Health: Verification Mechanics and Coverage
+- ## PURPOSE OF THIS FILE
+- ## WHY THIS PATTERN
+- ## HOW TO USE THIS TEMPLATE
 - ## CHAIN
-- ## THE PROBLEM
-- ## THE PATTERN
-- ## PRINCIPLES
-- ## DATA
-- ## DEPENDENCIES
-- ## INSPIRATIONS
-- ## SCOPE
+- ## FLOWS ANALYSIS
+- ## HEALTH INDICATORS SELECTED
+- ## OBJECTIVES COVERAGE
+- ## STATUS (RESULT INDICATOR)
+- ## CHECKER INDEX
+- ## INDICATOR: Schema Compliance
+- ## HOW TO RUN
+- # Run CLI health check
+- # Run with JSON output
+- # Run pytest suite
+- # Run specific test
+- ## KNOWN GAPS
 - ## MARKERS
-
-**Sections:**
-- # Schema — Link Axes: Nodes, Links, and Examples
-- ## CHAIN
-- ## OVERVIEW
-- ## NODE TYPES (V0)
-- ## UNIVERSAL FIELDS (ALL NODES)
-- ## LINK TYPES (V0)
-- ## UNIVERSAL FIELDS (ALL LINKS)
-- ## LINK AXES (REQUIRED FOR RELATES/PRIMES)
-- ## INSTANCES (10) WITH NODE ATTRIBUTES
-- ## LINK MATRIX (EXPLICIT LINKS)
-- ## ATTRIBUTE CATALOG (RICH)
-- ## RULES
-- ## OBSERVABLE BEHAVIORS (TARGET)
-
-**Sections:**
-- # Link Axes — Sync: Current State
-- ## MATURITY
-- ## CURRENT STATE
-- ## IN PROGRESS
-- ## RECENT CHANGES
-- ## KNOWN ISSUES
-- ## HANDOFF: FOR AGENTS
-- ## HANDOFF: FOR HUMAN
-- ## TODO
-- ## CONSCIOUSNESS TRACE
-- ## POINTERS
-
-**Sections:**
-- # Schema — Validation: Link Axes Invariants
-- ## CHAIN
-- ## BEHAVIORS GUARANTEED
-- ## INVARIANTS
-- ## PROPERTIES
-- ## ERROR CONDITIONS
-- ## VERIFICATION PROCEDURE
-- ## SYNC STATUS
-- ## MARKERS
-
-**Doc refs:**
-- `docs/engine/models/PATTERNS_Models.md`
-
-**Sections:**
-- # Schema Models — Patterns: Redirect to Canonical Data Model Patterns
-- ## WHAT CHANGED
-- ## TRANSITION NOTES
-- ## CHAIN
-
-**Doc refs:**
-- `docs/engine/models/BEHAVIORS_Models.md`
-- `docs/engine/models/IMPLEMENTATION_Models.md`
-- `docs/engine/models/PATTERNS_Models.md`
-- `docs/engine/models/SYNC_Models.md`
-
-**Sections:**
-- # Schema Models — Sync: Redirect
-- ## WHAT CHANGED
-- ## TRANSITION NOTES
-- ## CHAIN
 
 **Code refs:**
+- `base.py`
+- `check_health.py`
+- `engine/graph/health/check_health.py`
+- `engine/graph/health/test_schema.py`
+- `engine/models/base.py`
+- `engine/models/links.py`
+- `engine/models/nodes.py`
+- `nodes.py`
+- `test_schema.py`
+- `test_schema_links.py`
+- `test_schema_nodes.py`
+
+**Sections:**
+- # Schema — Implementation: Code Architecture and Structure
+- ## CHAIN
+- ## CODE STRUCTURE
+- ## DESIGN PATTERNS
+- ## SCHEMA
+- ## ENTRY POINTS
+- ## DATA FLOW AND DOCKING
+- ## MODULE DEPENDENCIES
+- ## STATE MANAGEMENT
+- ## BIDIRECTIONAL LINKS
+- ## EXTRACTION CANDIDATES
+- ## MARKERS
+
+**Code refs:**
+- `__init__.py`
+- `api/app.py`
+- `api/graphs.py`
+- `api/moments.py`
+- `api/playthroughs.py`
+- `base.py`
+- `check_health.py`
+- `engine/init_db.py`
+- `engine/migrations/migrate_001_schema_alignment.py`
 - `engine/models/__init__.py`
 - `engine/models/base.py`
 - `engine/models/links.py`
 - `engine/models/nodes.py`
-- `engine/tests/test_models.py`
-
-**Doc refs:**
-- `docs/schema/models/PATTERNS_Pydantic_Schema_Models.md`
-- `docs/schema/models/SYNC_Schema_Models.md`
-
-**Sections:**
-- # Archived: SYNC_Schema_Models.md
-- ## RECENT CHANGES
-- ## Agent Observations
-- # Archived: SYNC_Schema_Models.md
-- ## RECENT CHANGES
-- ## Agent Observations
-
-**Sections:**
-- # Schema — Algorithm: Documentation Routing
-- ## CHAIN
-- ## FLOW
-
-**Sections:**
-- # Schema — Behaviors: Observable Schema Effects
-- ## CHAIN
-- ## BEHAVIORS
+- `engine/physics/tick.py`
+- `graph_interface.py`
+- `graph_ops.py`
+- `graph_ops_links.py`
+- `graph_ops_moments.py`
+- `graph_queries.py`
+- `graph_queries_moments.py`
+- `graph_queries_search.py`
+- `init_db.py`
+- `links.py`
+- `memory/moment_processor.py`
+- `moment_graph/queries.py`
+- `moment_graph/surface.py`
+- `moment_graph/traversal.py`
+- `nodes.py`
+- `orchestration/orchestrator.py`
+- `orchestration/world_runner.py`
+- `physics/tick.py`
+- `test_schema.py`
 
 **Sections:**
-- # Schema — Health: Verification Checklist
-- ## CHAIN
-- ## CHECKS
+- # Schema Alignment Migration Plan
+- ## DECISION SUMMARY
+- ## RENAME MAPPING
+- ## FILES TO MODIFY
+- ## DATABASE MIGRATION
+- # Rename Character to Actor
+- # Rename Place to Space
+- # Verify
+- ## EXECUTION ORDER
+- ## VALIDATION COVERAGE (E3/E4 Response)
+- # Query from_node type
+- ## MARKERS
+
+**Code refs:**
+- `check_health.py`
 
 **Sections:**
-- # Schema — Implementation: Documentation Structure
-- ## CHAIN
-- ## STRUCTURE
-
-**Sections:**
-- # OBJECTIFS — Schema
+- # OBJECTIVES — Schema
 - ## PRIMARY OBJECTIVES (ranked)
 - ## NON-OBJECTIVES
 - ## TRADEOFFS (canonical decisions)
 - ## SUCCESS SIGNALS (observable)
+- ## MARKERS
 
 **Sections:**
-- # Schema — Patterns: Module Overview and Ownership
-- ## CHAIN
-- ## PURPOSE
+- # Schema Design Patterns
+- ## Core Philosophy
+- ## Key Decisions
+- ## What's NOT in the Schema
+- ## Invariants
 
-**Sections:**
-- # SCHEMA: Code Graph
-- ## CORE INSIGHT
-- ## DESIGN PATTERNS
-- ## THE EVOLUTION: DOCTOR TO PHYSICS
-- # Physics Properties
-- ## MECHANICS
-- ## SCHEMA EVOLUTION
+**Code refs:**
+- `engine/models/links.py`
 
 **Doc refs:**
-- `docs/schema/SCHEMA.md`
+- `docs/physics/algorithms/ALGORITHM_Physics_Schema_v1.1_Energy_Physics.md`
+- `docs/schema/ALGORITHM_Schema.md`
+- `docs/schema/BEHAVIORS_Schema.md`
+- `docs/schema/HEALTH_Schema.md`
+- `docs/schema/IMPLEMENTATION_Schema.md`
+- `docs/schema/MIGRATION_Schema_Alignment.md`
+- `docs/schema/OBJECTIVES_Schema.md`
+- `docs/schema/PATTERNS_Schema.md`
+- `docs/schema/SYNC_Schema.md`
+- `docs/schema/VALIDATION_Schema.md`
 
 **Sections:**
 - # Schema — Sync: Current State
 - ## CURRENT STATE
-- ## RECENT CHANGES
+- ## MATURITY
+- ## v1.1 CHANGES SUMMARY
+- # All links have emotions (unified list, colored by energy flow)
+- ## ESCALATIONS
+- ## RESOLVED
+- ## OPEN QUESTIONS
+- ## RESOLVED
+- ## FILES
+- ## COMPLETED MIGRATIONS
+- ## TODOS
+- ## PROPOSITIONS
+- ## HANDOFF: FOR AGENTS
+- ## HANDOFF: FOR HUMAN
 
 **Code refs:**
-- `engine/graph/health/test_schema.py`
-- `engine/tests/test_spec_consistency.py`
+- `check_health.py`
+- `engine/graph/health/check_health.py`
 
 **Sections:**
-- # Graph Validation
+- # Schema — Validation: Invariants and Verification
 - ## CHAIN
+- ## BEHAVIORS GUARANTEED
+- ## OBJECTIVES COVERED
 - ## INVARIANTS
+- ## DETAILED COVERAGE TABLES
+- # Query source node type
+- # Query target node type
 - ## PROPERTIES
 - ## ERROR CONDITIONS
-- ## TEST COVERAGE
+- ## HEALTH COVERAGE
 - ## VERIFICATION PROCEDURE
+- # Run all schema tests
+- # Run health check
+- # Check for mutations (should find none)
 - ## SYNC STATUS
 - ## MARKERS
 
@@ -6627,7 +6775,7 @@
 
 **Doc refs:**
 - `docs/tools/HEALTH_Tools.md`
-- `docs/tools/OBJECTIFS_Tools_Goals.md`
+- `docs/tools/OBJECTIVES_Tools_Goals.md`
 
 **Sections:**
 - # Tools — Health: Verification
@@ -6674,7 +6822,7 @@
 - ## CODE LOCATIONS
 
 **Sections:**
-- # OBJECTIFS — Tools
+- # OBJECTIVES — Tools
 - ## PRIMARY OBJECTIVES (ranked)
 - ## NON-OBJECTIVES
 - ## TRADEOFFS (canonical decisions)
@@ -6913,14 +7061,14 @@
 - `state.py`
 
 **Sections:**
-- # OBJECTIFS: Text User Interface (TUI) Module
+- # OBJECTIVES: Text User Interface (TUI) Module
 - ## Objective
 - ## Scope
 - ## Non-Objectives
 - ## CHAIN
 
 **Sections:**
-- # OBJECTIFS — Tui
+- # OBJECTIVES — Tui
 - ## PRIMARY OBJECTIVES (ranked)
 - ## NON-OBJECTIVES
 - ## TRADEOFFS (canonical decisions)
@@ -7172,11 +7320,17 @@
 - # Repository Map:
 
 **Code refs:**
+- `Next.js`
+- `Node.js`
 - `__init__.py`
 - `agent_cli.py`
+- `api/app.py`
 - `api/connectome/graph/route.ts`
 - `api/connectome/graphs/route.ts`
 - `api/connectome/search/route.ts`
+- `api/graphs.py`
+- `api/moments.py`
+- `api/playthroughs.py`
 - `api/sse/route.ts`
 - `app.py`
 - `app/api/connectome/graph/route.ts`
@@ -7235,6 +7389,7 @@
 - `app/connectome/page.tsx`
 - `app/layout.ts`
 - `app/layout.tsx`
+- `app/ngram/page.ts`
 - `app/ngram/page.tsx`
 - `app/page.ts`
 - `app/page.tsx`
@@ -7273,6 +7428,7 @@
 - `connectome_energy_badge_bucketed_glow_and_value_formatter.ts`
 - `connectome_node_background_theme_tokens_by_type_and_language.ts`
 - `connectome_node_boundary_intersection_geometry_helpers.ts`
+- `connectome_read_cli.py`
 - `connectome_system_map_node_edge_manifest.ts`
 - `context.py`
 - `core_utils.py`
@@ -7309,6 +7465,7 @@
 - `engine/membrane/functions.py`
 - `engine/membrane/health_check.py`
 - `engine/membrane/provider.py`
+- `engine/migrations/migrate_001_schema_alignment.py`
 - `engine/models/__init__.py`
 - `engine/models/base.py`
 - `engine/models/links.py`
@@ -7353,21 +7510,28 @@
 - `frontend/hooks/useGameState.ts`
 - `gemini_agent.py`
 - `github.py`
+- `graph_interface.py`
 - `graph_ops.py`
 - `graph_ops_apply.py`
 - `graph_ops_events.py`
 - `graph_ops_image.py`
+- `graph_ops_links.py`
 - `graph_ops_moments.py`
 - `graph_ops_read_only_interface.py`
 - `graph_ops_types.py`
 - `graph_queries.py`
+- `graph_queries_moments.py`
 - `graph_queries_narratives.py`
 - `graph_queries_search.py`
 - `init_cmd.py`
+- `init_db.py`
 - `layout.tsx`
 - `links.py`
 - `lint_terminology.py`
 - `manager.py`
+- `memory/moment_processor.py`
+- `moment_graph/queries.py`
+- `moment_graph/surface.py`
 - `moment_graph/traversal.py`
 - `moment_processor.py`
 - `moments.py`
@@ -7434,9 +7598,12 @@
 - `ngram/utils/validation_utils.py`
 - `ngram/validate.py`
 - `nodes.py`
+- `orchestration/orchestrator.py`
+- `orchestration/world_runner.py`
 - `orchestrator.py`
 - `page.tsx`
 - `pannable_zoomable_zoned_flow_canvas_renderer.tsx`
+- `physics/tick.py`
 - `playthroughs.py`
 - `project_map.py`
 - `project_map_html.py`
@@ -7465,8 +7632,10 @@
 - `string_utils.py`
 - `surface.py`
 - `sync.py`
-- `tensions.py`
+- `pressures.py`
 - `test_schema.py`
+- `test_schema_links.py`
+- `test_schema_nodes.py`
 - `tick.py`
 - `tools/connectome_doc_bundle_splitter_and_fence_rewriter.py`
 - `tools/dialogue/clickables.py`
@@ -7563,7 +7732,8 @@
 - `docs/connectome/flow_canvas/PATTERNS_Connectome_Flow_Canvas_Pannable_Zoomable_Zoned_System_Map_Rendering_Patterns.md`
 - `docs/connectome/flow_canvas/SYNC_Connectome_Flow_Canvas_Sync_Current_State.md`
 - `docs/connectome/flow_canvas/VALIDATION_Connectome_Flow_Canvas_Invariants_For_Readability_And_Stability.md`
-- `docs/connectome/graphs/OBJECTIFS_Connectome_Graphs.md`
+- `docs/connectome/graph_api/SYNC_Graph_API.md`
+- `docs/connectome/graphs/OBJECTIVES_Connectome_Graphs.md`
 - `docs/connectome/graphs/PATTERNS_Connectome_Graphs.md`
 - `docs/connectome/graphs/SYNC_Connectome_Graphs_Sync_Current_State.md`
 - `docs/connectome/health/HEALTH_Connectome_Live_Signals.md`
@@ -7611,7 +7781,7 @@
 - `docs/engine/models/VALIDATION_Models.md`
 - `docs/engine/moments/PATTERNS_Moments.md`
 - `docs/engine/moments/SYNC_Moments.md`
-- `docs/frontend/app_shell/OBJECTIFS_App_Shell.md`
+- `docs/frontend/app_shell/OBJECTIVES_App_Shell.md`
 - `docs/frontend/app_shell/PATTERNS_App_Shell.md`
 - `docs/frontend/app_shell/SYNC_App_Shell_State.md`
 - `docs/infrastructure/api/ALGORITHM_Api.md`
@@ -7636,7 +7806,7 @@
 - `docs/llm_agents/SYNC_LLM_Agents_State.md`
 - `docs/llm_agents/SYNC_LLM_Agents_State_archive_2025-12.md`
 - `docs/llm_agents/VALIDATION_Gemini_Agent_Invariants.md`
-- `docs/ngram_cli_core/OBJECTIFS_ngram_cli_core.md`
+- `docs/ngram_cli_core/OBJECTIVES_ngram_cli_core.md`
 - `docs/ngram_cli_core/PATTERNS_ngram_cli_core.md`
 - `docs/ngram_cli_core/SYNC_ngram_cli_core.md`
 - `docs/physics/ALGORITHM_Physics.md`
@@ -7676,18 +7846,27 @@
 - `docs/protocol/doctor/IMPLEMENTATION_Project_Health_Doctor.md`
 - `docs/protocol/doctor/PATTERNS_Project_Health_Doctor.md`
 - `docs/protocol/doctor/SYNC_Project_Health_Doctor.md`
+- `docs/schema/ALGORITHM_Schema.md`
+- `docs/schema/BEHAVIORS_Schema.md`
+- `docs/schema/HEALTH_Schema.md`
+- `docs/schema/IMPLEMENTATION_Schema.md`
+- `docs/schema/MIGRATION_Schema_Alignment.md`
+- `docs/schema/OBJECTIVES_Schema.md`
+- `docs/schema/PATTERNS_Schema.md`
 - `docs/schema/SCHEMA.md`
 - `docs/schema/SCHEMA/SCHEMA_Links.md`
 - `docs/schema/SCHEMA/SCHEMA_Nodes.md`
 - `docs/schema/SCHEMA_Moments.md`
 - `docs/schema/SCHEMA_Moments/SCHEMA_Moments_Overview.md`
+- `docs/schema/SYNC_Schema.md`
+- `docs/schema/VALIDATION_Schema.md`
 - `docs/schema/models/PATTERNS_Pydantic_Schema_Models.md`
 - `docs/schema/models/SYNC_Schema_Models.md`
 - `docs/tools/ALGORITHM_Tools.md`
 - `docs/tools/BEHAVIORS_Tools.md`
 - `docs/tools/HEALTH_Tools.md`
 - `docs/tools/IMPLEMENTATION_Tools.md`
-- `docs/tools/OBJECTIFS_Tools_Goals.md`
+- `docs/tools/OBJECTIVES_Tools_Goals.md`
 - `docs/tools/PATTERNS_Tools.md`
 - `docs/tools/SYNC_Tools.md`
 - `docs/tools/VALIDATION_Tools.md`
@@ -7714,8 +7893,8 @@
 - `implementation/IMPLEMENTATION_Physics_Code_Structure.md`
 - `implementation/IMPLEMENTATION_Physics_Dataflow.md`
 - `implementation/IMPLEMENTATION_Physics_Runtime.md`
-- `..ngram/state/SYNC_Project_Health.md`
-- `..ngram/state/SYNC_Prompt_Command_State.md`
+- `ngram/state/SYNC_Project_Health.md`
+- `ngram/state/SYNC_Prompt_Command_State.md`
 - `prompt/ALGORITHM_Prompt_Bootstrap_Prompt_Construction.md`
 - `prompt/BEHAVIORS_Prompt_Command_Output_and_Flow.md`
 - `prompt/HEALTH_Prompt_Runtime_Verification.md`
@@ -7812,7 +7991,7 @@
 - ## KNOWLEDGE & BELIEFS
 - ## PLACE & GEOGRAPHY
 - ## THINGS & POSSESSIONS
-- ## NARRATIVES & TENSIONS
+- ## NARRATIVES & PRESSURES
 - ## COMPLEX RELATIONSHIP QUERIES
 - ## GAMEPLAY QUERIES
 - ## ATMOSPHERIC QUERIES
@@ -7827,7 +8006,7 @@
 - ## RUMORS
 - ## OATHS & BLOOD
 - ## PLACES
-- ## TENSIONS
+- ## PRESSURES
 - ## COMPLEX QUERIES
 - ## THINGS
 - ## NARRATIVE TYPES
@@ -7839,39 +8018,39 @@
 - `def __init__()`
 - `def _load_schema()`
 - `def _query()`
-- `def test_character_required_fields()`
-- `def test_character_type_enum()`
-- `def test_character_flaw_enum()`
-- `def test_place_required_fields()`
-- `def test_place_type_enum()`
+- `def test_actor_required_fields()`
+- `def test_actor_type_enum()`
+- `def test_actor_flaw_enum()`
+- `def test_space_required_fields()`
+- `def test_space_type_enum()`
 - `def test_thing_required_fields()`
 - `def test_thing_significance_enum()`
 - `def test_narrative_required_fields()`
 - `def test_narrative_type_enum()`
-- `def test_tension_required_fields()`
-- `def test_tension_pressure_range()`
+- `def test_pressure_required_fields()`
+- `def test_pressure_range()`
 - `def test_believes_link_structure()`
 - `def test_believes_value_ranges()`
 - `def test_at_link_structure()`
 - `def test_carries_link_structure()`
 - `def test_located_at_link_structure()`
 - `def test_connects_link_structure()`
-- `def test_orphan_characters()`
-- `def test_characters_have_location()`
+- `def test_orphan_actors()`
+- `def test_actors_have_location()`
 - `def test_things_have_location_or_carrier()`
 - `def test_narratives_have_believers()`
 - `def test_player_exists()`
 - `def run_all_tests()`
 - `def print_report()`
 - `def validator()`
-- `def test_character_required_fields()`
-- `def test_character_type_enum()`
-- `def test_place_required_fields()`
-- `def test_place_type_enum()`
+- `def test_actor_required_fields()`
+- `def test_actor_type_enum()`
+- `def test_space_required_fields()`
+- `def test_space_type_enum()`
 - `def test_thing_required_fields()`
 - `def test_narrative_required_fields()`
 - `def test_narrative_type_enum()`
-- `def test_tension_pressure_range()`
+- `def test_pressure_range()`
 - `def test_believes_link_structure()`
 - `def test_at_link_structure()`
 - `def test_player_exists()`
@@ -8098,7 +8277,11 @@
 - `def __init__()`
 - `def speed()`
 - `def running()`
+- `def paused()`
+- `def tick_count()`
 - `def set_speed()`
+- `def pause()`
+- `def resume()`
 - `def _tick_interval()`
 - `async def run()`
 - `def stop()`
@@ -8109,7 +8292,7 @@
 - `def activation_threshold()`
 - `def weight_transfer_multiplier()`
 - `def decay_scale()`
-- `def tension_boost_scale()`
+- `def dramatic_boost_scale()`
 
 **Definitions:**
 - `class MembraneProvider`
@@ -8118,10 +8301,17 @@
 - `def get_frame()`
 - `def reset_place()`
 
-**Docs:** `docs/schema/models/PATTERNS_Pydantic_Schema_Models.md`
+**Definitions:**
+- `def migrate()`
+- `def main()`
 
 **Definitions:**
-- `class CharacterType`
+- `def migrate()`
+
+**Docs:** `docs/schema/PATTERNS_Schema.md`
+
+**Definitions:**
+- `class ActorType`
 - `class Face`
 - `class SkillLevel`
 - `class VoiceTone`
@@ -8129,7 +8319,7 @@
 - `class Approach`
 - `class Value`
 - `class Flaw`
-- `class PlaceType`
+- `class SpaceType`
 - `class Weather`
 - `class Mood`
 - `class ThingType`
@@ -8146,7 +8336,7 @@
 - `class ModifierSeverity`
 - `class Modifier`
 - `class Skills`
-- `class CharacterVoice`
+- `class ActorVoice`
 - `class Personality`
 - `class Backstory`
 - `class Atmosphere`
@@ -8163,25 +8353,25 @@
 - `def __ge__()`
 
 **Definitions:**
-- `class CharacterNarrative`
-- `def belief_intensity()`
+- `class LinkType`
+- `class LinkBase`
+- `def consolidate_emotions()`
+- `def add_emotion()`
+- `def blend_emotions()`
+- `class ActorNarrative`
 - `class NarrativeNarrative`
-- `def link_type()`
-- `class CharacterPlace`
-- `def is_present()`
-- `class CharacterThing`
-- `def has_item()`
-- `class ThingPlace`
-- `def is_here()`
-- `class PlacePlace`
+- `class ActorSpace`
+- `class ActorThing`
+- `class ThingSpace`
+- `class SpaceSpace`
 - `def travel_days()`
 
 **Docs:** `docs/schema/`
 
 **Definitions:**
-- `class Character`
+- `class Actor`
 - `def embeddable_text()`
-- `class Place`
+- `class Space`
 - `def embeddable_text()`
 - `class Thing`
 - `def embeddable_text()`
@@ -8189,13 +8379,12 @@
 - `def embeddable_text()`
 - `def is_core_type()`
 - `class Moment`
-- `def tick()`
 - `def embeddable_text()`
 - `def should_embed()`
 - `def is_active()`
-- `def is_spoken()`
-- `def can_surface()`
-- `class Config`
+- `def is_completed()`
+- `def is_resolved()`
+- `def can_draw_energy()`
 
 **Docs:** `docs/engine/moment-graph-engine/PATTERNS_Instant_Traversal_Moment_Graph.md`
 
@@ -8259,7 +8448,7 @@
 - `def get_character_beliefs()`
 - `def get_narrative_believers()`
 - `def get_narratives_about()`
-- `def get_all_tensions()`
+- `def get_all_pressures()`
 - `def build_scene_context()`
 
 **Docs:** `docs/physics/graph/PATTERNS_Graph.md`
@@ -8275,7 +8464,7 @@
 - `def add_place()`
 - `def add_thing()`
 - `def add_narrative()`
-- `def add_tension()`
+- `def add_pressure()`
 - `def add_moment()`
 - `def apply_mutations()`
 - `def get_graph()`
@@ -8291,7 +8480,7 @@
 - `def _extract_place_args()`
 - `def _extract_thing_args()`
 - `def _extract_narrative_args()`
-- `def _extract_tension_args()`
+- `def _extract_pressure_args()`
 - `def _extract_moment_args()`
 - `def _extract_belief_args()`
 - `def _extract_presence_args()`
@@ -8300,7 +8489,7 @@
 - `def _extract_narrative_link_args()`
 - `def _extract_thing_location_args()`
 - `def _apply_node_update()`
-- `def _apply_tension_update()`
+- `def _apply_pressure_update()`
 
 **Definitions:**
 - `class LinkCreationMixin`
@@ -8370,9 +8559,9 @@
 - `def get_narratives_about()`
 - `def get_high_weight_narratives()`
 - `def get_contradicting_narratives()`
-- `def get_tension()`
-- `def get_all_tensions()`
-- `def get_flipped_tensions()`
+- `def get_pressure()`
+- `def get_all_pressures()`
+- `def get_flipped_pressures()`
 - `def build_scene_context()`
 - `def get_player_location()`
 - `def get_queries()`
@@ -8414,6 +8603,8 @@
 - `def extract_node_props()`
 - `def extract_link_props()`
 - `def to_markdown()`
+- `def calculate_link_resistance()`
+- `def dijkstra_with_resistance()`
 - `def view_to_scene_tree()`
 
 **Definitions:**
@@ -8438,6 +8629,7 @@
 
 **Definitions:**
 - `def distance_to_proximity()`
+- `def emotion_proximity()`
 
 **Definitions:**
 - `def clamp()`
@@ -8474,13 +8666,26 @@
 - `def compute_prime_effect()`
 - `def compute_prime_contributions()`
 
-**Docs:** `docs/physics/PATTERNS_Physics.md`
+**Docs:** `docs/physics/algorithms/ALGORITHM_Physics_Schema_v1.1_Energy_Physics.md`
 
 **Definitions:**
 - `class TickResult`
+- `class TickResultV1_1`
 - `class GraphTick`
 - `def __init__()`
 - `def run()`
+- `def run_v1_1()`
+- `def _phase_generation()`
+- `def _phase_moment_draw()`
+- `def _phase_moment_flow()`
+- `def _phase_narrative_backflow()`
+- `def _phase_decay()`
+- `def _phase_completion()`
+- `def _liquidate_moment()`
+- `def _crystallize_actor_links()`
+- `def _get_active_moments()`
+- `def _count_actors()`
+- `def _calculate_total_energy()`
 - `def _process_moment_tick()`
 - `def _compute_character_energies()`
 - `def _compute_relationship_intensity()`
@@ -8551,7 +8756,7 @@
 - `def test_add_moment_basic()`
 - `def test_add_moment_with_status_and_weight()`
 - `def test_add_moment_with_tone()`
-- `def test_add_moment_with_tick_spoken()`
+- `def test_add_moment_with_tick_resolved()`
 - `def test_add_moment_with_speaker_creates_said_link()`
 - `def test_add_moment_with_place_creates_at_link()`
 - `def test_add_moment_with_after_creates_then_link()`
@@ -8693,8 +8898,8 @@
 - `def test_process_dialogue_with_weight_and_status()`
 - `def test_process_narration_with_tone()`
 - `def test_process_hint_defaults()`
-- `def test_spoken_status_sets_tick_spoken()`
-- `def test_possible_status_no_tick_spoken()`
+- `def test_completed_status_sets_tick_resolved()`
+- `def test_possible_status_no_tick_resolved()`
 - `class TestPossibleMomentCreation`
 - `def test_create_possible_moment_basic()`
 - `def test_create_possible_moment_with_attachments()`
@@ -8765,7 +8970,7 @@
 - `def test_modifier_types_cover_all_node_types()`
 - `def test_road_types_have_speed_ordering()`
 - `class TestCrossReferences`
-- `def test_tension_references_narratives()`
+- `def test_pressure_references_narratives()`
 - `def test_belief_source_types_make_sense()`
 - `def test_narrative_about_fields_valid()`
 
@@ -9063,7 +9268,7 @@
 - `def active_count()`
 - `def clear_completed()`
 
-**Docs:** `docs/ngram_cli_core/OBJECTIFS_ngram_cli_core.md`
+**Docs:** `docs/ngram_cli_core/OBJECTIVES_ngram_cli_core.md`
 
 **Definitions:**
 - `def _add_module_translation_args()`
@@ -9115,22 +9320,6 @@
 - `def generate_health_markdown()`
 - `def print_doctor_report()`
 - `def check_sync_status()`
-
-**Docs:** `docs/cli/core/PATTERNS_Why_CLI_Over_Copy.md`
-
-**Definitions:**
-- `def _escape_marker_tokens()`
-- `def _copy_skills()`
-- `def _update_root_claude_md()`
-- `def _build_root_claude_section()`
-- `def _build_claude_addition()`
-- `def _build_agents_addition()`
-- `def _build_manager_agents_addition()`
-- `def _remove_write_permissions()`
-- `def _enforce_readonly_for_views()`
-- `def _enforce_readonly_for_templates()`
-- `def init_protocol()`
-- `def copy_protocol_partial()`
 
 **Docs:** `docs/cli/core/PATTERNS_Why_CLI_Over_Copy.md`
 
@@ -9194,6 +9383,34 @@
 - `def _save_single_map()`
 - `def generate_and_save()`
 
+**Docs:** `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture.md`
+
+**Definitions:**
+- `class Colors`
+- `def colorize()`
+- `def maturity_color()`
+- `def severity_color()`
+- `def doc_status_color()`
+- `class DocChainStatus`
+- `def completeness_score()`
+- `def to_bar()`
+- `def get_all_docs()`
+- `class HealthIssue`
+- `class ModuleStatus`
+- `def load_modules_yaml()`
+- `def extract_doc_status()`
+- `def find_doc_chain()`
+- `def extract_sync_details()`
+- `def _path_matches_glob()`
+- `def get_all_health_issues()`
+- `def get_module_health_issues()`
+- `def filter_issues_for_module()`
+- `def get_module_status()`
+- `def get_all_modules_status()`
+- `def format_module_status()`
+- `def format_global_status()`
+- `def status_command()`
+
 **Docs:** `docs/cli/core/PATTERNS_Why_CLI_Over_Copy.md`
 
 **Definitions:**
@@ -9216,7 +9433,7 @@
 - ## What You Can Do
 - ## What You Output
 - ## Guidelines
-- ## Special Marker Check
+- ## @ngram Markers
 - ## Files to Check
 - ## Updating LEARNINGS Files
 - ## After Your Response
@@ -9428,7 +9645,7 @@
 - ## MARKERS
 
 **Sections:**
-- # OBJECTIFS — {Module}
+- # OBJECTIVES — {Module}
 - ## PRIMARY OBJECTIVES (ranked)
 - ## NON-OBJECTIVES
 - ## TRADEOFFS (canonical decisions)
@@ -9685,11 +9902,21 @@
 - ## GEMINI Agent Operating Principles (Derived from ngram Protocol)
 - ## Operational Directives
 
+**Definitions:**
+- `def migrate_file()`
+- `def main()`
+
 **Docs:** `docs/tools/PATTERNS_Tools.md`
 
 **Definitions:**
 - `def _is_safe_relative_path()`
 - `def _split_sections()`
+- `def main()`
+
+**Definitions:**
+- `def should_skip()`
+- `def migrate_file()`
+- `def find_files()`
 - `def main()`
 
 **Docs:** `docs/tools/PATTERNS_Tools.md`
@@ -9791,11 +10018,17 @@
 - ## Contributing
 
 **Code refs:**
+- `Next.js`
+- `Node.js`
 - `__init__.py`
 - `agent_cli.py`
+- `api/app.py`
 - `api/connectome/graph/route.ts`
 - `api/connectome/graphs/route.ts`
 - `api/connectome/search/route.ts`
+- `api/graphs.py`
+- `api/moments.py`
+- `api/playthroughs.py`
 - `api/sse/route.ts`
 - `app.py`
 - `app/api/connectome/graph/route.ts`
@@ -9854,6 +10087,7 @@
 - `app/connectome/page.tsx`
 - `app/layout.ts`
 - `app/layout.tsx`
+- `app/ngram/page.ts`
 - `app/ngram/page.tsx`
 - `app/page.ts`
 - `app/page.tsx`
@@ -9892,9 +10126,11 @@
 - `connectome_energy_badge_bucketed_glow_and_value_formatter.ts`
 - `connectome_node_background_theme_tokens_by_type_and_language.ts`
 - `connectome_node_boundary_intersection_geometry_helpers.ts`
+- `connectome_read_cli.py`
 - `connectome_system_map_node_edge_manifest.ts`
 - `context.py`
 - `core_utils.py`
+- `diffusion_sim_v2.py`
 - `doctor.py`
 - `doctor_checks.py`
 - `doctor_cli_parser_and_run_checker.py`
@@ -9928,6 +10164,7 @@
 - `engine/membrane/functions.py`
 - `engine/membrane/health_check.py`
 - `engine/membrane/provider.py`
+- `engine/migrations/migrate_001_schema_alignment.py`
 - `engine/models/__init__.py`
 - `engine/models/base.py`
 - `engine/models/links.py`
@@ -9972,21 +10209,28 @@
 - `frontend/hooks/useGameState.ts`
 - `gemini_agent.py`
 - `github.py`
+- `graph_interface.py`
 - `graph_ops.py`
 - `graph_ops_apply.py`
 - `graph_ops_events.py`
 - `graph_ops_image.py`
+- `graph_ops_links.py`
 - `graph_ops_moments.py`
 - `graph_ops_read_only_interface.py`
 - `graph_ops_types.py`
 - `graph_queries.py`
+- `graph_queries_moments.py`
 - `graph_queries_narratives.py`
 - `graph_queries_search.py`
 - `init_cmd.py`
+- `init_db.py`
 - `layout.tsx`
 - `links.py`
 - `lint_terminology.py`
 - `manager.py`
+- `memory/moment_processor.py`
+- `moment_graph/queries.py`
+- `moment_graph/surface.py`
 - `moment_graph/traversal.py`
 - `moment_processor.py`
 - `moments.py`
@@ -10053,9 +10297,12 @@
 - `ngram/utils/validation_utils.py`
 - `ngram/validate.py`
 - `nodes.py`
+- `orchestration/orchestrator.py`
+- `orchestration/world_runner.py`
 - `orchestrator.py`
 - `page.tsx`
 - `pannable_zoomable_zoned_flow_canvas_renderer.tsx`
+- `physics/tick.py`
 - `playthroughs.py`
 - `project_map.py`
 - `project_map_html.py`
@@ -10084,8 +10331,10 @@
 - `string_utils.py`
 - `surface.py`
 - `sync.py`
-- `tensions.py`
+- `pressures.py`
 - `test_schema.py`
+- `test_schema_links.py`
+- `test_schema_nodes.py`
 - `tick.py`
 - `tools/connectome_doc_bundle_splitter_and_fence_rewriter.py`
 - `tools/dialogue/clickables.py`
@@ -10103,6 +10352,7 @@
 - `algorithms/ALGORITHM_Physics_Energy_Mechanics_And_Link_Semantics.md`
 - `algorithms/ALGORITHM_Physics_Handler_And_Input_Processing_Flows.md`
 - `algorithms/ALGORITHM_Physics_Mechanisms.md`
+- `algorithms/ALGORITHM_Physics_Schema_v1.1_Energy_Physics.md`
 - `algorithms/ALGORITHM_Physics_Speed_Control_And_Display_Filtering.md`
 - `algorithms/ALGORITHM_Physics_Tick_Cycle_Gating_Flips_And_Dispatch.md`
 - `archive/SYNC_Archive_2024-12.md`
@@ -10182,7 +10432,8 @@
 - `docs/connectome/flow_canvas/PATTERNS_Connectome_Flow_Canvas_Pannable_Zoomable_Zoned_System_Map_Rendering_Patterns.md`
 - `docs/connectome/flow_canvas/SYNC_Connectome_Flow_Canvas_Sync_Current_State.md`
 - `docs/connectome/flow_canvas/VALIDATION_Connectome_Flow_Canvas_Invariants_For_Readability_And_Stability.md`
-- `docs/connectome/graphs/OBJECTIFS_Connectome_Graphs.md`
+- `docs/connectome/graph_api/SYNC_Graph_API.md`
+- `docs/connectome/graphs/OBJECTIVES_Connectome_Graphs.md`
 - `docs/connectome/graphs/PATTERNS_Connectome_Graphs.md`
 - `docs/connectome/graphs/SYNC_Connectome_Graphs_Sync_Current_State.md`
 - `docs/connectome/health/HEALTH_Connectome_Live_Signals.md`
@@ -10230,7 +10481,7 @@
 - `docs/engine/models/VALIDATION_Models.md`
 - `docs/engine/moments/PATTERNS_Moments.md`
 - `docs/engine/moments/SYNC_Moments.md`
-- `docs/frontend/app_shell/OBJECTIFS_App_Shell.md`
+- `docs/frontend/app_shell/OBJECTIVES_App_Shell.md`
 - `docs/frontend/app_shell/PATTERNS_App_Shell.md`
 - `docs/frontend/app_shell/SYNC_App_Shell_State.md`
 - `docs/infrastructure/api/ALGORITHM_Api.md`
@@ -10255,7 +10506,7 @@
 - `docs/llm_agents/SYNC_LLM_Agents_State.md`
 - `docs/llm_agents/SYNC_LLM_Agents_State_archive_2025-12.md`
 - `docs/llm_agents/VALIDATION_Gemini_Agent_Invariants.md`
-- `docs/ngram_cli_core/OBJECTIFS_ngram_cli_core.md`
+- `docs/ngram_cli_core/OBJECTIVES_ngram_cli_core.md`
 - `docs/ngram_cli_core/PATTERNS_ngram_cli_core.md`
 - `docs/ngram_cli_core/SYNC_ngram_cli_core.md`
 - `docs/physics/ALGORITHM_Physics.md`
@@ -10268,6 +10519,7 @@
 - `docs/physics/VALIDATION_Physics.md`
 - `docs/physics/algorithms/ALGORITHM_Physics_Energy_Mechanics_And_Link_Semantics.md`
 - `docs/physics/algorithms/ALGORITHM_Physics_Mechanisms.md`
+- `docs/physics/algorithms/ALGORITHM_Physics_Schema_v1.1_Energy_Physics.md`
 - `docs/physics/archive/IMPLEMENTATION_Physics_archive_2025-12.md`
 - `docs/physics/archive/SYNC_Physics_archive_2025-12.md`
 - `docs/physics/archive/SYNC_archive_2024-12.md`
@@ -10295,18 +10547,27 @@
 - `docs/protocol/doctor/IMPLEMENTATION_Project_Health_Doctor.md`
 - `docs/protocol/doctor/PATTERNS_Project_Health_Doctor.md`
 - `docs/protocol/doctor/SYNC_Project_Health_Doctor.md`
+- `docs/schema/ALGORITHM_Schema.md`
+- `docs/schema/BEHAVIORS_Schema.md`
+- `docs/schema/HEALTH_Schema.md`
+- `docs/schema/IMPLEMENTATION_Schema.md`
+- `docs/schema/MIGRATION_Schema_Alignment.md`
+- `docs/schema/OBJECTIVES_Schema.md`
+- `docs/schema/PATTERNS_Schema.md`
 - `docs/schema/SCHEMA.md`
 - `docs/schema/SCHEMA/SCHEMA_Links.md`
 - `docs/schema/SCHEMA/SCHEMA_Nodes.md`
 - `docs/schema/SCHEMA_Moments.md`
 - `docs/schema/SCHEMA_Moments/SCHEMA_Moments_Overview.md`
+- `docs/schema/SYNC_Schema.md`
+- `docs/schema/VALIDATION_Schema.md`
 - `docs/schema/models/PATTERNS_Pydantic_Schema_Models.md`
 - `docs/schema/models/SYNC_Schema_Models.md`
 - `docs/tools/ALGORITHM_Tools.md`
 - `docs/tools/BEHAVIORS_Tools.md`
 - `docs/tools/HEALTH_Tools.md`
 - `docs/tools/IMPLEMENTATION_Tools.md`
-- `docs/tools/OBJECTIFS_Tools_Goals.md`
+- `docs/tools/OBJECTIVES_Tools_Goals.md`
 - `docs/tools/PATTERNS_Tools.md`
 - `docs/tools/SYNC_Tools.md`
 - `docs/tools/VALIDATION_Tools.md`
@@ -10333,8 +10594,8 @@
 - `implementation/IMPLEMENTATION_Physics_Code_Structure.md`
 - `implementation/IMPLEMENTATION_Physics_Dataflow.md`
 - `implementation/IMPLEMENTATION_Physics_Runtime.md`
-- `..ngram/state/SYNC_Project_Health.md`
-- `..ngram/state/SYNC_Prompt_Command_State.md`
+- `ngram/state/SYNC_Project_Health.md`
+- `ngram/state/SYNC_Prompt_Command_State.md`
 - `prompt/ALGORITHM_Prompt_Bootstrap_Prompt_Construction.md`
 - `prompt/BEHAVIORS_Prompt_Command_Output_and_Flow.md`
 - `prompt/HEALTH_Prompt_Runtime_Verification.md`
@@ -10396,7 +10657,7 @@
 **Doc refs:**
 - `docs/connectome/edge_kit/IMPLEMENTATION_Connectome_Edge_Kit_Component_Map_And_Render_Tokens.md`
 - `docs/connectome/flow_canvas/IMPLEMENTATION_Connectome_Flow_Canvas_Code_Structure_With_React_Flow_And_Zones.md`
-- `docs/connectome/graphs/OBJECTIFS_Connectome_Graphs.md`
+- `docs/connectome/graphs/OBJECTIVES_Connectome_Graphs.md`
 - `docs/connectome/health/HEALTH_Connectome_Live_Signals.md`
 - `docs/connectome/log_panel/IMPLEMENTATION_Connectome_Log_Panel_Component_Structure_And_Serializer_Integration.md`
 - `docs/connectome/node_kit/IMPLEMENTATION_Connectome_Node_Kit_Component_Map_And_Styling_Tokens.md`
@@ -10574,7 +10835,7 @@
 - `stream_dialogue.py`
 - `string_utils.py`
 - `sync.py`
-- `tensions.py`
+- `pressures.py`
 - `test_schema.py`
 - `tick.py`
 - `tools/stream_dialogue.py`
@@ -10721,8 +10982,8 @@
 - `features/BEHAVIORS_Agent_Trace_Logging.md`
 - `features/PATTERNS_Agent_Trace_Logging.md`
 - `features/SYNC_Agent_Trace_Logging.md`
-- `..ngram/state/SYNC_Project_Health.md`
-- `..ngram/state/SYNC_Prompt_Command_State.md`
+- `ngram/state/SYNC_Project_Health.md`
+- `ngram/state/SYNC_Prompt_Command_State.md`
 - `prompt/ALGORITHM_Prompt_Bootstrap_Prompt_Construction.md`
 - `prompt/BEHAVIORS_Prompt_Command_Output_and_Flow.md`
 - `prompt/HEALTH_Prompt_Runtime_Verification.md`

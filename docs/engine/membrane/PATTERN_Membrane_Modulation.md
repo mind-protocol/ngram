@@ -63,7 +63,7 @@ The Membrane:
 - Does not inject energy
 
 It only re-weights how existing forces interact (thresholds, transfer factors,
-decay, tension scaling) so deterministic mechanics operate in a biased field.
+decay, pressure scaling) so deterministic mechanics operate in a biased field.
 
 **Position in the system:**
 
@@ -114,7 +114,7 @@ without breaking determinism.
 
 ### Principle 5: Bounded Momentum
 
-The membrane may keep a small non-canon state (e.g., dominant tension age) to
+The membrane may keep a small non-canon state (e.g., dominant pressure age) to
 avoid under-modulation plateaus, but outputs remain bounded and indirect.
 
 Why this matters: prevents stagnation without introducing fiat outcomes.
@@ -155,7 +155,7 @@ Why this matters: prevents stagnation without introducing fiat outcomes.
 
 ### In Scope
 
-- Modulating weights, thresholds, decay, and tension scaling.
+- Modulating weights, thresholds, decay, and pressure scaling.
 - Producing idempotent numeric frames that can be cached or dropped.
 - Operating strictly outside traversal/surfacing hot paths.
 

@@ -113,7 +113,7 @@ DoctorIssue:
 | `init_protocol()` | `ngram/init_cmd.py:10` | `ngram init` |
 | `validate_protocol()` | `ngram/validate.py:667` | `ngram validate` |
 | `run_doctor()` | `ngram/doctor.py:127` | `ngram doctor` |
-| `run_repair()` | `ngram/repair.py:970` | `ngram repair` |
+| `run_repair()` | `ngram/repair.py:970` | `ngram work` |
 | `print_bootstrap_prompt()` | `ngram/prompt.py:30` | `ngram prompt` |
 | `generate_repo_overview()` | `ngram/repo_overview.py:12` | `ngram repo-overview` |
 

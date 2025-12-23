@@ -2,7 +2,7 @@
 
 ## CHAIN
 
-OBJECTIFS:       ./OBJECTIFS_Connectome_Graphs.md
+OBJECTIVES:       ./OBJECTIVES_Connectome_Graphs.md
 PATTERNS:        ./PATTERNS_Connectome_Graphs.md
 ALGORITHM:       ./ALGORITHM_Proxying_Graph_Listing_CLI.md
 VALIDATION:      ./VALIDATION_Connectome_Graph_Listing_Invariants.md

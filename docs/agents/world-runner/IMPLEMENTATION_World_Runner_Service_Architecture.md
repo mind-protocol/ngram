@@ -85,12 +85,12 @@ WorldRunnerOutput:
 
 ### World Evolution: Ticks → Flips → Agent Resolution
 
-This flow handles the transition from detected tension flips in the graph to structured world changes and narrative injections.
+This flow handles the transition from detected pressure flips in the graph to structured world changes and narrative injections.
 
 ```yaml
 flow:
   name: world_evolution
-  purpose: Resolve off-screen tension flips into concrete world changes.
+  purpose: Resolve off-screen pressure flips into concrete world changes.
   scope: Tick Result -> World Runner Agent -> Mutations & Injections
   steps:
     - id: step_1_prompt
@@ -177,11 +177,11 @@ engine/infrastructure/orchestration/orchestrator.py
 
 ## LOGIC CHAINS
 
-The `WorldRunnerService` chain starts inside `Orchestrator._process_flips` whenever `GraphTick.run` reports flips and hands the tension list, player context, and time span to the service. `process_flips` then orchestrates `_build_prompt`, pulls the detailed tension and character data through `GraphQueries`, and funnels the assembled prompt into `_call_claude`. After `parse_claude_json_output` yields the `WorldRunnerOutput`, `GraphOps.apply` persists the mutations, `_apply_wr_mutations` consolidates them with the orchestrator state, and any returned `world_injection` is queued for the next narrator invocation.
+The `WorldRunnerService` chain starts inside `Orchestrator._process_flips` whenever `GraphTick.run` reports flips and hands the pressure flip list, player context, and time span to the service. `process_flips` then orchestrates `_build_prompt`, pulls the detailed flip and character data through `GraphQueries`, and funnels the assembled prompt into `_call_claude`. After `parse_claude_json_output` yields the `WorldRunnerOutput`, `GraphOps.apply` persists the mutations, `_apply_wr_mutations` consolidates them with the orchestrator state, and any returned `world_injection` is queued for the next narrator invocation.
 
 ## RUNTIME BEHAVIOR
 
-At runtime the service behaves as a stateless adapter: each `process_flips` invocation begins by querying the graph for tension metadata, character locations, and strained beliefs, then emits a YAML prompt that includes the flips, the enriched graph context, and the provided player snapshot. `_call_claude` runs the CLI via `run_agent` with `output_format="json"`, guards against timeouts, parse failures, and missing binaries, and only then lets `_fallback_response` surface a minimal injection if anything goes wrong. When the agent returns cleanly, `process_flips` applies `graph_mutations` with `GraphOps`, logs how many narratives or beliefs changed, and hands the parsed output back to the orchestrator along with any saved `world_injection`.
+At runtime the service behaves as a stateless adapter: each `process_flips` invocation begins by querying the graph for pressure metadata, character locations, and strained beliefs, then emits a YAML prompt that includes the flips, the enriched graph context, and the provided player snapshot. `_call_claude` runs the CLI via `run_agent` with `output_format="json"`, guards against timeouts, parse failures, and missing binaries, and only then lets `_fallback_response` surface a minimal injection if anything goes wrong. When the agent returns cleanly, `process_flips` applies `graph_mutations` with `GraphOps`, logs how many narratives or beliefs changed, and hands the parsed output back to the orchestrator along with any saved `world_injection`.
 
 ## CONFIGURATION
 

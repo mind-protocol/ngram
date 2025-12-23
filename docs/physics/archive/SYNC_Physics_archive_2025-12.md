@@ -193,7 +193,7 @@ traceability without altering runtime behavior.
   - Moment decay by status: possible (0.02), active (0.01), spoken (0.03), dormant (0.005)
   - Weight decays only after 100 ticks without reinforcement (very slow: 0.001)
 - SCHEMA updated with weight+energy fields on Character, Narrative, Moment
-- TENSION node removed — tensions emerge from contradictions, deadlines, debts, secrets, oaths
+- TENSION node removed — pressure emerges from contradictions, deadlines, debts, secrets, oaths
 - All docs unified to new model (Physics, Handlers, Behaviors, Tests, Implementation)
 - ALGORITHM_Physics.md updated: character_pumping() no longer takes focus param
 - INFRASTRUCTURE.md consolidated into IMPLEMENTATION_Physics.md (Runtime Patterns section)

@@ -87,7 +87,7 @@ character.energy = relationship_intensity × geographical_proximity
 
 Agents (Narrator, World Runner) don't inject energy. They update link strengths. Energy emerges from structure automatically.
 
-**Approach creates tension automatically.** When player travels toward York, Edmund's proximity changes from 0.2 to 0.7. His energy triples. His narratives heat up. Confrontation tension rises. No one decided this. Physics decided this.
+**Approach creates pressure automatically.** When player travels toward York, Edmund's proximity changes from 0.2 to 0.7. His energy triples. His narratives heat up. Confrontation pressure rises. No one decided this. Physics decided this.
 
 ### Link-Type Dependent Propagation
 
@@ -232,7 +232,7 @@ character.energy = relationship_intensity × geographical_proximity
 
 Agents (Narrator, World Runner) don't inject energy. They update link strengths. Energy emerges from structure automatically.
 
-**Approach creates tension automatically.** When player travels toward York, Edmund's proximity changes from 0.2 to 0.7. His energy triples. His narratives heat up. Confrontation tension rises. No one decided this. Physics decided this.
+**Approach creates pressure automatically.** When player travels toward York, Edmund's proximity changes from 0.2 to 0.7. His energy triples. His narratives heat up. Confrontation pressure rises. No one decided this. Physics decided this.
 
 ### Link-Type Dependent Propagation
 
@@ -379,7 +379,7 @@ character.energy = relationship_intensity × geographical_proximity
 
 Agents (Narrator, World Runner) don't inject energy. They update link strengths. Energy emerges from structure automatically.
 
-**Approach creates tension automatically.** When player travels toward York, Edmund's proximity changes from 0.2 to 0.7. His energy triples. His narratives heat up. Confrontation tension rises. No one decided this. Physics decided this.
+**Approach creates pressure automatically.** When player travels toward York, Edmund's proximity changes from 0.2 to 0.7. His energy triples. His narratives heat up. Confrontation pressure rises. No one decided this. Physics decided this.
 
 ### Link-Type Dependent Propagation
 
@@ -547,7 +547,7 @@ character.energy = relationship_intensity × geographical_proximity
 
 Agents (Narrator, World Runner) don't inject energy. They update link strengths. Energy emerges from structure automatically.
 
-**Approach creates tension automatically.** When player travels toward York, Edmund's proximity changes from 0.2 to 0.7. His energy triples. His narratives heat up. Confrontation tension rises. No one decided this. Physics decided this.
+**Approach creates pressure automatically.** When player travels toward York, Edmund's proximity changes from 0.2 to 0.7. His energy triples. His narratives heat up. Confrontation pressure rises. No one decided this. Physics decided this.
 
 ### Link-Type Dependent Propagation
 

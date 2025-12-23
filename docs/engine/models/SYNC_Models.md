@@ -10,12 +10,12 @@ UPDATED: 2025-12-20
 STATUS: DRAFT
 
 What's canonical (v1):
-- The Pydantic models for nodes, links, and tensions are defined in `engine/models/`.
+- The Pydantic models for nodes, links are defined in `engine/models/`.
 - Basic type enforcement and field validation are in place.
 
 ## CURRENT STATE
 
-The `engine/models/` module provides the core data structures for the game. All major node, link, and tension types are defined using Pydantic, ensuring type safety and basic data validation. This module acts as the authoritative source for the game's graph schema.
+The `engine/models/` module provides the core data structures for the game. All major node and link types are defined using Pydantic, ensuring type safety and basic data validation. This module acts as the authoritative source for the game's graph schema.
 
 ## RECENT CHANGES
 

@@ -65,5 +65,5 @@ Handling rules: see `BEHAVIORS_Narrator.md`.
 
 1. Recent narratives since last scene
 2. Character movements and arrivals
-3. Active tensions and breaking points
+3. Active pressure dynamics and breaking points
 4. Character beliefs and backstory details

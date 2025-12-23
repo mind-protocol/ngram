@@ -51,7 +51,7 @@ Schema definitions live in `../schema/IMPLEMENTATION_Schema.md`. Runtime flows r
 | init_protocol | ngram/init_cmd.py:15 | `ngram init` |
 | validate_protocol | ngram/validate.py:667 | `ngram validate` |
 | doctor_command | ngram/doctor.py:127 | `ngram doctor` |
-| repair_command | ngram/repair.py:970 | `ngram repair` |
+| repair_command | ngram/repair.py:970 | `ngram work` |
 | sync_command | ngram/sync.py | `ngram sync` |
 | print_module_context | ngram/context.py:442 | `ngram context` |
 | print_bootstrap_prompt | ngram/prompt.py | `ngram prompt` |

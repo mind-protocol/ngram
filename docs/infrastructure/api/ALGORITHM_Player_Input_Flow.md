@@ -83,7 +83,7 @@ WHERE m.weight < $new_weight
 -- 3. Flip to active if threshold met
 MATCH (m:Moment {id: $target_id})
 WHERE m.weight >= 0.8 AND m.status = 'possible'
-SET m.status = 'active', m.tick_spoken = $tick
+SET m.status = 'active', m.tick_resolved = $tick
 ```
 
 ---

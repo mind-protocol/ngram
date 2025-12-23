@@ -171,7 +171,7 @@ players and agents, independent of UI framing, across ticks and flips.
 | Measure | Healthy Range |
 |---------|---------------|
 | Average pressure | 0.4 - 0.6 |
-| Hot tensions (>0.7) | At least one |
+| Hot pressure points (>0.7) | At least one |
 | Breaks per game-hour | 0.5 - 2.0 |
 
 **If too cold:** Decay slows. System heats up.

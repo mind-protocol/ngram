@@ -102,7 +102,7 @@ AND:    outputs are clamped to documented bounds
 ### B9: Momentum Biases Without Forcing
 
 ```
-GIVEN:  a dominant tension persists across ticks
+GIVEN:  a dominant pressure persists across ticks
 WHEN:   membrane state updates
 THEN:   modifiers may shift toward higher movement
 AND:    no direct activation or canon writes occur
@@ -127,7 +127,7 @@ AND:    scene changes reset or recompute membrane state
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| aggregates | dict | Counts/ratios for possible/active/spoken, tension summary |
+| aggregates | dict | Counts/ratios for possible/active/spoken, pressure summary |
 | tick | int | Current tick counter |
 
 **Outputs:**

@@ -78,7 +78,7 @@ AND:    GitHub issues are created only when `--github` is provided
 
 ```
 GIVEN:  A project with health issues from doctor
-WHEN:   `ngram repair` is executed
+WHEN:   `ngram work` is executed
 THEN:   Repair agents are spawned for each issue
 AND:    `--model {claude,codex,gemini}` selects the agent model
 AND:    Agents follow appropriate VIEW for each issue type

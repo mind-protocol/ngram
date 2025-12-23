@@ -88,7 +88,7 @@ The tick is the orchestrator; it does not store state beyond an ephemeral contex
 ## STATE MANAGEMENT
 
 - **Graph state:** Lives in FalkorDB (`Moment`, `Link`, `Narrative` nodes). No cached state outside the graph.
-- **Active tensions:** Derived from contradictions/demands; persist as relationships, not dedicated nodes.
+- **Active pressures:** Derived from contradictions/demands; persist as relationships, not dedicated nodes.
 - **Energy:** Stored on node properties; decays each tick.
 
 ---

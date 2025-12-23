@@ -193,7 +193,7 @@ Creates playthrough artifacts consumed by `GET /api/view/{playthrough_id}`, reli
 │  │    - Graph name = playthrough_id (isolated per player)           │   │
 │  │    - load_initial_state() loads seed data:                       │   │
 │  │      • Base world nodes (places, characters)                     │   │
-│  │      • Core narratives and tensions                              │   │
+│  │      • Core narratives and pressures                             │   │
 │  └─────────────────────────────────────────────────────────────────┘   │
 │                                       │                                 │
 │                                       ▼                                 │

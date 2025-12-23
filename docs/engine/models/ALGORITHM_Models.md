@@ -159,4 +159,12 @@ Validated Model Instance
 <!-- @ngram:todo Formalize documentation for custom validators if they become more complex. -->
 <!-- @ngram:todo Explore Pydantic V2's new features (e.g., `model_validator`) to optimize validation flows. -->
 <!-- @ngram:proposition Add a section on performance tuning for large-scale model instantiation. -->
-<!-- @ngram:escalation Should all derived properties be explicitly documented in a separate behaviors file or kept within the algorithm doc? -->
+<!-- @ngram:escalation
+title: "Should all derived properties be explicitly documented in a separate behaviors file or kept within the algorithm doc?"
+priority: 5
+response:
+  status: resolved
+  choice: "N/A - removed dead code"
+  action: "Deleted unused @property methods from link models (belief_intensity, link_type, is_present, has_item, is_here)"
+  notes: "2025-12-23: Properties were never used. Queries use raw floats directly in Cypher."
+-->

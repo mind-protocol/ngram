@@ -30,14 +30,14 @@ IMPL:            ../../../engine/moment_graph/__init__.py
 
 - `engine/moment_graph/queries.py`
   Read-only query helpers for current view, transitions, speaker resolution,
-  dormant moments, wait triggers, and tension-attached moments.
+  dormant moments, wait triggers, and pressure-attached moments.
 
 - `engine/moment_graph/traversal.py`
   Traversal and lifecycle mutations for click/wait triggers, status changes,
   weight updates, and history (THEN) links.
 
 - `engine/moment_graph/surface.py`
-  Surfacing logic for flips, decay, scene change handling, and tension boosts.
+  Surfacing logic for flips, decay, scene change handling, and dramatic boosts.
 
 ===============================================================================
 ## DATA FLOW

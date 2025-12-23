@@ -80,7 +80,7 @@ The trace now explicitly says the archive is deterministic history, so agents do
 
 ```json
 {
-  "thinking": "Edmund's confrontation tension flipped. Given Rolf's oath and Edmund's location in York, Edmund would have received word of Rolf's approach and made a preemptive political move. This creates a new retaliation tension.",
+  "thinking": "Edmund's confrontation pressure flipped. Given Rolf's oath and Edmund's location in York, Edmund would have received word of Rolf's approach and made a preemptive political move. This creates new retaliation pressure.",
 
   "graph_mutations": {
     "new_narratives": [
@@ -131,18 +131,18 @@ The trace now explicitly says the archive is deterministic history, so agents do
       }
     ],
 
-    "tension_updates": [
+    "pressure_updates": [
       {
-        "id": "tension_confrontation",
+        "id": "narr_confrontation",
         "pressure": 0.0,
         "resolved": true,
         "reason": "Confrontation occurred - Edmund acted first"
       }
     ],
 
-    "new_tensions": [
+    "new_pressure_points": [
       {
-        "id": "tension_retaliation",
+        "id": "narr_retaliation",
         "narratives": ["narr_edmund_move", "narr_rolf_oath"],
         "description": "Rolf will not accept Edmund's political attack quietly. His oath demands response.",
         "pressure": 0.4,
@@ -192,7 +192,7 @@ The trace now explicitly says the archive is deterministic history, so agents do
 
     "breaks": [
       {
-        "tension_id": "tension_confrontation",
+        "narrative_id": "narr_confrontation",
         "narrative": "narr_edmund_move",
         "event": "Edmund's allies moved against Rolf's claim publicly in York",
         "location": "place_york",
@@ -203,8 +203,8 @@ The trace now explicitly says the archive is deterministic history, so agents do
 
     "news_arrived": [],
 
-    "tension_changes": {
-      "tension_retaliation": "created at 0.4"
+    "pressure_changes": {
+      "narr_retaliation": "created at 0.4"
     },
 
     "interruption": null,
@@ -225,7 +225,7 @@ The trace now explicitly says the archive is deterministic history, so agents do
 3. **`about` must reference existing nodes** — Or nodes being created in same mutation
 4. **`truth` is director-only** — Characters never see this field
 5. **Belief `heard` must be > 0 for other fields to matter**
-6. **Tension `narratives` must exist** — Or be created in same mutation
+6. **Pressure `narratives` must exist** — Or be created in same mutation
 7. **`player_awareness` must be accurate** — Based on player location
 
 ---
@@ -236,8 +236,8 @@ When applying mutations:
 
 1. **New narratives first** — Create before referencing
 2. **New beliefs second** — Now narratives exist to believe
-3. **Tension updates third** — Existing tensions modified
-4. **New tensions fourth** — New clusters created
+3. **Pressure updates third** — Existing pressure modified
+4. **New pressure points fourth** — New pressure clusters created
 5. **Character movements fifth** — Physical state changes
 6. **Modifier changes last** — Temporary states applied
 
@@ -265,9 +265,9 @@ When applying mutations:
           "type": "array",
           "items": { "$ref": "#/definitions/newBelief" }
         },
-        "tension_updates": {
+        "pressure_updates": {
           "type": "array",
-          "items": { "$ref": "#/definitions/tensionUpdate" }
+          "items": { "$ref": "#/definitions/pressureUpdate" }
         },
         "new_tensions": {
           "type": "array",
@@ -293,7 +293,7 @@ When applying mutations:
           "items": { "$ref": "#/definitions/break" }
         },
         "news_arrived": { "type": "array" },
-        "tension_changes": { "type": "object" },
+        "pressure_changes": { "type": "object" },
         "interruption": { "type": ["object", "null"] },
         "atmosphere_shift": { "type": "string" },
         "narrator_notes": { "type": "string" }
@@ -330,7 +330,7 @@ When applying mutations:
         "from_whom": { "type": "string" }
       }
     },
-    "tensionUpdate": {
+    "pressureUpdate": {
       "type": "object",
       "required": ["id", "reason"],
       "properties": {
@@ -340,7 +340,7 @@ When applying mutations:
         "reason": { "type": "string" }
       }
     },
-    "newTension": {
+    "newPressurePoint": {
       "type": "object",
       "required": ["id", "narratives", "description", "pressure", "pressure_type"],
       "properties": {
@@ -377,9 +377,9 @@ When applying mutations:
     },
     "break": {
       "type": "object",
-      "required": ["tension_id", "narrative", "event", "location", "player_awareness"],
+      "required": ["narrative_id", "narrative", "event", "location", "player_awareness"],
       "properties": {
-        "tension_id": { "type": "string" },
+        "narrative_id": { "type": "string" },
         "narrative": { "type": "string" },
         "event": { "type": "string" },
         "location": { "type": "string" },
@@ -422,9 +422,9 @@ Three men block the road ahead. Armed. One carries a Norman sword.
 
 ## CLUSTER: Relevant Nodes
 
-### Tension (Flipped)
+### Pressure (Flipped)
 
-**tension_road_ambush**
+**narr_road_ambush**
 - pressure: 0.95 → FLIPPED
 - breaking_point: 0.90
 - narratives: [narr_bandit_territory, narr_road_danger]
@@ -488,7 +488,7 @@ Three men block the road ahead. Armed. One carries a Norman sword.
 
 ## WORLD CHANGES (Background)
 
-- tension_road_ambush: RESOLVED (flipped)
+- narr_road_ambush: RESOLVED (flipped)
 - narr_ambush_encounter: CREATED
 
 ---
@@ -519,8 +519,8 @@ When player action finishes without interruption:
   time_elapsed: 2880,      // Full 2 days
   world_changes: [
     { type: "narrative_created", id: "narr_edmund_move", summary: "Edmund moved politically in York" },
-    { type: "tension_resolved", id: "tension_confrontation" },
-    { type: "tension_created", id: "tension_retaliation", pressure: 0.4 }
+    { type: "pressure_resolved", id: "narr_confrontation" },
+    { type: "pressure_created", id: "narr_retaliation", pressure: 0.4 }
   ],
   news_available: [
     { summary: "Edmund's allies spoke against you in York", source: "travelers", reliability: 0.7 },
@@ -552,14 +552,14 @@ When player action finishes without interruption:
 - truth: 0.3
 - about: char_edmund, char_rolf, place_york
 
-### Tensions Resolved
+### Pressure Resolved
 
-**tension_confrontation** → RESOLVED
+**narr_confrontation** → RESOLVED
 - Edmund acted first, politically
 
-### Tensions Created
+### Pressure Created
 
-**tension_retaliation**
+**narr_retaliation**
 - pressure: 0.4
 - narratives: [narr_edmund_move, narr_rolf_oath]
 - description: "Rolf will not accept Edmund's attack quietly"
@@ -607,7 +607,7 @@ You process flips detected by the graph tick.
 TIME_SPAN: 2 days
 
 FLIPS:
-  - tension_id: tension_confrontation
+  - narrative_id: narr_confrontation
     pressure: 0.95
     breaking_point: 0.90
     trigger_reason: "Pressure accumulated over 2 days of travel. Rolf approaches York where Edmund is."
@@ -713,14 +713,14 @@ Output JSON matching WorldRunnerOutput schema.
 | Duration | What Can Happen |
 |----------|-----------------|
 | Minutes | Almost nothing changes |
-| Hours | Local tensions might break |
+| Hours | Local pressure might flip |
 | A day | Regional events possible, news travels |
 | Days | Multiple breaks, cascades likely |
 | Weeks | World transforms significantly |
 
 ### Cascade Check
 
-After determining the break, check if it destabilizes other tensions:
+After determining the break, check if it destabilizes other pressure points:
 - New contradictions created?
 - Proximity changes that increase pressure?
 - Belief changes that create conflicts?

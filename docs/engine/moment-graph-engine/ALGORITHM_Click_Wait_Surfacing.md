@@ -38,7 +38,7 @@ IMPL:            ../../../engine/moment_graph/traversal.py
 ===============================================================================
 
 1. Query active moments with `CAN_LEAD_TO` links triggered by `wait`.
-2. Filter to links whose wait threshold has elapsed since `tick_spoken`.
+2. Filter to links whose wait threshold has elapsed since `tick_resolved`.
 3. For each trigger, apply the same weight transfer and status updates as
    click traversal.
 4. Create `THEN` links with `player_caused = false`.
@@ -50,7 +50,7 @@ IMPL:            ../../../engine/moment_graph/traversal.py
 1. `check_for_flips` activates any `possible` moment with weight >= threshold.
 2. `apply_decay` multiplies weights by `DECAY_RATE` for active/possible moments.
 3. Moments with weight below the decay threshold are marked `decayed` with a
-   `tick_decayed` stamp.
+   `tick_resolved` stamp.
 
 ===============================================================================
 ## SCENE CHANGE
@@ -62,8 +62,8 @@ IMPL:            ../../../engine/moment_graph/traversal.py
    weight to 0.3.
 
 ===============================================================================
-## TENSION BOOST
+## DRAMATIC BOOST
 ===============================================================================
 
-1. Multiply tension pressure by `TENSION_ENERGY_FACTOR`.
+1. Multiply dramatic pressure by `DRAMATIC_ENERGY_FACTOR`.
 2. Add that boost to weights of attached moments, clamped to 1.0.

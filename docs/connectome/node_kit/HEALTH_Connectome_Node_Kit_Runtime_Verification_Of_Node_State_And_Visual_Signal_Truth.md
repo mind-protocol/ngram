@@ -27,7 +27,7 @@ The node surface is the primary operator interface for Connectome, so runtime in
 
 ## HOW TO USE THIS TEMPLATE
 
-1. Follow the full chain (OBJECTIFS → BEHAVIORS → PATTERNS → ALGORITHM → VALIDATION → IMPLEMENTATION → SYNC) to understand intent, invariants, and docking locations before writing checks.
+1. Follow the full chain (OBJECTIVES → BEHAVIORS → PATTERNS → ALGORITHM → VALIDATION → IMPLEMENTATION → SYNC) to understand intent, invariants, and docking locations before writing checks.
 2. Read each IMPLEMENTATION entry listed under this HEALTH doc so you know where selector data (active_focus, energy buckets, wait/tick values) flows through the render tree.
 3. Pick flows where divergence would confuse humans (highlight singularity, energy buckets, timers) and design probes that compare rendered widgets back to VALIDATION V3–V6.
 4. Throttle these probes, log outcomes to a dedicated stream or file, and equip CHECKERS with precise default actions so regression hunters can remedy issues quickly.

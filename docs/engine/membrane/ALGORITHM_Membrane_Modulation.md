@@ -42,7 +42,7 @@ frame is cached per place for hot-path reads and never mutates canon state.
 ```
 weight_transfer_multiplier: float
 decay_scale: float
-tension_boost_scale: float
+dramatic_boost_scale: float
 activation_threshold_offset: float
 ```
 
@@ -55,9 +55,9 @@ place_id: str
 tick: int
 active_density: float
 possible_density: float
-tension_pressure: float
+dramatic_pressure: float
 surprise_rate: float
-dominant_tension_age: int
+dominant_pressure_age: int
 ```
 
 ---
@@ -88,7 +88,7 @@ values to safe ranges.
 frame = ModulationFrame(
   weight_transfer_multiplier=clamp(base * scale, min, max),
   decay_scale=clamp(...),
-  tension_boost_scale=clamp(...),
+  dramatic_boost_scale=clamp(...),
   activation_threshold_offset=clamp(...)
 )
 ```
@@ -190,13 +190,13 @@ ModulationFrame (cached per place_id)
 - ModulationFrame (bounded)
 
 **Procedure:**
-1) if not place_id: return neutral  
-2) ctx = MembraneContext(place_id=place_id, tick=tick, ...)  
-3) frame = ModulationFrame(  
-   weight_transfer_multiplier=...,  
-   decay_scale=...,  
-   tension_boost_scale=...,  
-   activation_threshold_offset=...  
-)  
-4) clamp all fields to bounds  
+1) if not place_id: return neutral
+2) ctx = MembraneContext(place_id=place_id, tick=tick, ...)
+3) frame = ModulationFrame(
+   weight_transfer_multiplier=...,
+   decay_scale=...,
+   dramatic_boost_scale=...,
+   activation_threshold_offset=...
+)
+4) clamp all fields to bounds
 5) cache under place_id  

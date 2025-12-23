@@ -13,7 +13,7 @@ UPDATED: 2025-12-31
 This file captures the health flows, indicators, and checkers that prove the World Runner keeps background time consistent while the Narrator writes scenes. It lists the triggers, docks, objectives, and representations the doctor needs to map into the logs so no invisible evolution can corrupt the canonical graph.
 
 What it protects:
-- **Off-screen continuity**: Every background tick keeps the tensions and flips coherent so interrupted scenes resume pointing at the same facts.
+- **Off-screen continuity**: Every background tick keeps the pressure flips coherent so interrupted scenes resume pointing at the same facts.
 - **Service orchestration reliability**: The CLI agent and fallback machinery must stay responsive across timeouts, crashes, and special-purpose prompts.
 - **Injection sanity**: Narrator-facing payloads stay schema-compliant even when the runner returns during multi-turn resumptions.
 
@@ -64,7 +64,7 @@ Run the World Runner health checklist before significant orchestration changes a
 ```yaml
 flows_analysis:
   - flow_id: world_evolution
-    purpose: Advance tension-driven story bits while the narrator hands control to the runner.
+    purpose: Advance pressure-driven story bits while the narrator hands control to the runner.
     triggers:
       - type: event
         source: Orchestrator long-action scheduling
@@ -102,7 +102,7 @@ health_indicators:
 
 | Objective | Indicators | Why These Signals Matter |
 |-----------|------------|---------------------------|
-| Keep off-screen evolution consistent so the narrator never observes contradictory tensions or stale flips. | background_consistency | A dropped mutation or inconsistent injection breaks the story, so this indicator gates scene resumption before it reaches the narrator. |
+| Keep off-screen evolution consistent so the narrator never observes contradictory pressure dynamics or stale flips. | background_consistency | A dropped mutation or inconsistent injection breaks the story, so this indicator gates scene resumption before it reaches the narrator. |
 | Guarantee CLI adapter resiliency such that agent timeouts, parse errors, or missing binaries degrade to safe fallback responses. | adapter_resilience | Failure to fall back leaves the orchestrator waiting forever, so this indicator confirms the fallback validator and error logging continue to work. |
 
 ---

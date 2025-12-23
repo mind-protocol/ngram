@@ -281,7 +281,7 @@ pytest tests/physics/test_attention_split_determinism.py
 pytest engine/tests/test_physics_mechanisms.py -k attention
 pytest tests/runtime/test_interrupt_invariants.py
 pytest tests/runtime/test_dmz_worldbuilder.py
-pytest tests/runtime/test_void_tension.py
+pytest tests/runtime/test_void_pressure.py
 pytest tests/runtime/test_simultaneity_contradicts.py
 pytest tests/perf/test_hot_path_budget.py
 ```

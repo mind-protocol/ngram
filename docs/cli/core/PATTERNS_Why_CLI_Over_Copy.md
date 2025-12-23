@@ -124,6 +124,16 @@ IMPL: ngram/github.py
 ## MARKERS
 
 <!-- @ngram:todo Add `ngram watch` for continuous health monitoring. -->
-<!-- @ngram:todo Tidy `repair --parallel` output—it is useful but hard to read. -->
-<!-- @ngram:proposition Integrate MCP server hints for richer tool access while repairs run. -->
-<!-- @ngram:escalation Should `doctor` auto-run before `repair`, or remain a separate command? -->
+<!-- @ngram:todo
+title: "Replace repair with work command"
+priority: high
+status: resolved
+decision: "2025-12-23: `ngram repair` removed. Replaced by `ngram work <path> [objective]`. Doctor auto-runs before work. Migration script to update all references. Clean switch, no deprecation."
+completed: |
+  1. Created work.py with new signature: work(path, objective=None)
+  2. Added 'work' subparser to cli.py with positional path argument
+  3. Doctor auto-runs (inherited from repair implementation)
+  4. Migration script updated 12 doc files
+  5. repair command kept as legacy alias
+-->
+<!-- @ngram:proposition Integrate MCP server hints for richer tool access while work runs. -->

@@ -40,7 +40,7 @@ The `connectome_graph_api` module provides a single Next.js API route (`/api/con
 - **Started:** 2023-12-19
 - **By:** agent  
 - **Status:** in progress
-- **Context:** This module had a `modules.yaml` entry and initial `OBJECTIFS` and `PATTERNS` documents, but was missing a `SYNC` file and full `CHAIN` links. This task aims to complete the minimum viable documentation and establish proper linking.
+- **Context:** This module had a `modules.yaml` entry and initial `OBJECTIVES` and `PATTERNS` documents, but was missing a `SYNC` file and full `CHAIN` links. This task aims to complete the minimum viable documentation and establish proper linking.
 
 ---
 
@@ -87,7 +87,7 @@ Changes to the `connectome_read_cli` Python script might break this API if the o
 ## HANDOFF: FOR HUMAN
 
 **Executive summary:**
-The `connectome_graph_api` module now has its `SYNC` documentation in place, completing the minimum viable documentation set (`OBJECTIFS`, `PATTERNS`, `SYNC`). The `modules.yaml` entry was already correct.
+The `connectome_graph_api` module now has its `SYNC` documentation in place, completing the minimum viable documentation set (`OBJECTIVES`, `PATTERNS`, `SYNC`). The `modules.yaml` entry was already correct.
 
 **Decisions made:**
 - Confirmed that `modules.yaml` correctly mapped `app/api/connectome/graph` to `docs/connectome/graph_api/`.
@@ -115,7 +115,7 @@ The `connectome_graph_api` module now has its `SYNC` documentation in place, com
 ### Immediate
 
 - [x] Create `SYNC_Graph_API.md`.
-- [ ] Update `CHAIN` blocks in `OBJECTIFS_Graph_API.md` and `PATTERNS_Graph_API.md`.
+- [ ] Update `CHAIN` blocks in `OBJECTIVES_Graph_API.md` and `PATTERNS_Graph_API.md`.
 - [ ] Add `DOCS:` reference to `app/api/connectome/graph/route.ts`.
 - [ ] Update `SYNC_Project_State.md`.
 

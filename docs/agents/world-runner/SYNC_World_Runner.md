@@ -15,7 +15,7 @@ What's canonical (v1):
 
 ## CURRENT STATE
 
-The World Runner is complete. It operates as an adapter between the Python game engine and an AI agent that resolves off-screen narrative tensions.
+The World Runner is complete. It operates as an adapter between the Python game engine and an AI agent that resolves off-screen narrative pressure.
 
 ## RECENT CHANGES
 

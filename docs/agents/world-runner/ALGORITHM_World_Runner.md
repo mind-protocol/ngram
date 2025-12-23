@@ -10,7 +10,7 @@ STATUS: Canonical
 
 ## OVERVIEW
 
-The World Runner advances time in discrete ticks, inspects tension flips, and
+The World Runner advances time in discrete ticks, inspects pressure flips, and
 returns an Injection that either interrupts the Narrator (player-impacting
 flip) or completes the requested duration with accumulated world changes and
 news. The loop is intentionally short-lived and stateless across calls.
@@ -35,8 +35,8 @@ The second paragraph of this algorithm translates those objectives into instrume
 
 - **Injection:** Structured response containing interrupt/completion flags,
   elapsed time, remaining time, event payload, world changes, and news items.
-- **Flip:** Result of a tick when tension crosses a breaking threshold, with
-  location, involved characters, urgency, and references to source tensions.
+- **Flip:** Result of a tick when pressure crosses a breaking threshold, with
+  location, involved characters, urgency, and references to source narratives.
 - **PlayerContext:** Player location/route, companions, and time context used
   by `affects_player` for intersection decisions.
 - **WorldChange:** Background mutation records derived from non-player flips.
@@ -108,7 +108,7 @@ The Runner emits counters for interrupted vs completed Injections plus timestamp
 
 It also surfaces the duration of each tick and the overall run so latency regressions are visible before narration feels laggy.
 
-Monitoring dashboards can correlate those metrics with the `tick_trace` histogram on the CLI logs to trace slow runs back to specific tension flips or background changes.
+Monitoring dashboards can correlate those metrics with the `tick_trace` histogram on the CLI logs to trace slow runs back to specific pressure flips or background changes.
 
 ---
 
@@ -140,14 +140,14 @@ The function uses location, companions, and urgency checks to avoid unnecessary 
 
 - Favor explicit location and companion overlaps before treating urgency as a fallback so the Runner only interrupts when concrete context exists.
 - Always re-evaluate the player location at the tick boundary so resumed calls remain deterministic even if the player moved during narration.
-- Monitoring both location overlaps and urgency allows the Runner to prioritize player-facing flips while still surfacing emergent tension spikes that cross the critical threshold near allies.
+- Monitoring both location overlaps and urgency allows the Runner to prioritize player-facing flips while still surfacing emergent pressure spikes that cross the critical threshold near allies.
 
 ---
 
 ## Algorithm Steps (Condensed)
 
 1. **Tick:** Update pressure, narrative weight, and decay.
-2. **Detect flips:** Pressure points over breaking point become flip candidates.
+2. **Detect flips:** Pressure exceeding breaking point becomes flip candidates.
 3. **Process flips:**
    - Player-affecting flip → generate `Event` and return interrupted Injection.
    - Non-player flip → create narratives/beliefs as background changes.
@@ -170,7 +170,7 @@ The function uses location, companions, and urgency checks to avoid unnecessary 
 ## DATA FLOW
 
 1. Input action + player context enter `run_world`.
-2. Tick calls `run_graph_tick`, producing flips and updated tension state.
+2. Tick calls `run_graph_tick`, producing flips and updated pressure state.
 3. Player-impacting flips create an `Event` and short-circuit to Injection.
 4. Non-player flips create background `WorldChange` mutations and `NewsItem`s.
 5. Injection (interrupted or completed) is returned to the Narrator pipeline.
@@ -188,7 +188,7 @@ for accumulated changes within a single call.
 
 ## HELPER FUNCTIONS
 
-- `run_graph_tick(elapsed_minutes)` handles tension propagation and flip
+- `run_graph_tick(elapsed_minutes)` handles pressure propagation and flip
   detection for a single tick.
 - `affects_player(flip, player_context, current_tick)` decides whether a flip
   is player-impacting based on location, companions, and urgency.
@@ -217,7 +217,7 @@ Each call is independent. The graph is the memory.
 
 ## Cluster Context for Flips
 
-For any flip, return a compact cluster of linked nodes (tension, narratives, key characters, and places). Cap total nodes (~30). This gives the Narrator enough context to write the scene without dumping the full graph.
+For any flip, return a compact cluster of linked nodes (pressure points, narratives, key characters, and places). Cap total nodes (~30). This gives the Narrator enough context to write the scene without dumping the full graph.
 
 ---
 

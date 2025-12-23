@@ -60,7 +60,7 @@ The system needs a scoping rule that preserves locality and aligns with scene-ba
 
 Scope the Membrane **per Place / Scene**, not globally and not per edge.
 
-Each Place maintains its own Membrane State derived from local aggregates (tension pressure, activity density, recurrence, character presence).
+Each Place maintains its own Membrane State derived from local aggregates (dramatic pressure, activity density, recurrence, character presence).
 
 Membrane State:
 - persists only while the player is in the same Place
@@ -111,7 +111,7 @@ Dynamic functions must clamp results to safe ranges to prevent runaway behavior 
 |--------|------|-----------------------|
 | `place_id` from scene queries | OTHER | Scope key for membrane state |
 | Local moment aggregates | OTHER | Active/possible density, recurrence |
-| Local tension summaries | OTHER | Pressure, dominant tension age |
+| Local pressure summaries | OTHER | Pressure, dominant pressure age |
 | Local presence (AT links) | OTHER | Character presence signal |
 | `MembraneContext` | OTHER | Aggregates (density, pressure, surprise, age) used by dynamic functions |
 | `ModulationFrame` | OTHER | External modifiers applied to dynamic parameter functions |

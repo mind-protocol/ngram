@@ -40,7 +40,7 @@ Without strict enforcement, different parts of the application (e.g., world scra
 
 **Schema-First, Code-Driven Pydantic Models for Graph Entities.**
 
-Define the canonical structure and types for all graph nodes, links, and tensions using Pydantic `BaseModel` classes. These models serve as the single source of truth for the data schema, providing:
+Define the canonical structure and types for all graph nodes and links using Pydantic `BaseModel` classes. These models serve as the single source of truth for the data schema, providing:
 - **Type enforcement:** Ensure data adheres to expected Python types.
 - **Validation:** Define constraints (e.g., `ge=0.0, le=1.0` for probabilities).
 - **Serialization/Deserialization:** Easily convert between Python objects and JSON/dict for graph interactions.
@@ -72,7 +72,7 @@ Pydantic `BaseModel` is the chosen tool for defining graph entity schemas.
 
 ### Principle 3: Source of Truth for Graph Entities
 
-The Pydantic models in `engine/models/` are the authoritative source for the structure of all nodes, links, and tensions stored in the graph.
+The Pydantic models in `engine/models/` are the authoritative source for the structure of all nodes and links stored in the graph.
 
 **Why it matters:**
 - Eliminates ambiguity about what constitutes a valid graph entity.
@@ -96,7 +96,6 @@ This pattern describes the structure and validation of the primary data entities
 
 - **Nodes:** `Character`, `Place`, `Thing`, `Narrative`, `Moment`.
 - **Links:** `CharacterNarrative`, `NarrativeNarrative`, `CharacterPlace`, `CharacterThing`, `ThingPlace`, `PlacePlace`.
-- **Tension:** The `Tension` model combining narratives under pressure.
 - **Enums:** Various enumerated types for consistent choices (e.g., `CharacterType`, `MomentStatus`).
 - **Shared Sub-Models:** Reusable structures like `Skills`, `Personality`, `Atmosphere`, `GameTimestamp`.
 
@@ -128,8 +127,7 @@ All these data structures are defined as Pydantic `BaseModel` classes, leveragin
 **In Scope:**
 - Defining Pydantic models for `Character`, `Place`, `Thing`, `Narrative`, `Moment` nodes.
 - Defining Pydantic models for `CharacterNarrative`, `NarrativeNarrative`, `CharacterPlace`, `CharacterThing`, `ThingPlace`, `PlacePlace` links.
-- Defining the `Tension` model.
-- Defining common enums (e.g., `CharacterType`, `PlaceType`, `NarrativeType`, `MomentType`, `ModifierType`, `PressureType`).
+- Defining common enums (e.g., `CharacterType`, `PlaceType`, `NarrativeType`, `MomentType`, `ModifierType`).
 - Providing base models for shared complex types (e.g., `Skills`, `Personality`, `Atmosphere`).
 - Ensuring basic data validation (types, ranges, defaults).
 
@@ -146,4 +144,12 @@ All these data structures are defined as Pydantic `BaseModel` classes, leveragin
 <!-- @ngram:todo Consider adding custom Pydantic validators for cross-field dependencies (e.g., `Narrative.source` and `Narrative.detail` exclusivity). -->
 <!-- @ngram:todo Explore integrating Pydantic models with OpenAPI/JSON Schema generation for API documentation. -->
 <!-- @ngram:proposition Use Pydantic's `Config.allow_extra = 'forbid'` for stricter schema enforcement. -->
-<!-- @ngram:escalation Should all enums be defined centrally in `base.py` or co-located with their primary models? -->
+<!-- @ngram:escalation
+title: "Should all enums be defined centrally in base.py or co-located with their primary models?"
+priority: 5
+response:
+  status: resolved
+  choice: "Free text, except node_type"
+  behavior: "Only node_type (actor|space|thing|narrative|moment) is an enum. All other types (ActorType, SpaceType, MomentType, etc.) become free text strings. Project-specific, not framework-constrained."
+  notes: "2025-12-23: Aligns with base schema where type is free text. Decided by Nicolas."
+-->

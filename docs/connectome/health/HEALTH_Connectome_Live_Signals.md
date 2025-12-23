@@ -21,8 +21,8 @@ This HEALTH layer is **diagnostic, not corrective**:
 ## CHAIN
 
 ```
-OBJECTIFS:
-  - ./OBJECTIFS_Connectome_Health.md
+OBJECTIVES:
+  - ./OBJECTIVES_Connectome_Health.md
 
 PATTERNS:
   - PATTERNS_Attention_Energy_Split.md

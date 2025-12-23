@@ -82,7 +82,7 @@ This document describes the observable behaviors of the data models within the `
 
 ### B4: Custom Property Methods Reflect Derived State
 
-**Description:** `@property` methods on models compute derived attributes (e.g., `has_flipped` on `Tension`, `is_present` on `CharacterPlace`). These properties reflect the current state based on other model fields.
+**Description:** `@property` methods on models compute derived attributes (e.g., `is_present` on `CharacterPlace`). These properties reflect the current state based on other model fields.
 
 **Inputs:** Internal model state.
 

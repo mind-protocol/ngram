@@ -94,8 +94,8 @@ class Moment:
 
     # Tick tracking
     tick_created: int
-    tick_spoken: Optional[int]
-    tick_decayed: Optional[int]
+    tick_resolved: Optional[int]
+    tick_resolved: Optional[int]
 
     # Transcript reference
     line: Optional[int]    # Line in transcript.json

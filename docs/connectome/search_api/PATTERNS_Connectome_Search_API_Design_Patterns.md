@@ -11,7 +11,7 @@ VERIFIED: N/A against N/A
 ## CHAIN
 
 ```
-OBJECTIFS:      ./OBJECTIFS_Connectome_Search_API_Objectives.md
+OBJECTIVES:      ./OBJECTIVES_Connectome_Search_API_Objectives.md
 BEHAVIORS:      ./BEHAVIORS_Connectome_Search_API_Behaviors.md
 THIS:            PATTERNS_Connectome_Search_API_Design_Patterns.md (you are here)
 ALGORITHM:       ./ALGORITHM_Connectome_Search_API_Invocation_Flow.md

@@ -18,8 +18,9 @@ detected after weight and pressure updates.
 
 - Character: `energy`, `location`, and belief links to narratives.
 - Narrative: `energy`, `weight`, `focus`, `last_active_tick`, and link edges.
-- Tension: `pressure`, `breaking_point`, `pressure_type`, and `progression`.
 - Link: `type`, `strength`, `source`, `target`, plus optional metadata.
+
+Note: Tension/pressure is computed from narrative contradictions and energy concentration, not stored as separate entities.
 
 ## ALGORITHM: graph_tick
 
@@ -37,8 +38,7 @@ Every tick (5 minutes game time), the graph engine runs this sequence:
 3. Propagate energy between narratives
 4. Decay energy
 5. Recompute narrative weights
-6. Tick pressures
-7. Detect flips
+6. Detect energy threshold crossings
 ```
 
 ---
@@ -61,10 +61,9 @@ the orchestrator passes to the world runner.
 
 ## COMPLEXITY
 
-Let `C` be characters, `N` narratives, `L` narrative links, `T` tensions:
-energy and weight steps are O(C + N + L), pressure ticks are O(T + edges
-inside each tension), and flips are O(T). The full tick is linear in the
-graph size for typical tension fanout.
+Let `C` be characters, `N` narratives, `L` narrative links:
+energy and weight steps are O(C + N + L), and threshold detection is O(N).
+The full tick is linear in the graph size.
 
 ## HELPER FUNCTIONS
 
@@ -77,8 +76,8 @@ graph size for typical tension fanout.
 ## INTERACTIONS
 
 The orchestrator calls `graph_tick` each time a player action advances time.
-GraphOps provides the query/mutation surface for narrative, link, and tension
-data, while the world runner consumes flipped tensions to generate changes.
+GraphOps provides the query/mutation surface for narrative, link, and pressure
+data, while the world runner consumes flipped pressures to generate changes.
 
 ## MARKERS
 
@@ -253,8 +252,8 @@ def adjust_criticality():
     """
     global decay_rate
 
-    avg_pressure = mean([t.pressure for t in graph.tensions])
-    hot_count = sum(1 for t in graph.tensions if t.pressure > 0.7)
+    avg_pressure = mean([p.level for p in graph.pressure_points])
+    hot_count = sum(1 for p in graph.pressure_points if p.level > 0.7)
     recent_breaks = count_breaks_in_last_hour()
 
     # System too cold — let it heat
@@ -431,44 +430,44 @@ BASE_RATE = 0.001  # per minute
 DEFAULT_BREAKING_POINT = 0.9
 
 def tick_pressures(time_elapsed_minutes):
-    for tension in graph.tensions:
-        if tension.pressure_type == 'gradual':
-            tick_gradual(tension, time_elapsed_minutes)
-        elif tension.pressure_type == 'scheduled':
-            tick_scheduled(tension)
-        elif tension.pressure_type == 'hybrid':
-            tick_hybrid(tension, time_elapsed_minutes)
+    for pressure_point in graph.pressure_points:
+        if pressure_point.pressure_type == 'gradual':
+            tick_gradual(pressure_point, time_elapsed_minutes)
+        elif pressure_point.pressure_type == 'scheduled':
+            tick_scheduled(pressure_point)
+        elif pressure_point.pressure_type == 'hybrid':
+            tick_hybrid(pressure_point, time_elapsed_minutes)
 
         # Check for flip
-        if tension.pressure >= tension.breaking_point:
-            mark_for_flip(tension)
+        if pressure_point.level >= pressure_point.breaking_point:
+            mark_for_flip(pressure_point)
 
-def tick_gradual(tension, time_elapsed):
-    focus = average_focus(tension.narratives)
-    max_weight = max_narrative_weight(tension.narratives)
+def tick_gradual(pressure_point, time_elapsed):
+    focus = average_focus(pressure_point.narratives)
+    max_weight = max_narrative_weight(pressure_point.narratives)
 
     delta = time_elapsed * BASE_RATE * focus * max_weight
-    tension.pressure = min(tension.pressure + delta, 1.0)
+    pressure_point.level = min(pressure_point.level + delta, 1.0)
 
-def tick_scheduled(tension):
-    for checkpoint in tension.progression:
+def tick_scheduled(pressure_point):
+    for checkpoint in pressure_point.progression:
         if current_time >= checkpoint.at:
-            tension.pressure = max(tension.pressure, checkpoint.pressure)
+            pressure_point.level = max(pressure_point.level, checkpoint.pressure)
 
-def tick_hybrid(tension, time_elapsed):
+def tick_hybrid(pressure_point, time_elapsed):
     # Tick gradual component
-    focus = average_focus(tension.narratives)
-    max_weight = max_narrative_weight(tension.narratives)
-    ticked = tension.pressure + (time_elapsed * BASE_RATE * focus * max_weight)
+    focus = average_focus(pressure_point.narratives)
+    max_weight = max_narrative_weight(pressure_point.narratives)
+    ticked = pressure_point.level + (time_elapsed * BASE_RATE * focus * max_weight)
 
     # Find scheduled floor
     floor = 0
-    for checkpoint in tension.progression:
+    for checkpoint in pressure_point.progression:
         if current_time >= checkpoint.at:
             floor = max(floor, checkpoint.pressure_floor)
 
     # Use higher of ticked or floor
-    tension.pressure = min(max(ticked, floor), 1.0)
+    pressure_point.level = min(max(ticked, floor), 1.0)
 ```
 
 ---
@@ -478,9 +477,9 @@ def tick_hybrid(tension, time_elapsed):
 ```python
 def detect_flips():
     flipped = []
-    for tension in graph.tensions:
-        if tension.pressure >= tension.breaking_point:
-            flipped.append(tension)
+    for pressure_point in graph.pressure_points:
+        if pressure_point.level >= pressure_point.breaking_point:
+            flipped.append(pressure_point)
     return flipped
 ```
 
@@ -541,7 +540,7 @@ When characters move, proximity changes. Energy follows automatically.
 #   Edmund: intensity=4.0, proximity=0.7 → energy=2.8
 #
 # No one decided this. Physics decided this.
-# Confrontation tension rises because Edmund's narratives heat up.
+# Confrontation pressure rises because Edmund's narratives heat up.
 ```
 
 ---

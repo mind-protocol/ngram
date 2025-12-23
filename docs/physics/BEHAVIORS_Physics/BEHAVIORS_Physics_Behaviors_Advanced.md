@@ -38,7 +38,7 @@ It changes the graph.
 |--------|------------------|
 | travel | Character AT links |
 | take | Thing AT/CARRIES links |
-| attack | Health, relationships, tension |
+| attack | Health, relationships, pressure |
 | give | Possession links |
 | speak | (no state change, just moment) |
 

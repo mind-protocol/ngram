@@ -22,8 +22,6 @@ interface WorldRunnerOutput {
 interface GraphMutations {
   new_narratives?: NewNarrative[];
   new_beliefs?: NewBelief[];
-  tension_updates?: TensionUpdate[];
-  new_tensions?: NewTension[];
   character_movements?: CharacterMovement[];
   modifier_changes?: ModifierChange[];
 }
@@ -71,34 +69,6 @@ interface NewBelief {
 
 **BeliefSource:** `witnessed`, `told`, `inferred`, `assumed`, `taught`
 
-### Tension Update
-
-```typescript
-interface TensionUpdate {
-  id: string;
-  pressure?: number;
-  resolved?: boolean;
-  reason: string;
-}
-```
-
-### New Tension
-
-```typescript
-interface NewTension {
-  id: string;
-  narratives: string[];
-  description: string;
-  pressure: number;
-  pressure_type: 'gradual' | 'scheduled' | 'hybrid';
-  breaking_point?: number;
-  base_rate?: number;
-  trigger_at?: string;
-  progression?: TensionStep[];
-  narrator_notes?: string;
-}
-```
-
 ### Character Movement
 
 ```typescript
@@ -129,7 +99,7 @@ interface WorldInjection {
   time_since_last: string;
   breaks: Break[];
   news_arrived?: NewsItem[];
-  tension_changes?: Record<string, string>;
+  energy_shifts?: Record<string, string>;
   interruption?: Interruption | null;
   atmosphere_shift?: string;
   narrator_notes?: string;
@@ -140,7 +110,7 @@ interface WorldInjection {
 
 ```typescript
 interface Break {
-  tension_id: string;
+  narrative_id: string;
   narrative: string;
   event: string;
   location: string;
@@ -183,8 +153,7 @@ interface Interruption {
 3. `about` references must resolve to existing or newly created nodes.
 4. `truth` is director-only.
 5. `heard` must be > 0 for belief confidence fields to matter.
-6. Tension narratives must exist.
-7. `player_awareness` must match player location and time.
+6. `player_awareness` must match player location and time.
 
 ---
 
@@ -192,10 +161,8 @@ interface Interruption {
 
 1. New narratives
 2. New beliefs
-3. Tension updates
-4. New tensions
-5. Character movements
-6. Modifier changes
+3. Character movements
+4. Modifier changes
 
 ---
 

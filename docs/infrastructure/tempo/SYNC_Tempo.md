@@ -1,9 +1,9 @@
 # Tempo Controller — Sync: Current State
 
 ```
-LAST_UPDATED: 2025-12-20
-UPDATED_BY: codex
-STATUS: DESIGNING
+LAST_UPDATED: 2025-12-23
+UPDATED_BY: Claude
+STATUS: CANONICAL v1
 ```
 
 ---
@@ -12,9 +12,13 @@ STATUS: DESIGNING
 
 **What's canonical (v1):**
 - Tempo is the pacing boundary between physics and canon surfacing.
+- Freeze behavior on pause: no ticks, queue frozen, exact resume.
+- Speed modes: 1x (1s), 2x (0.2s), 3x (0.01s).
+- Async event-based pause (no busy-wait).
 
 **What's still being designed:**
 - Exact interrupt definitions and player-link detection rules.
+- API endpoints for tempo control.
 
 **What's proposed (v2+):**
 - Adaptive pacing based on graph load.
@@ -23,24 +27,36 @@ STATUS: DESIGNING
 
 ## CURRENT STATE
 
-Tempo documentation is established in this module chain, but no implementation
-exists yet in the engine. Speed modes are defined by stop conditions rather
-than fixed intervals.
+Tempo controller implemented with freeze semantics.
+
+**Freeze behavior (decided 2025-12-23):**
+- `pause()` stops all tick progression immediately
+- No physics runs, no canon recording, tick_count frozen
+- `resume()` continues exactly where left off
+- Queue state preserved across pause/resume
+- Uses asyncio.Event for efficient blocking (no CPU burn)
 
 ---
 
 ## IN PROGRESS
 
-### Tempo module scaffolding
-
-- **Started:** 2025-12-20
-- **By:** codex
-- **Status:** in progress
-- **Context:** Establish doc chain before wiring runtime.
+None — v1 complete.
 
 ---
 
 ## RECENT CHANGES
+
+### 2025-12-23: Implemented freeze behavior
+
+- **What:** TempoController with pause()/resume() and freeze semantics.
+- **Why:** Decision made: pause = freeze (no flush).
+- **Files:** engine/infrastructure/tempo/tempo_controller.py
+- **Key changes:**
+  - Added `paused` state and `tick_at_pause` tracking
+  - `pause()` clears asyncio.Event, blocking loop efficiently
+  - `resume()` sets event, continues exactly where left off
+  - No busy-wait during pause
+  - Speed validation on set_speed()
 
 ### 2025-12-20: Added tempo module docs
 
@@ -53,68 +69,65 @@ than fixed intervals.
 
 ## KNOWN ISSUES
 
-### No implementation yet
-
-- **Severity:** medium
-- **Symptom:** Tempo loop does not exist in engine code.
-- **Suspected cause:** Module was undocumented previously.
-- **Attempted:** Doc chain only; no code changes.
+None currently.
 
 ---
 
 ## HANDOFF: FOR AGENTS
 
-**Your likely VIEW:** VIEW_Implement_Write_Or_Modify_Code
+**Your likely VIEW:** VIEW_Extend_Add_Features_To_Existing
 
-**Where I stopped:** Doc chain created; no runtime hooks.
+**Where I stopped:** Tempo controller v1 complete with freeze semantics.
 
 **What you need to understand:**
-Tempo is defined as the pacing loop that calls physics and canon without
-blocking on narrator output. Implementation should live under
-`engine/infrastructure/tempo/` and integrate with API endpoints.
+- `TempoController.pause()` freezes immediately, no ticks run
+- `TempoController.resume()` continues exactly where left off
+- Uses asyncio.Event for efficient blocking
+- Speed modes: 1x, 2x, 3x with fixed intervals
 
 **Watch out for:**
-Avoid mixing narrator output with tempo surfacing. Tempo is timing only.
+- Don't add flush behavior to pause — decision was freeze
+- Tempo is timing only, never generates content
 
-**Open questions I had:**
-How to encode speed-to-interval mapping and backpressure thresholds.
+**Next steps:**
+- Add API endpoints for pause/resume/speed control
+- Wire into main application loop
 
 ---
 
 ## HANDOFF: FOR HUMAN
 
 **Executive summary:**
-Tempo is now a formal module in docs. Implementation is still pending.
+Tempo controller implemented with freeze behavior. Pause = 0 ticks, queue frozen, exact resume.
 
 **Decisions made:**
-Tempo owns cadence and surfacing timing only, not content generation.
+- Freeze over flush (2025-12-23)
+- Speed intervals: 1x=1s, 2x=0.2s, 3x=0.01s
+- Event-based pause (no busy-wait)
 
-**Needs your input:**
-Confirm desired speed intervals and per-tick surfacing caps.
+**Ready to use:**
+`engine/infrastructure/tempo/tempo_controller.py`
 
 ---
 
 ## TODO
 
-### Doc/Impl Drift
-
-<!-- @ngram:todo DOCS→IMPL: Implement `engine/infrastructure/tempo/tempo_controller.py`. -->
-
 ### Tests to Run
 
 ```bash
 ngram validate
+pytest engine/infrastructure/tempo/ -v
 ```
 
 ### Immediate
 
-<!-- @ngram:todo Create tempo controller loop in engine. -->
-<!-- @ngram:todo Add API endpoints for speed and control. -->
+@ngram:todo — Add API endpoints for pause/resume/speed control
+@ngram:todo — Wire TempoController into main application loop
 
 ### Later
 
-<!-- @ngram:todo Add health checker implementation. -->
-<!-- @ngram:proposition adaptive pacing based on queue size. -->
+@ngram:todo — Add health checker implementation
+@ngram:proposition — Adaptive pacing based on queue size
 
 ---
 
@@ -138,6 +151,7 @@ How strict the pacing guarantees need to be for the UI.
 
 | What | Where |
 |------|-------|
+| Implementation | `engine/infrastructure/tempo/tempo_controller.py` |
 | Tempo algorithm | `docs/infrastructure/tempo/ALGORITHM_Tempo_Controller.md` |
 | Tempo patterns | `docs/infrastructure/tempo/PATTERNS_Tempo.md` |
 | Canon holder | `docs/infrastructure/canon/PATTERNS_Canon.md` |

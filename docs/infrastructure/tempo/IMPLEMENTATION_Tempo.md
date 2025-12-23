@@ -280,4 +280,12 @@ Async loop driven by `asyncio`. One loop per playthrough.
 
 ### Questions
 
-<!-- @ngram:escalation Should tempo state persist across restarts? -->
+<!-- @ngram:escalation
+title: "Should tempo state persist across restarts?"
+priority: 5
+response:
+  status: resolved
+  choice: "Partial persist"
+  behavior: "Current tick: always persist. Speed setting: always reset to x1 on restart. Paused state: reset to running."
+  notes: "2025-12-23: Decided by Nicolas."
+-->

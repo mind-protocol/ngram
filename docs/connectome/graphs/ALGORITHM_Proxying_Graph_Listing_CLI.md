@@ -2,7 +2,7 @@
 
 ## CHAIN
 
-OBJECTIFS:       ./OBJECTIFS_Connectome_Graphs.md
+OBJECTIVES:       ./OBJECTIVES_Connectome_Graphs.md
 PATTERNS:        ./PATTERNS_Connectome_Graphs.md
 BEHAVIORS:       ./BEHAVIORS_Listing_Available_Connectome_Graphs.md
 VALIDATION:      ./VALIDATION_Connectome_Graph_Listing_Invariants.md

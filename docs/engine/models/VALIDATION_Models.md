@@ -168,4 +168,12 @@ This validation document ensures the declared schema invariants and properties a
 <!-- @ngram:todo Add explicit unit tests for `V4: Immutable Defaults Are Truly Immutable`. -->
 <!-- @ngram:todo Implement property-based tests for serialization roundtrip (P1) and derived properties (P2). -->
 <!-- @ngram:proposition Generate validation reports from Pydantic schema exports (e.g., JSON Schema) and compare against expectations. -->
-<!-- @ngram:escalation Should all models have an explicit `__eq__` method for robust comparison in tests? -->
+<!-- @ngram:escalation
+title: "Should all models have an explicit __eq__ method for robust comparison in tests?"
+priority: 5
+response:
+  status: resolved
+  choice: "No"
+  behavior: "Pydantic's default field-by-field comparison is sufficient. No custom __eq__ needed."
+  notes: "2025-12-23: Decided by Nicolas."
+-->

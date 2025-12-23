@@ -616,13 +616,13 @@ SCENE_CONTEXT:
       type: memory
       tone: bitter
 
-  tensions:
-    - id: tension_confrontation
+  pressure_dynamics:
+    - id: narr_confrontation
       description: "Edmund draws closer. The reckoning approaches."
       pressure: 0.6
       breaking_point: 0.9
 
-    - id: tension_aldric_secret
+    - id: narr_aldric_secret
       description: "Aldric carries something he hasn't shared."
       pressure: 0.3
       breaking_point: 0.9

@@ -33,7 +33,6 @@ engine/models/__init__.py  # Module exports and high-level docs
 engine/models/base.py      # Enums, shared sub-models (e.g., Skills, Atmosphere)
 engine/models/nodes.py     # Character, Place, Thing, Narrative, Moment models
 engine/models/links.py     # CharacterNarrative, PlacePlace, etc. models
-tensions (pending import)  # Tension model
 ```
 
 ### File Responsibilities
@@ -44,7 +43,6 @@ tensions (pending import)  # Tension model
 | `engine/models/base.py` | Core enums & shared types | `CharacterType`, `Modifier`, `GameTimestamp` | ~300 | OK |
 | `engine/models/nodes.py` | Graph node definitions | `Character`, `Place`, `Thing`, `Narrative`, `Moment` | ~300 | OK |
 | `engine/models/links.py` | Graph link definitions | `CharacterNarrative`, `PlacePlace` | ~200 | OK |
-| `tensions` | Tension definition | `Tension` | ~100 | OK |
 
 **Size Thresholds:**
 - **OK** (<400 lines): Healthy size, easy to understand
@@ -59,7 +57,7 @@ tensions (pending import)  # Tension model
 
 **Pattern:** Domain Model / Anemic Domain Model (with rich properties).
 
-**Why this pattern:** The models primarily focus on data structure and validation (anemic), but also include rich `@property` methods (e.g., `has_flipped` in `Tension`) and `embeddable_text` functions that provide some behavior. This balances strict data representation with domain-specific utility.
+**Why this pattern:** The models primarily focus on data structure and validation (anemic), but also include rich `@property` methods and `embeddable_text` functions that provide some behavior. This balances strict data representation with domain-specific utility.
 
 ### Code Patterns in Use
 
@@ -67,7 +65,7 @@ tensions (pending import)  # Tension model
 |---------|------------|---------|
 | Pydantic `BaseModel` | All models | Schema definition, validation, serialization |
 | Python `enum Enum` | All `*Type` fields | Type-safe enumeration of valid choices |
-| `@property` decorator | `Tension has_flipped`, `CharacterPlace is_present` | Derived attributes for clear state querying |
+| `@property` decorator | `CharacterPlace is_present` | Derived attributes for clear state querying |
 | `default_factory` | `List` fields, nested models | Ensure mutable defaults are independent per instance |
 
 ### Anti-Patterns to Avoid
@@ -86,7 +84,7 @@ tensions (pending import)  # Tension model
 
 ## SCHEMA
 
-The primary schema is the sum of all Pydantic models in this module. Refer to individual model definitions in `engine/models/nodes.py`, `engine/models/links.py`, `tensions`, and `engine/models/base.py` for full details. High-level schema contracts for specific domains (e.g., Moment Graph) are documented in `docs/schema/`.
+The primary schema is the sum of all Pydantic models in this module. Refer to individual model definitions in `engine/models/nodes.py`, `engine/models/links.py`, and `engine/models/base.py` for full details. High-level schema contracts for specific domains (e.g., Moment Graph) are documented in `docs/schema/`.
 
 ---
 
@@ -187,17 +185,13 @@ GameTimestamp instance (`ts1`)
 engine/models/__init__.py
     ├── imports → .base
     ├── imports → .nodes
-    ├── imports → .links
-    └── imports → .tensions
+    └── imports → .links
 
 engine/models/nodes.py
     └── imports → .base (for enums and sub-models)
 
 engine/models/links.py
     └── imports → .base (for enums)
-
-engine/models/tensions
-    └── imports → .base (for enums and sub-models)
 ```
 
 ### External Dependencies
@@ -234,7 +228,7 @@ When data is loaded from various sources (e.g., API requests, database queries, 
 
 ### Property Access
 
-Derived properties (e.g., `Tension has_flipped`) are computed dynamically upon access. These computations are typically lightweight and do not involve side effects, ensuring efficient querying of model state.
+Derived properties are computed dynamically upon access. These computations are typically lightweight and do not involve side effects, ensuring efficient querying of model state.
 
 ### Serialization
 
@@ -280,7 +274,6 @@ Models are frequently serialized to dictionaries or JSON (e.g., for API response
 |-------------|----------------|
 | Character model | `engine/models/nodes.py:Character` |
 | Place model | `engine/models/nodes.py:Place` |
-| Tension model | `engine/models/tensions:Tension` |
 | `GameTimestamp` operations | `engine/models/base.py:GameTimestamp` |
 
 ---
@@ -299,5 +292,18 @@ Models are frequently serialized to dictionaries or JSON (e.g., for API response
 
 ### Questions
 
-<!-- @ngram:escalation How can we best manage schema evolution without breaking existing saved graph data? -->
-<!-- @ngram:escalation Should `Moment`'s `tick` property (alias for `tick_created`) be removed for clarity in new code? -->
+<!-- @ngram:todo
+title: "Implement schema migration system"
+priority: medium
+decision: "2025-12-23: Option B chosen — migration scripts. On schema change, ALL graphs are migrated immediately. Deprecated fields removed, renamed fields renamed. No backwards compat cruft. Implement: 1) version field in graph metadata, 2) migration registry, 3) CLI command `ngram migrate`."
+-->
+<!-- @ngram:escalation
+title: "Should Moment's tick property (alias for tick_created) be removed?"
+priority: 5
+response:
+  status: resolved
+  choice: "Yes, remove"
+  task_description: "Migration script at engine/migrations/migrate_tick_to_tick_created.py"
+  behavior: "All code uses tick_created directly. No backwards compat alias."
+  notes: "2025-12-23: Implemented same session."
+-->

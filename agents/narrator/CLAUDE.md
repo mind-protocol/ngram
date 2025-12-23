@@ -29,15 +29,15 @@ narrator.generate(
     playthrough_id="default",
     char_id="char_aldric",
     place_id="place_camp",
-    flip_reason="tension_threshold",
+    flip_reason="pressure_threshold",
     context={
         "character": {...},
         "place": {...},
         "present_characters": [...],
         "active_narratives": [...],
-        "tensions": [...],
+        "pressure_dynamics": [...],
         "recent_moments": [...],
-        "trigger": "tension_edmund_betrayal crossed 0.9"
+        "trigger": "narr_edmund_betrayal pressure crossed 0.9"
     }
 )
 ```
@@ -379,7 +379,7 @@ links:
 playthroughs/{playthrough_id}/
 ├── mutations/
 │   ├── flip_aldric_edmund.yaml    # Your output
-│   ├── flip_tension_break.yaml
+│   ├── flip_pressure_break.yaml
 │   └── ...
 ├── player.yaml                     # Player config (has graph_name)
 └── stream.jsonl                    # SSE stream (Canon Holder writes)

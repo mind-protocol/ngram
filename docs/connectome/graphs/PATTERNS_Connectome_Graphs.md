@@ -26,4 +26,4 @@ This document describes the design patterns and conventions followed within the 
 
 ## CHAIN
 - Implemented in `app/api/connectome/graphs/route.ts`
-- Related to `OBJECTIFS_Connectome_Graphs.md`
+- Related to `OBJECTIVES_Connectome_Graphs.md`

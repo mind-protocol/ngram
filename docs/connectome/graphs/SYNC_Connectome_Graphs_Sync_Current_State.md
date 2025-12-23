@@ -8,7 +8,7 @@ This document captures the current synchronization status and recent changes rel
 
 - **2023-10-27:** Initial documentation of the `connectome/graphs` module.
   - Files created:
-    - `docs/connectome/graphs/OBJECTIFS_Connectome_Graphs.md`
+    - `docs/connectome/graphs/OBJECTIVES_Connectome_Graphs.md`
     - `docs/connectome/graphs/PATTERNS_Connectome_Graphs.md`
     - `docs/connectome/graphs/SYNC_Connectome_Graphs_Sync_Current_State.md`
   - `modules.yaml` updated with mapping for `connectome/graphs`.
@@ -24,7 +24,7 @@ This document captures the current synchronization status and recent changes rel
 - No known conflicts at this time.
 
 ## CHAIN
-- Related to `OBJECTIFS_Connectome_Graphs.md`
+- Related to `OBJECTIVES_Connectome_Graphs.md`
 - Related to `PATTERNS_Connectome_Graphs.md`
 - Updates `modules.yaml`
 - References `app/api/connectome/graphs/route.ts`

@@ -11,7 +11,7 @@ VERIFIED: 2023-11-20 against Initial Documentation Commit
 ## CHAIN
 
 ```
-OBJECTIFS:      ./OBJECTIFS_Graph_API.md
+OBJECTIVES:      ./OBJECTIVES_Graph_API.md
 BEHAVIORS:      ./BEHAVIORS_Graph_API.md
 THIS:            PATTERNS_Graph_API.md (you are here)
 ALGORITHM:       ./ALGORITHM_Graph_API.md

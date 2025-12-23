@@ -1,0 +1,455 @@
+# NGRAM Graph Schema v1.2
+# Minimal authoritative schema
+# Copied to .ngram/ at init
+
+version: "1.2"
+updated: "2025-12-23"
+
+# =============================================================================
+# NODE BASE (all nodes share these)
+# =============================================================================
+#
+# v1.1 CHANGES:
+#   - weight: 0-1 → 0-∞ (protagonist 10x more important than villager)
+#   - energy: 0-1 → 0-∞ (accumulates from moments, decay prevents explosion)
+#   - Weight does double duty: importance (ranking) + inertia (physics stability)
+
+NodeBase:
+  fields:
+    id:
+      type: string
+      required: true
+    name:
+      type: string
+      required: true
+    node_type:
+      type: enum
+      values: [actor, space, thing, narrative, moment]
+      required: true
+    type:
+      type: string
+      required: true
+      description: "Subtype within node_type"
+    description:
+      type: string
+      default: ""
+    weight:
+      type: float
+      range: [0, infinity]
+      default: 1.0
+      description: "Importance (ranking) + inertia (physics). Unbounded."
+    energy:
+      type: float
+      range: [0, infinity]
+      default: 0.0
+      description: "Instantaneous activation. Accumulates, decays. Unbounded."
+    created_at_s:
+      type: int
+      required: true
+    updated_at_s:
+      type: int
+      required: true
+
+# =============================================================================
+# NODE TYPES (type-specific fields only)
+# =============================================================================
+#
+# `type` is a FREE STRING - each project defines its own subtypes.
+# Examples below are conventions, not constraints.
+#
+# ngram (dev tooling):
+#   actor: human, agent, system
+#   space: module, folder, topic, conversation
+#   thing: file, url, artifact, commit
+#   narrative: pattern, mechanism, validation, health, implementation
+#   moment: task, event, tick
+#
+# blood-ledger (narrative game):
+#   actor: player, companion, major, minor, background
+#   space: region, city, hold, village, monastery, camp, road, wilderness
+#   thing: weapon, armor, document, relic, treasure, title, land, horse
+#   narrative: memory, rumor, oath, debt, blood, enmity, love, secret
+#   moment: input, output, thought
+
+nodes:
+
+  actor:
+    description: "Anyone/anything that can act"
+    fields: {}
+
+  space:
+    description: "Container or location"
+    fields: {}
+
+  thing:
+    description: "Object that can be referenced, possessed, transferred"
+    fields:
+      uri:
+        type: string
+        required: false
+        description: "Optional locator (file path, URL, etc.)"
+
+  narrative:
+    description: "Story, pattern, or knowledge about nodes"
+    fields:
+      content:
+        type: string
+        default: ""
+
+  moment:
+    description: "Temporal event in the graph"
+    fields:
+      text:
+        type: string
+        default: ""
+      status:
+        type: enum
+        values: [possible, active, spoken, decayed]
+        default: possible
+      tick_created:
+        type: int
+        default: 0
+      tick_resolved:
+        type: int
+        nullable: true
+
+# =============================================================================
+# LINK BASE (all links share these)
+# =============================================================================
+#
+# v1.2 CHANGES:
+#   - Added `about` link type (Moment → Any, flow phase)
+#   - Added `attached_to` link type (Thing → Actor/Space, flow phase)
+#   - ADDED weight, energy, strength back (for hot/cold filtering + unified traversal)
+#   - ADDED name (free-form label: 'believes', 'owes debt to', 'witnessed')
+#   - ADDED role (semantic: originator, believer, witness, subject, creditor, debtor)
+#   - ADDED direction (semantic: support, oppose, elaborate, subsume, supersede)
+#   - Link types: 9 total (4 energy carriers, 5 structural)
+#   - Migration: 14 old types → 9 new types (old types become property values)
+#
+# v1.1 CHANGES:
+#   - Renamed from_id/to_id -> node_a/node_b (bidirectional clarity)
+#   - ADDED conductivity (0-1, percentage of energy that passes through)
+#   - ADDED emotions list for Hebbian coloring
+
+LinkBase:
+  fields:
+    id:
+      type: string
+      required: true
+    node_a:
+      type: string
+      required: true
+      description: "First endpoint (was from_id)"
+    node_b:
+      type: string
+      required: true
+      description: "Second endpoint (was to_id)"
+    type:
+      type: enum
+      values: [contains, leads_to, expresses, sequence, primes, can_become, relates, about, attached_to]
+      required: true
+
+    # Physics properties (v1.2)
+    conductivity:
+      type: float
+      range: [0, 1]
+      default: 0.5
+      description: "Percentage of energy that passes through"
+    weight:
+      type: float
+      range: [0, infinity]
+      default: 1.0
+      description: "Link importance (used in heat_score = energy × weight)"
+    energy:
+      type: float
+      range: [0, infinity]
+      default: 0.0
+      description: "Current attention — hot/cold filtering. No decay, drains to nodes."
+    strength:
+      type: float
+      range: [0, infinity]
+      default: 0.0
+      description: "Accumulated depth — permanent, grows with each traversal"
+    emotions:
+      type: list
+      items: [string, float]
+      default: []
+      description: "Hebbian coloring: [[emotion_name, intensity], ...]"
+
+    # Semantic properties (v1.2)
+    name:
+      type: string
+      default: ""
+      description: "Link name/label (e.g., 'believes', 'owes debt to', 'witnessed')"
+    role:
+      type: enum
+      values: [originator, believer, witness, subject, creditor, debtor]
+      nullable: true
+      description: "Semantic role of node_a relative to node_b"
+    direction:
+      type: enum
+      values: [support, oppose, elaborate, subsume, supersede]
+      nullable: true
+      description: "Semantic direction for relates links"
+    description:
+      type: string
+      default: ""
+      description: "Human-readable description of the link"
+    created_at_s:
+      type: int
+      required: true
+
+# =============================================================================
+# LINK TYPES (9 types in 2 categories)
+# =============================================================================
+#
+# v1.2 SIMPLIFICATION:
+#   - 4 ENERGY CARRIERS: expresses, about, relates, attached_to
+#   - 5 STRUCTURAL (no energy): contains, leads_to, sequence, primes, can_become
+#
+# OLD TYPES CONSOLIDATED:
+#   BELIEVES, ORIGINATED, ABOUT (narrative), SUPPORTS, CONTRADICTS, ELABORATES → relates
+#   CAN_SPEAK → expresses
+#   ATTACHED_TO (moment) → about
+#   CARRIES (thing) → attached_to (inverted)
+#   AT → contains (inverted)
+#   THEN → sequence
+#   CAN_LEAD_TO → primes
+#
+# SEMANTIC DIFFERENTIATION:
+#   Instead of many types, use `role` and `direction` properties:
+#   - role: originator, believer, witness, subject, creditor, debtor
+#   - direction: support, oppose, elaborate, subsume, supersede
+#   - emotions: carry the valence (opposition → contradicts, alignment → supports)
+
+links:
+
+  # ---------------------------------------------------------------------------
+  # ENERGY CARRIERS (participate in physics tick)
+  # ---------------------------------------------------------------------------
+
+  expresses:
+    description: "Actor → Moment (draw phase energy)"
+    forward_name: expresses
+    reverse_name: expressed_by
+    valid_from: [actor]
+    valid_to: [moment]
+    energy_carrier: true
+    phase: draw
+    fields: {}
+    # Replaces: CAN_SPEAK, SAID
+
+  about:
+    description: "Moment → Any (flow phase energy)"
+    forward_name: about
+    reverse_name: referenced_by
+    valid_from: [moment]
+    valid_to: [actor, space, thing, narrative]
+    energy_carrier: true
+    phase: flow
+    fields: {}
+    # v1.2 NEW — Replaces old ATTACHED_TO (moment sense)
+
+  relates:
+    description: "Any → Any (flow + backflow energy)"
+    forward_name: relates
+    reverse_name: relates
+    valid_from: [actor, space, thing, narrative, moment]
+    valid_to: [actor, space, thing, narrative, moment]
+    energy_carrier: true
+    phase: [flow, backflow]
+    fields:
+      # Semantic properties (replaces old type differentiation)
+      role:
+        type: string
+        nullable: true
+        description: "originator, believer, witness, subject, creditor, debtor"
+      direction:
+        type: enum
+        values: [support, oppose, elaborate, subsume, supersede]
+        nullable: true
+    # Replaces: BELIEVES, ORIGINATED, ABOUT (narrative), SUPPORTS, CONTRADICTS,
+    #           ELABORATES, SUBSUMES, SUPERSEDES
+
+  attached_to:
+    description: "Thing → Actor/Space (flow phase energy)"
+    forward_name: attached_to
+    reverse_name: has_attached
+    valid_from: [thing]
+    valid_to: [actor, space]
+    energy_carrier: true
+    phase: flow
+    fields: {}
+    # v1.2 NEW — Replaces CARRIES (inverted direction)
+
+  # ---------------------------------------------------------------------------
+  # STRUCTURAL (no energy flow, structure only)
+  # ---------------------------------------------------------------------------
+
+  contains:
+    description: "Hierarchy/containment"
+    forward_name: contains
+    reverse_name: within
+    valid_from: [space]
+    valid_to: [space, actor, thing]
+    energy_carrier: false
+    fields: {}
+    # Replaces: AT (inverted direction)
+
+  leads_to:
+    description: "Space → Space path"
+    forward_name: leads_to
+    reverse_name: reachable_from
+    valid_from: [space]
+    valid_to: [space]
+    energy_carrier: false
+    fields:
+      distance:
+        type: string
+        nullable: true
+        description: "Travel distance: '2 days', '4 hours'"
+      difficulty:
+        type: enum
+        values: [trivial, easy, moderate, hard, dangerous]
+        default: moderate
+
+  sequence:
+    description: "Moment → Moment (canonical history)"
+    forward_name: after
+    reverse_name: before
+    valid_from: [moment]
+    valid_to: [moment]
+    energy_carrier: false
+    fields:
+      tick:
+        type: int
+        required: true
+    # Replaces: THEN
+
+  primes:
+    description: "Soft causality / traversal possibility"
+    forward_name: primes
+    reverse_name: primed_by
+    valid_from: [moment]
+    valid_to: [moment]
+    energy_carrier: false
+    fields:
+      trigger:
+        type: enum
+        values: [player, auto, wait]
+        default: player
+    # Replaces: CAN_LEAD_TO
+
+  can_become:
+    description: "Thing → Thing transformation"
+    forward_name: can_become
+    reverse_name: becomes_from
+    valid_from: [thing]
+    valid_to: [thing]
+    energy_carrier: false
+    fields: {}
+    # v1.2 NEW — For thing state transitions
+
+# =============================================================================
+# INVARIANTS
+# =============================================================================
+
+invariants:
+  - "Every link.node_a and node_b must reference existing nodes"
+  - "Node weight >= 0 (unbounded)"
+  - "Node energy >= 0 (unbounded)"
+  - "Link conductivity in [0,1]"
+  - "Emotion intensity in [0,1] for each emotion tuple"
+  - "Queries cannot mutate graph"
+  - "Hot path (traversal/surface) cannot invoke LLM"
+  - "Sequence links are acyclic (no moment after itself)"
+  - "Expresses links target moments only"
+
+# =============================================================================
+# PHYSICS (v1.2)
+# =============================================================================
+#
+# KEY CHANGE: NO DECAY — energy flows through links, cooling handles lifecycle
+#
+# Energy Flow (unified traversal):
+#   flow = source.energy × rate × conductivity × weight × emotion_factor
+#   received = flow × sqrt(target.weight)
+#
+# Link Update (on every traversal):
+#   link.energy += amount × link.weight        (attention)
+#   link.strength += growth_formula            (permanent depth)
+#   link.emotions = blend(existing, flow)      (Hebbian coloring)
+#
+# Hot/Cold Filtering:
+#   heat_score = link.energy × link.weight
+#   HOT if heat_score > COLD_THRESHOLD (0.01) → in physics
+#   COLD if heat_score ≤ COLD_THRESHOLD → excluded from tick
+#   Top-N: process only hottest 20 links per node
+#
+# Link Cooling (replaces decay):
+#   - 30% of link.energy drains to connected nodes (50/50 split)
+#   - 10% of link.energy converts to permanent strength
+#   - No arbitrary decay — energy is conserved, just redistributed
+#
+# Moments exit physics when all links cold (not via status)
+#
+# Constants:
+#   GENERATION_RATE = 0.5
+#   DRAW_RATE = 0.3
+#   BACKFLOW_RATE = 0.1
+#   COLD_THRESHOLD = 0.01
+#   TOP_N_LINKS = 20
+#   LINK_DRAIN_RATE = 0.3
+#   LINK_TO_STRENGTH_RATE = 0.1
+
+# =============================================================================
+# MIGRATION TO v1.2
+# =============================================================================
+#
+# FROM v1.1:
+#
+# Link type changes:
+#   - ADDED: about (Moment → Any, flow phase)
+#   - ADDED: attached_to (Thing → Actor/Space, flow phase)
+#   - CHANGED: can_become now Thing → Thing (was Moment → Moment, use primes instead)
+#
+# Link field additions:
+#   - weight (unbounded, for heat_score)
+#   - energy (unbounded, for hot/cold filtering)
+#   - strength (unbounded, permanent growth)
+#   - role (semantic: originator, believer, witness, subject, creditor, debtor)
+#   - direction (semantic: support, oppose, elaborate, subsume, supersede)
+#
+# Physics changes:
+#   - NO DECAY — link cooling replaces decay
+#   - Hot/cold filtering via heat_score
+#   - Top-N link filter (20 per node)
+#   - Unified traversal updates energy + strength + emotions
+#
+# FROM LEGACY LINK TYPES:
+#
+# Old Type           → New Type + Properties
+# ─────────────────────────────────────────────────────────────
+# BELIEVES           → relates (role: believer)
+# ORIGINATED         → relates (role: originator, higher weight)
+# ABOUT (narrative)  → relates
+# SUPPORTS           → relates (direction: support, emotions: [[alignment, X]])
+# CONTRADICTS        → relates (direction: oppose, emotions: [[opposition, X]])
+# ELABORATES         → relates (direction: elaborate)
+# SUBSUMES           → relates (direction: subsume)
+# SUPERSEDES         → relates (direction: supersede)
+# CAN_SPEAK          → expresses
+# SAID               → expresses
+# ATTACHED_TO (mom)  → about (Moment → Any)
+# CARRIES            → attached_to (Thing → Actor, INVERTED)
+# AT                 → contains (Space → Actor, INVERTED)
+# THEN               → sequence
+# CAN_LEAD_TO        → primes
+#
+# Direction inversion examples:
+#   OLD: actor_aldric -[AT]-> space_hall
+#   NEW: space_hall -[contains]-> actor_aldric
+#
+#   OLD: actor_aldric -[CARRIES]-> thing_sword
+#   NEW: thing_sword -[attached_to]-> actor_aldric

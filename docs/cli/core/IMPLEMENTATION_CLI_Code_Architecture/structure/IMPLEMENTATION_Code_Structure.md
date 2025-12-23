@@ -79,7 +79,7 @@ Key data structures such as `ValidationResult`, `DoctorIssue`, `RepairResult`, a
 |-------------|-----------|--------------|
 | `main()` | `ngram/cli.py:42` | `ngram` CLI |
 | `run_doctor()` | `ngram/doctor.py:127` | `ngram doctor` |
-| `run_repair()` | `ngram/repair.py:970` | `ngram repair` |
+| `run_repair()` | `ngram/repair.py:970` | `ngram work` |
 | `print_bootstrap_prompt()` | `ngram/prompt.py:30` | `ngram prompt` |
 | `generate_repo_overview()` | `ngram/repo_overview.py:12` | `ngram overview` |
 

@@ -68,7 +68,14 @@ boundaries that separate orchestration from transport concerns.
 <!-- @ngram:todo Document the API versioning strategy once public clients exist. -->
 <!-- @ngram:todo Clarify whether debug SSE should be behind auth or dev-only config. -->
 <!-- @ngram:proposition Split the app factory into per-router factories when the surface grows. -->
-<!-- @ngram:escalation Should health checks include a read-only scenario asset check? -->
+<!-- @ngram:escalation
+title: "Should health checks include a read-only scenario asset check?"
+priority: 5
+response:
+  status: resolved
+  choice: "N/A — wrong scope"
+  notes: "2025-12-23: Scenarios are Blood Ledger scope, not ngram. Remove scenario references from ngram repo; health checks stay simple (DB/graph connectivity only)."
+-->
 
 ## CHAIN
 

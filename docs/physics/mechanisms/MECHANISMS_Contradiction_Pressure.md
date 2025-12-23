@@ -17,9 +17,9 @@ CREATED: 2025-12-21
 
 ## PURPOSE
 
-Represent “alternatives remain alive” as a physical local force:
+Represent "alternatives remain alive" as a physical local force:
 - contradictions (RELATES.polarity < 0) create pressure,
-- pressure influences surfacing indirectly (via membrane / thresholds / tension boost),
+- pressure influences surfacing indirectly (via membrane / thresholds / pressure boost),
 - without deleting alternatives and without fiat narration.
 
 ---
@@ -72,7 +72,7 @@ pressure_next = clamp( pressure_prev * pressure_decay(place) + pressure_instant,
 Pressure MUST NOT create nodes or set statuses directly.
 
 It may:
-- scale `tension_pressure` input to `apply_tension_boost`
+- scale `dramatic_pressure` input to `apply_dramatic_boost`
 - offset activation threshold via membrane (dynamic function)
 - adjust decay scale via membrane
 

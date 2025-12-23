@@ -103,7 +103,7 @@ Original file: SYNC_Moment_Graph_Engine.md
 ### 2025-12-19: Verified moment graph query helpers
 
 - **What:** Reviewed `get_dormant_moments`, `get_wait_triggers`, and
-  `get_moments_attached_to_tension` in `engine/moment_graph/queries.py`.
+  pressure-attached moment queries in `engine/moment_graph/queries.py`.
 - **Why:** Repair task flagged incomplete implementations.
 - **Files:** `engine/moment_graph/queries.py`
 - **Result:** Implementations already present; no code changes required.

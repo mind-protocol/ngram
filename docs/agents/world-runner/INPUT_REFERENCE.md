@@ -39,7 +39,7 @@ interface FlipContext {
 }
 
 interface Flip {
-  tension_id: string;
+  narrative_id: string;
   pressure: number;
   breaking_point: number;
   trigger_reason: string;
@@ -80,7 +80,7 @@ interface PlayerContext {
 
 - Focus on **why the flip happened** and **who it affects**.
 - Scale outcomes to time span (minutes → small, days → cascade).
-- If a flip destabilizes new tensions, report cascades.
+- If a flip destabilizes new pressure dynamics, report cascades.
 
 ---
 

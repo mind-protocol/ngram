@@ -1044,7 +1044,7 @@ tests:
       - Run 20 ticks
       - Count pressure points with level > 0.7
     expected: "At least one pressure point is 'hot'."
-    assertion: count(pressure.level > 0.7) >= 1
+    assertion: count(pressure_point.level > 0.7) >= 1
   
   - id: T17
     behavior: B17 (no_explosion_freeze)
@@ -1059,7 +1059,7 @@ tests:
   
   - id: T18
     behavior: B18 (breaks_ripple)
-    scenario: "Break affects other tensions."
+    scenario: "Break affects other pressure points."
     setup:
       - pressure_A at 0.88, pressure_B at 0.85
       - Breaking A creates narrative that supports B's narratives

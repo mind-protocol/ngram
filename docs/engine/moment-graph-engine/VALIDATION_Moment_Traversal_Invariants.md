@@ -28,8 +28,8 @@ IMPL:            ../../../engine/moment_graph/traversal.py
   `possible`, `active`, `spoken`, `dormant`, `decayed`.
 - Weight updates are clamped to [0, 1].
 - Traversal updates always write a `THEN` link between origin and target.
-- `tick_spoken` is set when a moment becomes `spoken`.
-- `tick_decayed` is set when a moment becomes `decayed`.
+- `tick_resolved` is set when a moment becomes `spoken`.
+- `tick_resolved` is set when a moment becomes `decayed`.
 - Surfacing only activates moments from `possible` status.
 - Presence-gated visibility requires all `presence_required` attachments to be
   present in the view context.
@@ -48,5 +48,5 @@ IMPL:            ../../../engine/moment_graph/traversal.py
 - Click traversal returns no match even when a transition exists (word matching
   mismatch).
 - Weight transfer writes NaN or values outside [0, 1].
-- Wait triggers fire without `tick_spoken` or with incorrect tick math.
+- Wait triggers fire without `tick_resolved` or with incorrect tick math.
 - Scene change leaves moments in `active` state for old locations.

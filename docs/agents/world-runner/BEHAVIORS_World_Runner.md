@@ -28,9 +28,9 @@ This interface is the only observable contract the Narrator consumes after a lon
 
 | Behavior ID | Objective | Why It Matters |
 |-------------|-----------|----------------|
-| B1 | Keep injection payloads grounded in deterministic evaluation of the canonical graph and tension flips so narrators see the same reality every run. | Ensures follow-up narration can rely on consistent world state instead of guessing what the runner did during the tick loop. |
+| B1 | Keep injection payloads grounded in deterministic evaluation of the canonical graph and pressure flips so narrators see the same reality every run. | Ensures follow-up narration can rely on consistent world state instead of guessing what the runner did during the tick loop. |
 | B2 | Interrupt immediately when a player-facing flip occurs and surface the triggering payload along with the remaining duration for resumption. | Lets the narrator split long actions cleanly so players always react to interrupts with faithful context about why time stopped. |
-| B3 | Complete the requested duration when no player-facing flips arise, summarizing background changes and elapsed minutes for scene continuity. | Supplies narrators with the quiet aftermath data they need to keep world news and tension updates in sync without rerunning the simulation. |
+| B3 | Complete the requested duration when no player-facing flips arise, summarizing background changes and elapsed minutes for scene continuity. | Supplies narrators with the quiet aftermath data they need to keep world news and pressure updates in sync without rerunning the simulation. |
 | B4 | Append low-urgency beats to the injection queue without interrupting the current scene, documenting supplemental reactions for optional narration. | Gives narrators optional hooks for flavor beats while preserving the smooth pacing of the ongoing scene and the deterministic interrupt contract. |
 
 The table above spells out how each observable behavior ties back to the runner contract so the narrator can audit interrupts, completions, and queued beats against explicit objectives before weaving the Injection into prose, and now the objective rows explicitly reference the output channels (`world_changes`, `news_available`, `remaining`, and `interrupted`) each behavior drives so narrators know which payload fields to trust.
@@ -78,7 +78,7 @@ See `docs/agents/world-runner/TOOL_REFERENCE.md` for canonical schemas.
 **Inputs:**
 - Long action intent + expected duration from the Narrator.
 - Playthrough context (id, player identity, location, current scene).
-- Graph state and tension records queried at tick time.
+- Graph state and pressure records queried at tick time.
 
 **Outputs:**
 - Injection payload describing interrupt/completion and elapsed time.
@@ -133,9 +133,9 @@ interface WorldChange {
 type WorldChangeType =
   | 'narrative_created'
   | 'narrative_updated'
-  | 'tension_created'
-  | 'tension_resolved'
-  | 'tension_pressure_changed'
+  | 'pressure_created'
+  | 'pressure_resolved'
+  | 'pressure_changed'
   | 'character_moved'
   | 'belief_changed';
 ```

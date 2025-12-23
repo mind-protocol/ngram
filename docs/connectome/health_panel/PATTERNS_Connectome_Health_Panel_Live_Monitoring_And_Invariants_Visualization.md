@@ -11,7 +11,7 @@ VERIFIED: N/A against N/A
 ## CHAIN
 
 ```
-OBJECTIFS:      ./OBJECTIFS_Connectome_Health_Panel_Metrics_Display_And_Realtime_Feedback.md
+OBJECTIVES:      ./OBJECTIVES_Connectome_Health_Panel_Metrics_Display_And_Realtime_Feedback.md
 THIS:            PATTERNS_Connectome_Health_Panel_Live_Monitoring_And_Invariants_Visualization.md (you are here)
 IMPLEMENTATION:  ../../components/connectome_health_panel.tsx
 SYNC:            ./SYNC_Connectome_Health_Panel_Sync_Current_State.md
