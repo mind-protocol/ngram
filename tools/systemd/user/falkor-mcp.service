@@ -1,0 +1,22 @@
+[Unit]
+Description=FalkorDB MCP Server (dev)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/FalkorDB-MCPServer
+Environment=PATH=%h/.nvm/versions/node/v24.10.0/bin:/usr/bin:/bin
+Environment=NODE_ENV=development
+Environment=MCP_API_KEY=
+Environment=HOST=127.0.0.1
+Environment=PORT=3005
+ExecStartPre=/bin/mkdir -p %h/ngram/.ngram/logs
+ExecStart=/bin/bash -lc '%h/.nvm/versions/node/v24.10.0/bin/npm run dev 2> >(tee -a %h/ngram/.ngram/error.log >&2) | tee -a %h/ngram/.ngram/logs/falkor-mcp.log'
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,30 @@
+# Scenario 3 — Contradiction pressure rises after selection
+
+meta:
+  id: scn_contradiction_pressure
+  created: 2025-12-21
+  purpose: "RELATES polarity<0 yields pressure that modulates surfacing indirectly."
+graph:
+  place: P1_Inn_CommonRoom
+  narratives:
+    - id: N_Alt_A
+      focus: 1.0
+    - id: N_Alt_B
+      focus: 1.0
+links:
+  - type: RELATES
+    from: N_Alt_A
+    to: N_Alt_B
+    role: descriptive
+    mode: semantic
+    strength: 0.9
+    confidence: 0.8
+    polarity: -0.7
+expected:
+  after_tick_1:
+    - "pressure_instant > 0"
+    - "pressure_next >= pressure_instant (unless pressure_decay very low)"
+observability:
+  log:
+    - pressure_value
+    - top_contradiction_edges

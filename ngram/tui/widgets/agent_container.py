@@ -8,10 +8,70 @@ Tabs:
 - DOCTOR: Shows health check results
 """
 
-from typing import TYPE_CHECKING
+import asyncio
+from typing import TYPE_CHECKING, Optional
 
 from textual.containers import Container, VerticalScroll, Horizontal, ScrollableContainer
 from textual.widgets import Static, TabbedContent, TabPane, Markdown
+
+
+# Shimmer colors - warm tones matching the Wood & Paper theme
+SHIMMER_COLORS = ["#8B4513", "#D2691E", "#CD853F", "#DEB887", "#CD853F", "#D2691E"]
+
+
+class ShimmerStatic(Static):
+    """Static widget with animated shimmer effect for running agents."""
+
+    def __init__(self, symbol: str, text: str, **kwargs) -> None:
+        super().__init__("", **kwargs)
+        self._symbol = symbol
+        self._text = text
+        self._shimmer_pos = 0
+        self._shimmer_task: Optional[asyncio.Task] = None
+        self._stopped = False
+
+    def on_mount(self) -> None:
+        """Start shimmer animation on mount."""
+        self._shimmer_task = asyncio.create_task(self._animate_shimmer())
+
+    def _render_shimmer(self) -> str:
+        """Render text with shimmer effect at current position."""
+        result = f"{self._symbol} "
+        text = self._text
+        shimmer_width = 4  # Width of the shimmer wave
+
+        for i, char in enumerate(text):
+            # Calculate distance from shimmer position
+            dist = abs(i - self._shimmer_pos)
+            if dist < shimmer_width:
+                color_idx = dist % len(SHIMMER_COLORS)
+                result += f"[{SHIMMER_COLORS[color_idx]}]{char}[/]"
+            else:
+                result += f"[#A0522D]{char}[/]"  # Base color (sienna)
+
+        return result
+
+    async def _animate_shimmer(self) -> None:
+        """Animate the shimmer effect."""
+        try:
+            while not self._stopped:
+                self.update(self._render_shimmer())
+                self._shimmer_pos = (self._shimmer_pos + 1) % (len(self._text) + 8)
+                await asyncio.sleep(0.25)  # 250ms interval
+        except asyncio.CancelledError:
+            pass
+        except Exception:
+            pass  # Widget removed or app closing
+
+    def stop_shimmer(self, final_text: str = "") -> None:
+        """Stop the shimmer animation and show final text."""
+        self._stopped = True
+        if self._shimmer_task:
+            self._shimmer_task.cancel()
+        if final_text:
+            self.update(final_text)
+        else:
+            self.update(f"{self._symbol} [dim]{self._text}[/]")
 
 
 class ClickableStatic(Static):
@@ -91,6 +151,7 @@ class AgentContainer(Container):
         self._completed_ids: set[str] = set()
         self._max_markdown_chars = 20000
         self._markdown_cache: dict[str, tuple[str, object]] = {}
+        self._shimmer_widgets: dict[str, ShimmerStatic] = {}  # agent_id -> ShimmerStatic
 
     def _prepare_markdown(self, content: str, label: str) -> str:
         """Truncate large markdown content to keep tab rendering responsive."""
@@ -284,6 +345,27 @@ class AgentContainer(Container):
             scroll.scroll_end(animate=False)
         except Exception as e:
             self.log.error(f"add_summary failed: {e}")
+
+    def add_shimmer_agent(self, agent_id: str, symbol: str, text: str) -> None:
+        """Add a shimmering status line for a running agent."""
+        try:
+            scroll = self.app.query_one("#summary-log", VerticalScroll)
+            # Remove placeholder if present
+            for child in list(scroll.children):
+                if hasattr(child, 'has_class') and child.has_class("placeholder"):
+                    child.remove()
+            shimmer = ShimmerStatic(symbol, text)
+            self._shimmer_widgets[agent_id] = shimmer
+            scroll.mount(shimmer)
+            scroll.scroll_end(animate=False)
+        except Exception as e:
+            self.log.error(f"add_shimmer_agent failed: {e}")
+
+    def stop_shimmer_agent(self, agent_id: str, final_text: str) -> None:
+        """Stop shimmer animation for an agent and show final status."""
+        shimmer = self._shimmer_widgets.pop(agent_id, None)
+        if shimmer:
+            shimmer.stop_shimmer(final_text)
 
     def clear_summary(self) -> None:
         """Clear the summary log."""

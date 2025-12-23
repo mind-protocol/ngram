@@ -1,0 +1,16 @@
+296980:C 21 Dec 2025 08:51:54.394 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+296980:C 21 Dec 2025 08:51:54.394 # Redis version=6.0.16, bits=64, commit=00000000, modified=0, pid=296980, just started
+296980:C 21 Dec 2025 08:51:54.394 # Configuration loaded
+296980:M 21 Dec 2025 08:51:54.395 # Could not create server TCP listening socket *:6379: unable to bind socket, errno: 1
+297154:C 21 Dec 2025 08:52:12.796 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+297154:C 21 Dec 2025 08:52:12.796 # Redis version=6.0.16, bits=64, commit=00000000, modified=0, pid=297154, just started
+297154:C 21 Dec 2025 08:52:12.796 # Configuration loaded
+297154:M 21 Dec 2025 08:52:12.797 # Could not create server TCP listening socket 127.0.0.1:6379: unable to bind socket, errno: 1
+297324:C 21 Dec 2025 08:52:24.547 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+297324:C 21 Dec 2025 08:52:24.547 # Redis version=6.0.16, bits=64, commit=00000000, modified=0, pid=297324, just started
+297324:C 21 Dec 2025 08:52:24.547 # Configuration loaded
+297324:M 21 Dec 2025 08:52:24.548 # Could not create server TCP listening socket 127.0.0.1:6380: unable to bind socket, errno: 1
+297722:C 21 Dec 2025 08:53:01.080 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+297722:C 21 Dec 2025 08:53:01.080 # Redis version=6.0.16, bits=64, commit=00000000, modified=0, pid=297722, just started
+297722:C 21 Dec 2025 08:53:01.080 # Configuration loaded
+297722:M 21 Dec 2025 08:53:01.081 # Could not create server TCP listening socket 127.0.0.1:3002: unable to bind socket, errno: 1

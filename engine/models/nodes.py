@@ -1,22 +1,32 @@
 """
-Blood Ledger — Node Models
+Node Models — Generic Schema Types
 
-The 4 node types: Character, Place, Thing, Narrative, Moment
-Based on SCHEMA.md v5.1
+The 5 node types: Actor, Space, Thing, Narrative, Moment
+Based on schema.yaml v1.2
+
+v1.2 CHANGES:
+    - No decay — energy flows through links, cooling handles lifecycle
+    - Moment.duration_minutes: affects radiation rate (1/duration×12 per tick)
+    - Moments exit physics when all links cold (no LINGERING status)
+
+v1.1 CHANGES:
+    - MomentStatus: POSSIBLE, ACTIVE, COMPLETED, REJECTED, INTERRUPTED, OVERRIDDEN
+    - Moment: tick_created, tick_activated, tick_resolved; prose/sketch fields
+    - All nodes: energy/weight unbounded (no le=1.0)
 
 DOCS: docs/schema/
 
 TESTS:
-    engine/tests/test_models.py::TestCharacterModel
-    engine/tests/test_models.py::TestPlaceModel
+    engine/tests/test_models.py::TestActorModel
+    engine/tests/test_models.py::TestSpaceModel
     engine/tests/test_models.py::TestThingModel
     engine/tests/test_models.py::TestNarrativeModel
     engine/tests/test_models.py::TestMomentModel
     engine/tests/test_integration_scenarios.py (structural tests)
 
 VALIDATES:
-    V2.1: Character invariants (id, name, type, skills, voice, personality)
-    V2.2: Place invariants (id, name, type, atmosphere)
+    V2.1: Actor invariants (id, name, type, voice, personality)
+    V2.2: Space invariants (id, name, type, atmosphere)
     V2.3: Thing invariants (id, name, type, significance, portable)
     V2.4: Narrative invariants (id, name, content, type, weight, focus, truth)
     V2.6: Moment invariants (id, text, type, tick)
@@ -30,8 +40,8 @@ from typing import List, Optional
 from pydantic import BaseModel, Field
 
 from .base import (
-    CharacterType, Face, Skills, CharacterVoice, Personality, Backstory, Modifier,
-    PlaceType, Atmosphere,
+    ActorType, Face, ActorVoice, Personality, Backstory, Modifier,
+    SpaceType, Atmosphere,
     ThingType, Significance,
     NarrativeType, NarrativeTone, NarrativeVoice, NarrativeAbout,
     NarrativeSource,
@@ -39,23 +49,26 @@ from .base import (
 )
 
 
-class Character(BaseModel):
+class Actor(BaseModel):
     """
-    CHARACTER - A person who exists in the world, with voice, history, and agency.
+    ACTOR - A person who exists in the world, with voice, history, and agency.
     Anyone who can act, speak, remember, die.
     """
     id: str
     name: str
-    type: CharacterType = CharacterType.MINOR
+    type: ActorType = ActorType.MINOR
     alive: bool = True
     face: Optional[Face] = None
 
-    skills: Skills = Field(default_factory=Skills)
-    voice: CharacterVoice = Field(default_factory=CharacterVoice)
+    voice: ActorVoice = Field(default_factory=ActorVoice)
     personality: Personality = Field(default_factory=Personality)
     backstory: Backstory = Field(default_factory=Backstory)
 
     modifiers: List[Modifier] = Field(default_factory=list)
+
+    # Physics metrics (v1.1: unbounded, no capacity — decay handles runaway)
+    energy: float = Field(default=0.0, ge=0.0, description="Current energy level (unbounded)")
+    weight: float = Field(default=1.0, ge=0.0, description="Importance/inertia (unbounded)")
 
     # Embedding for semantic search
     embedding: Optional[List[float]] = Field(default=None, exclude=True)
@@ -72,17 +85,21 @@ class Character(BaseModel):
         return ". ".join(parts)
 
 
-class Place(BaseModel):
+class Space(BaseModel):
     """
-    PLACE - A location where things happen, with atmosphere and geography.
+    SPACE - A location where things happen, with atmosphere and geography.
     Anywhere that can be located, traveled to, occupied.
     """
     id: str
     name: str
-    type: PlaceType = PlaceType.VILLAGE
+    type: SpaceType = SpaceType.VILLAGE
 
     atmosphere: Atmosphere = Field(default_factory=Atmosphere)
     modifiers: List[Modifier] = Field(default_factory=list)
+
+    # Physics metrics (v1.1: unbounded, no capacity — decay handles runaway)
+    energy: float = Field(default=0.0, ge=0.0, description="Current energy level (unbounded)")
+    weight: float = Field(default=1.0, ge=0.0, description="Importance/inertia (unbounded)")
 
     # Embedding for semantic search
     embedding: Optional[List[float]] = Field(default=None, exclude=True)
@@ -111,6 +128,10 @@ class Thing(BaseModel):
     description: str = ""
 
     modifiers: List[Modifier] = Field(default_factory=list)
+
+    # Physics metrics (v1.1: unbounded, no capacity — decay handles runaway)
+    energy: float = Field(default=0.0, ge=0.0, description="Current energy level (unbounded)")
+    weight: float = Field(default=1.0, ge=0.0, description="Importance/inertia (unbounded)")
 
     # Embedding for semantic search
     embedding: Optional[List[float]] = Field(default=None, exclude=True)
@@ -162,8 +183,9 @@ class Narrative(BaseModel):
         description="For world-generated history: full description (no conversation exists)"
     )
 
-    # System fields (computed by graph engine)
-    weight: float = Field(default=0.0, ge=0.0, le=1.0, description="Importance - computed by graph engine")
+    # Physics metrics (v1.1: unbounded, no capacity — decay handles runaway)
+    energy: float = Field(default=0.0, ge=0.0, description="Current energy level (unbounded)")
+    weight: float = Field(default=1.0, ge=0.0, description="Importance/inertia (unbounded)")
     focus: float = Field(default=1.0, ge=0.1, le=3.0, description="Narrator pacing adjustment")
 
     # Director only (hidden from players/characters)
@@ -201,61 +223,76 @@ class Moment(BaseModel):
     - decayed: Pruned
 
     Links:
-        Character -[CAN_SPEAK]-> Moment (who can say this)
-        Character -[SAID]-> Moment (who said this - after spoken)
-        Moment -[ATTACHED_TO]-> Character|Place|Thing|Narrative
+        Actor -[CAN_SPEAK]-> Moment (who can say this)
+        Actor -[SAID]-> Moment (who said this - after spoken)
+        Moment -[ATTACHED_TO]-> Actor|Space|Thing|Narrative
         Moment -[CAN_LEAD_TO]-> Moment (traversal)
         Moment -[THEN]-> Moment (sequence after spoken)
-        Moment -[AT]-> Place (where it occurred)
+        Moment -[AT]-> Space (where it occurred)
         Narrative -[FROM]-> Moment (source attribution)
 
     Note: Speaker is NOT an attribute - use SAID link to find who spoke.
     """
     id: str = Field(description="Unique ID: {place}_{day}_{time}_{type}_{timestamp}")
-    text: str = Field(description="The actual text content")
     type: MomentType = MomentType.NARRATION
 
-    # Moment Graph fields
+    # Content (v1.1: prose written at creation, shown at completion)
+    prose: str = Field(
+        default="",
+        description="Full prose text — written at creation, shown at completion"
+    )
+    sketch: Optional[str] = Field(
+        default=None,
+        description="Brief description for world builder moments (optional)"
+    )
+
+    # Legacy field (deprecated, use prose instead)
+    text: str = Field(default="", description="DEPRECATED: use prose instead")
+
+    # Moment Graph fields (v1.2)
     status: MomentStatus = Field(
-        default=MomentStatus.SPOKEN,  # Default for backward compat
+        default=MomentStatus.POSSIBLE,
         description="Lifecycle status in moment graph"
+    )
+    energy: float = Field(
+        default=0.0,
+        ge=0.0,
+        description="Current energy level (unbounded, no decay — depletes via radiation)"
     )
     weight: float = Field(
         default=0.5,
-        ge=0.0, le=1.0,
-        description="Salience/importance (computed from graph topology)"
+        ge=0.0,
+        description="Salience/importance (unbounded)"
+    )
+    duration_minutes: float = Field(
+        default=0.5,
+        ge=0.0,
+        description="Expected duration — affects radiation rate (1/duration×12 per tick)"
     )
     tone: Optional[str] = Field(
         default=None,
         description="Emotional tone: bitter, hopeful, urgent, etc."
     )
 
-    # Tick tracking (expanded from single tick)
+    # Tick tracking (v1.1)
     tick_created: int = Field(
         default=0, ge=0,
-        alias="tick",
         description="World tick when moment was created"
     )
-    tick_spoken: Optional[int] = Field(
+    tick_activated: Optional[int] = Field(
         default=None,
-        description="World tick when moment was spoken (if spoken)"
+        description="World tick when moment became active (possible→active)"
     )
-    tick_decayed: Optional[int] = Field(
+    tick_resolved: Optional[int] = Field(
         default=None,
-        description="World tick when moment decayed (if decayed)"
+        description="World tick when moment was resolved (completed/rejected/interrupted/overridden)"
     )
-
-    # Backward compat alias
-    @property
-    def tick(self) -> int:
-        """Backward compat: tick refers to tick_created."""
-        return self.tick_created
 
     # Transcript reference - line number in playthroughs/{id}/transcript.json
     line: Optional[int] = Field(default=None, description="Starting line in transcript.json")
 
     # Speaker reference (derived from SAID link, not stored on node)
-    speaker: Optional[str] = Field(default=None, description="Character ID for dialogue moments")
+    speaker: Optional[str] = Field(default=None, description="Actor ID for dialogue moments")
 
     # Embedding for semantic search
     embedding: Optional[List[float]] = Field(default=None, exclude=True)
@@ -276,29 +313,53 @@ class Moment(BaseModel):
 
     def embeddable_text(self) -> str:
         """Generate text for embedding (speaker added by processor if dialogue)."""
+        content = self.prose or self.text  # prefer prose, fallback to text
         if self.type == MomentType.DIALOGUE and self.speaker:
-            return f"{self.speaker}: {self.text}"
-        return self.text
+            return f"{self.speaker}: {content}"
+        return content
 
     @property
     def should_embed(self) -> bool:
-        """Only embed if text is meaningful length."""
-        return len(self.text.strip()) > 20
+        """Only embed if content is meaningful length."""
+        content = self.prose or self.text
+        return len(content.strip()) > 20
 
     @property
     def is_active(self) -> bool:
-        """Check if moment is currently active."""
+        """Check if moment is currently active (drawing/flowing energy)."""
         return self.status == MomentStatus.ACTIVE
 
     @property
-    def is_spoken(self) -> bool:
-        """Check if moment has been spoken."""
-        return self.status == MomentStatus.SPOKEN
+    def is_completed(self) -> bool:
+        """Check if moment has been completed (liquidated, now inert bridge)."""
+        return self.status == MomentStatus.COMPLETED
 
     @property
-    def can_surface(self) -> bool:
-        """Check if moment can potentially surface."""
+    def is_resolved(self) -> bool:
+        """Check if moment has reached a terminal state."""
+        return self.status in [
+            MomentStatus.COMPLETED,
+            MomentStatus.REJECTED,
+            MomentStatus.INTERRUPTED,
+            MomentStatus.OVERRIDDEN
+        ]
+
+    @property
+    def can_draw_energy(self) -> bool:
+        """Check if moment can draw energy from connected actors.
+
+        v1.2: Both POSSIBLE and ACTIVE moments draw (POSSIBLE at reduced rate).
+        """
         return self.status in [MomentStatus.POSSIBLE, MomentStatus.ACTIVE]
 
-    class Config:
-        allow_population_by_field_name = True
+    @property
+    def radiation_rate(self) -> float:
+        """Calculate radiation rate based on duration.
+
+        v1.2: radiation_rate = 1 / (duration_minutes × 12)
+        12 ticks per minute (5 sec tick).
+        """
+        if self.duration_minutes <= 0:
+            return 1.0  # instant
+        return 1.0 / (self.duration_minutes * 12)
+

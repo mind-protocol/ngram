@@ -50,7 +50,7 @@ Inspired by agent CLIs:
 - **Input bar at bottom**: Like Claude Code's prompt
 - **Commands via `/`**: `/repair`, `/doctor`, `/help`, `/quit`
 
-The TUI wraps existing CLI functionality without replacing it. All subcommands (`ngram doctor`, `ngram repair`, etc.) continue to work.
+The TUI wraps existing CLI functionality without replacing it. All subcommands (`ngram doctor`, `ngram work`, etc.) continue to work.
 
 ---
 
@@ -161,4 +161,12 @@ IMPL: ngram/tui/manager.py
 <!-- @ngram:todo Consider keyboard shortcuts (Ctrl+R for repair, Ctrl+D for doctor) -->
 <!-- @ngram:todo How to handle very long agent outputs? Auto-scroll? Truncation? -->
 <!-- @ngram:proposition Agent history panel showing completed agents -->
-<!-- @ngram:escalation Should `ngram` without args require textual, or gracefully fall back to CLI help? -->
+<!-- @ngram:escalation
+title: "Should ngram without args require Textual, or fall back to CLI help?"
+priority: 5
+response:
+  status: resolved
+  choice: "N/A — TUI deprecated"
+  behavior: "TUI replaced by Next.js web interface. CLI is for agents, web is for humans."
+  notes: "2025-12-23: Architecture changed. ngram CLI = agent interface, Next.js = human interface."
+-->

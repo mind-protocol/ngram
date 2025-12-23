@@ -1,7 +1,7 @@
 # SYNC: SSE API Module
 
 ## CHAIN:
-OBJECTIFS: ./OBJECTIFS_SSE_API.md
+OBJECTIVES: ./OBJECTIVES_SSE_API.md
 PATTERNS: ./PATTERNS_SSE_API.md
 BEHAVIORS: ./BEHAVIORS_SSE_API.md
 ALGORITHM: ./ALGORITHM_SSE_API.md
@@ -26,6 +26,6 @@ This document tracks changes and synchronization status for the `app/api/sse` mo
   - Updated `SYNC_SSE_API.md` to reflect the completed documentation set and current status.
 
 - **2023-11-20: Initial Documentation (Agent)**
-  - Created `OBJECTIFS_SSE_API.md`, `PATTERNS_SSE_API.md`, and `SYNC_SSE_API.md` to document the purpose, behavior, and design patterns of the SSE API module.
+  - Created `OBJECTIVES_SSE_API.md`, `PATTERNS_SSE_API.md`, and `SYNC_SSE_API.md` to document the purpose, behavior, and design patterns of the SSE API module.
   - Added mapping for `app/api/sse/**` to `docs/api/sse/` in `modules.yaml`.
   - Added `DOCS:` reference to `app/api/sse/route.ts`.

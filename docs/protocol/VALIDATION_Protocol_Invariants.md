@@ -245,4 +245,12 @@ RESULT:
 <!-- @ngram:todo Implement validate_protocol.py (umbrella script) -->
 <!-- @ngram:todo CI integration for validation -->
 <!-- @ngram:proposition Pre-commit hook for SYNC update reminder -->
-<!-- @ngram:escalation How strict should validation be? Warn vs block? -->
+<!-- @ngram:escalation
+title: "How strict should validation be? Warn vs block?"
+priority: 5
+response:
+  status: resolved
+  choice: "Persist valid, return precise errors"
+  behavior: "Never block entirely. Persist everything persistable. Return structured errors with exact fix instructions. Output optimized for agent consumption — machine-parseable, actionable."
+  notes: "2025-12-23: CLI is for agents. Be maximally helpful. Decided by Nicolas."
+-->

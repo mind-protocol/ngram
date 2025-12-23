@@ -100,7 +100,7 @@ def check_project_sync_exists(target_dir: Path) -> ValidationResult:
 
 
 def check_module_docs_minimum(target_dir: Path) -> ValidationResult:
-    """V2: Every module doc folder has PATTERNS + SYNC minimum."""
+    """V2: Every module doc folder has OBJECTIVES + PATTERNS + SYNC minimum."""
     docs_dir = target_dir / "docs"
 
     if not docs_dir.exists():
@@ -118,9 +118,12 @@ def check_module_docs_minimum(target_dir: Path) -> ValidationResult:
     for module_dir in modules:
         md_files = list(module_dir.glob("*.md"))
 
+        has_objectifs = any("OBJECTIVES_" in f.name for f in md_files)
         has_patterns = any("PATTERNS_" in f.name for f in md_files)
         has_sync = any("SYNC_" in f.name for f in md_files)
 
+        if not has_objectifs:
+            issues.append(f"{module_dir.relative_to(target_dir)}: missing OBJECTIVES_*.md")
         if not has_patterns:
             issues.append(f"{module_dir.relative_to(target_dir)}: missing PATTERNS_*.md")
         if not has_sync:
@@ -139,13 +142,13 @@ def check_module_docs_minimum(target_dir: Path) -> ValidationResult:
         check_id="V2",
         name="Module docs minimum",
         passed=True,
-        message=f"All {len(modules)} module(s) have PATTERNS + SYNC",
+        message=f"All {len(modules)} module(s) have OBJECTIVES + PATTERNS + SYNC",
         details=[]
     )
 
 
 def check_full_chain(target_dir: Path) -> ValidationResult:
-    """Check that module docs have the full chain (PATTERNS, BEHAVIORS, ALGORITHM, VALIDATION, HEALTH, SYNC)."""
+    """Check that module docs have the full chain (OBJECTIVES, BEHAVIORS, PATTERNS, ALGORITHM, VALIDATION, HEALTH, SYNC)."""
     docs_dir = target_dir / "docs"
 
     if not docs_dir.exists():
@@ -158,7 +161,16 @@ def check_full_chain(target_dir: Path) -> ValidationResult:
         )
 
     # Full chain doc types (in order)
-    full_chain = ["PATTERNS_", "BEHAVIORS_", "ALGORITHM_", "VALIDATION_", "IMPLEMENTATION_", "HEALTH_", "SYNC_"]
+    full_chain = [
+        "OBJECTIVES_",
+        "BEHAVIORS_",
+        "PATTERNS_",
+        "ALGORITHM_",
+        "VALIDATION_",
+        "IMPLEMENTATION_",
+        "HEALTH_",
+        "SYNC_",
+    ]
 
     issues = []
     modules = find_module_directories(docs_dir)
@@ -188,7 +200,7 @@ def check_full_chain(target_dir: Path) -> ValidationResult:
         check_id="FC",
         name="Full chain",
         passed=True,
-        message=f"All {len(modules)} module(s) have full chain (6 doc types)",
+        message=f"All {len(modules)} module(s) have full chain (8 doc types)",
         details=[]
     )
 
@@ -210,7 +222,10 @@ def check_chain_links(target_dir: Path) -> ValidationResult:
     files_checked = 0
 
     # Pattern to match CHAIN section links
-    chain_pattern = re.compile(r'^\s*(PATTERNS|BEHAVIORS|ALGORITHM|VALIDATION|IMPLEMENTATION|HEALTH|SYNC|THIS):\s*(.+\.md)\s*$', re.MULTILINE)
+    chain_pattern = re.compile(
+        r'^\s*(OBJECTIVES|BEHAVIORS|PATTERNS|ALGORITHM|VALIDATION|IMPLEMENTATION|HEALTH|SYNC|THIS):\s*(.+\.md)\s*$',
+        re.MULTILINE
+    )
 
     for md_file in docs_dir.rglob("*.md"):
         content = md_file.read_text()
@@ -273,8 +288,9 @@ def check_naming_conventions(target_dir: Path) -> ValidationResult:
 
     # Expected prefixes (plural form with underscore)
     expected_prefixes = [
-        "PATTERNS_",
+        "OBJECTIVES_",
         "BEHAVIORS_",
+        "PATTERNS_",
         "ALGORITHM_",
         "VALIDATION_",
         "IMPLEMENTATION_",
@@ -293,6 +309,7 @@ def check_naming_conventions(target_dir: Path) -> ValidationResult:
         "ALGORITHMS_": "Should be: ALGORITHM_ (singular)",
         "VALIDATIONS_": "Should be: VALIDATION_ (singular)",
         "CONCEPTS_": "Should be: CONCEPT_ (singular)",
+        "OBJECTIF_": "Should be: OBJECTIVES_ (plural)",
     }
 
     for md_file in docs_dir.rglob("*.md"):
@@ -498,6 +515,7 @@ def generate_fix_prompt(target_dir: Path, results: List[ValidationResult]) -> st
         elif result.check_id == "V2":
             prompt_parts.append("### What's Wrong\n")
             prompt_parts.append("Some modules have incomplete documentation. Every module needs at minimum:\n")
+            prompt_parts.append("- `OBJECTIVES_*.md` — Ranked goals and tradeoffs\n")
             prompt_parts.append("- `PATTERNS_*.md` — Why this design exists\n")
             prompt_parts.append("- `SYNC_*.md` — Current state of the module\n\n")
 
@@ -506,29 +524,32 @@ def generate_fix_prompt(target_dir: Path, results: List[ValidationResult]) -> st
                 prompt_parts.append(f"- {detail}\n")
 
             prompt_parts.append("\n### Why It Matters\n")
+            prompt_parts.append("Without OBJECTIVES, agents don't know what to optimize.\n")
             prompt_parts.append("Without PATTERNS, agents don't know *why* the module is shaped this way.\n")
             prompt_parts.append("Without SYNC, agents don't know the current state or what to continue.\n\n")
 
             prompt_parts.append("### How to Fix\n")
             prompt_parts.append("Use **VIEW_Document_Create_Module_Documentation.md** to create proper docs:\n")
             prompt_parts.append("1. Read the module's code to understand it\n")
-            prompt_parts.append("2. Create PATTERNS with descriptive name (e.g., `PATTERNS_Why_Event_Sourcing.md`)\n")
-            prompt_parts.append("3. Create SYNC with current state\n\n")
+            prompt_parts.append("2. Create OBJECTIVES with descriptive name (e.g., `OBJECTIVES_Event_Store_Goals.md`)\n")
+            prompt_parts.append("3. Create PATTERNS with descriptive name (e.g., `PATTERNS_Why_Event_Sourcing.md`)\n")
+            prompt_parts.append("4. Create SYNC with current state\n\n")
 
             prompt_parts.append("### Reference\n")
             prompt_parts.append("- VIEW: `.ngram/views/VIEW_Document_Create_Module_Documentation.md`\n")
-            prompt_parts.append("- Templates: `.ngram/templates/PATTERNS_TEMPLATE.md`, `SYNC_TEMPLATE.md`\n\n")
+            prompt_parts.append("- Templates: `.ngram/templates/OBJECTIVES_TEMPLATE.md`, `PATTERNS_TEMPLATE.md`, `SYNC_TEMPLATE.md`\n\n")
 
         elif result.check_id == "FC":
             prompt_parts.append("### What's Wrong\n")
             prompt_parts.append("Some modules don't have the full documentation chain. The complete chain is:\n")
-            prompt_parts.append("1. `PATTERNS_*.md` — Why this design (philosophy, tradeoffs)\n")
+            prompt_parts.append("1. `OBJECTIVES_*.md` — Ranked goals and tradeoffs\n")
             prompt_parts.append("2. `BEHAVIORS_*.md` — What it should do (observable effects)\n")
-            prompt_parts.append("3. `ALGORITHM_*.md` — How it works (step-by-step logic)\n")
-            prompt_parts.append("4. `VALIDATION_*.md` — How to verify (invariants, checks)\n")
-            prompt_parts.append("5. `IMPLEMENTATION_*.md` — Code architecture (where code lives, data flows)\n")
-            prompt_parts.append("6. `HEALTH_*.md` — Health checks (verification mechanics, signals)\n")
-            prompt_parts.append("7. `SYNC_*.md` — Current state (status, handoffs)\n\n")
+            prompt_parts.append("3. `PATTERNS_*.md` — Why this design (philosophy, tradeoffs)\n")
+            prompt_parts.append("4. `ALGORITHM_*.md` — How it works (step-by-step logic)\n")
+            prompt_parts.append("5. `VALIDATION_*.md` — How to verify (invariants, checks)\n")
+            prompt_parts.append("6. `IMPLEMENTATION_*.md` — Code architecture (where code lives, data flows)\n")
+            prompt_parts.append("7. `HEALTH_*.md` — Health checks (verification mechanics, signals)\n")
+            prompt_parts.append("8. `SYNC_*.md` — Current state (status, handoffs)\n\n")
 
             prompt_parts.append("### Issues Found\n")
             for detail in result.details:
@@ -536,6 +557,7 @@ def generate_fix_prompt(target_dir: Path, results: List[ValidationResult]) -> st
 
             prompt_parts.append("\n### Why It Matters\n")
             prompt_parts.append("Each doc type answers a different question an agent might have:\n")
+            prompt_parts.append("- OBJECTIVES: \"What are we optimizing?\"\n")
             prompt_parts.append("- PATTERNS: \"Why is it shaped this way?\"\n")
             prompt_parts.append("- BEHAVIORS: \"What should it do?\"\n")
             prompt_parts.append("- ALGORITHM: \"How does it work?\"\n")
@@ -569,6 +591,7 @@ def generate_fix_prompt(target_dir: Path, results: List[ValidationResult]) -> st
             prompt_parts.append("### Correct Naming\n")
             prompt_parts.append("| Type | Pattern | Example |\n")
             prompt_parts.append("|------|---------|--------|\n")
+            prompt_parts.append("| OBJECTIVES | `OBJECTIVES_Descriptive_Name.md` | `OBJECTIVES_Event_Store_Goals.md` |\n")
             prompt_parts.append("| PATTERNS | `PATTERNS_Descriptive_Name.md` | `PATTERNS_Why_Event_Sourcing.md` |\n")
             prompt_parts.append("| BEHAVIORS | `BEHAVIORS_Descriptive_Name.md` | `BEHAVIORS_Event_Store_Operations.md` |\n")
             prompt_parts.append("| ALGORITHM | `ALGORITHM_Descriptive_Name.md` | `ALGORITHM_Projection_Rebuild.md` |\n")
@@ -604,8 +627,9 @@ def generate_fix_prompt(target_dir: Path, results: List[ValidationResult]) -> st
             prompt_parts.append("```\n")
             prompt_parts.append("## CHAIN\n")
             prompt_parts.append("\n")
-            prompt_parts.append("PATTERNS:        ./PATTERNS_Descriptive_Name.md\n")
+            prompt_parts.append("OBJECTIVES:      ./OBJECTIVES_Descriptive_Name.md\n")
             prompt_parts.append("BEHAVIORS:       ./BEHAVIORS_Descriptive_Name.md\n")
+            prompt_parts.append("PATTERNS:        ./PATTERNS_Descriptive_Name.md\n")
             prompt_parts.append("ALGORITHM:       ./ALGORITHM_Descriptive_Name.md\n")
             prompt_parts.append("VALIDATION:      ./VALIDATION_Descriptive_Name.md\n")
             prompt_parts.append("IMPLEMENTATION:  ./IMPLEMENTATION_Descriptive_Name.md\n")

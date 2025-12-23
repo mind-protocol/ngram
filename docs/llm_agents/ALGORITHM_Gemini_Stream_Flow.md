@@ -39,7 +39,7 @@ It also documents which observable behaviors count toward that 50+ character gua
 
 ## ALGORITHM: main
 
-The `main()` entrypoint in `ngram/llms/gemini_agent.py` orchestrates argument parsing, credential resolution, tool wiring, and the streaming loop so the subprocess behaves consistently when invoked from `ngram agent` or `ngram repair`.
+The `main()` entrypoint in `ngram/llms/gemini_agent.py` orchestrates argument parsing, credential resolution, tool wiring, and the streaming loop so the subprocess behaves consistently when invoked from `ngram agent` or `ngram work`.
 The steps listed below mirror the order `main()` uses to call `parse_args`, bootstrap `dotenv`, configure tools, and unwind the streaming response.
 That explicit mapping highlights the single responsible function so the doctor can point code readers back to `main()` when verifying the procedure.
 Linking these steps to `main()` keeps the procedure traceable so future agents know which function to inspect when the algorithm doc drifts again.
@@ -164,7 +164,7 @@ Normalized JSON output (TUI)
 
 ## INTERACTIONS
 
-- Invoked by `ngram agent` or `ngram repair` when Gemini is the selected provider.
+- Invoked by `ngram agent` or `ngram work` when Gemini is the selected provider.
 - The TUI listens on the JSON stream (`assistant_chunks`) and renders every `type`/`content` field in agent panels.
 - Tool handlers post `tool_result` messages so the repair workflow can track side effects.
 

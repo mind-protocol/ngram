@@ -25,7 +25,7 @@ class SnapMomentContext:
     action: Optional[str] = None
     references: Set[str] = field(default_factory=set)
     importance: float = 0.0
-    tension_pressure: float = 0.0
+    dramatic_pressure: float = 0.0
     choices: int = 0
     witnessed_by_player: bool = False
     threatens: Set[str] = field(default_factory=set)
@@ -64,7 +64,7 @@ def is_interrupt(
     if moment.importance > 0.7:
         return True
 
-    if moment.tension_pressure > 0.9:
+    if moment.dramatic_pressure > 0.9:
         return True
 
     if moment.choices >= 2:

@@ -1,5 +1,5 @@
 """
-Blood Ledger — Graph Operations: Moment Lifecycle Methods
+Graph Operations: Moment Lifecycle Methods
 
 Mixin class for moment-related graph operations.
 Extracted from graph_ops.py to reduce file size.
@@ -146,7 +146,7 @@ class MomentOperationsMixin:
                 cypher_flip = """
                 MATCH (m:Moment {id: $target_id})
                 SET m.status = 'active',
-                    m.tick_spoken = $tick
+                    m.tick_resolved = $tick
                 """
                 self._query(cypher_flip, {
                     "target_id": target["id"],
@@ -167,8 +167,8 @@ class MomentOperationsMixin:
             current_tick = self._get_current_tick()
             cypher_consume = """
             MATCH (m:Moment {id: $moment_id})
-            SET m.status = 'spoken',
-                m.tick_spoken = $tick
+            SET m.status = 'completed',
+                m.tick_resolved = $tick
             """
             self._query(cypher_consume, {
                 "moment_id": moment_id,
@@ -230,7 +230,7 @@ class MomentOperationsMixin:
             cypher_flip = """
             MATCH (m:Moment {id: $moment_id})
             SET m.status = 'active',
-                m.tick_spoken = $tick
+                m.tick_resolved = $tick
             """
             self._query(cypher_flip, {
                 "moment_id": moment_id,
@@ -355,7 +355,7 @@ class MomentOperationsMixin:
         Args:
             decay_rate: Multiplier per tick (0.99 = 1% decay)
             decay_threshold: Weight below which moment decays (default 0.1)
-            current_tick: Current world tick (for tick_decayed)
+            current_tick: Current world tick (for tick_resolved)
 
         Returns:
             Dict with counts: {decayed_count, updated_count}
@@ -379,7 +379,7 @@ class MomentOperationsMixin:
         decayed_cypher = """
         MATCH (m:Moment)
         WHERE m.status = 'possible' AND m.weight < $threshold
-        SET m.status = 'decayed', m.tick_decayed = $tick
+        SET m.status = 'rejected', m.tick_resolved = $tick
         RETURN count(m)
         """
         result = self._query(decayed_cypher, {
@@ -420,7 +420,7 @@ class MomentOperationsMixin:
         """
         # Mark persistent moments as dormant
         dormant_cypher = """
-        MATCH (m:Moment)-[a:ATTACHED_TO]->(p:Place {id: $location_id})
+        MATCH (m:Moment)-[a:ATTACHED_TO]->(p:Space {id: $location_id})
         WHERE a.persistent = true AND m.status IN ['possible', 'active']
         SET m.status = 'dormant'
         RETURN count(m)
@@ -430,7 +430,7 @@ class MomentOperationsMixin:
 
         # Delete non-persistent moments attached to this location
         delete_cypher = """
-        MATCH (m:Moment)-[a:ATTACHED_TO]->(p:Place {id: $location_id})
+        MATCH (m:Moment)-[a:ATTACHED_TO]->(p:Space {id: $location_id})
         WHERE a.persistent = false AND m.status IN ['possible', 'active']
         DETACH DELETE m
         RETURN count(m)
@@ -465,7 +465,7 @@ class MomentOperationsMixin:
         Ref: ALGORITHM_Lifecycle.md § Reactivation
         """
         reactivate_cypher = """
-        MATCH (m:Moment)-[a:ATTACHED_TO]->(p:Place {id: $location_id})
+        MATCH (m:Moment)-[a:ATTACHED_TO]->(p:Space {id: $location_id})
         WHERE m.status = 'dormant'
         SET m.status = 'possible'
         RETURN count(m)
@@ -503,7 +503,7 @@ class MomentOperationsMixin:
 
         gc_cypher = """
         MATCH (m:Moment)
-        WHERE m.status = 'decayed' AND m.tick_decayed < $threshold
+        WHERE m.status = 'rejected' AND m.tick_resolved < $threshold
         DETACH DELETE m
         RETURN count(m)
         """
@@ -532,7 +532,7 @@ class MomentOperationsMixin:
         Args:
             moment_id: The moment to boost
             boost: Weight to add (0-1)
-            current_tick: Current tick for tick_spoken if flipped
+            current_tick: Current tick for tick_resolved if flipped
 
         Returns:
             Dict with {new_weight, flipped, status}
@@ -570,7 +570,7 @@ class MomentOperationsMixin:
         if flipped:
             update_cypher = """
             MATCH (m:Moment {id: $id})
-            SET m.weight = $weight, m.status = 'active', m.tick_spoken = $tick
+            SET m.weight = $weight, m.status = 'active', m.tick_resolved = $tick
             """
             self._query(update_cypher, {
                 "id": moment_id,

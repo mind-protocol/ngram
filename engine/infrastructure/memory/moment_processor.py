@@ -1,5 +1,5 @@
 """
-Blood Ledger — Moment Processor
+Moment Processor
 
 Converts narrator output (dialogue, narration) into Moment nodes.
 Manages transcript.json - the full record of all narrated content.
@@ -132,7 +132,7 @@ class MomentProcessor:
         name: Optional[str] = None,
         tone: Optional[str] = None,
         initial_weight: float = 1.0,
-        initial_status: str = "spoken"
+        initial_status: str = "completed"
     ) -> str:
         """
         Process dialogue into a Moment node.
@@ -143,7 +143,7 @@ class MomentProcessor:
             name: Optional short name for the moment ID
             tone: Emotional tone (curious, defiant, vulnerable, warm, cold, etc.)
             initial_weight: Starting weight for the moment (0-1, default 1.0 for spoken)
-            initial_status: Status (possible, active, spoken). Default "spoken" for immediate display.
+            initial_status: Status (possible, active, spoken). Default "completed" for immediate display.
 
         Returns:
             The created moment ID
@@ -174,7 +174,7 @@ class MomentProcessor:
             id=moment_id,
             text=text,
             type="dialogue",
-            tick=self._current_tick,
+            tick_created=self._current_tick,
             speaker=speaker,
             place_id=self._current_place_id,
             after_moment_id=self._last_moment_id,
@@ -183,7 +183,7 @@ class MomentProcessor:
             status=initial_status,
             weight=initial_weight,
             tone=tone,
-            tick_spoken=self._current_tick if initial_status == "spoken" else None
+            tick_resolved=self._current_tick if initial_status == "completed" else None
         )
 
         self._last_moment_id = moment_id
@@ -196,7 +196,7 @@ class MomentProcessor:
         name: Optional[str] = None,
         tone: Optional[str] = None,
         initial_weight: float = 1.0,
-        initial_status: str = "spoken"
+        initial_status: str = "completed"
     ) -> str:
         """
         Process narration into a Moment node.
@@ -206,7 +206,7 @@ class MomentProcessor:
             name: Optional short name for the moment ID
             tone: Atmospheric tone (tense, peaceful, ominous, etc.)
             initial_weight: Starting weight for the moment (0-1, default 1.0 for spoken)
-            initial_status: Status (possible, active, spoken). Default "spoken" for immediate display.
+            initial_status: Status (possible, active, spoken). Default "completed" for immediate display.
 
         Returns:
             The created moment ID
@@ -236,7 +236,7 @@ class MomentProcessor:
             id=moment_id,
             text=text,
             type="narration",
-            tick=self._current_tick,
+            tick_created=self._current_tick,
             place_id=self._current_place_id,
             after_moment_id=self._last_moment_id,
             embedding=embedding,
@@ -244,7 +244,7 @@ class MomentProcessor:
             status=initial_status,
             weight=initial_weight,
             tone=tone,
-            tick_spoken=self._current_tick if initial_status == "spoken" else None
+            tick_resolved=self._current_tick if initial_status == "completed" else None
         )
 
         self._last_moment_id = moment_id
@@ -259,7 +259,7 @@ class MomentProcessor:
         name: Optional[str] = None,
         tone: Optional[str] = None,
         initial_weight: float = 1.0,
-        initial_status: str = "spoken"
+        initial_status: str = "completed"
     ) -> str:
         """
         Process player action into a Moment node.
@@ -271,7 +271,7 @@ class MomentProcessor:
             name: Optional short name for the moment ID
             tone: Tone of the action (questioning, demanding, etc.)
             initial_weight: Starting weight for the moment (0-1, default 1.0 for spoken)
-            initial_status: Status (possible, active, spoken). Default "spoken" for immediate display.
+            initial_status: Status (possible, active, spoken). Default "completed" for immediate display.
 
         Returns:
             The created moment ID
@@ -302,7 +302,7 @@ class MomentProcessor:
             id=moment_id,
             text=text,
             type=action_type,
-            tick=self._current_tick,
+            tick_created=self._current_tick,
             speaker=player_id,
             place_id=self._current_place_id,
             after_moment_id=self._last_moment_id,
@@ -311,7 +311,7 @@ class MomentProcessor:
             status=initial_status,
             weight=initial_weight,
             tone=tone,
-            tick_spoken=self._current_tick if initial_status == "spoken" else None
+            tick_resolved=self._current_tick if initial_status == "completed" else None
         )
 
         self._last_moment_id = moment_id
@@ -364,7 +364,7 @@ class MomentProcessor:
             id=moment_id,
             text=text,
             type="hint",
-            tick=self._current_tick,
+            tick_created=self._current_tick,
             place_id=self._current_place_id,
             after_moment_id=self._last_moment_id,
             embedding=embedding,
@@ -372,7 +372,7 @@ class MomentProcessor:
             status=initial_status,
             weight=initial_weight,
             tone=tone,
-            tick_spoken=self._current_tick if initial_status in ["spoken", "active"] else None
+            tick_resolved=self._current_tick if initial_status in ["completed", "active"] else None
         )
 
         self._last_moment_id = moment_id
@@ -414,7 +414,7 @@ class MomentProcessor:
             id=moment_id,
             text=text,
             type="dialogue",
-            tick=self._current_tick,
+            tick_created=self._current_tick,
             place_id=self._current_place_id,
             status="possible",
             weight=initial_weight,

@@ -1,6 +1,6 @@
 # Graph Health & Queries
 
-Tools for validating and querying the Blood Ledger graph database.
+Tools for validating and querying the Graph Engine graph database.
 
 ## Files
 
@@ -33,33 +33,25 @@ Each query in `example_queries.cypher` has a quality rating (1-10):
 ### Scene Setup (run at every scene)
 ```cypher
 // Who is here and what do they know? (10/10)
-MATCH (c:Character)-[at:AT]->(p:Place {name: $location})
+MATCH (c:Actor)-[at:AT]->(p:Space {name: $location})
 WHERE at.present > 0.5
 OPTIONAL MATCH (c)-[b:BELIEVES]->(n:Narrative)
 WHERE b.heard > 0.5
 RETURN c.name, c.type, at.visible, collect(n.name) AS knows
 ```
 
-### Tension Tracking (10/10)
-```cypher
-// What's about to explode?
-MATCH (t:Tension)
-WHERE t.pressure > 0.7
-RETURN t.description, t.pressure, t.narrator_notes
-```
-
 ### Knowledge Network (10/10)
 ```cypher
 // False beliefs - dramatic irony gold
-MATCH (c:Character)-[b:BELIEVES]->(n:Narrative)
+MATCH (c:Actor)-[b:BELIEVES]->(n:Narrative)
 WHERE b.believes > 0.7 AND n.truth < 0.3
 RETURN c.name AS believer, n.name AS false_belief
 ```
 
 ### Secrets (10/10)
 ```cypher
-// What are characters hiding?
-MATCH (c:Character)-[b:BELIEVES]->(n:Narrative)
+// What are actors hiding?
+MATCH (c:Actor)-[b:BELIEVES]->(n:Narrative)
 WHERE b.hides > 0.5
 RETURN c.name AS keeper, n.name AS secret, n.content
 ```
@@ -90,15 +82,15 @@ The `test_schema.py` suite validates:
 - Value ranges (pressure 0-1, weight 0-1)
 
 **Link Tests:**
-- Structure: Character→Narrative (BELIEVES), Character→Place (AT), etc.
+- Structure: Actor→Narrative (BELIEVES), Actor→Space (AT), etc.
 - Value ranges on link properties (heard, believes, doubts all 0-1)
 
 **Data Quality:**
 - Orphan nodes (no relationships)
-- Characters without locations
+- Actors without locations
 - Things without location or carrier
 - Narratives without believers
-- Player character exists
+- Player actor exists
 
 ## Using Queries
 
@@ -112,7 +104,7 @@ graph = db.select_graph("blood_ledger")
 
 # Run a query
 result = graph.query("""
-    MATCH (c:Character {type: 'companion', alive: true})
+    MATCH (c:Actor {type: 'companion', alive: true})
     RETURN c.name, c.flaw
 """)
 

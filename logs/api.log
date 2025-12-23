@@ -1,0 +1,123 @@
+INFO:     Started server process [756422]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+18:53:09 INFO engine.physics.graph.graph_queries: [GraphQueries] Connected to blood_ledger
+18:53:09 INFO engine.physics.graph.graph_ops: [GraphOps] Connected to blood_ledger
+INFO:     127.0.0.1:46550 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46562 - "GET /health HTTP/1.1" 200 OK
+18:53:17 INFO engine.physics.graph.graph_queries: [GraphQueries] Connected to blood_ledger
+18:53:17 INFO engine.physics.graph.graph_ops: [GraphOps] Connected to blood_ledger
+18:53:17 INFO engine.infrastructure.orchestration.narrator: [NarratorService] Initialized, working_dir=/home/mind-protocol/ngram/engine/agents/narrator
+18:53:17 INFO engine.infrastructure.orchestration.world_runner: [WorldRunnerService] Initialized
+18:53:17 INFO engine.physics.graph.graph_queries: [GraphQueries] Connected to blood_ledger
+18:53:17 INFO engine.physics.graph.graph_ops: [GraphOps] Connected to blood_ledger
+18:53:17 INFO engine.physics.tick: [GraphTick] Initialized
+18:53:17 INFO engine.infrastructure.orchestration.orchestrator: [Orchestrator] Initialized playthrough 'test_action_pt'
+18:53:17 INFO engine.infrastructure.orchestration.orchestrator: [Orchestrator] Processing action: look around
+18:53:17 INFO engine.infrastructure.orchestration.orchestrator: [Orchestrator] player_id=char_player, player_location=None
+18:53:17 INFO engine.infrastructure.orchestration.orchestrator: [Orchestrator] Resolved location to: place_unknown
+18:53:17 ERROR engine.infrastructure.orchestration.orchestrator: [Orchestrator] Failed to build context: Place not found: place_unknown
+
+HOW TO FIX:
+Add the place first:
+  graph.add_place(id='place_unknown', name='...', type='...')
+18:53:17 INFO engine.infrastructure.orchestration.orchestrator: [Orchestrator] Scene context has 0 characters present
+18:53:17 INFO engine.infrastructure.orchestration.narrator: [NarratorService] Calling agent CLI from /home/mind-protocol/ngram/engine/agents/narrator
+18:53:17 ERROR engine.infrastructure.orchestration.narrator: [NarratorService] Agent CLI not found
+INFO:     127.0.0.1:45430 - "POST /api/action HTTP/1.1" 200 OK
+18:53:36 INFO engine.physics.graph.graph_queries: [GraphQueries] Connected to test_action_pt
+INFO:     127.0.0.1:44860 - "DELETE /api/graph/test_action_pt HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47252 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46682 - "GET /health HTTP/1.1" 200 OK
+19:36:21 INFO engine.infrastructure.api.graphs: [Graph] Cloning 'seed' -> 'pt_e21b7d3b'
+INFO:     127.0.0.1:48326 - "POST /api/graph/create HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48328 - "POST /api/graph/pt_e21b7d3b/mutate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48326 - "POST /api/graph/pt_e21b7d3b/mutate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48328 - "POST /api/graph/pt_e21b7d3b/mutate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48326 - "POST /api/graph/pt_e21b7d3b/mutate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48328 - "POST /api/graph/pt_e21b7d3b/mutate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48326 - "POST /api/graph/pt_e21b7d3b/mutate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48328 - "POST /api/graph/pt_e21b7d3b/mutate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48326 - "POST /api/graph/pt_e21b7d3b/mutate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48328 - "POST /api/graph/pt_e21b7d3b/mutate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48326 - "POST /api/graph/pt_e21b7d3b/mutate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48328 - "POST /api/graph/pt_e21b7d3b/mutate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48326 - "POST /api/graph/pt_e21b7d3b/mutate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48328 - "POST /api/graph/pt_e21b7d3b/mutate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48326 - "POST /api/graph/pt_e21b7d3b/mutate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48328 - "POST /api/graph/pt_e21b7d3b/mutate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48326 - "POST /api/graph/pt_e21b7d3b/mutate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48328 - "POST /api/graph/pt_e21b7d3b/mutate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48326 - "POST /api/graph/pt_e21b7d3b/mutate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48328 - "POST /api/graph/pt_e21b7d3b/mutate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48326 - "POST /api/graph/pt_e21b7d3b/mutate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48328 - "POST /api/graph/pt_e21b7d3b/mutate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48326 - "POST /api/graph/pt_e21b7d3b/mutate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48328 - "POST /api/graph/pt_e21b7d3b/mutate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48326 - "POST /api/graph/pt_e21b7d3b/mutate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48328 - "POST /api/graph/pt_e21b7d3b/mutate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48326 - "POST /api/graph/pt_e21b7d3b/mutate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48328 - "POST /api/graph/pt_e21b7d3b/mutate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48326 - "POST /api/graph/pt_e21b7d3b/mutate HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48328 - "POST /api/graph/pt_e21b7d3b/mutate HTTP/1.1" 200 OK
+19:36:32 INFO engine.physics.graph.graph_queries: [GraphQueries] Connected to pt_e21b7d3b
+INFO:     127.0.0.1:45566 - "GET /api/graph/pt_e21b7d3b HTTP/1.1" 200 OK
+19:36:32 INFO engine.physics.graph.graph_queries: [GraphQueries] Connected to pt_e21b7d3b
+INFO:     127.0.0.1:45580 - "POST /api/graph/pt_e21b7d3b/query HTTP/1.1" 200 OK
+19:36:43 INFO engine.physics.graph.graph_queries: [GraphQueries] Connected to pt_e21b7d3b
+INFO:     127.0.0.1:47224 - "POST /api/graph/pt_e21b7d3b/query HTTP/1.1" 200 OK
+19:36:43 INFO engine.physics.graph.graph_queries: [GraphQueries] Connected to pt_e21b7d3b
+19:36:43 INFO engine.physics.graph.graph_queries: [GraphQueries] Connected to pt_e21b7d3b
+INFO:     127.0.0.1:47234 - "GET /api/view/pt_e21b7d3b?location_id=place_thornwick HTTP/1.1" 200 OK
+19:36:43 INFO engine.physics.graph.graph_queries: [GraphQueries] Connected to pt_e21b7d3b
+19:36:43 INFO engine.physics.graph.graph_queries: [GraphQueries] Connected to pt_e21b7d3b
+INFO:     127.0.0.1:47248 - "GET /api/moment/view/pt_e21b7d3b?location_id=place_thornwick HTTP/1.1" 200 OK
+19:36:52 INFO engine.physics.graph.graph_queries: [GraphQueries] Connected to pt_e21b7d3b
+INFO:     127.0.0.1:47246 - "POST /api/graph/pt_e21b7d3b/query HTTP/1.1" 200 OK
+19:36:52 INFO engine.physics.graph.graph_queries: [GraphQueries] Connected to pt_e21b7d3b
+19:36:52 INFO engine.physics.graph.graph_queries: [GraphQueries] Connected to pt_e21b7d3b
+INFO:     127.0.0.1:47256 - "GET /api/moment/view/pt_e21b7d3b?location_id=place_thornwick HTTP/1.1" 200 OK
+19:37:01 INFO engine.physics.graph.graph_queries: [GraphQueries] Connected to blood_ledger
+19:37:01 INFO engine.physics.graph.graph_ops: [GraphOps] Connected to blood_ledger
+19:37:01 INFO engine.infrastructure.orchestration.narrator: [NarratorService] Initialized, working_dir=/home/mind-protocol/ngram/engine/agents/narrator
+19:37:01 INFO engine.infrastructure.orchestration.world_runner: [WorldRunnerService] Initialized
+19:37:01 INFO engine.physics.graph.graph_queries: [GraphQueries] Connected to blood_ledger
+19:37:01 INFO engine.physics.graph.graph_ops: [GraphOps] Connected to blood_ledger
+19:37:01 INFO engine.physics.tick: [GraphTick] Initialized
+19:37:01 INFO engine.infrastructure.orchestration.orchestrator: [Orchestrator] Initialized playthrough 'pt_e21b7d3b'
+19:37:01 INFO engine.infrastructure.orchestration.orchestrator: [Orchestrator] Processing action: I look at the ashes of my home
+19:37:01 INFO engine.infrastructure.orchestration.orchestrator: [Orchestrator] player_id=char_player, player_location=None
+19:37:01 INFO engine.infrastructure.orchestration.orchestrator: [Orchestrator] Resolved location to: place_unknown
+19:37:01 ERROR engine.infrastructure.orchestration.orchestrator: [Orchestrator] Failed to build context: Place not found: place_unknown
+
+HOW TO FIX:
+Add the place first:
+  graph.add_place(id='place_unknown', name='...', type='...')
+19:37:01 INFO engine.infrastructure.orchestration.orchestrator: [Orchestrator] Scene context has 0 characters present
+19:37:01 INFO engine.infrastructure.orchestration.narrator: [NarratorService] Calling agent CLI from /home/mind-protocol/ngram/engine/agents/narrator
+19:37:01 ERROR engine.infrastructure.orchestration.narrator: [NarratorService] Agent CLI not found
+INFO:     127.0.0.1:45968 - "POST /api/action HTTP/1.1" 200 OK
+19:37:11 INFO engine.infrastructure.orchestration.orchestrator: [Orchestrator] Processing action: I stand up
+19:37:11 INFO engine.infrastructure.orchestration.orchestrator: [Orchestrator] player_id=char_player, player_location=None
+19:37:11 INFO engine.infrastructure.orchestration.orchestrator: [Orchestrator] Resolved location to: place_unknown
+19:37:11 ERROR engine.infrastructure.orchestration.orchestrator: [Orchestrator] Failed to build context: Place not found: place_unknown
+
+HOW TO FIX:
+Add the place first:
+  graph.add_place(id='place_unknown', name='...', type='...')
+19:37:11 INFO engine.infrastructure.orchestration.orchestrator: [Orchestrator] Scene context has 0 characters present
+19:37:11 INFO engine.infrastructure.orchestration.narrator: [NarratorService] Calling agent CLI from /home/mind-protocol/ngram/engine/agents/narrator
+19:37:11 ERROR engine.infrastructure.orchestration.narrator: [NarratorService] Agent CLI not found
+INFO:     127.0.0.1:44804 - "POST /api/action HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48274 - "GET /health HTTP/1.1" 200 OK
+19:37:25 INFO engine.physics.graph.graph_queries: [GraphQueries] Connected to pt_e21b7d3b
+INFO:     127.0.0.1:48280 - "GET /api/graph/pt_e21b7d3b HTTP/1.1" 200 OK
+19:37:25 INFO engine.physics.graph.graph_queries: [GraphQueries] Connected to pt_e21b7d3b
+INFO:     127.0.0.1:48288 - "POST /api/graph/pt_e21b7d3b/query HTTP/1.1" 200 OK
+19:37:25 INFO engine.physics.graph.graph_queries: [GraphQueries] Connected to pt_e21b7d3b
+INFO:     127.0.0.1:48296 - "POST /api/graph/pt_e21b7d3b/query HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [756422]

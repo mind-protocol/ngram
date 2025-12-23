@@ -166,7 +166,7 @@ What would you do next? Related extensions, optimizations, architectural improve
 - [What future agents could tackle]
 ```
 
-**IMPORTANT:** Suggestions with `[ ]` checkboxes will be offered interactively during `ngram repair`.
+**IMPORTANT:** Suggestions with `[ ]` checkboxes will be offered interactively during `ngram work`.
 
 ---
 

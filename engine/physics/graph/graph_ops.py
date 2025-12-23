@@ -1,5 +1,5 @@
 """
-Blood Ledger — Graph Operations
+Graph Operations
 
 Write mutations to FalkorDB via YAML/JSON files.
 
@@ -44,6 +44,10 @@ from engine.physics.graph.graph_ops_types import (
     SimilarNode,
     ApplyResult,
     SIMILARITY_THRESHOLD
+)
+from engine.physics.graph.graph_ops_read_only_interface import (
+    GraphReadOps,
+    get_graph_reader,
 )
 
 logger = logging.getLogger(__name__)
@@ -144,7 +148,7 @@ Error: {e}"""
         Find nodes with embeddings similar to the given embedding.
 
         Args:
-            label: Node label (Character, Place, Thing, Narrative)
+            label: Node label (Actor, Space, Thing, Narrative)
             embedding: The embedding to compare against
             threshold: Minimum similarity to return (default 0.85)
 
@@ -200,7 +204,7 @@ Error: {e}"""
         Check if a similar node already exists.
 
         Args:
-            label: Node type (Character, Place, Thing, Narrative)
+            label: Node type (Actor, Space, Thing, Narrative)
             embedding: Embedding of the new node
             threshold: Similarity threshold
 
@@ -237,7 +241,10 @@ Error: {e}"""
         embedding: List[float] = None,
         image_prompt: str = None,
         playthrough: str = None,
-        detail: str = None
+        detail: str = None,
+        # Physics fields (schema.yaml defaults)
+        energy: float = 0.0,
+        weight: float = 0.5,
     ) -> None:
         """
         Add or update a CHARACTER node.
@@ -267,7 +274,10 @@ Error: {e}"""
             "name": name,
             "type": type,
             "alive": alive,
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.utcnow().isoformat(),
+            # Physics fields (always set)
+            "energy": energy,
+            "weight": weight,
         }
 
         if gender:
@@ -306,7 +316,7 @@ Error: {e}"""
                 props["image_path"] = image_path
 
         cypher = """
-        MERGE (n:Character {id: $id})
+        MERGE (n:Actor {id: $id})
         SET n += $props
         """
         self._query(cypher, {"id": id, "props": props})
@@ -323,7 +333,10 @@ Error: {e}"""
         embedding: List[float] = None,
         image_prompt: str = None,
         playthrough: str = None,
-        detail: str = None
+        detail: str = None,
+        # Physics fields (schema.yaml defaults)
+        energy: float = 0.0,
+        weight: float = 0.5,
     ) -> None:
         """
         Add or update a PLACE node.
@@ -346,7 +359,10 @@ Error: {e}"""
             "id": id,
             "name": name,
             "type": type,
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.utcnow().isoformat(),
+            # Physics fields (always set)
+            "energy": energy,
+            "weight": weight,
         }
 
         if mood:
@@ -369,7 +385,7 @@ Error: {e}"""
                 props["image_path"] = image_path
 
         cypher = """
-        MERGE (n:Place {id: $id})
+        MERGE (n:Space {id: $id})
         SET n += $props
         """
         self._query(cypher, {"id": id, "props": props})
@@ -387,7 +403,10 @@ Error: {e}"""
         embedding: List[float] = None,
         image_prompt: str = None,
         playthrough: str = None,
-        detail: str = None
+        detail: str = None,
+        # Physics fields (schema.yaml defaults)
+        energy: float = 0.0,
+        weight: float = 0.5,
     ) -> None:
         """
         Add or update a THING node.
@@ -446,8 +465,8 @@ Error: {e}"""
         content: str,
         type: str,
         interpretation: str = None,
-        about_characters: List[str] = None,
-        about_places: List[str] = None,
+        about_actors: List[str] = None,
+        about_spaces: List[str] = None,
         about_things: List[str] = None,
         about_relationship: List[str] = None,
         tone: str = None,
@@ -471,10 +490,10 @@ Error: {e}"""
             content: The story itself
             type: memory, account, rumor, reputation, identity, bond, oath, debt, blood, enmity, love, service, ownership, claim, control, origin, belief, prophecy, lie, secret
             interpretation: What it means (emotional/thematic weight)
-            about_characters: Character IDs this is about
-            about_places: Place IDs this is about
+            about_actors: Actor IDs this is about
+            about_spaces: Space IDs this is about
             about_things: Thing IDs this is about
-            about_relationship: Pair of character IDs (for bond/enmity types)
+            about_relationship: Pair of actor IDs (for bond/enmity types)
             tone: bitter, proud, shameful, defiant, mournful, cold, righteous, hopeful, fearful, warm, dark, sacred
             voice_style: whisper, demand, remind, accuse, plead, warn, inspire, mock, question
             voice_phrases: Example lines this narrative might say
@@ -497,10 +516,10 @@ Error: {e}"""
 
         if interpretation:
             props["interpretation"] = interpretation
-        if about_characters:
-            props["about_characters"] = json.dumps(about_characters)
-        if about_places:
-            props["about_places"] = json.dumps(about_places)
+        if about_actors:
+            props["about_actors"] = json.dumps(about_actors)
+        if about_spaces:
+            props["about_spaces"] = json.dumps(about_spaces)
         if about_things:
             props["about_things"] = json.dumps(about_things)
         if about_relationship:
@@ -526,84 +545,27 @@ Error: {e}"""
         """
         self._query(cypher, {"id": id, "props": props})
 
-        # Create OCCURRED_AT link to Place if specified
+        # Create OCCURRED_AT link to Space if specified
         if occurred_where:
             link_cypher = """
             MATCH (n:Narrative {id: $narr_id})
-            MATCH (p:Place {id: $place_id})
+            MATCH (p:Space {id: $place_id})
             MERGE (n)-[:OCCURRED_AT]->(p)
             """
             self._query(link_cypher, {"narr_id": id, "place_id": occurred_where})
 
         logger.info(f"[GraphOps] Added narrative: {name} ({id})")
 
-    def add_tension(
-        self,
-        id: str,
-        narratives: List[str],
-        description: str,
-        pressure: float = 0.0,
-        pressure_type: str = "gradual",
-        breaking_point: float = 0.9,
-        base_rate: float = 0.001,
-        trigger_at: str = None,
-        progression: List[Dict] = None,
-        narrator_notes: str = None,
-        detail: str = None
-    ) -> None:
-        """
-        Add or update a TENSION node.
-
-        Args:
-            id: Unique identifier (e.g., "tension_confrontation")
-            narratives: List of narrative IDs in tension
-            description: What this tension is about
-            pressure: Current pressure level (0-1)
-            pressure_type: gradual, scheduled, hybrid
-            breaking_point: When it breaks (usually 0.9)
-            base_rate: Pressure increase per minute (for gradual)
-            trigger_at: When it must break (for scheduled)
-            progression: Timeline steps (for scheduled/hybrid)
-            narrator_notes: How to handle the break
-        """
-        props = {
-            "id": id,
-            "narratives": json.dumps(narratives),
-            "description": description,
-            "pressure": pressure,
-            "pressure_type": pressure_type,
-            "breaking_point": breaking_point,
-            "base_rate": base_rate,
-            "created_at": datetime.utcnow().isoformat()
-        }
-
-        if trigger_at:
-            props["trigger_at"] = trigger_at
-        if progression:
-            props["progression"] = json.dumps(progression)
-        if narrator_notes:
-            props["narrator_notes"] = narrator_notes
-        if detail:
-            props["detail"] = detail
-
-        cypher = """
-        MERGE (n:Tension {id: $id})
-        SET n += $props
-        """
-        self._query(cypher, {"id": id, "props": props})
-        logger.info(f"[GraphOps] Added tension: {id}")
-
     def add_moment(
         self,
         id: str,
         text: str,
         type: str = "narration",
-        tick: int = 0,
-        status: str = "spoken",
+        tick_created: int = 0,
+        status: str = "completed",
         weight: float = 0.5,
         tone: str = None,
-        tick_spoken: int = None,
-        tick_decayed: int = None,
+        tick_resolved: int = None,
         speaker: str = None,
         place_id: str = None,
         after_moment_id: str = None,
@@ -628,12 +590,11 @@ Error: {e}"""
             id: Unique identifier (e.g., "crossing_d5_dusk_dialogue_143521")
             text: The actual text content
             type: narration, dialogue, hint, player_click, player_freeform, player_choice
-            tick: World tick when this was created
+            tick_created: World tick when this was created
             status: possible, active, spoken, dormant, decayed
             weight: 0-1, determines surfacing priority for possible moments
             tone: curious, defiant, vulnerable, warm, cold, bitter, etc.
-            tick_spoken: World tick when moment was spoken (null if not yet)
-            tick_decayed: World tick when moment decayed (null if not yet)
+            tick_resolved: World tick when moment was resolved (completed/rejected/interrupted/overridden)
             speaker: Character ID - creates SAID link (not stored as attribute)
             place_id: Where it occurred (creates AT link)
             after_moment_id: Previous moment (creates THEN link for sequence)
@@ -647,7 +608,7 @@ Error: {e}"""
             "id": id,
             "text": text,
             "type": type,
-            "tick": tick,
+            "tick_created": tick_created,
             "status": status,
             "weight": weight,
             "created_at": datetime.utcnow().isoformat()
@@ -655,10 +616,8 @@ Error: {e}"""
 
         if tone:
             props["tone"] = tone
-        if tick_spoken is not None:
-            props["tick_spoken"] = tick_spoken
-        if tick_decayed is not None:
-            props["tick_decayed"] = tick_decayed
+        if tick_resolved is not None:
+            props["tick_resolved"] = tick_resolved
         if embedding:
             props["embedding"] = embedding
         if line is not None:
@@ -705,8 +664,6 @@ Error: {e}"""
             mutations: Dict with keys:
                 - new_narratives: List of narrative dicts
                 - new_beliefs: List of belief dicts
-                - tension_updates: List of tension update dicts
-                - new_tensions: List of new tension dicts
                 - character_movements: List of movement dicts
         """
         # 1. New narratives first
@@ -739,38 +696,7 @@ Error: {e}"""
                 from_whom=belief.get("from_whom")
             )
 
-        # 3. Tension updates
-        for update in mutations.get("tension_updates", []):
-            props = {}
-            if "pressure" in update:
-                props["pressure"] = update["pressure"]
-            if update.get("resolved"):
-                props["resolved"] = True
-
-            if props:
-                cypher = """
-                MATCH (t:Tension {id: $id})
-                SET t += $props
-                """
-                self._query(cypher, {"id": update["id"], "props": props})
-                logger.info(f"[GraphOps] Updated tension: {update['id']}")
-
-        # 4. New tensions
-        for tension in mutations.get("new_tensions", []):
-            self.add_tension(
-                id=tension["id"],
-                narratives=tension["narratives"],
-                description=tension["description"],
-                pressure=tension.get("pressure", 0.0),
-                pressure_type=tension.get("pressure_type", "gradual"),
-                breaking_point=tension.get("breaking_point", 0.9),
-                base_rate=tension.get("base_rate", 0.001),
-                trigger_at=tension.get("trigger_at"),
-                progression=tension.get("progression"),
-                narrator_notes=tension.get("narrator_notes")
-            )
-
-        # 5. Character movements
+        # 3. Character movements
         for move in mutations.get("character_movements", []):
             self.move_character(
                 character_id=move["character"],
@@ -792,3 +718,4 @@ def get_graph(
 ) -> GraphOps:
     """Get a GraphOps instance."""
     return GraphOps(graph_name=graph_name, host=host, port=port)
+

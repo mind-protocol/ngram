@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Blood Ledger Schema Test Suite
+Graph Engine Schema Test Suite
 
 Verifies that the graph database matches the schema definition.
 Tests node types, required fields, valid enum values, and link structures.
@@ -27,7 +27,10 @@ except ImportError:
 
 # Project paths
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
-SCHEMA_PATH = Path(__file__).parent / "schema.yaml"
+# Base schema (authoritative) - defines node_type, type as free string
+BASE_SCHEMA_PATH = PROJECT_ROOT / "docs" / "schema" / "schema.yaml"
+# Project-specific schema - adds Graph Engine enums
+PROJECT_SCHEMA_PATH = Path(__file__).parent / "schema.yaml"
 
 
 @dataclass
@@ -66,11 +69,32 @@ class SchemaValidator:
                 print(f"Warning: Could not connect to FalkorDB: {e}")
 
     def _load_schema(self) -> Dict[str, Any]:
-        """Load schema.yaml."""
-        if SCHEMA_PATH.exists():
-            with open(SCHEMA_PATH) as f:
-                return yaml.safe_load(f)
-        return {}
+        """Load schema.yaml.
+
+        Loads base schema from docs/schema/schema.yaml (authoritative),
+        then overlays project-specific schema for Graph Engine enums.
+        """
+        schema = {}
+
+        # Load base schema (authoritative)
+        if BASE_SCHEMA_PATH.exists():
+            with open(BASE_SCHEMA_PATH) as f:
+                schema = yaml.safe_load(f) or {}
+
+        # Overlay project-specific schema
+        if PROJECT_SCHEMA_PATH.exists():
+            with open(PROJECT_SCHEMA_PATH) as f:
+                project = yaml.safe_load(f) or {}
+                # Merge - project schema takes precedence for validation enums
+                for key, val in project.items():
+                    if key not in schema:
+                        schema[key] = val
+                    elif isinstance(val, dict) and isinstance(schema.get(key), dict):
+                        schema[key].update(val)
+                    else:
+                        schema[key] = val
+
+        return schema
 
     def _query(self, cypher: str) -> List:
         """Run a Cypher query."""
@@ -87,15 +111,15 @@ class SchemaValidator:
     # NODE TESTS
     # =========================================================================
 
-    def test_character_required_fields(self) -> TestResult:
-        """Test that all Characters have required fields (id, name)."""
+    def test_actor_required_fields(self) -> TestResult:
+        """Test that all Actors have required fields (id, name)."""
         violations = []
 
         # Check for missing id
-        rows = self._query("MATCH (c:Character) WHERE c.id IS NULL RETURN c.name LIMIT 10")
+        rows = self._query("MATCH (c:Actor) WHERE c.id IS NULL RETURN c.name LIMIT 10")
         for row in rows:
             violations.append(SchemaViolation(
-                node_type="Character",
+                node_type="Actor",
                 node_id="<no id>",
                 field="id",
                 issue="Required field 'id' is missing",
@@ -103,110 +127,110 @@ class SchemaValidator:
             ))
 
         # Check for missing name
-        rows = self._query("MATCH (c:Character) WHERE c.name IS NULL RETURN c.id LIMIT 10")
+        rows = self._query("MATCH (c:Actor) WHERE c.name IS NULL RETURN c.id LIMIT 10")
         for row in rows:
             violations.append(SchemaViolation(
-                node_type="Character",
+                node_type="Actor",
                 node_id=row[0] if row else "<unknown>",
                 field="name",
                 issue="Required field 'name' is missing"
             ))
 
         return TestResult(
-            test_name="Character required fields",
+            test_name="Actor required fields",
             passed=len(violations) == 0,
             violations=violations,
-            message=f"Found {len(violations)} characters with missing required fields"
+            message=f"Found {len(violations)} actors with missing required fields"
         )
 
-    def test_character_type_enum(self) -> TestResult:
-        """Test that Character.type uses valid enum values."""
+    def test_actor_type_enum(self) -> TestResult:
+        """Test that Actor.type uses valid enum values."""
         valid_types = {'player', 'companion', 'major', 'minor', 'background'}
         violations = []
 
         rows = self._query("""
-            MATCH (c:Character)
+            MATCH (c:Actor)
             WHERE c.type IS NOT NULL
             RETURN c.id, c.name, c.type
         """)
 
         for row in rows:
-            char_id, name, char_type = row[0], row[1], row[2]
-            if char_type not in valid_types:
+            actor_id, name, actor_type = row[0], row[1], row[2]
+            if actor_type not in valid_types:
                 violations.append(SchemaViolation(
-                    node_type="Character",
-                    node_id=char_id,
+                    node_type="Actor",
+                    node_id=actor_id,
                     field="type",
-                    issue=f"Invalid type '{char_type}'. Valid: {valid_types}",
-                    value=char_type
+                    issue=f"Invalid type '{actor_type}'. Valid: {valid_types}",
+                    value=actor_type
                 ))
 
         return TestResult(
-            test_name="Character type enum",
+            test_name="Actor type enum",
             passed=len(violations) == 0,
             violations=violations,
-            message=f"Found {len(violations)} characters with invalid type"
+            message=f"Found {len(violations)} actors with invalid type"
         )
 
-    def test_character_flaw_enum(self) -> TestResult:
-        """Test that Character.flaw uses valid enum values."""
+    def test_actor_flaw_enum(self) -> TestResult:
+        """Test that Actor.flaw uses valid enum values."""
         valid_flaws = {'pride', 'fear', 'greed', 'wrath', 'doubt', None}
         violations = []
 
         rows = self._query("""
-            MATCH (c:Character)
+            MATCH (c:Actor)
             WHERE c.flaw IS NOT NULL
             RETURN c.id, c.name, c.flaw
         """)
 
         for row in rows:
-            char_id, name, flaw = row[0], row[1], row[2]
+            actor_id, name, flaw = row[0], row[1], row[2]
             if flaw not in valid_flaws:
                 violations.append(SchemaViolation(
-                    node_type="Character",
-                    node_id=char_id,
+                    node_type="Actor",
+                    node_id=actor_id,
                     field="flaw",
                     issue=f"Invalid flaw '{flaw}'. Valid: {valid_flaws}",
                     value=flaw
                 ))
 
         return TestResult(
-            test_name="Character flaw enum",
+            test_name="Actor flaw enum",
             passed=len(violations) == 0,
             violations=violations,
-            message=f"Found {len(violations)} characters with invalid flaw"
+            message=f"Found {len(violations)} actors with invalid flaw"
         )
 
-    def test_place_required_fields(self) -> TestResult:
-        """Test that all Places have required fields (id, name)."""
+    def test_space_required_fields(self) -> TestResult:
+        """Test that all Spaces have required fields (id, name)."""
         violations = []
 
-        rows = self._query("MATCH (p:Place) WHERE p.id IS NULL RETURN p.name LIMIT 10")
+        rows = self._query("MATCH (p:Space) WHERE p.id IS NULL RETURN p.name LIMIT 10")
         for row in rows:
             violations.append(SchemaViolation(
-                node_type="Place",
+                node_type="Space",
                 node_id="<no id>",
                 field="id",
                 issue="Required field 'id' is missing"
             ))
 
-        rows = self._query("MATCH (p:Place) WHERE p.name IS NULL RETURN p.id LIMIT 10")
+        rows = self._query("MATCH (p:Space) WHERE p.name IS NULL RETURN p.id LIMIT 10")
         for row in rows:
             violations.append(SchemaViolation(
-                node_type="Place",
+                node_type="Space",
                 node_id=row[0] if row else "<unknown>",
                 field="name",
                 issue="Required field 'name' is missing"
             ))
 
         return TestResult(
-            test_name="Place required fields",
+            test_name="Space required fields",
             passed=len(violations) == 0,
             violations=violations
         )
 
-    def test_place_type_enum(self) -> TestResult:
-        """Test that Place.type uses valid enum values."""
+    def test_space_type_enum(self) -> TestResult:
+        """Test that Space.type uses valid enum values."""
         valid_types = {
             'region', 'city', 'town', 'hold', 'village', 'monastery', 'abbey',
             'crossing', 'road', 'wilderness', 'forest', 'ruin', 'camp',
@@ -215,24 +239,24 @@ class SchemaValidator:
         violations = []
 
         rows = self._query("""
-            MATCH (p:Place)
+            MATCH (p:Space)
             WHERE p.type IS NOT NULL
             RETURN p.id, p.name, p.type
         """)
 
         for row in rows:
-            place_id, name, place_type = row[0], row[1], row[2]
-            if place_type not in valid_types:
+            space_id, name, space_type = row[0], row[1], row[2]
+            if space_type not in valid_types:
                 violations.append(SchemaViolation(
-                    node_type="Place",
-                    node_id=place_id,
+                    node_type="Space",
+                    node_id=space_id,
                     field="type",
-                    issue=f"Invalid type '{place_type}'",
-                    value=place_type
+                    issue=f"Invalid type '{space_type}'",
+                    value=space_type
                 ))
 
         return TestResult(
-            test_name="Place type enum",
+            test_name="Space type enum",
             passed=len(violations) == 0,
             violations=violations
         )
@@ -346,62 +370,18 @@ class SchemaValidator:
             violations=violations
         )
 
-    def test_tension_required_fields(self) -> TestResult:
-        """Test that all Tensions have required field (id)."""
-        violations = []
-
-        rows = self._query("MATCH (t:Tension) WHERE t.id IS NULL RETURN t.description LIMIT 10")
-        for row in rows:
-            violations.append(SchemaViolation(
-                node_type="Tension",
-                node_id="<no id>",
-                field="id",
-                issue="Required field 'id' is missing"
-            ))
-
-        return TestResult(
-            test_name="Tension required fields",
-            passed=len(violations) == 0,
-            violations=violations
-        )
-
-    def test_tension_pressure_range(self) -> TestResult:
-        """Test that Tension.pressure is within valid range [0, 1]."""
-        violations = []
-
-        rows = self._query("""
-            MATCH (t:Tension)
-            WHERE t.pressure IS NOT NULL AND (t.pressure < 0 OR t.pressure > 1)
-            RETURN t.id, t.pressure
-        """)
-
-        for row in rows:
-            violations.append(SchemaViolation(
-                node_type="Tension",
-                node_id=row[0],
-                field="pressure",
-                issue=f"Pressure {row[1]} is outside valid range [0, 1]",
-                value=row[1]
-            ))
-
-        return TestResult(
-            test_name="Tension pressure range",
-            passed=len(violations) == 0,
-            violations=violations
-        )
-
     # =========================================================================
     # LINK TESTS
     # =========================================================================
 
     def test_believes_link_structure(self) -> TestResult:
-        """Test that BELIEVES links go from Character to Narrative."""
+        """Test that BELIEVES links go from Actor to Narrative."""
         violations = []
 
-        # Check for BELIEVES from non-Character
+        # Check for BELIEVES from non-Actor
         rows = self._query("""
             MATCH (a)-[b:BELIEVES]->(n)
-            WHERE NOT a:Character
+            WHERE NOT a:Actor
             RETURN labels(a)[0], a.id, n.id
             LIMIT 10
         """)
@@ -410,19 +390,19 @@ class SchemaValidator:
                 node_type=row[0],
                 node_id=row[1],
                 field="BELIEVES",
-                issue=f"BELIEVES link from {row[0]} (should be Character)"
+                issue=f"BELIEVES link from {row[0]} (should be Actor)"
             ))
 
         # Check for BELIEVES to non-Narrative
         rows = self._query("""
-            MATCH (c:Character)-[b:BELIEVES]->(n)
+            MATCH (c:Actor)-[b:BELIEVES]->(n)
             WHERE NOT n:Narrative
             RETURN c.id, labels(n)[0], n.id
             LIMIT 10
         """)
         for row in rows:
             violations.append(SchemaViolation(
-                node_type="Character",
+                node_type="Actor",
                 node_id=row[0],
                 field="BELIEVES",
                 issue=f"BELIEVES link to {row[1]} (should be Narrative)"
@@ -441,7 +421,7 @@ class SchemaValidator:
 
         for field in float_fields:
             rows = self._query(f"""
-                MATCH (c:Character)-[b:BELIEVES]->(n:Narrative)
+                MATCH (c:Actor)-[b:BELIEVES]->(n:Narrative)
                 WHERE b.{field} IS NOT NULL AND (b.{field} < 0 OR b.{field} > 1)
                 RETURN c.id, n.id, b.{field}
                 LIMIT 10
@@ -462,12 +442,12 @@ class SchemaValidator:
         )
 
     def test_at_link_structure(self) -> TestResult:
-        """Test that AT links go from Character to Place."""
+        """Test that AT links go from Actor to Space."""
         violations = []
 
         rows = self._query("""
             MATCH (a)-[at:AT]->(p)
-            WHERE NOT a:Character OR NOT p:Place
+            WHERE NOT a:Actor OR NOT p:Space
             RETURN labels(a)[0], a.id, labels(p)[0], p.id
             LIMIT 10
         """)
@@ -477,7 +457,7 @@ class SchemaValidator:
                 node_type=row[0],
                 node_id=row[1],
                 field="AT",
-                issue=f"AT link from {row[0]} to {row[2]} (should be Character->Place)"
+                issue=f"AT link from {row[0]} to {row[2]} (should be Actor->Space)"
             ))
 
         return TestResult(
@@ -487,12 +467,12 @@ class SchemaValidator:
         )
 
     def test_carries_link_structure(self) -> TestResult:
-        """Test that CARRIES links go from Character to Thing."""
+        """Test that CARRIES links go from Actor to Thing."""
         violations = []
 
         rows = self._query("""
             MATCH (a)-[r:CARRIES]->(t)
-            WHERE NOT a:Character OR NOT t:Thing
+            WHERE NOT a:Actor OR NOT t:Thing
             RETURN labels(a)[0], a.id, labels(t)[0], t.id
             LIMIT 10
         """)
@@ -502,7 +482,7 @@ class SchemaValidator:
                 node_type=row[0],
                 node_id=row[1],
                 field="CARRIES",
-                issue=f"CARRIES link from {row[0]} to {row[2]} (should be Character->Thing)"
+                issue=f"CARRIES link from {row[0]} to {row[2]} (should be Actor->Thing)"
             ))
 
         return TestResult(
@@ -512,12 +492,12 @@ class SchemaValidator:
         )
 
     def test_located_at_link_structure(self) -> TestResult:
-        """Test that LOCATED_AT links go from Thing to Place."""
+        """Test that LOCATED_AT links go from Thing to Space."""
         violations = []
 
         rows = self._query("""
             MATCH (a)-[r:LOCATED_AT]->(p)
-            WHERE NOT a:Thing OR NOT p:Place
+            WHERE NOT a:Thing OR NOT p:Space
             RETURN labels(a)[0], a.id, labels(p)[0], p.id
             LIMIT 10
         """)
@@ -527,7 +507,7 @@ class SchemaValidator:
                 node_type=row[0],
                 node_id=row[1],
                 field="LOCATED_AT",
-                issue=f"LOCATED_AT link from {row[0]} to {row[2]} (should be Thing->Place)"
+                issue=f"LOCATED_AT link from {row[0]} to {row[2]} (should be Thing->Space)"
             ))
 
         return TestResult(
@@ -537,12 +517,12 @@ class SchemaValidator:
         )
 
     def test_connects_link_structure(self) -> TestResult:
-        """Test that CONNECTS links go from Place to Place."""
+        """Test that CONNECTS links go from Space to Space."""
         violations = []
 
         rows = self._query("""
             MATCH (a)-[r:CONNECTS]->(b)
-            WHERE NOT a:Place OR NOT b:Place
+            WHERE NOT a:Space OR NOT b:Space
             RETURN labels(a)[0], a.id, labels(b)[0], b.id
             LIMIT 10
         """)
@@ -552,7 +532,7 @@ class SchemaValidator:
                 node_type=row[0],
                 node_id=row[1],
                 field="CONNECTS",
-                issue=f"CONNECTS link from {row[0]} to {row[2]} (should be Place->Place)"
+                issue=f"CONNECTS link from {row[0]} to {row[2]} (should be Space->Space)"
             ))
 
         return TestResult(
@@ -565,64 +545,64 @@ class SchemaValidator:
     # DATA QUALITY TESTS
     # =========================================================================
 
-    def test_orphan_characters(self) -> TestResult:
-        """Test that characters have at least one relationship."""
+    def test_orphan_actors(self) -> TestResult:
+        """Test that actors have at least one relationship."""
         violations = []
 
         rows = self._query("""
-            MATCH (c:Character)
+            MATCH (c:Actor)
             WHERE NOT (c)-[]-()
             RETURN c.id, c.name
         """)
 
         for row in rows:
             violations.append(SchemaViolation(
-                node_type="Character",
+                node_type="Actor",
                 node_id=row[0],
                 field="<relationships>",
-                issue="Character has no relationships (orphan)"
+                issue="Actor has no relationships (orphan)"
             ))
 
         return TestResult(
-            test_name="Orphan characters",
+            test_name="Orphan actors",
             passed=len(violations) == 0,
             violations=violations,
-            message=f"Found {len(violations)} orphan characters"
+            message=f"Found {len(violations)} orphan actors"
         )
 
-    def test_characters_have_location(self) -> TestResult:
-        """Test that living characters have a location (AT relationship)."""
+    def test_actors_have_location(self) -> TestResult:
+        """Test that living actors have a location (AT relationship)."""
         violations = []
 
         rows = self._query("""
-            MATCH (c:Character)
+            MATCH (c:Actor)
             WHERE (c.alive = true OR c.alive IS NULL)
-            AND NOT (c)-[:AT]->(:Place)
+            AND NOT (c)-[:AT]->(:Space)
             RETURN c.id, c.name, c.type
         """)
 
         for row in rows:
             violations.append(SchemaViolation(
-                node_type="Character",
+                node_type="Actor",
                 node_id=row[0],
                 field="AT",
-                issue=f"Living character '{row[1]}' has no location"
+                issue=f"Living actor '{row[1]}' has no location"
             ))
 
         return TestResult(
-            test_name="Characters have location",
+            test_name="Actors have location",
             passed=len(violations) == 0,
             violations=violations
         )
 
     def test_things_have_location_or_carrier(self) -> TestResult:
-        """Test that things are either at a place or carried by someone."""
+        """Test that things are either at a space or carried by someone."""
         violations = []
 
         rows = self._query("""
             MATCH (t:Thing)
-            WHERE NOT (t)-[:LOCATED_AT]->(:Place)
-            AND NOT (:Character)-[:CARRIES]->(t)
+            WHERE NOT (t)-[:LOCATED_AT]->(:Space)
+            AND NOT (:Actor)-[:CARRIES]->(t)
             RETURN t.id, t.name
         """)
 
@@ -646,7 +626,7 @@ class SchemaValidator:
 
         rows = self._query("""
             MATCH (n:Narrative)
-            WHERE NOT (:Character)-[:BELIEVES]->(n)
+            WHERE NOT (:Actor)-[:BELIEVES]->(n)
             RETURN n.id, n.name, n.type
         """)
 
@@ -665,35 +645,35 @@ class SchemaValidator:
         )
 
     def test_player_exists(self) -> TestResult:
-        """Test that exactly one player character exists."""
+        """Test that exactly one player actor exists."""
         violations = []
 
         rows = self._query("""
-            MATCH (c:Character {type: 'player'})
+            MATCH (c:Actor {type: 'player'})
             RETURN c.id, c.name
         """)
 
         if len(rows) == 0:
             violations.append(SchemaViolation(
-                node_type="Character",
+                node_type="Actor",
                 node_id="<none>",
                 field="type",
-                issue="No player character found (type='player')"
+                issue="No player actor found (type='player')"
             ))
         elif len(rows) > 1:
             for row in rows:
                 violations.append(SchemaViolation(
-                    node_type="Character",
+                    node_type="Actor",
                     node_id=row[0],
                     field="type",
-                    issue=f"Multiple player characters found: {row[1]}"
+                    issue=f"Multiple player actors found: {row[1]}"
                 ))
 
         return TestResult(
             test_name="Player exists",
             passed=len(violations) == 0,
             violations=violations,
-            message=f"Found {len(rows)} player character(s)"
+            message=f"Found {len(rows)} player actor(s)"
         )
 
     # =========================================================================
@@ -708,17 +688,15 @@ class SchemaValidator:
 
         tests = [
             # Node tests
-            self.test_character_required_fields,
-            self.test_character_type_enum,
-            self.test_character_flaw_enum,
-            self.test_place_required_fields,
-            self.test_place_type_enum,
+            self.test_actor_required_fields,
+            self.test_actor_type_enum,
+            self.test_actor_flaw_enum,
+            self.test_space_required_fields,
+            self.test_space_type_enum,
             self.test_thing_required_fields,
             self.test_thing_significance_enum,
             self.test_narrative_required_fields,
             self.test_narrative_type_enum,
-            self.test_tension_required_fields,
-            self.test_tension_pressure_range,
             # Link tests
             self.test_believes_link_structure,
             self.test_believes_value_ranges,
@@ -727,8 +705,8 @@ class SchemaValidator:
             self.test_located_at_link_structure,
             self.test_connects_link_structure,
             # Data quality tests
-            self.test_orphan_characters,
-            self.test_characters_have_location,
+            self.test_orphan_actors,
+            self.test_actors_have_location,
             self.test_things_have_location_or_carrier,
             self.test_narratives_have_believers,
             self.test_player_exists,
@@ -779,23 +757,23 @@ def validator():
     return SchemaValidator()
 
 
-def test_character_required_fields(validator):
-    result = validator.test_character_required_fields()
+def test_actor_required_fields(validator):
+    result = validator.test_actor_required_fields()
     assert result.passed, f"Violations: {result.violations}"
 
 
-def test_character_type_enum(validator):
-    result = validator.test_character_type_enum()
+def test_actor_type_enum(validator):
+    result = validator.test_actor_type_enum()
     assert result.passed, f"Violations: {result.violations}"
 
 
-def test_place_required_fields(validator):
-    result = validator.test_place_required_fields()
+def test_space_required_fields(validator):
+    result = validator.test_space_required_fields()
     assert result.passed, f"Violations: {result.violations}"
 
 
-def test_place_type_enum(validator):
-    result = validator.test_place_type_enum()
+def test_space_type_enum(validator):
+    result = validator.test_space_type_enum()
     assert result.passed, f"Violations: {result.violations}"
 
 
@@ -811,11 +789,6 @@ def test_narrative_required_fields(validator):
 
 def test_narrative_type_enum(validator):
     result = validator.test_narrative_type_enum()
-    assert result.passed, f"Violations: {result.violations}"
-
-
-def test_tension_pressure_range(validator):
-    result = validator.test_tension_pressure_range()
     assert result.passed, f"Violations: {result.violations}"
 
 

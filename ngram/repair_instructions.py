@@ -824,6 +824,110 @@ MANDATORY FINAL LINE:
 """,
             "docs_to_update": [],
         },
+
+        "LEGACY_MARKER": {
+            "view": "VIEW_Refactor_Improve_Code_Structure.md",
+            "description": "Convert legacy marker to new format",
+            "docs_to_read": [
+                ".ngram/PRINCIPLES.md",
+                issue.path,
+            ],
+            "prompt": f"""## Task: Convert Legacy Marker Format
+
+**Target:** `{issue.path}`
+**Problem:** {issue.message}
+**Details:** {issue.details}
+
+The file contains legacy marker formats that should be converted to the new @ngram: format.
+
+## Marker Format Reference (from PRINCIPLES.md):
+- `@ngram:todo` - Actionable tasks that need doing
+- `@ngram:proposition` - Improvement ideas, suggestions for features/refactors
+- `@ngram:escalation` - Blockers needing human decision, missing requirements
+
+## Steps:
+
+1. Read the file to find all legacy markers
+2. Convert each pattern:
+   - `## GAPS / IDEAS / QUESTIONS` → `## MARKERS`
+   - `- [ ] <text>` → `<!-- @ngram:todo <text> -->`
+   - `- IDEA: <text>` → `<!-- @ngram:proposition <text> -->`
+   - `- QUESTION: <text>` → `<!-- @ngram:escalation <text> -->`
+3. Add reference to PRINCIPLES.md if missing:
+   `> See PRINCIPLES.md "Feedback Loop" section for marker format.`
+4. Verify the converted markers are valid HTML comments
+5. Update SYNC if significant changes were made
+
+## Success Criteria:
+- No legacy marker patterns remain
+- All markers use @ngram: format in HTML comments
+- Section header is `## MARKERS` not `## GAPS / IDEAS / QUESTIONS`
+
+Report "REPAIR COMPLETE" when done, or "REPAIR FAILED: <reason>" if you cannot complete.
+
+MANDATORY FINAL LINE:
+- End your response with a standalone line: `REPAIR COMPLETE`
+- If you fail, end with: `REPAIR FAILED: <reason>`
+
+""",
+            "docs_to_update": [issue.path],
+        },
+
+        "UNRESOLVED_QUESTION": {
+            "view": "VIEW_Debug_Investigate_And_Fix_Issues.md",
+            "description": "Investigate and resolve unresolved question",
+            "docs_to_read": [
+                ".ngram/PRINCIPLES.md",
+                issue.path,
+            ],
+            "prompt": f"""## Task: Investigate and Resolve Unresolved Question
+
+**Target:** `{issue.path}`
+**Problem:** {issue.message}
+**Questions found:** {issue.details.get('questions', [])}
+
+The file contains questions that haven't been resolved or properly tracked.
+
+## Decision Tree:
+
+1. **Can you answer the question directly?**
+   - YES → Answer it and remove/update the question
+   - NO → Convert to proper marker (step 2)
+
+2. **What type of question is it?**
+   - Needs human decision → `<!-- @ngram:escalation <question> -->`
+   - Improvement idea → `<!-- @ngram:proposition <question> -->`
+   - Actionable task → `<!-- @ngram:todo <question> -->`
+
+## Steps:
+
+1. Read the file and locate each question
+2. For each question, determine:
+   - Context: what section/topic is it about?
+   - Urgency: is this blocking something?
+   - Type: decision needed vs suggestion vs task
+3. Take action:
+   - If answerable: research/investigate and provide answer inline
+   - If needs human input: convert to @ngram:escalation
+   - If it's an idea: convert to @ngram:proposition
+   - If it's a task: convert to @ngram:todo
+4. Update SYNC with what was resolved or converted
+
+## Success Criteria:
+- Each question is either:
+  - Answered/resolved (question removed, answer documented)
+  - Converted to appropriate @ngram: marker
+- No orphan questions remain outside MARKERS section
+
+Report "REPAIR COMPLETE" when done, or "REPAIR FAILED: <reason>" if you cannot complete.
+
+MANDATORY FINAL LINE:
+- End your response with a standalone line: `REPAIR COMPLETE`
+- If you fail, end with: `REPAIR FAILED: <reason>`
+
+""",
+            "docs_to_update": [issue.path],
+        },
     }
 
     # First check for doc-related instructions

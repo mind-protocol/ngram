@@ -1,5 +1,5 @@
 """
-Blood Ledger — Memory System
+Memory System
 
 Handles moment recording and transcript management.
 """

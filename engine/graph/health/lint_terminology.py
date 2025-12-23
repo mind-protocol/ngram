@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Blood Ledger Terminology Linter
+Graph Engine Terminology Linter
 
 Fixes terminology issues in the codebase:
 1. Replaces "player" in node attributes with actual player character name
@@ -34,7 +34,7 @@ def get_player_name_from_graph(graph_name: str = "blood_ledger") -> Optional[str
         db = FalkorDB(host='localhost', port=6379)
         graph = db.select_graph(graph_name)
         result = graph.query('''
-            MATCH (c:Character {type: "player"})
+            MATCH (c:Actor {type: "player"})
             RETURN c.name
         ''')
         if result.result_set and result.result_set[0]:
@@ -377,7 +377,7 @@ class TerminologyLinter:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Lint Blood Ledger codebase for terminology issues"
+        description="Lint Graph Engine codebase for terminology issues"
     )
     parser.add_argument(
         "--fix",

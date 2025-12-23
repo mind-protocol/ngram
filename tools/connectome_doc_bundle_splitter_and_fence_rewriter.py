@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# DOCS: docs/tools/PATTERNS_Tools.md
 """
 Split a bundled connectome doc file into individual docs and rewrite fence markers.
 

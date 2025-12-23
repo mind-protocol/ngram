@@ -100,7 +100,7 @@ def spawn_manager_agent(
     user_input: str,
     recent_logs: List[str],
     target_dir: Path,
-    agent_provider: str = "claude",
+    agent_provider: str = "codex",
 ) -> Optional[str]:
     """Spawn the ngram manager with user input and recent logs."""
     agent_provider = normalize_agent(agent_provider)
@@ -217,7 +217,7 @@ Keep your response concise - repairs are in progress.
 def check_for_manager_input(
     recent_logs: List[str],
     target_dir: Path,
-    agent_provider: str = "claude",
+    agent_provider: str = "codex",
 ) -> Optional[str]:
     """Check if user has provided input, spawn manager if so."""
     global manager_input_queue

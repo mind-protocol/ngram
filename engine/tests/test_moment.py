@@ -32,14 +32,14 @@ class TestMomentModel:
             id="camp_d1_night_dialogue_001",
             text="I swore an oath.",
             type=MomentType.DIALOGUE,
-            tick=1440,
+            tick_created=1440,
             speaker="char_aldric"
         )
 
         assert moment.id == "camp_d1_night_dialogue_001"
         assert moment.text == "I swore an oath."
         assert moment.type == MomentType.DIALOGUE
-        assert moment.tick == 1440
+        assert moment.tick_created == 1440
         assert moment.speaker == "char_aldric"
 
     def test_embeddable_text_dialogue(self):
@@ -48,7 +48,7 @@ class TestMomentModel:
             id="test",
             text="Hello there.",
             type=MomentType.DIALOGUE,
-            tick=0,
+            tick_created=0,
             speaker="char_aldric"
         )
 
@@ -60,7 +60,7 @@ class TestMomentModel:
             id="test",
             text="The fire crackles.",
             type=MomentType.NARRATION,
-            tick=0
+            tick_created=0
         )
 
         assert moment.embeddable_text() == "The fire crackles."
@@ -71,7 +71,7 @@ class TestMomentModel:
             id="test",
             text="This is a longer piece of text that should be embedded.",
             type=MomentType.NARRATION,
-            tick=0
+            tick_created=0
         )
 
         assert moment.should_embed is True
@@ -82,7 +82,7 @@ class TestMomentModel:
             id="test",
             text="Short.",
             type=MomentType.NARRATION,
-            tick=0
+            tick_created=0
         )
 
         assert moment.should_embed is False
@@ -103,7 +103,7 @@ class TestMomentGraphOps:
             'id': 'camp_d1_night_dialogue_001',
             'text': 'I swore an oath.',
             'moment_type': 'dialogue',
-            'tick': 1440,
+            'tick_created': 1440,
             'speaker': 'char_aldric',
             'place_id': 'place_camp',
             'line': 42
@@ -114,7 +114,7 @@ class TestMomentGraphOps:
         assert args['id'] == 'camp_d1_night_dialogue_001'
         assert args['text'] == 'I swore an oath.'
         assert args['type'] == 'dialogue'
-        assert args['tick'] == 1440
+        assert args['tick_created'] == 1440
         assert args['speaker'] == 'char_aldric'
         assert args['place_id'] == 'place_camp'
         assert args['line'] == 42
@@ -248,7 +248,7 @@ class TestMomentProcessor:
 
             assert call_args.kwargs['type'] == "narration"
             assert call_args.kwargs.get('speaker') is None
-            assert call_args.kwargs['tick'] == 2160
+            assert call_args.kwargs['tick_created'] == 2160
 
     def test_sequence_linking(self):
         """Test that moments are linked in sequence."""

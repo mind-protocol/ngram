@@ -75,7 +75,17 @@ def find_module_directories(docs_dir: Path) -> List[Path]:
     A module directory is one that contains .md files with doc type prefixes.
     """
     modules = []
-    doc_prefixes = ['PATTERNS_', 'BEHAVIORS_', 'ALGORITHM_', 'VALIDATION_', 'TEST_', 'SYNC_']
+    doc_prefixes = [
+        'OBJECTIVES_',
+        'PATTERNS_',
+        'BEHAVIORS_',
+        'ALGORITHM_',
+        'VALIDATION_',
+        'IMPLEMENTATION_',
+        'HEALTH_',
+        'TEST_',
+        'SYNC_',
+    ]
 
     for item in docs_dir.iterdir():
         if not item.is_dir() or item.name == "concepts":

@@ -1,5 +1,5 @@
 """
-Blood Ledger — Embedding Service
+Embedding Service
 
 Generates embeddings for semantic search using sentence-transformers.
 Based on Mind Protocol's embedding_service.py pattern.
@@ -7,7 +7,10 @@ Based on Mind Protocol's embedding_service.py pattern.
 DOCS: docs/infrastructure/embeddings/
 """
 
+import hashlib
 import logging
+import os
+import re
 from typing import List, Dict, Any, Optional
 import numpy as np
 
@@ -34,22 +37,45 @@ class EmbeddingService:
         self.model_name = model_name
         self.model = None
         self.dimension = 768  # all-mpnet-base-v2 dimension
+        self._use_fallback = False
 
         logger.info(f"[EmbeddingService] Initializing with {model_name}")
 
     def _load_model(self):
         """Lazy load the model."""
         if self.model is None:
+            if os.getenv("NGRAM_EMBEDDINGS_FALLBACK") == "1":
+                self.model = "fallback"
+                self._use_fallback = True
+                logger.info("[EmbeddingService] Forced fallback embeddings via env.")
+                return
             try:
                 from sentence_transformers import SentenceTransformer
                 self.model = SentenceTransformer(self.model_name)
                 self.dimension = self.model.get_sentence_embedding_dimension()
                 logger.info(f"[EmbeddingService] Loaded model ({self.dimension} dimensions)")
             except ImportError:
-                raise RuntimeError(
-                    "sentence-transformers not installed.\n"
-                    "Install with: pip install sentence-transformers"
+                self.model = "fallback"
+                self._use_fallback = True
+                logger.warning(
+                    "[EmbeddingService] sentence-transformers not installed; "
+                    "using deterministic hash fallback embeddings."
                 )
+
+    def _fallback_embed(self, text: str) -> List[float]:
+        tokens = re.findall(r"[a-z0-9]+", text.lower())
+        if not tokens:
+            return [0.0] * self.dimension
+        vec = [0.0] * self.dimension
+        for token in tokens:
+            digest = hashlib.md5(token.encode("utf-8")).digest()
+            for i in range(0, len(digest), 2):
+                idx = ((digest[i] << 8) | digest[i + 1]) % self.dimension
+                vec[idx] += 1.0
+        norm = float(np.linalg.norm(vec))
+        if norm > 0:
+            vec = [v / norm for v in vec]
+        return vec
 
     def embed(self, text: str) -> List[float]:
         """
@@ -65,6 +91,9 @@ class EmbeddingService:
 
         if not text or not text.strip():
             return [0.0] * self.dimension
+
+        if self._use_fallback:
+            return self._fallback_embed(text)
 
         embedding = self.model.encode(text, normalize_embeddings=True)
         return embedding.tolist()
@@ -86,6 +115,9 @@ class EmbeddingService:
 
         # Filter empty texts
         valid_texts = [t if t and t.strip() else " " for t in texts]
+
+        if self._use_fallback:
+            return [self._fallback_embed(text) for text in valid_texts]
 
         embeddings = self.model.encode(valid_texts, normalize_embeddings=True)
         return embeddings.tolist()

@@ -11,7 +11,7 @@ VERIFIED: N/A against N/A
 ## CHAIN
 
 ```
-OBJECTIFS:      ./OBJECTIFS_ngram_cli_core.md
+OBJECTIVES:      ./OBJECTIVES_ngram_cli_core.md
 BEHAVIORS:       ./BEHAVIORS_ngram_cli_core.md
 PATTERNS:        ./PATTERNS_ngram_cli_core.md
 THIS:            ALGORITHM_ngram_cli_core.md (you are here)

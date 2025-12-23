@@ -1,0 +1,19 @@
+[Unit]
+Description=ngram frontend
+After=network-online.target ngram-be.service
+Wants=network-online.target ngram-be.service
+
+[Service]
+Type=simple
+WorkingDirectory=%h/ngram
+Environment=PATH=%h/.nvm/versions/node/v24.10.0/bin:/usr/bin:/bin
+EnvironmentFile=%h/ngram/.ngram/systemd.env
+ExecStartPre=/bin/mkdir -p %h/ngram/.ngram/logs
+ExecStart=/bin/bash -lc 'if [[ -z "${FE_CMD:-}" ]]; then echo "FE_CMD not set in %h/ngram/.ngram/systemd.env"; exit 1; fi; eval "${FE_CMD}" 2> >(tee -a %h/ngram/.ngram/error.log >&2) | tee -a %h/ngram/.ngram/logs/ngram-fe.log'
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

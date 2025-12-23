@@ -26,8 +26,12 @@ def main():
     parser.add_argument("--allowed-tools", help="Comma-separated list of allowed tools.")
     parser.add_argument("--api-key", help="Gemini API key.")
     parser.add_argument("--model-name", default=None, help="Override default Gemini model (e.g., gemini-3-flash-preview).")
+    parser.add_argument("--project-dir", default=".", help="Project root directory for tool execution.")
 
     args = parser.parse_args()
+
+    # Base path for relative path resolution
+    project_root = Path(args.project_dir).resolve()
 
     # Load from .env file
     config = dotenv_values()
@@ -49,10 +53,11 @@ def main():
 
     # --- Tool Definitions ---
     def run_shell_command(command: str, description: str = ""):
-        """Execute a bash command."""
+        """Execute a bash command in the project directory."""
         try:
             print(json.dumps({"type": "tool_code", "name": "run_shell_command", "args": {"command": command, "description": description}}), flush=True)
-            result = subprocess.run(command, shell=True, capture_output=True, text=True)
+            # Execute in project root
+            result = subprocess.run(command, shell=True, capture_output=True, text=True, cwd=project_root)
             return {"stdout": result.stdout, "stderr": result.stderr, "exit_code": result.returncode}
         except Exception as e:
             return {"error": str(e)}
@@ -61,18 +66,21 @@ def main():
         """Read a file's content."""
         try:
             print(json.dumps({"type": "tool_code", "name": "read_file", "args": {"file_path": file_path}}), flush=True)
-            content = Path(file_path).read_text(encoding="utf-8")
+            # Resolve relative to project root
+            full_path = project_root / file_path
+            content = full_path.read_text(encoding="utf-8")
             return {"content": content}
         except Exception as e:
             return {"error": str(e)}
 
-    def list_directory(dir_path: str):
+    def list_directory(dir_path: str = "."):
         """List files and directories."""
         try:
             print(json.dumps({"type": "tool_code", "name": "list_directory", "args": {"dir_path": dir_path}}), flush=True)
-            base_path = Path(dir_path)
+            # Resolve relative to project root
+            full_path = project_root / dir_path
             entries = []
-            for entry in sorted(base_path.iterdir()):
+            for entry in sorted(full_path.iterdir()):
                 entries.append({"name": entry.name, "type": "dir" if entry.is_dir() else "file"})
             return {"entries": entries, "count": len(entries)}
         except Exception as e:
@@ -84,7 +92,9 @@ def main():
             print(json.dumps({"type": "tool_code", "name": "search_file_content", "args": {"pattern": pattern, "dir_path": dir_path}}), flush=True)
             regex = re.compile(pattern)
             matches = []
-            for root, _, files in os.walk(dir_path):
+            # Resolve relative to project root
+            search_base = project_root / dir_path
+            for root, _, files in os.walk(search_base):
                 if ".git" in root or "__pycache__" in root: continue
                 for filename in files:
                     p = Path(root) / filename
@@ -92,7 +102,8 @@ def main():
                         content = p.read_text(encoding="utf-8", errors="ignore")
                         for i, line in enumerate(content.splitlines(), 1):
                             if regex.search(line):
-                                matches.append({"path": str(p), "line": i, "text": line.strip()})
+                                rel_path = p.relative_to(project_root)
+                                matches.append({"path": str(rel_path), "line": i, "text": line.strip()})
                                 if len(matches) >= 50: break
                     except: continue
                 if len(matches) >= 50: break
@@ -104,8 +115,16 @@ def main():
         """Find files matching glob pattern."""
         try:
             print(json.dumps({"type": "tool_code", "name": "glob", "args": {"pattern": pattern, "dir_path": dir_path}}), flush=True)
-            p = str(Path(dir_path) / pattern)
-            matches = sorted(glob.glob(p, recursive=True))
+            # Resolve relative to project root
+            search_base = project_root / dir_path
+            p = str(search_base / pattern)
+            matches = []
+            for match in sorted(glob.glob(p, recursive=True)):
+                try:
+                    rel_path = Path(match).relative_to(project_root)
+                    matches.append(str(rel_path))
+                except ValueError:
+                    matches.append(match)
             return {"matches": matches, "count": len(matches)}
         except Exception as e:
             return {"error": str(e)}
@@ -114,12 +133,13 @@ def main():
         """Replace text in a file."""
         try:
             print(json.dumps({"type": "tool_code", "name": "replace", "args": {"file_path": file_path, "old_string": old_string, "new_string": new_string, "instruction": instruction}}), flush=True)
-            p = Path(file_path)
-            content = p.read_text(encoding="utf-8")
+            # Resolve relative to project root
+            full_path = project_root / file_path
+            content = full_path.read_text(encoding="utf-8")
             if old_string not in content:
                 return {"error": f"String not found in {file_path}"}
             new_content = content.replace(old_string, new_string)
-            p.write_text(new_content, encoding="utf-8")
+            full_path.write_text(new_content, encoding="utf-8")
             return {"path": file_path, "success": True}
         except Exception as e:
             return {"error": str(e)}
@@ -128,9 +148,10 @@ def main():
         """Write content to a file."""
         try:
             print(json.dumps({"type": "tool_code", "name": "write_file", "args": {"file_path": file_path, "content": content}}), flush=True)
-            p = Path(file_path)
-            p.parent.mkdir(parents=True, exist_ok=True)
-            p.write_text(content, encoding="utf-8")
+            # Resolve relative to project root
+            full_path = project_root / file_path
+            full_path.parent.mkdir(parents=True, exist_ok=True)
+            full_path.write_text(content, encoding="utf-8")
             return {"path": file_path, "bytes": len(content)}
         except Exception as e:
             return {"error": str(e)}
@@ -214,9 +235,9 @@ def main():
                     else:
                         print(part.text, end="", flush=True)
                 
-                if part.call:
-                    tc = part.call
-                    tool_name = tc.function_name
+                if part.function_call:
+                    tc = part.function_call
+                    tool_name = tc.name
                     tool_args = tc.args
                     
                     if tool_name in tool_map:
@@ -227,7 +248,10 @@ def main():
                         
                         # Send result back to model using correct function_response schema
                         response = chat.send_message(
-                            [{"function_response": {"name": tool_name, "response": result}}]
+                            [genai.types.Part.from_function_response(
+                                name=tool_name,
+                                response=result
+                            )]
                         )
                         break 
             else:
@@ -239,10 +263,18 @@ def main():
         sys.exit(0)
 
     except Exception as e:
+        error_msg = str(e)
+        # Identify rate limit / quota exceeded errors
+        is_rate_limit = any(indicator in error_msg for indicator in ["429", "ResourceExhausted", "Rate limit", "quota", "Quota"])
+        
         if args.output_format == "stream-json":
-            print(json.dumps({"error": str(e)}), flush=True)
+            print(json.dumps({
+                "type": "error",
+                "code": "RATE_LIMIT_EXCEEDED" if is_rate_limit else "AGENT_ERROR",
+                "message": error_msg
+            }), flush=True)
         else:
-            print(f"Error: {e}", file=sys.stderr)
+            print(f"Error: {error_msg}", file=sys.stderr)
         sys.exit(1)
 
 if __name__ == "__main__":

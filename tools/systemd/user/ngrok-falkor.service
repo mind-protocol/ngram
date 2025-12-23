@@ -1,0 +1,17 @@
+[Unit]
+Description=ngrok tunnel for FalkorDB MCP (127.0.0.1:3005)
+After=network-online.target falkor-mcp.service
+Wants=network-online.target falkor-mcp.service
+
+[Service]
+Type=simple
+WorkingDirectory=%h/ngram
+ExecStartPre=/bin/mkdir -p %h/ngram/.ngram/logs
+ExecStart=/bin/bash -lc '/usr/local/bin/ngrok start --all --config %h/ngram/tools/ngrok.yml 2> >(tee -a %h/ngram/.ngram/error.log >&2) | tee -a %h/ngram/.ngram/logs/ngrok-falkor.log'
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

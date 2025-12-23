@@ -6,7 +6,7 @@ Health checks that analyze SYNC files for workflow state:
 - Incomplete gaps from previous sessions
 - Agent suggestions awaiting action
 
-DOCS: docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md
+DOCS: docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/overview/IMPLEMENTATION_Overview.md
 """
 
 from pathlib import Path

@@ -1,34 +1,34 @@
 """
-Blood Ledger — Base Types and Enums
+Base Types and Enums — Generic Schema
 
-Common types, enums, and modifiers shared across all models.
-Based on SCHEMA.md v5.1
+Common types, enums, EntityBase, and modifiers shared across all models.
 
 TESTS:
     engine/tests/test_models.py::TestModifier
     engine/tests/test_models.py::TestGameTimestamp
+    engine/tests/test_models.py::TestEntityBase
     engine/tests/test_spec_consistency.py::TestEnumConsistency
 
 VALIDATES:
-    V2: Node enums (CharacterType, PlaceType, ThingType, NarrativeType, etc.)
+    V2: Node enums (ActorType, SpaceType, ThingType, NarrativeType, MomentType)
     V3: Link enums (BeliefSource, PathDifficulty)
 
 SEE ALSO:
-    docs/engine/VALIDATION_Complete_Spec.md
-    docs/engine/TEST_Complete_Spec.md
+    docs/schema/SCHEMA/SCHEMA_EntityBase.md
+    docs/schema/SCHEMA/SCHEMA_Nodes.md
 """
 
 from enum import Enum
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from datetime import datetime
 from pydantic import BaseModel, Field
 
 
 # =============================================================================
-# CHARACTER ENUMS
+# ACTOR ENUMS
 # =============================================================================
 
-class CharacterType(str, Enum):
+class ActorType(str, Enum):
     PLAYER = "player"
     COMPANION = "companion"
     MAJOR = "major"
@@ -105,10 +105,10 @@ class Flaw(str, Enum):
 
 
 # =============================================================================
-# PLACE ENUMS
+# SPACE ENUMS
 # =============================================================================
 
-class PlaceType(str, Enum):
+class SpaceType(str, Enum):
     REGION = "region"
     CITY = "city"
     HOLD = "hold"
@@ -271,12 +271,21 @@ class MomentType(str, Enum):
 
 
 class MomentStatus(str, Enum):
-    """Lifecycle status of a Moment in the moment graph."""
-    POSSIBLE = "possible"    # Created, not yet surfaced
-    ACTIVE = "active"        # Visible to player, can be triggered
-    SPOKEN = "spoken"        # In transcript, part of history
-    DORMANT = "dormant"      # Waiting for return (persistent=True)
-    DECAYED = "decayed"      # Pruned, no longer relevant
+    """Lifecycle status of a Moment in the moment graph (v1.1).
+
+    Transitions:
+        possible → active:      Canon holder validates
+        active → completed:     Canon holder approves, liquidates to connected nodes
+        active → interrupted:   Another event supersedes, liquidates
+        active → overridden:    New moment contradicts, redirects energy
+        possible → rejected:    Canon holder refuses, energy returns to player
+    """
+    POSSIBLE = "possible"        # Exists but not yet considered
+    ACTIVE = "active"            # Draws from actors, flows to nodes
+    COMPLETED = "completed"      # Liquidated, became inert bridge
+    REJECTED = "rejected"        # Canon holder refused, energy returns to player
+    INTERRUPTED = "interrupted"  # Superseded, liquidated to connected nodes
+    OVERRIDDEN = "overridden"    # Contradicted, redirected through player
 
 
 class MomentTrigger(str, Enum):
@@ -352,8 +361,8 @@ class Skills(BaseModel):
     leading: SkillLevel = SkillLevel.UNTRAINED
 
 
-class CharacterVoice(BaseModel):
-    """How a character speaks."""
+class ActorVoice(BaseModel):
+    """How an actor speaks."""
     tone: VoiceTone = VoiceTone.MEASURED
     style: VoiceStyle = VoiceStyle.DIRECT
 
@@ -382,9 +391,9 @@ class Atmosphere(BaseModel):
 
 class NarrativeAbout(BaseModel):
     """What a narrative concerns."""
-    characters: List[str] = Field(default_factory=list)
-    relationship: List[str] = Field(default_factory=list, description="Pair of character IDs")
-    places: List[str] = Field(default_factory=list)
+    actors: List[str] = Field(default_factory=list)
+    relationship: List[str] = Field(default_factory=list, description="Pair of actor IDs")
+    spaces: List[str] = Field(default_factory=list)
     things: List[str] = Field(default_factory=list)
 
 

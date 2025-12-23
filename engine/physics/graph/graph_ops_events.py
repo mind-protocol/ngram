@@ -1,5 +1,5 @@
 """
-Blood Ledger — Graph Operations: Event Emitter
+Graph Operations: Event Emitter
 
 Global event emitter for mutation events.
 Extracted from graph_ops.py to reduce file size.
@@ -13,7 +13,7 @@ Usage:
 
 Listeners receive events with:
 - type: 'node_created', 'node_updated', 'link_created', 'link_updated',
-        'movement', 'tension_update', 'apply_start', 'apply_complete', 'apply_error'
+        'movement', 'apply_start', 'apply_complete', 'apply_error'
 - timestamp: ISO timestamp
 - data: Event-specific data
 """
@@ -36,7 +36,7 @@ def add_mutation_listener(callback: Callable[[Dict[str, Any]], None]) -> None:
 
     The callback receives a dict with:
         - type: 'node_created', 'node_updated', 'link_created', 'link_updated',
-                'movement', 'tension_update', 'apply_start', 'apply_complete', 'apply_error'
+                'movement', 'apply_start', 'apply_complete', 'apply_error'
         - timestamp: ISO timestamp
         - data: Event-specific data
     """

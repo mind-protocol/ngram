@@ -1,5 +1,5 @@
 """
-Blood Ledger — Database Layer
+Database Layer
 
 Apply mutations via YAML/JSON files:
     from engine.physics.graph import GraphOps
@@ -53,10 +53,12 @@ from .graph_ops import (
     add_mutation_listener, remove_mutation_listener
 )
 from .graph_queries import GraphQueries, get_queries, QueryError
+from .graph_interface import GraphClient
 
 __all__ = [
     'GraphOps', 'get_graph', 'ApplyResult', 'WriteError',
     'add_mutation_listener', 'remove_mutation_listener',
     'GraphQueries', 'get_queries', 'QueryError',
-    'get_playthrough_graph_name'
+    'get_playthrough_graph_name',
+    'GraphClient'
 ]

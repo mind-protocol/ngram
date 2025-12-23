@@ -7,6 +7,26 @@ CREATED: {DATE}
 
 ---
 
+## WHEN TO USE HEALTH (NOT TESTS)
+
+Health checks verify runtime behavior that tests cannot catch:
+
+| Use Health For | Why |
+|----------------|-----|
+| Drift over time | Needs 1000+ real ticks, not fixtures |
+| Ratio health | Emergent behavior, not deterministic |
+| Graph-wide state | Needs real structure, not mocks |
+| Production data patterns | Test fixtures can't predict real usage |
+
+**Tests gate completion. Health monitors runtime.**
+
+If behavior is deterministic with known inputs → write a test.
+If behavior emerges from real data over time → write a health check.
+
+See `VALIDATION_*.md` for the full distinction and `verified_by.confidence: needs-health` markers.
+
+---
+
 ## PURPOSE OF THIS FILE
 
 Start with WHAT this file is and WHY it exists. Then detail what it protects. A good implementation:
@@ -37,7 +57,7 @@ What to include:
 
 ## HOW TO USE THIS TEMPLATE
 
-1. Read the full doc chain first (OBJECTIFS → BEHAVIORS → PATTERNS → ALGORITHM → VALIDATION → IMPLEMENTATION → SYNC).
+1. Read the full doc chain first (OBJECTIVES → BEHAVIORS → PATTERNS → ALGORITHM → VALIDATION → IMPLEMENTATION → SYNC).
 2. Read the linked implementation files to build a global mental model (entry points, dependencies, data flows).
 3. Identify what *matters* most: vital signals for humans/agents (correctness, safety, money, security, user-visible outputs, state integrity).
 4. Study each flow in IMPLEMENTATION; list available docks, then select the significant/risky/transformative docks.
@@ -55,7 +75,7 @@ What to include:
 ## CHAIN
 
 ```
-OBJECTIFS:      ./OBJECTIFS_{name}.md
+OBJECTIVES:      ./OBJECTIVES_{name}.md
 PATTERNS:        ./PATTERNS_{name}.md
 BEHAVIORS:       ./BEHAVIORS_{name}.md
 ALGORITHM:       ./ALGORITHM_{name}.md
@@ -422,34 +442,8 @@ What to track here:
 
 ## MARKERS
 
-> See VIEW_Escalation for full YAML formats. Use `ngram solve-markers` to triage.
+> See PRINCIPLES.md "Feedback Loop" section for marker format and usage.
 
-<!-- @ngram:todo
-title: "{Missing health check}"
-priority: {low|medium|high|critical}
-context: |
-  {What validation criterion is uncovered}
-task: |
-  {Specific checker to implement}
--->
-
-<!-- @ngram:proposition
-title: "{Health signal improvement}"
-priority: {1-10}
-context: |
-  {Current limitation in health coverage}
-implications: |
-  {Better observability or alerting}
-suggested_changes: |
-  {New indicators or checkers to add}
--->
-
-<!-- @ngram:escalation
-task_name: "{Throttling or monitoring decision needed}"
-priority: {1-10}
-category: {tradeoff-needed|design-choice-needed|...}
-context: |
-  {Current monitoring state, constraints}
-questions:
-  - "{What threshold or frequency is appropriate?}"
--->
+<!-- @ngram:todo {Missing health check} -->
+<!-- @ngram:proposition {Health signal improvement} -->
+<!-- @ngram:escalation {Throttling or monitoring decision needed} -->

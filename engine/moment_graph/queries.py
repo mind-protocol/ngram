@@ -1,5 +1,5 @@
 """
-Blood Ledger — Moment Graph Query Layer
+Moment Graph Query Layer
 
 Fast queries for the moment graph. All operations must be <50ms.
 No LLM calls. Pure graph traversal.
@@ -74,10 +74,10 @@ class MomentQueries:
         things = [t for t in things if t]
 
         # 2. Query: Get moments that pass presence gating
-        # Statuses: 'active', 'possible' (live), 'spoken' (history)
+        # Statuses: 'active', 'possible' (live), 'completed' (history)
         cypher = """
         MATCH (m:Moment)
-        WHERE m.status IN ['possible', 'active', 'spoken']
+        WHERE m.status IN ['possible', 'active', 'completed']
 
         // Presence gating: Get all presence-required attachments
         OPTIONAL MATCH (m)-[r:ATTACHED_TO]->(target)
@@ -85,18 +85,18 @@ class MomentQueries:
         WITH m, collect(target.id) AS required_targets
 
         // Location match for spoken moments
-        OPTIONAL MATCH (m)-[:AT]->(at:Place {id: $location_id})
+        OPTIONAL MATCH (m)-[:AT]->(at:Space {id: $location_id})
         WITH m, required_targets, at
 
         // Filter: all required must be in present set (or no requirements)
-        // For 'spoken' moments, ensure they are at the current location
+        // For 'completed' moments, ensure they are at the current location
         WHERE (size(required_targets) = 0 OR ALL(req IN required_targets WHERE req IN $present_set))
-          AND (m.status <> 'spoken' OR at IS NOT NULL)
+          AND (m.status <> 'completed' OR at IS NOT NULL)
 
         // Get speaker via SAID or CAN_SPEAK
-        OPTIONAL MATCH (speaker:Character)-[:CAN_SPEAK]->(m)
+        OPTIONAL MATCH (speaker:Actor)-[:CAN_SPEAK]->(m)
         WHERE speaker.id IN $present_set
-        OPTIONAL MATCH (said_by:Character)-[:SAID]->(m)
+        OPTIONAL MATCH (said_by:Actor)-[:SAID]->(m)
 
         RETURN m.id AS id,
                m.text AS text,
@@ -104,17 +104,17 @@ class MomentQueries:
                m.status AS status,
                m.weight AS weight,
                m.tone AS tone,
-               m.tick_spoken AS tick_spoken,
+               m.tick_resolved AS tick_resolved,
                COALESCE(said_by.id, speaker.id) AS speaker
 
         ORDER BY 
             CASE m.status 
                 WHEN 'active' THEN 1 
                 WHEN 'possible' THEN 2 
-                WHEN 'spoken' THEN 3 
+                WHEN 'completed' THEN 3 
                 ELSE 4 
             END,
-            m.tick_spoken DESC,
+            m.tick_resolved DESC,
             m.weight DESC
         LIMIT $limit
         """
@@ -136,7 +136,7 @@ class MomentQueries:
                         'status': row.get('status'),
                         'weight': row.get('weight'),
                         'tone': row.get('tone'),
-                        'tick_spoken': row.get('tick_spoken'),
+                        'tick_resolved': row.get('tick_resolved'),
                         'speaker': row.get('speaker')
                     })
                 else:
@@ -147,7 +147,7 @@ class MomentQueries:
                         'status': row[3],
                         'weight': row[4],
                         'tone': row[5],
-                        'tick_spoken': row[6],
+                        'tick_resolved': row[6],
                         'speaker': row[7]
                     })
         except Exception as e:
@@ -223,7 +223,7 @@ class MomentQueries:
         cypher = """
         MATCH (m:Moment {id: $id})
         RETURN m.id, m.text, m.type, m.status, m.weight, m.tone,
-               m.tick_created, m.tick_spoken
+               m.tick_created, m.tick_resolved
         """
         try:
             results = self.read.query(cypher, {"id": moment_id})
@@ -239,7 +239,7 @@ class MomentQueries:
                         'weight': row.get('m.weight'),
                         'tone': row.get('m.tone'),
                         'tick_created': row.get('m.tick_created'),
-                        'tick_spoken': row.get('m.tick_spoken')
+                        'tick_resolved': row.get('m.tick_resolved')
                     }
                 return {
                     'id': row[0],
@@ -249,7 +249,7 @@ class MomentQueries:
                     'weight': row[4],
                     'tone': row[5],
                     'tick_created': row[6],
-                    'tick_spoken': row[7]
+                    'tick_resolved': row[7]
                 }
             return None
         except Exception as e:
@@ -348,7 +348,7 @@ class MomentQueries:
             Character ID of speaker, or None
         """
         cypher = """
-        MATCH (c:Character)-[r:CAN_SPEAK]->(m:Moment {id: $moment_id})
+        MATCH (c:Actor)-[r:CAN_SPEAK]->(m:Moment {id: $moment_id})
         WHERE c.id IN $present
         RETURN c.id AS speaker_id, r.weight AS weight
         ORDER BY r.weight DESC
@@ -371,7 +371,7 @@ class MomentQueries:
     ) -> List[Dict]:
         """Get dormant moments attached to a location."""
         cypher = """
-        MATCH (m:Moment {status: 'dormant'})-[:ATTACHED_TO]->(p:Place {id: $loc_id})
+        MATCH (m:Moment {status: 'dormant'})-[:ATTACHED_TO]->(p:Space {id: $loc_id})
         RETURN m.id AS id, m.text AS text, m.weight AS weight
         """
         try:
@@ -403,8 +403,8 @@ class MomentQueries:
         cypher = """
         MATCH (m:Moment {status: 'active'})-[r:CAN_LEAD_TO]->(next:Moment)
         WHERE r.trigger = 'wait'
-        AND m.tick_spoken IS NOT NULL
-        AND ($tick - m.tick_spoken) >= r.wait_ticks
+        AND m.tick_resolved IS NOT NULL
+        AND ($tick - m.tick_resolved) >= r.wait_ticks
         AND next.status IN ['possible', 'active']
         RETURN m.id AS from_id,
                next.id AS to_id,

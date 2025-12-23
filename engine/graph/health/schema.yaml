@@ -1,9 +1,30 @@
-# Graph Schema Definition
-# Derived from agents/narrator/CLAUDE.md
-# Used by check_health.py to validate graph data
+# Graph Engine Project Schema
+# EXTENDS: docs/schema/schema.yaml (authoritative base schema)
+#
+# This schema adds Graph Engine-specific type enums.
+# Base schema defines: node_type (5 values), type (free string)
+# This schema constrains `type` to game-specific values.
+#
+# v1.2 CHANGES:
+#   - 9 link types: 4 energy carriers + 5 structural
+#   - Energy carriers: expresses, about, relates, attached_to
+#   - Structural: contains, leads_to, sequence, primes, can_become
+#   - Semantic properties: name, role, direction on all links
+#   - NO DECAY: link cooling replaces decay (30% drain + 10% strength)
+#   - Hot/cold filtering via heat_score = energy × weight
+#   - Migration: 14 old types → 9 new types
+#
+# v1.1 CHANGES (from base schema):
+#   - Node weight/energy now unbounded (0-∞)
+#   - Links: weight/strength/energy/polarity REMOVED
+#   - Links: conductivity ADDED (0-1, percentage of energy flow)
+#   - Link types collapsed: at→contains, said→expresses, then→sequence
+#   - relates links now have a_emotions/b_emotions
+#
+# Used by check_health.py and test_schema.py for validation.
 
 nodes:
-  Character:
+  Actor:
     required:
       - id
       - name
@@ -12,7 +33,6 @@ nodes:
       - gender         # female, male (default: male)
       - alive          # boolean
       - face           # young, scarred, weathered, gaunt, hard, noble
-      - skills         # JSON: { fighting, tracking, healing, persuading, sneaking, riding, reading, leading }
       - voice_tone     # quiet, sharp, warm, bitter, measured, fierce
       - voice_style    # direct, questioning, sardonic, gentle, blunt
       - approach       # direct, cunning, cautious, impulsive, deliberate
@@ -68,7 +88,7 @@ nodes:
         - doubt
         - null
 
-  Place:
+  Space:
     required:
       - id
       - name
@@ -141,8 +161,8 @@ nodes:
     optional:
       - interpretation
       - type           # memory, account, rumor, reputation, identity, bond, oath, debt, blood, enmity, love, service, ownership, claim, control, origin, belief, prophecy, lie, secret
-      - about_characters  # JSON array
-      - about_places      # JSON array
+      - about_actors      # JSON array (renamed from about_characters)
+      - about_spaces      # JSON array (renamed from about_places)
       - about_things      # JSON array
       - about_relationship # JSON array
       - tone           # bitter, proud, shameful, defiant, mournful, cold, righteous, hopeful, fearful, warm, dark, sacred
@@ -153,7 +173,7 @@ nodes:
       - truth          # float 0-1 (director only)
       - narrator_notes
       - occurred_at    # When the event occurred (e.g., "Day 12, dawn")
-      # NOTE: occurred_where is now OCCURRED_AT link to Place, not an attribute
+      # NOTE: occurred_where is now OCCURRED_AT link to Space, not an attribute
       - detail         # Extended narrative text for rich descriptions
     enums:
       type:
@@ -192,112 +212,167 @@ nodes:
         - dark
         - sacred
 
-  Tension:
+  Moment:
     required:
       - id
     optional:
-      - narratives     # JSON array
-      - description
-      - narrator_notes
-      - pressure_type  # gradual, scheduled, hybrid, event
-      - pressure       # float 0-1
-      - breaking_point # float (default 0.9)
-      - base_rate      # float (for gradual)
-      - trigger_at     # string (for scheduled)
-      - progression    # JSON array (for scheduled/hybrid)
-      - detail         # Extended narrative text for rich descriptions
+      - name
+      - content        # Moment content/description
+      - status         # active, resolved, pending
+      - energy         # float >= 0
+      - weight         # float >= 0
+      - duration_minutes  # int, for radiation rate
+      - detail         # Extended narrative text
     enums:
-      pressure_type:
-        - gradual
-        - scheduled
-        - hybrid
-        - event
+      status:
+        - active
+        - resolved
+        - pending
 
 links:
-  BELIEVES:
-    from: Character
-    to: Narrative
+  # ---------------------------------------------------------------------------
+  # v1.2 LINK TYPES (9 total)
+  # Energy carriers (4): expresses, about, relates, attached_to
+  # Structural (5): contains, leads_to, sequence, primes, can_become
+  #
+  # All links have: name, role, direction (semantic properties)
+  # ---------------------------------------------------------------------------
+  # ==========================================================================
+  # ENERGY CARRIER LINKS (4)
+  # ==========================================================================
+
+  EXPRESSES:
+    # Actor expresses a Moment (speech, action, emotion)
+    # Migration: SAID → EXPRESSES
+    from: Actor
+    to: Moment
     required: []
     optional:
-      - heard          # float 0-1
-      - believes       # float 0-1
-      - doubts         # float 0-1
-      - denies         # float 0-1
-      - hides          # float 0-1
-      - spreads        # float 0-1
-      - originated     # float 0-1
-      - source         # witnessed, told, inferred, assumed, taught
-      - where          # place_id where they learned this
+      - name           # Link label (e.g., "says", "does", "feels")
+      - role           # originator, believer, witness, subject, creditor, debtor
+      - direction      # support, oppose, elaborate, subsume, supersede
+      - conductivity   # float 0-1 (percentage of energy flow)
       - detail         # Extended narrative text
     enums:
-      source:
-        - witnessed
-        - told
-        - inferred
-        - assumed
-        - taught
-        - none
+      role:
+        - originator
+        - believer
+        - witness
+        - subject
+      direction:
+        - support
+        - oppose
+        - elaborate
 
-  NARRATIVE_LINK:
-    from: Narrative
-    to: Narrative
+  ABOUT:
+    # Narrative/Moment is about a node (subject reference)
+    # Migration: OCCURRED_AT → ABOUT
+    from: [Narrative, Moment]
+    to: [Actor, Space, Thing, Narrative, Moment]
     required: []
     optional:
-      - contradicts    # float 0-1
-      - supports       # float 0-1
-      - elaborates     # float 0-1
-      - subsumes       # float 0-1
-      - supersedes     # float 0-1
+      - name           # Link label
+      - role           # originator, believer, witness, subject
+      - direction      # support, oppose, elaborate, subsume, supersede
+      - conductivity   # float 0-1
+      - detail         # Extended narrative text
+    enums:
+      role:
+        - originator
+        - believer
+        - witness
+        - subject
+      direction:
+        - support
+        - oppose
+        - elaborate
+        - subsume
+        - supersede
+
+  RELATES:
+    # Bidirectional semantic relation with emotions
+    # Migration: BELIEVES, NARRATIVE_LINK → RELATES (with role)
+    from: [Actor, Space, Thing, Narrative, Moment]
+    to: [Actor, Space, Thing, Narrative, Moment]
+    required: []
+    optional:
+      - name           # Link label (e.g., "believes", "fears", "loves")
+      - role           # originator, believer, witness, subject, creditor, debtor
+      - direction      # support, oppose, elaborate, subsume, supersede
+      - a_emotions     # List[[string, float]] - emotions from node_a perspective
+      - b_emotions     # List[[string, float]] - emotions from node_b perspective
+      - conductivity   # float 0-1
+      - detail         # Extended narrative text
+    enums:
+      role:
+        - originator
+        - believer
+        - witness
+        - subject
+        - creditor
+        - debtor
+      direction:
+        - support
+        - oppose
+        - elaborate
+        - subsume
+        - supersede
+
+  ATTACHED_TO:
+    # Physical attachment (carrying, located at)
+    # Migration: CARRIES, LOCATED_AT → ATTACHED_TO
+    from: [Actor, Thing]
+    to: [Actor, Thing, Space]
+    required: []
+    optional:
+      - name           # Link label (e.g., "carries", "located at")
+      - role           # subject, creditor, debtor
+      - direction      # support, oppose
+      - hidden         # float 0-1 (visibility)
+      - conductivity   # float 0-1
+      - detail         # Extended narrative text
+    enums:
+      role:
+        - subject
+        - creditor
+        - debtor
+      direction:
+        - support
+        - oppose
+
+  # ==========================================================================
+  # STRUCTURAL LINKS (5)
+  # ==========================================================================
+
+  CONTAINS:
+    # Spatial containment (Space contains Actor/Thing/Space)
+    # Migration: AT → CONTAINS (reversed direction)
+    from: Space
+    to: [Space, Actor, Thing]
+    required: []
+    optional:
+      - name           # Link label
+      - role           # subject
+      - direction      # support
+      - present        # float 0-1 (for actors)
+      - visible        # float 0-1 (for actors)
+      - conductivity   # float 0-1
       - detail         # Extended narrative text
 
-  OCCURRED_AT:
-    from: Narrative
-    to: Place
-    required: []
-    optional: []
-    # No properties - just indicates where the narrative event took place
-
-  AT:
-    from: Character
-    to: Place
+  LEADS_TO:
+    # Spatial connection between spaces
+    # Migration: CONNECTS → LEADS_TO
+    from: Space
+    to: Space
     required: []
     optional:
-      - present        # float 0-1
-      - visible        # float 0-1
-      - traveling_to   # place_id string
-      - travel_progress # float 0-1
-      - travel_eta_hours # float
-      - detail         # Extended narrative text
-
-  CARRIES:
-    from: Character
-    to: Thing
-    required: []
-    optional:
-      - carries        # float 0-1
-      - carries_hidden # float 0-1
-      - detail         # Extended narrative text
-
-  LOCATED_AT:
-    from: Thing
-    to: Place
-    required: []
-    optional:
-      - located        # float 0-1
-      - hidden         # float 0-1
-      - specific_location # string
-      - detail         # Extended narrative text
-
-  CONNECTS:
-    from: Place
-    to: Place
-    required: []
-    optional:
-      - contains       # float 0-1
-      - path           # float 0-1
+      - name           # Link label (e.g., "road to", "path through")
+      - role           # subject
+      - direction      # support
       - path_km        # float
       - path_hours     # float
-      - path_terrain   # roman_road, moor, forest, river_crossing, track
+      - path_terrain   # roman_road, moor, forest, river_crossing, track, marsh
+      - conductivity   # float 0-1
       - detail         # Extended narrative text
     enums:
       path_terrain:
@@ -308,9 +383,119 @@ links:
         - track
         - marsh
 
-# Skill levels for character skills
-skill_levels:
-  - untrained
-  - capable
-  - skilled
-  - master
+  SEQUENCE:
+    # Moment sequence (temporal ordering)
+    # Migration: THEN → SEQUENCE
+    from: Moment
+    to: Moment
+    required:
+      - tick           # int
+    optional:
+      - name           # Link label
+      - conductivity   # float 0-1
+      - detail         # Extended narrative text
+
+  PRIMES:
+    # Priming relationship (anticipation, setup)
+    from: [Narrative, Moment, Actor]
+    to: [Actor, Moment, Space]
+    required: []
+    optional:
+      - name           # Link label
+      - role           # originator, witness
+      - direction      # support, oppose
+      - lag_ticks      # int (delay before effect)
+      - conductivity   # float 0-1
+      - detail         # Extended narrative text
+    enums:
+      role:
+        - originator
+        - witness
+      direction:
+        - support
+        - oppose
+
+  CAN_BECOME:
+    # Moment branching possibilities
+    # Migration: CAN_LEAD_TO → CAN_BECOME
+    from: Moment
+    to: Moment
+    required: []
+    optional:
+      - name           # Link label
+      - trigger        # player, auto, wait
+      - conductivity   # float 0-1
+      - detail         # Extended narrative text
+    enums:
+      trigger:
+        - player
+        - auto
+        - wait
+
+  # ==========================================================================
+  # DEPRECATED (v1.1 → v1.2 migration)
+  # These are kept for backwards compatibility during migration only
+  # ==========================================================================
+
+  BELIEVES:
+    # DEPRECATED: Use RELATES with role: believer
+    deprecated: true
+    from: Actor
+    to: Narrative
+    required: []
+    optional:
+      - heard          # float 0-1
+      - believes       # float 0-1
+      - doubts         # float 0-1
+      - conductivity   # float 0-1
+    enums:
+      source:
+        - witnessed
+        - told
+        - inferred
+        - assumed
+        - taught
+
+  AT:
+    # DEPRECATED: Use CONTAINS with reversed direction
+    deprecated: true
+    from: Actor
+    to: Space
+    required: []
+    optional:
+      - present        # float 0-1
+      - visible        # float 0-1
+      - conductivity   # float 0-1
+
+  CARRIES:
+    # DEPRECATED: Use ATTACHED_TO
+    deprecated: true
+    from: Actor
+    to: Thing
+    required: []
+    optional:
+      - carries        # float 0-1
+      - carries_hidden # float 0-1
+      - conductivity   # float 0-1
+
+  LOCATED_AT:
+    # DEPRECATED: Use ATTACHED_TO
+    deprecated: true
+    from: Thing
+    to: Space
+    required: []
+    optional:
+      - located        # float 0-1
+      - hidden         # float 0-1
+      - conductivity   # float 0-1
+
+  CONNECTS:
+    # DEPRECATED: Use LEADS_TO
+    deprecated: true
+    from: Space
+    to: Space
+    required: []
+    optional:
+      - path_km        # float
+      - path_hours     # float
+      - conductivity   # float 0-1

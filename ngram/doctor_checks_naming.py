@@ -6,7 +6,7 @@ Health checks that verify:
 - Code files use snake_case.py
 - Directories use snake_case
 
-DOCS: docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md
+DOCS: docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/overview/IMPLEMENTATION_Overview.md
 """
 
 import re
@@ -18,8 +18,17 @@ from .doctor_files import should_ignore_path, find_source_files, find_code_direc
 
 # Standard doc prefixes
 STANDARD_DOC_PREFIXES = [
-    "PATTERNS", "BEHAVIORS", "ALGORITHM", "VALIDATION",
-    "IMPLEMENTATION", "TEST", "SYNC", "HEALTH", "CONCEPT", "TOUCHES"
+    "OBJECTIVES",
+    "PATTERNS",
+    "BEHAVIORS",
+    "ALGORITHM",
+    "VALIDATION",
+    "IMPLEMENTATION",
+    "TEST",
+    "SYNC",
+    "HEALTH",
+    "CONCEPT",
+    "TOUCHES",
 ]
 
 def is_snake_case(name: str) -> bool:

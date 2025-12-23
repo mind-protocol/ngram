@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# DOCS: docs/infrastructure/cli-tools/PATTERNS_CLI_Agent_Utilities.md
+# DOCS: docs/tools/PATTERNS_Tools.md
 """
 Stream dialogue and narration to the frontend via moments graph.
 
@@ -177,13 +177,13 @@ def create_moment_with_clickables(
         id=moment_id,
         text=clean_text,
         type=moment_type,
-        tick=tick,
+        tick_created=tick,
         speaker=speaker,
         place_id=place_id,
         status="active",
         weight=1.0,
         tone=tone,
-        tick_spoken=tick
+        tick_resolved=tick
     )
 
     # For each clickable, create a target moment and CAN_LEAD_TO link
@@ -199,7 +199,7 @@ def create_moment_with_clickables(
             id=target_id,
             text="",  # Empty - will be filled when narrator responds
             type="dialogue",
-            tick=tick,
+            tick_created=tick,
             place_id=place_id,
             status="possible",
             weight=0.5  # Below flip threshold

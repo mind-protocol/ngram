@@ -9,7 +9,7 @@ Provides health checks for projects:
 - Missing DOCS: references
 - Incomplete doc chains
 
-DOCS: docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/IMPLEMENTATION_Overview.md
+DOCS: docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/overview/IMPLEMENTATION_Overview.md
 """
 
 import json
@@ -45,6 +45,7 @@ from .doctor_checks import (
     doctor_check_large_doc_module,
     doctor_check_incomplete_chain,
     doctor_check_doc_template_drift,
+    doctor_check_validation_behaviors_list,
     doctor_check_nonstandard_doc_type,
     doctor_check_missing_tests,
     doctor_check_orphan_docs,
@@ -71,6 +72,12 @@ from .doctor_checks_content import (
     doctor_check_long_strings,
     doctor_check_recent_log_errors,
     doctor_check_special_markers,
+    doctor_check_legacy_markers,
+)
+from .doctor_checks_invariants import (
+    doctor_check_invariant_coverage,
+    doctor_check_test_validates_markers,
+    doctor_check_completion_gate,
 )
 
 
@@ -109,6 +116,7 @@ def run_doctor(target_dir: Path, config: DoctorConfig) -> Dict[str, Any]:
     all_issues.extend(doctor_check_orphan_docs(target_dir, config))
     all_issues.extend(doctor_check_stale_impl(target_dir, config))
     all_issues.extend(doctor_check_doc_template_drift(target_dir, config))
+    all_issues.extend(doctor_check_validation_behaviors_list(target_dir, config))
     all_issues.extend(doctor_check_prompt_doc_reference(target_dir, config))
     all_issues.extend(doctor_check_prompt_view_table(target_dir, config))
     all_issues.extend(doctor_check_prompt_checklist(target_dir, config))
@@ -122,10 +130,15 @@ def run_doctor(target_dir: Path, config: DoctorConfig) -> Dict[str, Any]:
     all_issues.extend(doctor_check_doc_duplication(target_dir, config))
     all_issues.extend(doctor_check_recent_log_errors(target_dir, config))
     all_issues.extend(doctor_check_special_markers(target_dir, config))
+    all_issues.extend(doctor_check_legacy_markers(target_dir, config))
     # Code quality checks
     all_issues.extend(doctor_check_magic_values(target_dir, config))
     all_issues.extend(doctor_check_hardcoded_secrets(target_dir, config))
     all_issues.extend(doctor_check_long_strings(target_dir, config))
+    # Invariant test coverage checks
+    all_issues.extend(doctor_check_invariant_coverage(target_dir, config))
+    all_issues.extend(doctor_check_test_validates_markers(target_dir, config))
+    all_issues.extend(doctor_check_completion_gate(target_dir, config))
 
     # Filter out suppressed issues from doctor-ignore.yaml
     ignores = load_doctor_ignore(target_dir)

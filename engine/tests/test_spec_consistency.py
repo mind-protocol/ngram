@@ -114,13 +114,13 @@ def extract_constants_from_content(content: str) -> Dict[str, Any]:
 # EXPECTED VALUES (from spec)
 # =============================================================================
 
-EXPECTED_NODE_TYPES = {'Character', 'Place', 'Thing', 'Narrative', 'Tension', 'Moment'}
+EXPECTED_NODE_TYPES = {'Actor', 'Space', 'Thing', 'Narrative', 'Moment'}
 
-EXPECTED_CHARACTER_TYPES = {'player', 'companion', 'major', 'minor', 'background'}
+EXPECTED_ACTOR_TYPES = {'player', 'companion', 'major', 'minor', 'background'}
 
-EXPECTED_PLACE_SCALES = {'region', 'settlement', 'district', 'building', 'room'}
+EXPECTED_SPACE_SCALES = {'region', 'settlement', 'district', 'building', 'room'}
 
-EXPECTED_PLACE_TYPES = {
+EXPECTED_SPACE_TYPES = {
     'region', 'city', 'hold', 'village', 'monastery', 'camp',
     'road', 'room', 'wilderness', 'ruin'
 }
@@ -159,9 +159,9 @@ EXPECTED_VOICE_STYLES = {
 
 EXPECTED_SKILL_LEVELS = {'untrained', 'capable', 'skilled', 'master'}
 
-EXPECTED_CHARACTER_TONES = {'quiet', 'sharp', 'warm', 'bitter', 'measured', 'fierce'}
+EXPECTED_ACTOR_TONES = {'quiet', 'sharp', 'warm', 'bitter', 'measured', 'fierce'}
 
-EXPECTED_CHARACTER_STYLES = {'direct', 'questioning', 'sardonic', 'gentle', 'blunt'}
+EXPECTED_ACTOR_STYLES = {'direct', 'questioning', 'sardonic', 'gentle', 'blunt'}
 
 EXPECTED_APPROACHES = {'direct', 'cunning', 'cautious', 'impulsive', 'deliberate'}
 
@@ -180,10 +180,10 @@ EXPECTED_MOMENT_TYPES = {
 EXPECTED_BELIEF_SOURCES = {'none', 'witnessed', 'told', 'inferred', 'assumed', 'taught'}
 
 EXPECTED_MODIFIER_TYPES = {
-    # Character
+    # Actor
     'wounded', 'sick', 'hungry', 'exhausted', 'drunk',
     'grieving', 'inspired', 'afraid', 'angry', 'hopeful', 'suspicious',
-    # Place
+    # Space
     'burning', 'flooded', 'besieged', 'abandoned', 'celebrating',
     'haunted', 'watched', 'safe',
     # Thing
@@ -234,21 +234,21 @@ class TestSchemaSpecAlignment:
             expected_lower = {n.lower() for n in EXPECTED_NODE_TYPES}
 
             # Just check the core 4 nodes are present
-            core_nodes = {'character', 'place', 'thing', 'narrative'}
+            core_nodes = {'actor', 'space', 'thing', 'narrative'}
             assert core_nodes <= schema_nodes, f"Missing core nodes: {core_nodes - schema_nodes}"
 
-    def test_character_type_enum(self):
-        """Character type enum should match spec."""
+    def test_actor_type_enum(self):
+        """Actor type enum should match spec."""
         schema = extract_yaml_from_markdown(SCHEMA_PATH)
 
-        if 'nodes' in schema and 'character' in schema['nodes']:
-            char_schema = schema['nodes']['character']
-            if 'attributes' in char_schema and 'type' in char_schema['attributes']:
-                type_attr = char_schema['attributes']['type']
+        if 'nodes' in schema and 'actor' in schema['nodes']:
+            actor_schema = schema['nodes']['actor']
+            if 'attributes' in actor_schema and 'type' in actor_schema['attributes']:
+                type_attr = actor_schema['attributes']['type']
                 if 'values' in type_attr:
                     schema_values = set(type_attr['values'])
-                    assert schema_values == EXPECTED_CHARACTER_TYPES, \
-                        f"Mismatch: schema={schema_values}, expected={EXPECTED_CHARACTER_TYPES}"
+                    assert schema_values == EXPECTED_ACTOR_TYPES, \
+                        f"Mismatch: schema={schema_values}, expected={EXPECTED_ACTOR_TYPES}"
 
     def test_narrative_type_enum(self):
         """Narrative type enum should match spec."""
@@ -271,18 +271,18 @@ class TestSchemaSpecAlignment:
 class TestEnumConsistency:
     """Test that enum values are consistent across all documents."""
 
-    def test_character_types_complete(self):
-        """All character types should be valid."""
-        assert 'player' in EXPECTED_CHARACTER_TYPES
-        assert 'companion' in EXPECTED_CHARACTER_TYPES
-        assert len(EXPECTED_CHARACTER_TYPES) == 5
+    def test_actor_types_complete(self):
+        """All actor types should be valid."""
+        assert 'player' in EXPECTED_ACTOR_TYPES
+        assert 'companion' in EXPECTED_ACTOR_TYPES
+        assert len(EXPECTED_ACTOR_TYPES) == 5
 
-    def test_place_scales_hierarchical(self):
-        """Place scales should form a clear hierarchy."""
+    def test_space_scales_hierarchical(self):
+        """Space scales should form a clear hierarchy."""
         # region > settlement > district > building > room
         hierarchy = ['region', 'settlement', 'district', 'building', 'room']
         for scale in hierarchy:
-            assert scale in EXPECTED_PLACE_SCALES
+            assert scale in EXPECTED_SPACE_SCALES
 
     def test_narrative_types_cover_all_categories(self):
         """Narrative types should cover events, characters, relationships, things, places, meta."""
@@ -395,8 +395,8 @@ class TestSpecInternalConsistency:
         assert core_types <= EXPECTED_NARRATIVE_TYPES, \
             f"Core types {core_types} must be valid narrative types"
 
-    def test_character_flaws_distinct(self):
-        """Character flaws should be distinct concepts."""
+    def test_actor_flaws_distinct(self):
+        """Actor flaws should be distinct concepts."""
         assert len(EXPECTED_FLAWS) == 9, "Should have 9 distinct flaws"
         # Check no duplicates
         flaws_list = list(EXPECTED_FLAWS)
@@ -414,14 +414,14 @@ class TestSpecInternalConsistency:
         assert neutral <= EXPECTED_VOICE_STYLES
 
     def test_modifier_types_cover_all_node_types(self):
-        """Modifier types should apply to characters, places, and things."""
-        # Character modifiers
-        char_mods = {'wounded', 'sick', 'hungry', 'exhausted', 'afraid', 'angry'}
-        assert char_mods <= EXPECTED_MODIFIER_TYPES
+        """Modifier types should apply to actors, spaces, and things."""
+        # Actor modifiers
+        actor_mods = {'wounded', 'sick', 'hungry', 'exhausted', 'afraid', 'angry'}
+        assert actor_mods <= EXPECTED_MODIFIER_TYPES
 
-        # Place modifiers
-        place_mods = {'burning', 'flooded', 'besieged', 'abandoned'}
-        assert place_mods <= EXPECTED_MODIFIER_TYPES
+        # Space modifiers
+        space_mods = {'burning', 'flooded', 'besieged', 'abandoned'}
+        assert space_mods <= EXPECTED_MODIFIER_TYPES
 
         # Thing modifiers
         thing_mods = {'damaged', 'hidden', 'contested', 'blessed', 'cursed'}
@@ -452,12 +452,6 @@ class TestSpecInternalConsistency:
 class TestCrossReferences:
     """Test that references between spec elements are valid."""
 
-    def test_tension_references_narratives(self):
-        """Tensions should reference valid narrative IDs."""
-        # This is a structural test - tension.narratives should be narrative IDs
-        # The actual validation happens at runtime
-        pass  # Placeholder for runtime test
-
     def test_belief_source_types_make_sense(self):
         """Belief source types should have clear meaning."""
         sources = EXPECTED_BELIEF_SOURCES
@@ -476,10 +470,10 @@ class TestCrossReferences:
 
     def test_narrative_about_fields_valid(self):
         """Narrative.about fields should reference valid node types."""
-        # about.characters -> Character IDs
-        # about.places -> Place IDs
+        # about.actors -> Actor IDs
+        # about.spaces -> Space IDs
         # about.things -> Thing IDs
-        # about.relationship -> [char_id, char_id]
+        # about.relationship -> [actor_id, actor_id]
 
         # This is structural - actual validation at runtime
         pass

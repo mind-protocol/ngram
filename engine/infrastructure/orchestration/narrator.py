@@ -1,5 +1,5 @@
 """
-Blood Ledger — Narrator Service
+Narrator Service
 
 Calls agent CLI to generate scenes.
 Uses --continue for persistent session across playthrough.
@@ -34,7 +34,8 @@ class NarratorService:
             self.working_dir = working_dir
         else:
             # Find project root (parent of engine/)
-            project_root = Path(__file__).parent.parent.parent
+            # narrator.py -> orchestration -> infrastructure -> engine -> ngram
+            project_root = Path(__file__).parent.parent.parent.parent
             self.working_dir = str(project_root / "agents" / "narrator")
 
         self.timeout = timeout
@@ -134,10 +135,12 @@ class NarratorService:
                 return self._fallback_response()
 
             response_text = result.stdout.strip()
-            logger.debug(f"[NarratorService] Raw response: {response_text[:500]}...")
+            logger.info(f"[NarratorService] Raw response length: {len(response_text)}")
+            logger.info(f"[NarratorService] Raw response preview: {response_text[:300]}...")
 
             try:
                 parsed = parse_claude_json_output(response_text)
+                logger.info(f"[NarratorService] Parsed type: {type(parsed).__name__}, keys: {list(parsed.keys()) if isinstance(parsed, dict) else 'N/A'}")
             except json.JSONDecodeError as e:
                 logger.error(f"[NarratorService] Failed to parse response: {e}")
                 logger.error(f"[NarratorService] Response was: {response_text[:500]}")

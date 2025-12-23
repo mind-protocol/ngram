@@ -11,7 +11,7 @@ VERIFIED: 2024-02-23 against Initial documentation
 ## CHAIN
 
 ```
-OBJECTIFS:      ./OBJECTIFS_App_Shell.md
+OBJECTIVES:      ./OBJECTIVES_App_Shell.md
 BEHAVIORS:      ./BEHAVIORS_App_Shell.md (planned)
 THIS:            ./PATTERNS_App_Shell.md (you are here)
 MECHANISMS:     N/A

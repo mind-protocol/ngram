@@ -1,0 +1,172 @@
+[19:04:58] ═══ TICK 1 START ═══
+[19:04:58] ── Phase 1: Compute character energies ──
+[19:04:58]   ⚡ char_alan_rufus generated 0.100 (weight=1.00)
+[19:04:58]   ⚡ char_aldgyth generated 0.100 (weight=1.00)
+[19:04:58]   ⚡ char_aldric generated 0.100 (weight=1.00)
+[19:04:58]   ⚡ char_aldwin generated 0.010 (weight=1.00)
+[19:04:58]   ⚡ char_archil generated 0.100 (weight=1.00)
+[19:04:58]   ⚡ char_brother_oswald generated 0.010 (weight=1.00)
+[19:04:58]   ⚡ char_dunstan generated 0.010 (weight=1.00)
+[19:04:58]   ⚡ char_eadric_wild generated 0.100 (weight=1.00)
+[19:04:58]   ⚡ char_ealdred generated 0.100 (weight=1.00)
+[19:04:58]   ⚡ char_edgar_atheling generated 0.100 (weight=1.00)
+[19:04:58] ── Phase 2: Flow energy to narratives ──
+[19:04:58]   actor:char_alan_rufus ──+0.000──> narrative:narr_danish_rumour | belief flow (str=0.32)
+[19:04:58]   actor:char_alan_rufus ──+0.000──> narrative:narr_edgar_flees | belief flow (str=0.58)
+[19:04:58]   actor:char_alan_rufus ──+0.000──> narrative:narr_alan_owes_william | belief flow (str=0.90)
+[19:04:58]   actor:char_alan_rufus ──+0.000──> narrative:narr_william_normandy | belief flow (str=0.58)
+[19:04:58]   actor:char_alan_rufus ──+0.000──> narrative:narr_edgar_proclaimed | belief flow (str=0.36)
+[19:04:58]   actor:char_alan_rufus ──+0.000──> narrative:narr_hastings | belief flow (str=0.58)
+[19:04:58]   actor:char_alan_rufus ──+0.000──> narrative:narr_harold_crowned | belief flow (str=0.58)
+[19:04:58]   actor:char_alan_rufus ──+0.000──> narrative:narr_stamford_bridge | belief flow (str=0.36)
+[19:04:58]   actor:char_alan_rufus ──+0.000──> narrative:narr_gilbert_tison_lord_malton | belief flow (str=0.35)
+[19:04:58]   actor:char_alan_rufus ──+0.000──> narrative:narr_malet_garrison_york_castle | belief flow (str=0.36)
+[19:04:58]   actor:char_alan_rufus ──+0.000──> narrative:narr_malet_sheriff_sheriff_hutton | belief flow (str=0.39)
+[19:04:58]   actor:char_alan_rufus ──+0.000──> narrative:narr_malet_sheriff_easingwold | belief flow (str=0.45)
+[19:04:58]   actor:char_alan_rufus ──+0.000──> narrative:narr_gospatric_buys | belief flow (str=0.58)
+[19:04:58]   actor:char_alan_rufus ──+0.000──> narrative:narr_malet_sheriff_thirsk | belief flow (str=0.56)
+[19:04:58]   actor:char_alan_rufus ──+0.000──> narrative:narr_ilbert_lacy_lord_wetherby | belief flow (str=0.40)
+[19:04:58]   actor:char_alan_rufus ──+0.000──> narrative:narr_cumin_earl_northallerton | belief flow (str=0.65)
+[19:04:58]   actor:char_alan_rufus ──+0.000──> narrative:narr_malet_sheriff_york | belief flow (str=0.36)
+[19:04:58]   actor:char_alan_rufus ──+0.000──> narrative:narr_malet_sheriff_tadcaster | belief flow (str=0.36)
+[19:04:58]   actor:char_alan_rufus ──+0.000──> narrative:narr_william_crowned | belief flow (str=0.58)
+[19:04:58]   actor:char_alan_rufus ──+0.000──> narrative:narr_alan_rufus_lord_scarborough | belief flow (str=0.90)
+[19:04:58]   ... and 1653 more energy transfers
+[19:04:58] ── Phase 3: Propagate energy between narratives ──
+[19:04:59] ── Phase 4: Decay energy ──
+[19:04:59]   📉 narrative:narr_harolds_sons_ireland 0.745→0.730 (-0.015) rate=2.0%
+[19:04:59]   📉 narrative:narr_danish_rumour 0.516→0.506 (-0.010) rate=2.0%
+[19:04:59]   📉 narrative:narr_edgar_flees 0.503→0.493 (-0.010) rate=2.0%
+[19:04:59]   📉 narrative:narr_aldgyth_widow 0.489→0.479 (-0.010) rate=2.0%
+[19:04:59]   📉 narrative:narr_alan_owes_william 0.478→0.476 (-0.002) rate=0.5%
+[19:04:59]   📉 narrative:narr_ealdred_crowned_both 0.478→0.475 (-0.002) rate=0.5%
+[19:04:59]   📉 narrative:narr_waltheof_owes_submission 0.477→0.475 (-0.002) rate=0.5%
+[19:04:59]   📉 narrative:narr_william_normandy 0.472→0.463 (-0.009) rate=2.0%
+[19:04:59]   📉 narrative:narr_edgar_proclaimed 0.463→0.454 (-0.009) rate=2.0%
+[19:04:59]   📉 narrative:narr_eadric_raids 0.462→0.453 (-0.009) rate=2.0%
+[19:04:59]   📉 narrative:narr_morcar_claim_northumbria 0.457→0.448 (-0.009) rate=2.0%
+[19:04:59]   📉 narrative:narr_hastings 0.455→0.445 (-0.009) rate=2.0%
+[19:04:59]   📉 narrative:narr_danish_invasion_coming 0.453→0.444 (-0.009) rate=2.0%
+[19:04:59]   📉 narrative:narr_edgar_rightful_king 0.450→0.441 (-0.009) rate=2.0%
+[19:04:59]   📉 narrative:narr_pickering_ghosts 0.450→0.441 (-0.009) rate=2.0%
+[19:04:59]   ... decayed 135 narratives, total energy lost: 1.10
+[19:04:59] ── Phase 5: Update narrative weights ──
+[19:04:59] ── Phase 6: Adjust criticality ──
+[19:04:59] ── Phase 7: Tick pressure on tensions ──
+[19:04:59] ── Phase 8: Detect flips ──
+[19:04:59] ── Phase 9: Process moment lifecycle ──
+[19:05:00] ═══ TICK 2 START ═══
+[19:05:00] ── Phase 1: Compute character energies ──
+[19:05:00]   ⚡ char_alan_rufus generated 0.100 (weight=1.00)
+[19:05:00]   ⚡ char_aldgyth generated 0.100 (weight=1.00)
+[19:05:00]   ⚡ char_aldric generated 0.100 (weight=1.00)
+[19:05:00]   ⚡ char_aldwin generated 0.010 (weight=1.00)
+[19:05:00]   ⚡ char_archil generated 0.100 (weight=1.00)
+[19:05:00]   ⚡ char_brother_oswald generated 0.010 (weight=1.00)
+[19:05:00]   ⚡ char_dunstan generated 0.010 (weight=1.00)
+[19:05:00]   ⚡ char_eadric_wild generated 0.100 (weight=1.00)
+[19:05:00]   ⚡ char_ealdred generated 0.100 (weight=1.00)
+[19:05:00]   ⚡ char_edgar_atheling generated 0.100 (weight=1.00)
+[19:05:00] ── Phase 2: Flow energy to narratives ──
+[19:05:00]   actor:char_alan_rufus ──+0.000──> narrative:narr_danish_rumour | belief flow (str=0.32)
+[19:05:00]   actor:char_alan_rufus ──+0.000──> narrative:narr_edgar_flees | belief flow (str=0.58)
+[19:05:00]   actor:char_alan_rufus ──+0.000──> narrative:narr_alan_owes_william | belief flow (str=0.90)
+[19:05:00]   actor:char_alan_rufus ──+0.000──> narrative:narr_william_normandy | belief flow (str=0.58)
+[19:05:00]   actor:char_alan_rufus ──+0.000──> narrative:narr_edgar_proclaimed | belief flow (str=0.36)
+[19:05:00]   actor:char_alan_rufus ──+0.000──> narrative:narr_hastings | belief flow (str=0.58)
+[19:05:00]   actor:char_alan_rufus ──+0.000──> narrative:narr_harold_crowned | belief flow (str=0.58)
+[19:05:00]   actor:char_alan_rufus ──+0.000──> narrative:narr_stamford_bridge | belief flow (str=0.36)
+[19:05:00]   actor:char_alan_rufus ──+0.000──> narrative:narr_gilbert_tison_lord_malton | belief flow (str=0.35)
+[19:05:00]   actor:char_alan_rufus ──+0.000──> narrative:narr_malet_garrison_york_castle | belief flow (str=0.36)
+[19:05:00]   actor:char_alan_rufus ──+0.000──> narrative:narr_malet_sheriff_sheriff_hutton | belief flow (str=0.39)
+[19:05:00]   actor:char_alan_rufus ──+0.000──> narrative:narr_malet_sheriff_easingwold | belief flow (str=0.45)
+[19:05:00]   actor:char_alan_rufus ──+0.000──> narrative:narr_gospatric_buys | belief flow (str=0.58)
+[19:05:00]   actor:char_alan_rufus ──+0.000──> narrative:narr_malet_sheriff_thirsk | belief flow (str=0.56)
+[19:05:00]   actor:char_alan_rufus ──+0.000──> narrative:narr_ilbert_lacy_lord_wetherby | belief flow (str=0.40)
+[19:05:00]   actor:char_alan_rufus ──+0.000──> narrative:narr_cumin_earl_northallerton | belief flow (str=0.65)
+[19:05:00]   actor:char_alan_rufus ──+0.000──> narrative:narr_malet_sheriff_york | belief flow (str=0.36)
+[19:05:00]   actor:char_alan_rufus ──+0.000──> narrative:narr_malet_sheriff_tadcaster | belief flow (str=0.36)
+[19:05:00]   actor:char_alan_rufus ──+0.000──> narrative:narr_william_crowned | belief flow (str=0.58)
+[19:05:00]   actor:char_alan_rufus ──+0.000──> narrative:narr_alan_rufus_lord_scarborough | belief flow (str=0.90)
+[19:05:00]   ... and 1653 more energy transfers
+[19:05:00] ── Phase 3: Propagate energy between narratives ──
+[19:05:01] ── Phase 4: Decay energy ──
+[19:05:01]   📉 narrative:narr_harolds_sons_ireland 0.756→0.741 (-0.015) rate=2.0%
+[19:05:01]   📉 narrative:narr_danish_rumour 0.515→0.505 (-0.010) rate=2.0%
+[19:05:01]   📉 narrative:narr_edgar_flees 0.502→0.492 (-0.010) rate=2.0%
+[19:05:01]   📉 narrative:narr_aldgyth_widow 0.487→0.478 (-0.010) rate=2.0%
+[19:05:01]   📉 narrative:narr_alan_owes_william 0.477→0.474 (-0.002) rate=0.5%
+[19:05:01]   📉 narrative:narr_ealdred_crowned_both 0.476→0.474 (-0.002) rate=0.5%
+[19:05:01]   📉 narrative:narr_waltheof_owes_submission 0.476→0.473 (-0.002) rate=0.5%
+[19:05:01]   📉 narrative:narr_william_normandy 0.469→0.460 (-0.009) rate=2.0%
+[19:05:01]   📉 narrative:narr_edgar_proclaimed 0.460→0.451 (-0.009) rate=2.0%
+[19:05:01]   📉 narrative:narr_eadric_raids 0.459→0.450 (-0.009) rate=2.0%
+[19:05:01]   📉 narrative:narr_morcar_claim_northumbria 0.453→0.444 (-0.009) rate=2.0%
+[19:05:01]   📉 narrative:narr_hastings 0.451→0.442 (-0.009) rate=2.0%
+[19:05:01]   📉 narrative:narr_danish_invasion_coming 0.449→0.440 (-0.009) rate=2.0%
+[19:05:01]   📉 narrative:narr_edgar_rightful_king 0.446→0.437 (-0.009) rate=2.0%
+[19:05:01]   📉 narrative:narr_aldgyth_hiding 0.446→0.437 (-0.009) rate=2.0%
+[19:05:01]   ... decayed 135 narratives, total energy lost: 1.08
+[19:05:01] ── Phase 5: Update narrative weights ──
+[19:05:01] ── Phase 6: Adjust criticality ──
+[19:05:01] ── Phase 7: Tick pressure on tensions ──
+[19:05:01] ── Phase 8: Detect flips ──
+[19:05:01] ── Phase 9: Process moment lifecycle ──
+[19:56:11] ═══ TICK 1 START ═══
+[19:56:11] ── Phase 1: Compute character energies ──
+[19:56:11] ── Phase 2: Flow energy to narratives ──
+[19:56:11] ── Phase 3: Propagate energy between narratives ──
+[19:56:11] ── Phase 4: Decay energy ──
+[19:56:11] ── Phase 5: Update narrative weights ──
+[19:56:11] ── Phase 6: Adjust criticality ──
+[19:56:11] ── Phase 7: Tick pressure on tensions ──
+[19:56:11] ── Phase 8: Detect flips ──
+[19:56:11] ── Phase 9: Process moment lifecycle ──
+[19:56:11] ═══ TICK 1 START ═══
+[19:56:11] ── Phase 1: Compute character energies ──
+[19:56:11] ── Phase 2: Flow energy to narratives ──
+[19:56:11] ── Phase 3: Propagate energy between narratives ──
+[19:56:11] ── Phase 4: Decay energy ──
+[19:56:11] ── Phase 5: Update narrative weights ──
+[19:56:11] ── Phase 6: Adjust criticality ──
+[19:56:11] ── Phase 7: Tick pressure on tensions ──
+[19:56:11] ── Phase 8: Detect flips ──
+[19:56:11] ── Phase 9: Process moment lifecycle ──
+[19:56:11] ═══ TICK 1 START ═══
+[19:56:11] ── Phase 1: Compute character energies ──
+[19:56:11] ── Phase 2: Flow energy to narratives ──
+[19:56:11] ── Phase 3: Propagate energy between narratives ──
+[19:56:11] ── Phase 4: Decay energy ──
+[19:56:11] ── Phase 5: Update narrative weights ──
+[19:56:11] ── Phase 6: Adjust criticality ──
+[19:56:11] ── Phase 7: Tick pressure on tensions ──
+[19:56:11] ── Phase 8: Detect flips ──
+[19:56:11] ── Phase 9: Process moment lifecycle ──
+[20:01:01] ═══ TICK 1 START ═══
+[20:01:01] ── Phase 1: Compute character energies ──
+[20:01:01] ── Phase 2: Flow energy to narratives ──
+[20:01:01] ── Phase 3: Propagate energy between narratives ──
+[20:01:01] ── Phase 4: Decay energy ──
+[20:01:01] ── Phase 5: Update narrative weights ──
+[20:01:01] ── Phase 6: Adjust criticality ──
+[20:01:01] ═══ TICK 1 START ═══
+[20:01:01] ── Phase 1: Compute character energies ──
+[20:01:01] ── Phase 2: Flow energy to narratives ──
+[20:01:01] ── Phase 3: Propagate energy between narratives ──
+[20:01:01] ── Phase 4: Decay energy ──
+[20:01:01] ── Phase 5: Update narrative weights ──
+[20:01:01] ── Phase 6: Adjust criticality ──
+[20:01:01] ═══ TICK 1 START ═══
+[20:01:01] ── Phase 1: Compute character energies ──
+[20:01:01] ── Phase 2: Flow energy to narratives ──
+[20:01:01] ── Phase 3: Propagate energy between narratives ──
+[20:01:01] ── Phase 4: Decay energy ──
+[20:01:01] ── Phase 5: Update narrative weights ──
+[20:01:01] ── Phase 6: Adjust criticality ──
+[20:05:26] ═══ TICK 1 START ═══
+[20:05:26] ── Phase 1: Compute character energies ──
+[20:05:26] ── Phase 2: Flow energy to narratives ──
+[20:05:26] ── Phase 3: Propagate energy between narratives ──
+[20:05:26] ── Phase 4: Decay energy ──
+[20:05:26] ── Phase 5: Update narrative weights ──
+[20:05:26] ── Phase 6: Adjust criticality ──

@@ -57,7 +57,7 @@ flows_analysis:
     purpose: Main interaction loop with the LLM. Failure breaks all AI functionality.
     triggers:
       - type: event
-        source: cli:ngram repair or tui:manager
+        source: cli:ngram work or tui:manager
     frequency:
       expected_rate: 5/min
       peak_rate: 50/min

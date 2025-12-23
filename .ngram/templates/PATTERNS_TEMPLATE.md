@@ -11,7 +11,7 @@ VERIFIED: {DATE} against {COMMIT}
 ## CHAIN
 
 ```
-OBJECTIFS:      ./OBJECTIFS_{name}.md
+OBJECTIVES:      ./OBJECTIVES_{name}.md
 BEHAVIORS:      ./BEHAVIORS_*.md
 THIS:            PATTERNS_*.md (you are here)
 MECHANISMS:     ./MECHANISMS_*.md (if applicable)
@@ -133,34 +133,8 @@ IMPL:            {path/to/main/source/file.py}
 
 ## MARKERS
 
-> See VIEW_Escalation for full YAML formats. Use `ngram solve-markers` to triage.
+> See PRINCIPLES.md "Feedback Loop" section for marker format and usage.
 
-<!-- @ngram:todo
-title: "{Actionable task}"
-priority: {low|medium|high|critical}
-context: |
-  {Why this task exists and what it unblocks}
-task: |
-  {Concrete work to perform}
--->
-
-<!-- @ngram:proposition
-title: "{Improvement idea}"
-priority: {1-10}
-context: |
-  {Current situation, why this is beneficial}
-implications: |
-  {Impacts on existing code}
-suggested_changes: |
-  {High-level description of proposed changes}
--->
-
-<!-- @ngram:escalation
-task_name: "{Decision needed with scope + goal}"
-priority: {1-10}
-category: {objective-needed|context-needed|design-choice-needed|...}
-context: |
-  {Current system, where the issue appears, why it matters}
-questions:
-  - "{Direct question requiring human decision}"
--->
+<!-- @ngram:todo {Actionable task that needs doing} -->
+<!-- @ngram:proposition {Improvement idea or future possibility} -->
+<!-- @ngram:escalation {Blocker or decision needed from human} -->

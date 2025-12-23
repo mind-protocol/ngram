@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Blood Ledger — Database Initialization
+Database Initialization
 
 Creates schema indexes and loads initial game state.
 
@@ -25,20 +25,19 @@ def create_indexes(r: redis.Redis, graph_name: str):
     """Create indexes for efficient querying."""
     indexes = [
         # Node ID indexes (primary lookups)
-        "CREATE INDEX FOR (n:Character) ON (n.id)",
-        "CREATE INDEX FOR (n:Place) ON (n.id)",
+        "CREATE INDEX FOR (n:Actor) ON (n.id)",
+        "CREATE INDEX FOR (n:Space) ON (n.id)",
         "CREATE INDEX FOR (n:Thing) ON (n.id)",
         "CREATE INDEX FOR (n:Narrative) ON (n.id)",
-        "CREATE INDEX FOR (n:Tension) ON (n.id)",
 
         # Type indexes (filtering)
-        "CREATE INDEX FOR (n:Character) ON (n.type)",
-        "CREATE INDEX FOR (n:Place) ON (n.type)",
+        "CREATE INDEX FOR (n:Actor) ON (n.type)",
+        "CREATE INDEX FOR (n:Space) ON (n.type)",
         "CREATE INDEX FOR (n:Narrative) ON (n.type)",
 
         # Name indexes (search)
-        "CREATE INDEX FOR (n:Character) ON (n.name)",
-        "CREATE INDEX FOR (n:Place) ON (n.name)",
+        "CREATE INDEX FOR (n:Actor) ON (n.name)",
+        "CREATE INDEX FOR (n:Space) ON (n.name)",
         "CREATE INDEX FOR (n:Thing) ON (n.name)",
         "CREATE INDEX FOR (n:Narrative) ON (n.name)",
     ]
@@ -67,12 +66,11 @@ def load_initial_state(graph_name: str, host: str, port: int):
     if world_dir.exists():
         # Phase 1: Load nodes first (order matters for references)
         node_files = {
-            "places.yaml": "place",
-            "places_minor.yaml": "place",
-            "characters.yaml": "character",
+            "places.yaml": "space",
+            "places_minor.yaml": "space",
+            "characters.yaml": "actor",
             "things.yaml": "thing",
             "narratives.yaml": "narrative",
-            "tensions.yaml": "tension",
             "events.yaml": "event",
         }
         for filename, node_type in node_files.items():
@@ -149,10 +147,9 @@ def load_initial_state(graph_name: str, host: str, port: int):
 def verify_data(r: redis.Redis, graph_name: str):
     """Verify initial data was loaded."""
     queries = [
-        ("Characters", "MATCH (n:Character) RETURN count(n)"),
-        ("Places", "MATCH (n:Place) RETURN count(n)"),
+        ("Actors", "MATCH (n:Actor) RETURN count(n)"),
+        ("Spaces", "MATCH (n:Space) RETURN count(n)"),
         ("Narratives", "MATCH (n:Narrative) RETURN count(n)"),
-        ("Tensions", "MATCH (n:Tension) RETURN count(n)"),
         ("Beliefs", "MATCH ()-[r:BELIEVES]->() RETURN count(r)"),
         ("Presences", "MATCH ()-[r:AT]->() RETURN count(r)"),
         ("Geography", "MATCH ()-[r:CONNECTS]->() RETURN count(r)"),
@@ -170,7 +167,7 @@ def verify_data(r: redis.Redis, graph_name: str):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Initialize Blood Ledger database')
+    parser = argparse.ArgumentParser(description='Initialize database')
     parser.add_argument('--host', default='localhost', help='FalkorDB host')
     parser.add_argument('--port', type=int, default=6379, help='FalkorDB port')
     parser.add_argument('--graph', default='blood_ledger', help='Graph name')

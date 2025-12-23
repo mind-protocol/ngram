@@ -216,4 +216,12 @@ docks:
 
 <!-- @ngram:todo Use Textual's `App.run_test()` for automated health verification in CI. -->
 <!-- @ngram:proposition Add a "TUI Health" overlay for developers to see internal latency and event counts. -->
-<!-- @ngram:escalation How should we handle terminal resizing failures in HEALTH? -->
+<!-- @ngram:escalation
+title: "How should we handle terminal resizing failures in HEALTH?"
+priority: 5
+response:
+  status: resolved
+  choice: "N/A — TUI deprecated"
+  behavior: "TUI replaced by Next.js web interface. CLI is for agents, web is for humans."
+  notes: "2025-12-23: Architecture changed. ngram CLI = agent interface, Next.js = human interface."
+-->

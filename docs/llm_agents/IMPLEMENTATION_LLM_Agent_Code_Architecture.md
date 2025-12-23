@@ -11,7 +11,7 @@ VERIFIED: 2025-12-19 against commit ad538f8
 ## CHAIN
 
 ```
-OBJECTIFS:        ./OBJECTIFS_Llm_Agents_Goals.md
+OBJECTIVES:        ./OBJECTIVES_Llm_Agents_Goals.md
 BEHAVIORS:        ./BEHAVIORS_Gemini_Agent_Output.md
 PATTERNS:         ./PATTERNS_Provider_Specific_LLM_Subprocesses.md
 ALGORITHM:        ./ALGORITHM_Gemini_Stream_Flow.md

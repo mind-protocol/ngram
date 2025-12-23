@@ -204,19 +204,19 @@ class TestMomentProcessorSchema:
         assert call["weight"] == 0.8  # Hints default to high weight
         assert call["status"] == "active"  # Hints default to active
 
-    def test_spoken_status_sets_tick_spoken(self, mock_moment_processor, mock_graph_ops):
-        """Test that spoken status sets tick_spoken."""
+    def test_completed_status_sets_tick_resolved(self, mock_moment_processor, mock_graph_ops):
+        """Test that spoken status sets tick_resolved."""
         mock_moment_processor.process_dialogue(
             text="Hello there.",
             speaker="char_aldric",
-            initial_status="spoken"
+            initial_status = 'completed'
         )
 
         call = mock_graph_ops._add_moment_calls[0]
-        assert call["tick_spoken"] == 1440  # Current tick from context
+        assert call["tick_resolved"] == 1440  # Current tick from context
 
-    def test_possible_status_no_tick_spoken(self, mock_moment_processor, mock_graph_ops):
-        """Test that possible status doesn't set tick_spoken."""
+    def test_possible_status_no_tick_resolved(self, mock_moment_processor, mock_graph_ops):
+        """Test that possible status doesn't set tick_resolved."""
         mock_moment_processor.process_dialogue(
             text="A future possibility.",
             speaker="char_aldric",
@@ -224,7 +224,7 @@ class TestMomentProcessorSchema:
         )
 
         call = mock_graph_ops._add_moment_calls[0]
-        assert call["tick_spoken"] is None
+        assert call["tick_resolved"] is None
 
 
 class TestPossibleMomentCreation:

@@ -1,5 +1,5 @@
 """
-Blood Ledger — API Layer
+API Layer
 
 FastAPI endpoints for the game engine.
 """

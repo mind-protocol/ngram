@@ -1,7 +1,7 @@
 """
 ngram CLI - Memory for AI agents
 
-DOCS: docs/ngram_cli_core/OBJECTIFS_ngram_cli_core.md
+DOCS: docs/ngram_cli_core/OBJECTIVES_ngram_cli_core.md
 
 Protocol for context, state, and handoffs across sessions.
 
@@ -42,6 +42,7 @@ from .project_map import print_project_map
 from .sync import sync_command
 from .solve_escalations import solve_special_markers_command
 from .repair import repair_command
+from .work import work_command
 from .refactor import refactor_command
 from .status_cmd import status_command
 from .repo_overview import generate_and_save as generate_overview
@@ -390,6 +391,67 @@ def main():
         help=argparse.SUPPRESS,
     )
 
+    # work command (replaces repair with simpler interface)
+    work_parser = subparsers.add_parser(
+        "work",
+        help="Run AI-assisted work on a path (auto-runs doctor first)"
+    )
+    work_parser.add_argument(
+        "path",
+        type=Path,
+        nargs="?",
+        default=Path.cwd(),
+        help="Target path (file or directory) to work on (default: current directory)"
+    )
+    work_parser.add_argument(
+        "objective",
+        nargs="?",
+        default=None,
+        help="Optional objective describing what to accomplish"
+    )
+    work_parser.add_argument(
+        "--max", "-m",
+        type=int,
+        default=None,
+        help="Maximum issues to fix (default: all)"
+    )
+    work_parser.add_argument(
+        "--type", "-t",
+        action="append",
+        dest="types",
+        choices=[
+            "MONOLITH", "UNDOCUMENTED", "STALE_SYNC", "PLACEHOLDER",
+            "INCOMPLETE_CHAIN", "NO_DOCS_REF", "BROKEN_IMPL_LINK",
+            "STUB_IMPL", "INCOMPLETE_IMPL", "UNDOC_IMPL", "LARGE_DOC_MODULE",
+            "YAML_DRIFT"
+        ],
+        help="Only fix specific issue types (can be repeated)"
+    )
+    work_parser.add_argument(
+        "--depth",
+        choices=["links", "docs", "full"],
+        default="docs",
+        help="Work depth: links (refs only), docs (+ content), full (+ code). Default: docs"
+    )
+    work_parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Show what would be done without spawning agents"
+    )
+    work_parser.add_argument(
+        "--parallel", "-p",
+        type=int,
+        default=5,
+        help="Number of parallel agents (default: 5)"
+    )
+    work_parser.add_argument(
+        "--model",
+        choices=AGENT_CHOICES,
+        dest="work_model",
+        default=None,
+        help="Agent model for work (overrides global --model)"
+    )
+
     # refactor command
     refactor_parser = subparsers.add_parser(
         "refactor",
@@ -577,6 +639,19 @@ def main():
         agent_provider = args.repair_model or args.model
         exit_code = repair_command(
             args.dir,
+            max_issues=args.max,
+            issue_types=args.types,
+            depth=args.depth,
+            dry_run=args.dry_run,
+            parallel=args.parallel,
+            agent_provider=agent_provider,
+        )
+        sys.exit(exit_code)
+    elif args.command == "work":
+        agent_provider = args.work_model or args.model
+        exit_code = work_command(
+            path=args.path,
+            objective=args.objective,
             max_issues=args.max,
             issue_types=args.types,
             depth=args.depth,

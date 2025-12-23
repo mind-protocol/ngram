@@ -83,7 +83,7 @@ class TestMomentCreation:
             id="camp_d1_dawn_narration_001",
             text="The fire crackles softly.",
             type="narration",
-            tick=1440
+            tick_created=1440
         )
 
         assert moment_id == "camp_d1_dawn_narration_001"
@@ -99,7 +99,7 @@ class TestMomentCreation:
             id="test_moment",
             text="A possible line of dialogue.",
             type="dialogue",
-            tick=1440,
+            tick_created=1440,
             status="possible",
             weight=0.6
         )
@@ -116,7 +116,7 @@ class TestMomentCreation:
             id="test_moment",
             text="I swore an oath.",
             type="dialogue",
-            tick=1440,
+            tick_created=1440,
             tone="defiant"
         )
 
@@ -124,20 +124,20 @@ class TestMomentCreation:
         props = params.get("props", {})
         assert props.get("tone") == "defiant"
 
-    def test_add_moment_with_tick_spoken(self, mock_graph_ops):
-        """Test moment with tick_spoken (for spoken moments)."""
+    def test_add_moment_with_tick_resolved(self, mock_graph_ops):
+        """Test moment with tick_resolved (for spoken moments)."""
         mock_graph_ops.add_moment(
             id="test_moment",
             text="Past dialogue.",
             type="dialogue",
-            tick=1440,
-            status="spoken",
-            tick_spoken=1500
+            tick_created=1440,
+            status = 'completed',
+            tick_resolved=1500
         )
 
         params = mock_graph_ops._queries[0]["params"]
         props = params.get("props", {})
-        assert props.get("tick_spoken") == 1500
+        assert props.get("tick_resolved") == 1500
 
     def test_add_moment_with_speaker_creates_said_link(self, mock_graph_ops):
         """Test that speaker param creates SAID link."""
@@ -145,7 +145,7 @@ class TestMomentCreation:
             id="test_dialogue",
             text="Aldric speaks.",
             type="dialogue",
-            tick=1440,
+            tick_created=1440,
             speaker="char_aldric"
         )
 
@@ -162,7 +162,7 @@ class TestMomentCreation:
             id="test_moment",
             text="At the camp.",
             type="narration",
-            tick=1440,
+            tick_created=1440,
             place_id="place_camp"
         )
 
@@ -176,7 +176,7 @@ class TestMomentCreation:
             id="test_moment_2",
             text="Second line.",
             type="narration",
-            tick=1440,
+            tick_created=1440,
             after_moment_id="test_moment_1"
         )
 
@@ -765,19 +765,19 @@ class TestInvariants:
         assert 0 <= weight <= 1
 
     def test_status_consistency_invariant(self, mock_graph_ops):
-        """Spoken moments should have tick_spoken set."""
-        # When creating a spoken moment, tick_spoken should be provided
+        """Spoken moments should have tick_resolved set."""
+        # When creating a spoken moment, tick_resolved should be provided
         mock_graph_ops.add_moment(
             id="spoken_moment",
             text="Past dialogue",
-            status="spoken",
-            tick=1440,
-            tick_spoken=1440
+            status = 'completed',
+            tick_created=1440,
+            tick_resolved=1440
         )
 
         params = mock_graph_ops._queries[0]["params"]
         props = params.get("props", {})
-        assert props.get("tick_spoken") is not None
+        assert props.get("tick_resolved") is not None
 
 
 # =============================================================================
@@ -844,7 +844,7 @@ class TestIntegrationConversationFlow:
             text="Aldric looks at the fire.",
             type="narration",
             status="active",
-            tick=1440
+            tick_created=1440
         )
 
         # Create moment 2 (response)
@@ -854,7 +854,7 @@ class TestIntegrationConversationFlow:
             type="dialogue",
             status="possible",
             weight=0.5,
-            tick=1440
+            tick_created=1440
         )
 
         # Link them
@@ -922,11 +922,11 @@ class TestExtractMomentArgs:
             'id': 'camp_d1_night_dialogue_001',
             'text': 'I swore an oath.',
             'moment_type': 'dialogue',
-            'tick': 1440,
+            'tick_created': 1440,
             'speaker': 'char_aldric',
             'place_id': 'place_camp',
             'line': 42,
-            'status': 'spoken',
+            'status': 'completed',
             'weight': 0.7,
             'tone': 'defiant'
         }
@@ -936,7 +936,7 @@ class TestExtractMomentArgs:
         assert args['id'] == 'camp_d1_night_dialogue_001'
         assert args['text'] == 'I swore an oath.'
         assert args['type'] == 'dialogue'
-        assert args['tick'] == 1440
+        assert args['tick_created'] == 1440
         assert args['speaker'] == 'char_aldric'
 
 

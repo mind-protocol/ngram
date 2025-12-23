@@ -1,5 +1,5 @@
 """
-Blood Ledger — Graph Operations: Image Generation Helpers
+Graph Operations: Image Generation Helpers
 
 Standalone helper functions for node image generation.
 Extracted from graph_ops.py to reduce file size.

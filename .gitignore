@@ -42,3 +42,4 @@ project_map.html
 # ngram agent working directories
 .ngram/agents/repair/
 .ngram/traces/
+node_modules\n.next

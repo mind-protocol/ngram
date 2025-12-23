@@ -1,7 +1,7 @@
 # ngram_cli_core — PATTERNS: Design and Implementation Conventions
 
 ## CHAIN
-- Docs: `docs/ngram_cli_core/OBJECTIFS_ngram_cli_core.md`
+- Docs: `docs/ngram_cli_core/OBJECTIVES_ngram_cli_core.md`
 - Code: `ngram/cli.py`
 - Code: `ngram/agent_cli.py`
 - Code: `ngram/doctor.py`
@@ -17,7 +17,7 @@ This module adheres to the following design and implementation patterns:
 ### 1. Command-Line Interface (CLI) Structure
 
 *   **Click Framework:** All CLI commands are built using the `Click` library for robust, composable command definitions, argument parsing, and help generation.
-*   **Subcommands:** Complex functionalities are organized into subcommands (e.g., `ngram doctor`, `ngram repair`) for clarity and modularity.
+*   **Subcommands:** Complex functionalities are organized into subcommands (e.g., `ngram doctor`, `ngram work`) for clarity and modularity.
 *   **Option and Argument Typing:** Type hints are used for CLI options and arguments to improve readability and enable static analysis.
 
 ### 2. Modular Design

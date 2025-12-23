@@ -154,7 +154,7 @@ class DocChainStatus:
     def get_all_docs(self) -> List[Tuple[str, Optional[Path], str]]:
         """Return list of (name, path, status) for all docs."""
         return [
-            ("OBJECTIFS", self.objectifs, self.objectifs_status),
+            ("OBJECTIVES", self.objectifs, self.objectifs_status),
             ("PATTERNS", self.patterns, self.patterns_status),
             ("BEHAVIORS", self.behaviors, self.behaviors_status),
             ("ALGORITHM", self.algorithm, self.algorithm_status),
@@ -261,7 +261,7 @@ def find_doc_chain(docs_path: Path) -> DocChainStatus:
 
     # Search for doc types
     patterns = {
-        "objectifs": "OBJECTIFS_*.md",
+        "objectifs": "OBJECTIVES_*.md",
         "patterns": "PATTERNS_*.md",
         "behaviors": "BEHAVIORS_*.md",
         "algorithm": "ALGORITHM_*.md",

@@ -11,7 +11,7 @@ VERIFIED: {DATE} against {COMMIT}
 ## CHAIN
 
 ```
-OBJECTIFS:      ./OBJECTIFS_{name}.md
+OBJECTIVES:      ./OBJECTIVES_{name}.md
 BEHAVIORS:       ./BEHAVIORS_*.md
 PATTERNS:        ./PATTERNS_*.md
 MECHANISMS:     ./MECHANISMS_*.md (if applicable)
@@ -160,34 +160,8 @@ ELSE:
 
 ## MARKERS
 
-> See VIEW_Escalation for full YAML formats. Use `ngram solve-markers` to triage.
+> See PRINCIPLES.md "Feedback Loop" section for marker format and usage.
 
-<!-- @ngram:todo
-title: "{Algorithm improvement to consider}"
-priority: {low|medium|high|critical}
-context: |
-  {Why this improvement matters}
-task: |
-  {Concrete algorithm change to make}
--->
-
-<!-- @ngram:proposition
-title: "{Optimization opportunity or alternative approach}"
-priority: {1-10}
-context: |
-  {Current algorithm limitations}
-implications: |
-  {Performance/correctness impacts}
-suggested_changes: |
-  {Proposed algorithm modifications}
--->
-
-<!-- @ngram:escalation
-task_name: "{Algorithm design question needing decision}"
-priority: {1-10}
-category: {design-choice-needed|tradeoff-needed|...}
-context: |
-  {Current approach, alternatives considered}
-questions:
-  - "{Direct question requiring human decision}"
--->
+<!-- @ngram:todo {Algorithm improvement to consider} -->
+<!-- @ngram:proposition {Optimization opportunity or alternative approach} -->
+<!-- @ngram:escalation {Design question needing decision} -->

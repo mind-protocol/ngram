@@ -11,7 +11,7 @@ VERIFIED: N/A
 ## CHAIN
 
 ```
-OBJECTIFS:       ./OBJECTIFS_App_Shell.md
+OBJECTIVES:       ./OBJECTIVES_App_Shell.md
 PATTERNS:        ./PATTERNS_App_Shell.md
 THIS:            ./BEHAVIORS_App_Shell.md
 ALGORITHM:       ./ALGORITHM_App_Shell.md

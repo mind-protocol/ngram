@@ -80,10 +80,9 @@ def build_agent_command(
         cmd.append("-")
         return cmd, combined_prompt
 
-    cmd = ["claude"]
+    cmd = ["claude", "-p"]  # -p/--print for non-interactive mode
     if continue_session:
         cmd.append("--continue")
-    cmd.extend(["-p", prompt])
     cmd.extend(["--output-format", output_format])
     if allow_dangerous:
         cmd.append("--dangerously-skip-permissions")
@@ -93,6 +92,8 @@ def build_agent_command(
         cmd.extend(["--append-system-prompt", system_prompt])
     if verbose:
         cmd.append("--verbose")
+    # Prompt must be the last positional argument
+    cmd.append(prompt)
     return cmd, None
 
 
@@ -123,6 +124,15 @@ def run_agent(
     if stdin_payload and not stdin_payload.endswith("\n"):
         stdin_payload += "\n"
 
+    # Ensure PATH includes common CLI locations
+    env = os.environ.copy()
+    extra_paths = [
+        os.path.expanduser("~/.nvm/versions/node/v24.10.0/bin"),
+        os.path.expanduser("~/.local/bin"),
+        "/usr/local/bin",
+    ]
+    env["PATH"] = ":".join(extra_paths) + ":" + env.get("PATH", "")
+
     result = subprocess.run(
         cmd,
         capture_output=True,
@@ -130,6 +140,7 @@ def run_agent(
         input=stdin_payload,
         timeout=timeout,
         cwd=working_dir,
+        env=env,
     )
 
     raw_stdout = result.stdout or ""
@@ -154,6 +165,17 @@ def parse_claude_json_output(output: str) -> Any:
     except json.JSONDecodeError:
         fenced = _strip_code_fence(output)
         return json.loads(fenced)
+
+    # Handle stream-json format (list of messages)
+    if isinstance(envelope, list):
+        # Find the last 'result' type message
+        for msg in reversed(envelope):
+            if isinstance(msg, dict) and msg.get("type") == "result":
+                envelope = msg
+                break
+        else:
+            # No result found, return empty
+            return {}
 
     if isinstance(envelope, dict) and "result" in envelope:
         result = envelope["result"]

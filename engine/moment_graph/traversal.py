@@ -1,5 +1,5 @@
 """
-Blood Ledger — Moment Graph Traversal Engine
+Moment Graph Traversal Engine
 
 Handles click traversal, weight updates, and moment state transitions.
 This is the hot path — must be <50ms for all operations.
@@ -74,7 +74,7 @@ class MomentTraversal:
 
         # 4. Consume origin if configured
         if target.get('consumes_origin', True):
-            self._update_status(moment_id, 'spoken', tick)
+            self._update_status(moment_id, 'completed', tick)
 
         # 5. Activate target
         self._update_status(target_id, 'active', tick)
@@ -102,7 +102,7 @@ class MomentTraversal:
         speaker_id: str = None
     ) -> None:
         """Mark moment as spoken and create SAID link if speaker."""
-        self._update_status(moment_id, 'spoken', tick)
+        self._update_status(moment_id, 'completed', tick)
         if speaker_id:
             self.write.add_said(speaker_id, moment_id)
         logger.debug(f"[Traversal] Spoken: {moment_id} by {speaker_id}")
@@ -121,7 +121,7 @@ class MomentTraversal:
         tick: int
     ) -> None:
         """Mark moment as decayed (pruned)."""
-        self._update_status(moment_id, 'decayed', tick)
+        self._update_status(moment_id, 'rejected', tick)
         logger.debug(f"[Traversal] Decayed: {moment_id}")
 
     def reactivate_dormant(
@@ -180,7 +180,7 @@ class MomentTraversal:
 
             # Consume origin if configured
             if t.get('consumes_origin', True):
-                self._update_status(from_id, 'spoken', tick)
+                self._update_status(from_id, 'completed', tick)
 
             # Activate target
             self._update_status(to_id, 'active', tick)
@@ -202,10 +202,10 @@ class MomentTraversal:
         """Update moment status and relevant tick."""
         props = {"status": status}
 
-        if status == "spoken" and tick is not None:
-            props["tick_spoken"] = tick
-        elif status == "decayed" and tick is not None:
-            props["tick_decayed"] = tick
+        if status == "completed" and tick is not None:
+            props["tick_resolved"] = tick
+        elif status == "rejected" and tick is not None:
+            props["tick_resolved"] = tick
 
         cypher = """
         MATCH (m:Moment {id: $moment_id})

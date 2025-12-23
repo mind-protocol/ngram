@@ -1,0 +1,204 @@
+# Physics Configuration for Graph Nodes and Links
+#
+# This file defines energy, weight, and emotion defaults that can be
+# applied to existing graphs via the migration script.
+#
+# Usage:
+#   python -m engine.migrations.migrate_to_v2_schema blood_ledger --apply-physics
+#   python -m engine.migrations.migrate_to_v2_schema blood_ledger --apply-physics --no-overwrite
+#
+# Structure:
+#   - defaults: Base values for all nodes/links
+#   - by_label: Per-label (Actor, Space, etc.) overrides
+#   - by_type: Per-type within label (e.g., Actor.type=player)
+#   - by_id: Per-specific-node overrides (manual curation)
+#
+# Priority: by_id > by_type > by_label > defaults
+#
+# STRATEGY OPTIONS:
+#   1. Manual curation (by_id) - Hand-pick weight/energy/emotions for key nodes
+#   2. Derived from embedding - Compute importance from semantic centrality
+#   3. Type-based defaults (by_type) - Assign by category
+#
+# Current graph stats (blood_ledger):
+#   Actors: major (27), minor (18), background (4), player (1)
+#   Narratives: memory (46), control (37), rumour (23), belief (10), secret (7)
+#   Spaces: village (29), town (20), crossing (9), abbey (7), hold (5)
+#   Things: token (8), document (6), treasure (5), weapon (5), relic (4)
+#   Links: BELIEVES (1702), CONNECTS (113), AT (54), LOCATED_AT (24)
+
+version: "1.1"
+
+# Base defaults (schema.yaml values)
+defaults:
+  node:
+    energy: 0.0
+    weight: 0.5
+  link:
+    energy: 0.0
+    weight: 1.0
+    conductivity: 1.0
+    strength: 0.0
+
+# Per-label defaults
+by_label:
+  Actor:
+    weight: 0.6  # Actors are slightly more important by default
+
+  Space:
+    weight: 0.4  # Spaces less important than actors
+
+  Narrative:
+    weight: 0.5  # Base narrative weight
+
+  Thing:
+    weight: 0.3  # Things usually background
+
+  Moment:
+    weight: 0.5
+    energy: 0.0  # Moments start inactive
+
+# Per-type within label (from actual blood_ledger data)
+by_type:
+  Actor:
+    player:
+      weight: 1.0   # Player is central
+      energy: 1.0   # Fully energized
+    companion:
+      weight: 0.9
+      energy: 0.8
+    major:
+      weight: 0.7   # 27 major characters
+      energy: 0.5
+    minor:
+      weight: 0.5   # 18 minor characters
+      energy: 0.2
+    background:
+      weight: 0.3   # 4 background
+      energy: 0.0
+
+  Space:
+    city:
+      weight: 0.6   # 3 cities
+    town:
+      weight: 0.5   # 20 towns
+    hold:
+      weight: 0.5   # 5 holds
+    abbey:
+      weight: 0.5   # 7 abbeys (religious importance)
+    village:
+      weight: 0.4   # 29 villages
+    crossing:
+      weight: 0.3   # 9 crossings (transit points)
+    forest:
+      weight: 0.3   # 3 forests
+    ruin:
+      weight: 0.4   # 4 ruins (narrative potential)
+    camp:
+      weight: 0.3   # 2 camps
+    wilderness:
+      weight: 0.2
+    monastery:
+      weight: 0.5
+
+  Narrative:
+    secret:
+      weight: 0.9   # 7 secrets - drive drama
+      energy: 0.3
+    oath:
+      weight: 0.85  # 1 oath - binding commitment
+    blood:
+      weight: 0.85  # 1 blood - deep tie
+    debt:
+      weight: 0.8   # 3 debts - obligations
+    memory:
+      weight: 0.6   # 46 memories - foundational
+    belief:
+      weight: 0.6   # 10 beliefs
+    reputation:
+      weight: 0.5   # 4 reputations
+    rumour:
+      weight: 0.45  # 23 rumours - less reliable
+    claim:
+      weight: 0.5   # 7 claims
+    control:
+      weight: 0.55  # 37 control narratives
+
+  Thing:
+    relic:
+      weight: 0.8   # 4 relics - sacred/rare
+    treasure:
+      weight: 0.7   # 5 treasures
+    weapon:
+      weight: 0.6   # 5 weapons
+    armor:
+      weight: 0.5   # 1 armor
+    document:
+      weight: 0.5   # 6 documents
+    letter:
+      weight: 0.4   # 1 letter
+    token:
+      weight: 0.4   # 8 tokens
+    provisions:
+      weight: 0.2   # 4 provisions - mundane
+
+# Per-node-id overrides (game-specific)
+# Uncomment and customize for your world
+by_id:
+  # Example: Make the protagonist extra important
+  # char_player:
+  #   weight: 1.0
+  #   energy: 1.0
+  #   emotions:
+  #     - [curiosity, 0.8]
+  #     - [caution, 0.3]
+  pass: null  # placeholder
+
+# Link physics by relationship type (from actual blood_ledger data)
+link_by_type:
+  # Core links (high volume)
+  BELIEVES:          # 1702 links - Actor→Narrative belief edges
+    conductivity: 0.8
+    weight: 0.5
+    energy: 0.0
+  CONNECTS:          # 113 links - Space→Space geography
+    conductivity: 1.0
+    weight: 0.5
+    energy: 0.0
+  AT:                # 54 links - Actor/Thing presence at Space
+    conductivity: 1.0
+    weight: 0.3
+    energy: 0.0
+  LOCATED_AT:        # 24 links - Thing location
+    conductivity: 0.8
+    weight: 0.3
+    energy: 0.0
+  OCCURRED_AT:       # 13 links - Event/Moment at Space
+    conductivity: 0.9
+    weight: 0.4
+    energy: 0.0
+
+  # Moment flow links (future)
+  SAID:
+    conductivity: 1.0
+    weight: 0.8
+  THEN:
+    conductivity: 1.0
+    weight: 1.0      # Sequence links are critical for flow
+  CAN_LEAD_TO:
+    conductivity: 0.6
+    weight: 0.5
+  ATTACHED_TO:
+    conductivity: 0.7
+    weight: 0.6
+  ABOUT:
+    conductivity: 0.5
+    weight: 0.4
+
+  # Structural links
+  CONTAINS:
+    conductivity: 0.3
+    weight: 0.2
+  CARRIES:
+    conductivity: 0.5
+    weight: 0.2

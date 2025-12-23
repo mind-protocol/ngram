@@ -1,0 +1,6 @@
+ignores:
+- issue_type: MARKER_DUPLICATE
+  path: templates/**
+  reason: Template sources - markers apply to copied instances in .claude/ and .ngram/
+  added_by: human
+  added_date: '2025-12-23'

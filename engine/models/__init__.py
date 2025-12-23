@@ -1,81 +1,91 @@
 """
-Blood Ledger — Data Models
+Data Models
 
-Complete Pydantic models for the Blood Ledger schema.
-Based on SCHEMA.md v5.1
+Complete Pydantic models for the schema.
+Based on schema.yaml v1.1
 
-DOCS: docs/schema/models/PATTERNS_Pydantic_Schema_Models.md
+DOCS: docs/schema/PATTERNS_Schema.md
 
-Nodes (4 types):
-- Character: A person who can act, speak, remember, die
-- Place: A location with atmosphere and geography
+v1.1 CHANGES:
+- MomentStatus: POSSIBLE, ACTIVE, COMPLETED, REJECTED, INTERRUPTED, OVERRIDDEN
+- LinkBase: unified link with node_a, node_b, conductivity, weight, energy, strength, emotions
+- LinkType: contains, leads_to, expresses, sequence, primes, can_become, relates
+- All nodes: energy/weight unbounded (decay handles runaway)
+
+Nodes (5 types):
+- Actor: A person who can act, speak, remember, die
+- Space: A location with atmosphere and geography
 - Thing: An object that can be owned, given, stolen, fought over
-- Narrative: A story that characters believe
+- Narrative: A story that actors believe
+- Moment: A unit of narrated content
 
-Links (6 types):
-- CharacterNarrative: What a character knows/believes
-- NarrativeNarrative: How stories relate
-- CharacterPlace: Physical presence (ground truth)
-- CharacterThing: Physical possession (ground truth)
-- ThingPlace: Where things are (ground truth)
-- PlacePlace: Geography (ground truth)
-
-
+Links:
+- LinkBase: Unified v1.1 link (node_a, node_b, type, conductivity, weight, energy, strength, emotions)
+- Legacy typed links still available for domain-specific fields
 """
 
 # Nodes
-from .nodes import Character, Place, Thing, Narrative
+from .nodes import Actor, Space, Thing, Narrative, Moment
 
-# Links
+# Links (v1.1)
 from .links import (
-    CharacterNarrative,
+    # v1.1 unified link
+    LinkType,
+    LinkBase,
+    # Emotion utilities
+    consolidate_emotions,
+    add_emotion,
+    blend_emotions,
+    # Legacy typed links (for domain-specific fields)
+    ActorNarrative,
     NarrativeNarrative,
-    CharacterPlace,
-    CharacterThing,
-    ThingPlace,
-    PlacePlace
+    ActorSpace,
+    ActorThing,
+    ThingSpace,
+    SpaceSpace
 )
-
-
 
 # Base types and enums
 from .base import (
-    # Character enums
-    CharacterType, Face, SkillLevel, VoiceTone, VoiceStyle,
+    # Actor enums
+    ActorType, Face, SkillLevel, VoiceTone, VoiceStyle,
     Approach, Value, Flaw,
-    # Place enums
-    PlaceType, Weather, Mood,
+    # Space enums
+    SpaceType, Weather, Mood,
     # Thing enums
     ThingType, Significance,
     # Narrative enums
     NarrativeType, NarrativeTone, NarrativeVoiceStyle,
     # Link enums
     BeliefSource, PathDifficulty,
-
+    # Moment enums
+    MomentType, MomentStatus, MomentTrigger,
     # Modifier enums
     ModifierType, ModifierSeverity,
     # Shared models
-    Modifier, Skills, CharacterVoice, Personality, Backstory,
-    Atmosphere, NarrativeAbout, NarrativeVoice, TensionProgression
+    Modifier, ActorVoice, Personality, Backstory,
+    Atmosphere, NarrativeAbout, NarrativeVoice
 )
 
 __all__ = [
     # Nodes
-    'Character', 'Place', 'Thing', 'Narrative',
-    # Links
-    'CharacterNarrative', 'NarrativeNarrative',
-    'CharacterPlace', 'CharacterThing', 'ThingPlace', 'PlacePlace',
-
+    'Actor', 'Space', 'Thing', 'Narrative', 'Moment',
+    # Links (v1.1)
+    'LinkType', 'LinkBase',
+    'consolidate_emotions', 'add_emotion', 'blend_emotions',
+    # Legacy typed links
+    'ActorNarrative', 'NarrativeNarrative',
+    'ActorSpace', 'ActorThing', 'ThingSpace', 'SpaceSpace',
     # Enums
-    'CharacterType', 'Face', 'SkillLevel', 'VoiceTone', 'VoiceStyle',
+    'ActorType', 'Face', 'SkillLevel', 'VoiceTone', 'VoiceStyle',
     'Approach', 'Value', 'Flaw',
-    'PlaceType', 'Weather', 'Mood',
+    'SpaceType', 'Weather', 'Mood',
     'ThingType', 'Significance',
     'NarrativeType', 'NarrativeTone', 'NarrativeVoiceStyle',
     'BeliefSource', 'PathDifficulty',
-    'PressureType',
+    'MomentType', 'MomentStatus', 'MomentTrigger',
     'ModifierType', 'ModifierSeverity',
     # Shared models
-    'Modifier', 'Skills', 'CharacterVoice', 'Personality', 'Backstory',
+    'Modifier', 'ActorVoice', 'Personality', 'Backstory',
     'Atmosphere', 'NarrativeAbout', 'NarrativeVoice'
 ]

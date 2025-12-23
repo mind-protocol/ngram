@@ -1,5 +1,5 @@
 """
-Blood Ledger — Moment Graph API Endpoints
+Moment Graph API Endpoints
 
 Fast endpoints for moment graph traversal and queries.
 The click path is HOT - must be <50ms, no LLM calls.
@@ -104,7 +104,7 @@ class MomentResponse(BaseModel):
     weight: float
     tone: Optional[str] = None
     tick_created: int = 0
-    tick_spoken: Optional[int] = None
+    tick_resolved: Optional[int] = None
     speaker: Optional[str] = None  # From SAID link
     clickable_words: List[str] = Field(default_factory=list)
 
@@ -207,7 +207,7 @@ def create_moments_router(
             try:
                 read = _get_graph_queries(playthrough_id, _host, _port, _playthroughs_dir)
                 result = read.query(f"""
-                    MATCH (c:Character {{id: '{player_id}'}})-[:AT]->(p:Place)
+                    MATCH (c:Actor {{id: '{player_id}'}})-[:AT]->(p:Space)
                     WHERE EXISTS((c)-[:AT {{present: 1.0}}]->(p))
                     RETURN p.id
                 """)
@@ -242,7 +242,7 @@ def create_moments_router(
                     weight=m.get("weight", 0.5),
                     tone=m.get("tone"),
                     tick_created=m.get("tick_created", 0),
-                    tick_spoken=m.get("tick_spoken"),
+                    tick_resolved=m.get("tick_resolved"),
                     speaker=m.get("speaker"),
                     clickable_words=list(set(clickable))
                 ))

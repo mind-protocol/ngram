@@ -127,7 +127,7 @@ What related issues might exist? Similar bugs, systemic problems, preventive mea
 - [What future agents could investigate]
 ```
 
-**IMPORTANT:** Suggestions with `[ ]` checkboxes will be offered interactively during `ngram repair`.
+**IMPORTANT:** Suggestions with `[ ]` checkboxes will be offered interactively during `ngram work`.
 
 ---
 

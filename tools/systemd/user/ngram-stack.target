@@ -1,0 +1,7 @@
+[Unit]
+Description=ngram stack (backend, frontend, MCP, ngrok, blood frontend)
+Wants=ngram-be.service ngram-fe.service falkor-mcp.service ngrok-falkor.service blood-fe.service
+After=ngram-be.service ngram-fe.service falkor-mcp.service ngrok-falkor.service blood-fe.service
+
+[Install]
+WantedBy=default.target

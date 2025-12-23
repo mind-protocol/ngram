@@ -199,6 +199,7 @@ waiting_decision: # explicit interim action while waiting
   note: "Proceed with batch ingestion but label dashboard freshness as unvalidated pending decision"
 
 response: # optional human response fields (fill after decision)
+  status: resolved # resolved | deferred | rejected — resolved markers skip doctor, auto-archive after 2 weeks
   choice: "Streaming ingestion" # chosen option or decision summary
   task_description: "Implement streaming ingestion for v1 dashboards" # optional task statement
   pattern: "Event-driven ingestion" # optional pattern name

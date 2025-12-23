@@ -6,7 +6,7 @@ Used by:
 - orchestrator.py (after narrator/world runner)
 """
 
-# DOCS: docs/infrastructure/api/PATTERNS_Api.md
+# DOCS: docs/infrastructure/api/IMPLEMENTATION_Api.md
 
 import asyncio
 import logging
@@ -79,5 +79,5 @@ def broadcast_moment_event(playthrough_id: str, event_type: str, data: Dict[str,
 
 
 # Note: Canon Holder (not yet implemented) should call broadcast_moment_event
-# when moments transition to 'spoken' status.
+# when moments transition to 'completed' status.
 # See: docs/infrastructure/canon/ALGORITHM_Canon_Holder.md

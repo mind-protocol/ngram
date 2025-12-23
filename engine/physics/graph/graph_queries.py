@@ -1,5 +1,5 @@
 """
-Blood Ledger — Graph Queries
+Graph Queries
 
 Easy-to-use functions for querying data from FalkorDB.
 Narrator and World Runner use these to read game state.
@@ -156,17 +156,17 @@ Error: {e}"""
 
         Examples:
             # Single node
-            read.query("MATCH (c:Character {id: 'char_aldric'}) RETURN c")
+            read.query("MATCH (c:Actor {id: 'char_aldric'}) RETURN c")
 
             # Filtered
-            read.query("MATCH (c:Character) WHERE c.type = 'companion' RETURN c")
+            read.query("MATCH (c:Actor) WHERE c.type = 'companion' RETURN c")
 
             # With params
-            read.query("MATCH (c:Character {id: $id}) RETURN c", {"id": "char_aldric"})
+            read.query("MATCH (c:Actor {id: $id}) RETURN c", {"id": "char_aldric"})
 
             # Complex
             read.query('''
-                MATCH (c:Character)-[b:BELIEVES]->(n:Narrative)
+                MATCH (c:Actor)-[b:BELIEVES]->(n:Narrative)
                 WHERE b.believes > 0.5
                 RETURN c.name, n.content, b.believes
             ''')
@@ -290,7 +290,7 @@ Error: {e}"""
             )
 
         cypher = f"""
-        MATCH (c:Character {{id: '{character_id}'}})
+        MATCH (c:Actor {{id: '{character_id}'}})
         RETURN c.id, c.name, c.type, c.alive, c.face,
                c.voice_tone, c.voice_style, c.approach, c.values, c.flaw,
                c.backstory_family, c.backstory_wound, c.backstory_why_here,
@@ -324,13 +324,13 @@ Error: {e}"""
         """
         if type_filter:
             cypher = f"""
-            MATCH (c:Character {{type: '{type_filter}'}})
+            MATCH (c:Actor {{type: '{type_filter}'}})
             RETURN c.id, c.name, c.type, c.alive
             ORDER BY c.name
             """
         else:
             cypher = """
-            MATCH (c:Character)
+            MATCH (c:Actor)
             RETURN c.id, c.name, c.type, c.alive
             ORDER BY c.name
             """
@@ -363,7 +363,7 @@ Error: {e}"""
             )
 
         cypher = f"""
-        MATCH (c:Character)-[r:AT]->(p:Place {{id: '{place_id}'}})
+        MATCH (c:Actor)-[r:AT]->(p:Space {{id: '{place_id}'}})
         WHERE r.present > 0.5
         RETURN c.id, c.name, c.type, r.visible
         ORDER BY c.name
@@ -396,7 +396,7 @@ Error: {e}"""
             )
 
         cypher = f"""
-        MATCH (p:Place {{id: '{place_id}'}})
+        MATCH (p:Space {{id: '{place_id}'}})
         RETURN p.id, p.name, p.type, p.mood, p.weather, p.details
         """
 
@@ -418,7 +418,7 @@ Error: {e}"""
             Dict with path_distance, path_difficulty, or None if no path
         """
         cypher = f"""
-        MATCH (f:Place {{id: '{from_place}'}})-[r:CONNECTS]->(t:Place {{id: '{to_place}'}})
+        MATCH (f:Space {{id: '{from_place}'}})-[r:CONNECTS]->(t:Space {{id: '{to_place}'}})
         WHERE r.path > 0.5
         RETURN r.path_distance, r.path_difficulty
         """
@@ -494,7 +494,7 @@ Error: {e}"""
             )
 
         cypher = f"""
-        MATCH (c:Character {{id: '{character_id}'}})-[r:BELIEVES]->(n:Narrative)
+        MATCH (c:Actor {{id: '{character_id}'}})-[r:BELIEVES]->(n:Narrative)
         WHERE r.heard >= {min_heard}
         RETURN n.id, n.name, n.content, n.type, n.weight,
                r.heard, r.believes, r.doubts, r.denies, r.source
@@ -525,7 +525,7 @@ Error: {e}"""
             )
 
         cypher = f"""
-        MATCH (c:Character)-[r:BELIEVES]->(n:Narrative {{id: '{narrative_id}'}})
+        MATCH (c:Actor)-[r:BELIEVES]->(n:Narrative {{id: '{narrative_id}'}})
         WHERE r.heard > 0
         RETURN c.id, c.name, c.type,
                r.heard, r.believes, r.doubts, r.denies
@@ -659,89 +659,6 @@ Error: {e}"""
         return [self._parse_node(row, fields) for row in rows]
 
     # =========================================================================
-    # TENSION QUERIES
-    # =========================================================================
-
-    def get_tension(self, tension_id: str) -> Optional[Dict[str, Any]]:
-        """
-        Get a tension by ID.
-
-        Args:
-            tension_id: e.g., "tension_confrontation"
-
-        Returns:
-            Tension dict or None if not found
-        """
-        if not tension_id:
-            raise QueryError(
-                "tension_id is required",
-                "Provide a valid tension ID:\n  graph.get_tension('tension_confrontation')"
-            )
-
-        cypher = f"""
-        MATCH (t:Tension {{id: '{tension_id}'}})
-        RETURN t.id, t.description, t.narratives, t.pressure, t.pressure_type,
-               t.breaking_point, t.base_rate, t.trigger_at, t.progression
-        """
-
-        rows = self._query(cypher)
-        if not rows:
-            return None
-
-        fields = [
-            "id", "description", "narratives", "pressure", "pressure_type",
-            "breaking_point", "base_rate", "trigger_at", "progression"
-        ]
-        return self._parse_node(rows[0], fields)
-
-    def get_all_tensions(self, min_pressure: float = 0.0) -> List[Dict[str, Any]]:
-        """
-        Get all tensions, optionally filtered by pressure.
-
-        Args:
-            min_pressure: Minimum pressure threshold
-
-        Returns:
-            List of tension dicts sorted by pressure
-
-        Example:
-            hot_tensions = graph.get_all_tensions(min_pressure=0.7)
-        """
-        cypher = f"""
-        MATCH (t:Tension)
-        WHERE t.pressure >= {min_pressure}
-        RETURN t.id, t.description, t.pressure, t.breaking_point, t.pressure_type, t.narratives
-        ORDER BY t.pressure DESC
-        """
-
-        rows = self._query(cypher)
-        fields = ["id", "description", "pressure", "breaking_point", "pressure_type", "narratives"]
-        return [self._parse_node(row, fields) for row in rows]
-
-    def get_flipped_tensions(self) -> List[Dict[str, Any]]:
-        """
-        Get tensions that have exceeded their breaking point.
-
-        Returns:
-            List of flipped tension dicts
-
-        Example:
-            flipped = graph.get_flipped_tensions()
-            for t in flipped:
-                print(f"FLIP: {t['id']} at pressure {t['pressure']}")
-        """
-        cypher = """
-        MATCH (t:Tension)
-        WHERE t.pressure >= t.breaking_point
-        RETURN t.id, t.description, t.narratives, t.pressure, t.breaking_point
-        ORDER BY t.pressure DESC
-        """
-
-        rows = self._query(cypher)
-        fields = ["id", "description", "narratives", "pressure", "breaking_point"]
-        return [self._parse_node(row, fields) for row in rows]
-
-    # =========================================================================
     # SCENE CONTEXT BUILDER
     # =========================================================================
 
@@ -762,7 +679,6 @@ Error: {e}"""
             - location info
             - present characters
             - active narratives (sorted by weight)
-            - tensions
 
         Example:
             context = graph.build_scene_context("place_camp")
@@ -784,31 +700,18 @@ Error: {e}"""
         active_narratives = [
             {
                 "id": b["id"],
-                "weight": b.get("weight", 0.5),
+                "weight": b.get("weight") or 0.5,
                 "summary": b["content"][:100] + "..." if len(b.get("content", "")) > 100 else b.get("content", ""),
                 "type": b["type"],
                 "tone": b.get("tone")
             }
-            for b in sorted(beliefs, key=lambda x: x.get("weight", 0), reverse=True)[:10]
-        ]
-
-        # Get relevant tensions
-        tensions = self.get_all_tensions(min_pressure=0.2)
-        tension_briefs = [
-            {
-                "id": t["id"],
-                "description": t["description"],
-                "pressure": t["pressure"],
-                "breaking_point": t.get("breaking_point", 0.9)
-            }
-            for t in tensions[:5]
+            for b in sorted(beliefs, key=lambda x: x.get("weight") or 0, reverse=True)[:10]
         ]
 
         return {
             "location": location,
             "present": present,
-            "active_narratives": active_narratives,
-            "tensions": tension_briefs
+            "active_narratives": active_narratives
         }
 
     def get_player_location(self, player_id: str = "char_player") -> Optional[Dict[str, Any]]:
@@ -822,7 +725,7 @@ Error: {e}"""
             Place dict with optional presence metadata, or None if not found.
         """
         cypher = """
-        MATCH (c:Character {id: $player_id})-[rel:AT]->(p:Place)
+        MATCH (c:Actor {id: $player_id})-[rel:AT]->(p:Space)
         RETURN p.id as place_id, rel.present as present, rel.visible as visible
         ORDER BY coalesce(rel.present, 1.0) DESC, coalesce(rel.visible, 1.0) DESC
         LIMIT 1
@@ -894,12 +797,6 @@ if __name__ == "__main__":
         beliefs = graph.get_character_beliefs("char_aldric")
         for b in beliefs:
             print(f"  {b['name']}: believes={b.get('believes', 0)}")
-
-        # Get tensions
-        print("\n=== Tensions ===")
-        tensions = graph.get_all_tensions()
-        for t in tensions:
-            print(f"  {t['id']}: pressure={t['pressure']}")
 
         # Build scene context
         print("\n=== Scene Context ===")

@@ -154,7 +154,7 @@ What would you do next? Future features, optimizations, cleanups.
 - [What future agents could tackle]
 ```
 
-**IMPORTANT:** Suggestions with `[ ]` checkboxes will be detected by `ngram repair` and offered to the user interactively. If accepted, an agent will be spawned to implement the suggestion.
+**IMPORTANT:** Suggestions with `[ ]` checkboxes will be detected by `ngram work` and offered to the user interactively. If accepted, an agent will be spawned to implement the suggestion.
 
 ---
 

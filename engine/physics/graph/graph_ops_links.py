@@ -1,5 +1,5 @@
 """
-Blood Ledger — Graph Operations: Link Creation Methods
+Graph Operations: Link Creation Methods
 
 Mixin class for creating links/relationships between nodes.
 Extracted from graph_ops.py to reduce file size.
@@ -49,7 +49,7 @@ class LinkCreationMixin:
         Used for dialogue and player actions to track who said/did what.
         """
         cypher = """
-        MATCH (c:Character {id: $char_id})
+        MATCH (c:Actor {id: $char_id})
         MATCH (m:Moment {id: $moment_id})
         MERGE (c)-[r:SAID]->(m)
         """
@@ -71,7 +71,7 @@ class LinkCreationMixin:
         """
         cypher = """
         MATCH (m:Moment {id: $moment_id})
-        MATCH (p:Place {id: $place_id})
+        MATCH (p:Space {id: $place_id})
         MERGE (m)-[r:AT]->(p)
         """
         self._query(cypher, {
@@ -140,7 +140,7 @@ class LinkCreationMixin:
             weight: How likely this character would speak it (default 1.0)
         """
         cypher = """
-        MATCH (c:Character {id: $char_id})
+        MATCH (c:Actor {id: $char_id})
         MATCH (m:Moment {id: $moment_id})
         MERGE (c)-[r:CAN_SPEAK]->(m)
         SET r.weight = $weight
@@ -316,7 +316,7 @@ class LinkCreationMixin:
             props["where"] = where
 
         cypher = """
-        MATCH (c:Character {id: $char_id})
+        MATCH (c:Actor {id: $char_id})
         MATCH (n:Narrative {id: $narr_id})
         MERGE (c)-[r:BELIEVES]->(n)
         SET r += $props
@@ -352,8 +352,8 @@ class LinkCreationMixin:
         }
 
         cypher = """
-        MATCH (c:Character {id: $char_id})
-        MATCH (p:Place {id: $place_id})
+        MATCH (c:Actor {id: $char_id})
+        MATCH (p:Space {id: $place_id})
         MERGE (c)-[r:AT]->(p)
         SET r += $props
         """
@@ -382,7 +382,7 @@ class LinkCreationMixin:
         """
         # Remove all existing AT links
         cypher_remove = """
-        MATCH (c:Character {id: $char_id})-[r:AT]->()
+        MATCH (c:Actor {id: $char_id})-[r:AT]->()
         DELETE r
         """
         self._query(cypher_remove, {"char_id": character_id})
@@ -415,7 +415,7 @@ class LinkCreationMixin:
         }
 
         cypher = """
-        MATCH (c:Character {id: $char_id})
+        MATCH (c:Actor {id: $char_id})
         MATCH (t:Thing {id: $thing_id})
         MERGE (c)-[r:CARRIES]->(t)
         SET r += $props
@@ -510,7 +510,7 @@ class LinkCreationMixin:
 
         cypher = """
         MATCH (t:Thing {id: $thing_id})
-        MATCH (p:Place {id: $place_id})
+        MATCH (p:Space {id: $place_id})
         MERGE (t)-[r:LOCATED_AT]->(p)
         SET r += $props
         """
@@ -560,8 +560,8 @@ class LinkCreationMixin:
             props["path_distance"] = path_distance
 
         cypher = """
-        MATCH (f:Place {id: $from_id})
-        MATCH (t:Place {id: $to_id})
+        MATCH (f:Space {id: $from_id})
+        MATCH (t:Space {id: $to_id})
         MERGE (f)-[r:CONNECTS]->(t)
         SET r += $props
         """
@@ -592,8 +592,8 @@ class LinkCreationMixin:
             child_place_id: The place inside it
         """
         cypher = """
-        MATCH (parent:Place {id: $parent_id})
-        MATCH (child:Place {id: $child_id})
+        MATCH (parent:Space {id: $parent_id})
+        MATCH (child:Space {id: $child_id})
         MERGE (parent)-[r:CONTAINS]->(child)
         """
         self._query(cypher, {

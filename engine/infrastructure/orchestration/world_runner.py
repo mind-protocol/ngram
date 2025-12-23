@@ -1,7 +1,7 @@
 """
-Blood Ledger — World Runner Service
+World Runner Service
 
-Calls agent CLI to resolve flips (tension breaks).
+Calls agent CLI to resolve world state changes.
 Stateless - no --continue, each call is independent.
 """
 
@@ -81,13 +81,13 @@ class WorldRunnerService:
 
         """
 
-        Process flipped tensions and determine what happened.
+        Process events and determine what happened.
 
 
 
         Args:
 
-            flips: List of flipped tensions
+            flips: List of events to process
 
             graph_context: Relevant narratives and character info (now used in _build_prompt)
 
@@ -157,51 +157,12 @@ class WorldRunnerService:
 
         Build the world runner prompt with comprehensive graph context.
 
-        Queries for detailed information about the flipped tensions and related entities.
-
         """
 
         import yaml
 
-
-
-        # Extract flip_ids for graph queries
-
-        flip_ids = [f['tension_id'] for f in flips]
-
-
-
-        # 1. Get comprehensive details for each flipped tension and its related narratives
-
-        tension_details = self.graph_queries.query("""
-
-            MATCH (t:Tension) WHERE t.id IN $flip_ids
-
-            OPTIONAL MATCH (t)-[:INVOLVES]->(n:Narrative)
-
-            OPTIONAL MATCH (c:Character)-[:BELIEVES]->(n)
-
-            OPTIONAL MATCH (n)-[:ABOUT]->(about_c:Character)
-
-            OPTIONAL MATCH (n)-[:ABOUT]->(about_p:Place)
-
-            OPTIONAL MATCH (n)-[:ABOUT]->(about_t:Thing)
-
-            RETURN t.id, t.description, t.narrator_notes, t.pressure, t.breaking_point, t.pressure_type,
-
-                   collect(DISTINCT {id: n.id, name: n.name, content: n.content, type: n.type, weight: n.weight, tone: n.tone}) AS involved_narratives,
-
-                   collect(DISTINCT {id: about_c.id, name: about_c.name, type: about_c.type}) AS about_characters,
-
-                   collect(DISTINCT {id: about_p.id, name: about_p.name, type: about_p.type}) AS about_places,
-
-                   collect(DISTINCT {id: about_t.id, name: about_t.name, type: about_t.type}) AS about_things
-
-            """,
-
-            params={"flip_ids": flip_ids}
-
-        )
+        # Placeholder for world state triggers
+        event_details = []
 
 
 
@@ -213,7 +174,7 @@ class WorldRunnerService:
 
         all_characters_at_locations = self.graph_queries.query("""
 
-            MATCH (c:Character)-[r:AT]->(p:Place)
+            MATCH (c:Actor)-[r:AT]->(p:Space)
 
             RETURN c.id, c.name, p.id AS place_id, p.name AS place_name, r.present, r.visible
 
@@ -229,7 +190,7 @@ class WorldRunnerService:
 
         character_relationships = self.graph_queries.query("""
 
-            MATCH (c1:Character)-[b:BELIEVES]->(n:Narrative)-[rel:RELATES_TO]->(n2:Narrative)<-[b2:BELIEVES]-(c2:Character)
+            MATCH (c1:Actor)-[b:BELIEVES]->(n:Narrative)-[rel:RELATES_TO]->(n2:Narrative)<-[b2:BELIEVES]-(c2:Actor)
 
             WHERE rel.contradicts > 0.5
 
@@ -249,7 +210,7 @@ class WorldRunnerService:
 
             "initial_context": initial_graph_context,
 
-            "tension_details": tension_details,
+            "event_details": event_details,
 
             "character_locations": all_characters_at_locations,
 
@@ -347,8 +308,6 @@ class WorldRunnerService:
             "graph_mutations": {
                 "new_narratives": [],
                 "new_beliefs": [],
-                "tension_updates": [],
-                "new_tensions": [],
                 "character_movements": [],
                 "modifier_changes": []
             },
@@ -356,9 +315,226 @@ class WorldRunnerService:
                 "time_since_last": "unknown",
                 "breaks": [],
                 "news_arrived": [],
-                "tension_changes": {},
                 "interruption": None,
                 "atmosphere_shift": None,
                 "narrator_notes": "World Runner unavailable - minimal response"
             }
+        }
+
+    # =========================================================================
+    # v1.2 TICK-BASED RUNNING
+    # =========================================================================
+
+    def run_until_visible(
+        self,
+        max_ticks: int = 100,
+        location_id: str = None,
+        player_id: str = "char_player"
+    ) -> Dict[str, Any]:
+        """
+        Run ticks until a moment completes (becomes visible to player).
+
+        This runs the physics simulation forward until something "happens"
+        that the player would perceive — a moment completing.
+
+        Args:
+            max_ticks: Maximum ticks to run before giving up
+            location_id: Current player location (for filtering visible moments)
+            player_id: Player actor ID
+
+        Returns:
+            Dict with:
+                - ticks_run: Number of ticks executed
+                - completed_moments: List of moments that completed
+                - final_tick_result: The tick result that had a completion
+                - stopped_reason: Why the loop stopped
+        """
+        from engine.physics.tick_v1_2 import GraphTickV1_2
+
+        # Create tick runner
+        tick_runner = GraphTickV1_2(
+            graph_queries=self.graph_queries,
+            graph_ops=self.graph_ops
+        )
+
+        ticks_run = 0
+        completed_moments = []
+        final_result = None
+        stopped_reason = "max_ticks_reached"
+
+        for tick_num in range(max_ticks):
+            # Run one tick
+            result = tick_runner.run()
+            ticks_run += 1
+            final_result = result
+
+            # Check for completions
+            if result.completions:
+                # Filter by location if specified
+                if location_id:
+                    # Check if any completion is at the player's location
+                    visible_completions = []
+                    for completion in result.completions:
+                        moment_id = completion.get("moment_id")
+                        if moment_id:
+                            # Check if moment is at player location
+                            location_query = """
+                            MATCH (m:Moment {id: $moment_id})-[:AT]->(s:Space {id: $location_id})
+                            RETURN m.id
+                            """
+                            at_location = self.graph_queries.query(
+                                location_query,
+                                params={"moment_id": moment_id, "location_id": location_id}
+                            )
+                            if at_location:
+                                visible_completions.append(completion)
+
+                    if visible_completions:
+                        completed_moments.extend(visible_completions)
+                        stopped_reason = "moment_completed_at_location"
+                        break
+                else:
+                    # No location filter, any completion counts
+                    completed_moments.extend(result.completions)
+                    stopped_reason = "moment_completed"
+                    break
+
+            # Early exit if no energy in system (nothing will happen)
+            total_energy = (
+                result.energy_generated +
+                result.energy_drawn +
+                result.energy_flowed +
+                result.energy_backflowed
+            )
+            if total_energy == 0 and ticks_run > 5:
+                stopped_reason = "no_energy_in_system"
+                break
+
+        logger.info(f"[WorldRunner] run_until_visible: {ticks_run} ticks, {len(completed_moments)} completions, reason={stopped_reason}")
+
+        return {
+            "ticks_run": ticks_run,
+            "completed_moments": completed_moments,
+            "final_tick_result": final_result,
+            "stopped_reason": stopped_reason
+        }
+
+    def run_until_disrupted(
+        self,
+        max_ticks: int = 100,
+        narrative_ids: List[str] = None,
+        disruption_threshold: float = 0.3
+    ) -> Dict[str, Any]:
+        """
+        Run ticks until narratives shift significantly.
+
+        A "disruption" is detected when:
+        - A narrative's energy changes by more than disruption_threshold
+        - A new narrative emerges with high energy
+        - A moment contradicts or overrides existing narratives
+
+        Args:
+            max_ticks: Maximum ticks to run before giving up
+            narrative_ids: Specific narratives to watch (None = all high-energy)
+            disruption_threshold: Energy change threshold for disruption
+
+        Returns:
+            Dict with:
+                - ticks_run: Number of ticks executed
+                - disruptions: List of disruption events detected
+                - final_tick_result: Last tick result
+                - stopped_reason: Why the loop stopped
+        """
+        from engine.physics.tick_v1_2 import GraphTickV1_2
+
+        # Get initial narrative state
+        if narrative_ids:
+            initial_narratives = {}
+            for nid in narrative_ids:
+                narrative = self.graph_queries.get_narrative(nid)
+                if narrative:
+                    initial_narratives[nid] = narrative.get("energy", 0.0)
+        else:
+            # Watch high-energy narratives
+            high_energy_query = """
+            MATCH (n:Narrative)
+            WHERE n.energy > 0.1
+            RETURN n.id as id, n.energy as energy
+            ORDER BY n.energy DESC
+            LIMIT 20
+            """
+            results = self.graph_queries.query(high_energy_query, params={})
+            initial_narratives = {r["id"]: r["energy"] for r in results if r.get("id")}
+
+        # Create tick runner
+        tick_runner = GraphTickV1_2(
+            graph_queries=self.graph_queries,
+            graph_ops=self.graph_ops
+        )
+
+        ticks_run = 0
+        disruptions = []
+        final_result = None
+        stopped_reason = "max_ticks_reached"
+
+        for tick_num in range(max_ticks):
+            # Run one tick
+            result = tick_runner.run()
+            ticks_run += 1
+            final_result = result
+
+            # Check for moment-based disruptions
+            if result.completions:
+                for completion in result.completions:
+                    disruptions.append({
+                        "type": "moment_completed",
+                        "tick": ticks_run,
+                        "moment_id": completion.get("moment_id"),
+                        "energy_released": completion.get("energy_released", 0.0)
+                    })
+
+            if result.rejections:
+                for rejection in result.rejections:
+                    disruptions.append({
+                        "type": "moment_rejected",
+                        "tick": ticks_run,
+                        "moment_id": rejection.get("moment_id"),
+                        "reason": rejection.get("reason", "unknown")
+                    })
+
+            # Check narrative energy shifts every 5 ticks
+            if ticks_run % 5 == 0:
+                for nid, initial_energy in initial_narratives.items():
+                    narrative = self.graph_queries.get_narrative(nid)
+                    if narrative:
+                        current_energy = narrative.get("energy", 0.0)
+                        change = abs(current_energy - initial_energy)
+                        if change > disruption_threshold:
+                            disruptions.append({
+                                "type": "narrative_shift",
+                                "tick": ticks_run,
+                                "narrative_id": nid,
+                                "initial_energy": initial_energy,
+                                "current_energy": current_energy,
+                                "change": change
+                            })
+
+            # Stop if we have disruptions
+            if disruptions:
+                stopped_reason = "disruption_detected"
+                break
+
+            # Early exit if no activity
+            if result.hot_links == 0 and ticks_run > 10:
+                stopped_reason = "no_hot_links"
+                break
+
+        logger.info(f"[WorldRunner] run_until_disrupted: {ticks_run} ticks, {len(disruptions)} disruptions, reason={stopped_reason}")
+
+        return {
+            "ticks_run": ticks_run,
+            "disruptions": disruptions,
+            "final_tick_result": final_result,
+            "stopped_reason": stopped_reason,
+            "watched_narratives": list(initial_narratives.keys())
         }

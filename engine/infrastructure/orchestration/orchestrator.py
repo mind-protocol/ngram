@@ -1,5 +1,5 @@
 """
-Blood Ledger — Orchestrator
+Orchestrator
 
 The main loop that coordinates:
 1. Narrator (scene generation)
@@ -18,6 +18,7 @@ from datetime import datetime
 
 from engine.physics.graph import GraphOps, GraphQueries
 from engine.physics import GraphTick
+from engine.health import get_health_service
 from .narrator import NarratorService
 from .world_runner import WorldRunnerService
 
@@ -26,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 class Orchestrator:
     """
-    Main orchestrator for the Blood Ledger game engine.
+    Main orchestrator for the Graph Engine game engine.
     """
 
     def __init__(
@@ -53,6 +54,10 @@ class Orchestrator:
 
         # State
         self.last_tick_time: Optional[datetime] = None
+
+        # Health service
+        self._health = get_health_service()
+        self._health.set_context(playthrough_id=playthrough_id, place_id="")
 
         logger.info(f"[Orchestrator] Initialized playthrough '{playthrough_id}'")
 
@@ -126,8 +131,31 @@ class Orchestrator:
                     player_location=player_location
                 )
 
+                # Record tick to health service
+                world_tick = self._get_world_tick() or 0
+                self._health.record_tick(
+                    tick=world_tick,
+                    energy_total=tick_result.energy_total,
+                    completions=tick_result.moments_decayed
+                )
+                self._health.record_pressure(
+                    pressure=tick_result.avg_pressure,
+                    top_edges=[]
+                )
+                self._health.set_context(
+                    playthrough_id=self.playthrough_id,
+                    place_id=player_location or ""
+                )
+
                 # 6. If flips, call World Runner
                 if tick_result.flips:
+                    # Record interrupts for health
+                    for flip in tick_result.flips:
+                        self._health.record_interrupt(
+                            reason="event_flip",
+                            moment_id=flip.get('event_id', '')
+                        )
+
                     self._process_flips(
                         flips=tick_result.flips,
                         player_id=player_id,
@@ -179,8 +207,7 @@ class Orchestrator:
             context = {
                 'location': {'id': player_location, 'name': 'Unknown'},
                 'present': [],
-                'active_narratives': [],
-                'tensions': []
+                'active_narratives': []
             }
 
         # Add time info
@@ -364,7 +391,7 @@ class Orchestrator:
         player_location: str,
         time_elapsed: str
     ):
-        """Process flipped tensions through World Runner."""
+        """Process events through World Runner."""
         # Build graph context
         graph_context = self._build_graph_context(flips)
 
@@ -431,7 +458,7 @@ class Orchestrator:
     def _get_character_location_by_id(self, char_id: str) -> Optional[str]:
         """Get a character's location."""
         cypher = f"""
-        MATCH (c:Character {{id: '{char_id}'}})-[r:AT]->(p:Place)
+        MATCH (c:Actor {{id: '{char_id}'}})-[r:AT]->(p:Space)
         WHERE r.present > 0.5
         RETURN p.id
         """
@@ -464,21 +491,6 @@ class Orchestrator:
                 **belief
             })
 
-        # Tension updates
-        for update in mutations.get('tension_updates', []):
-            data['updates'].append({
-                'tension': update.get('id'),
-                'pressure': update.get('pressure'),
-                'resolved': update.get('resolved')
-            })
-
-        # New tensions
-        for tension in mutations.get('new_tensions', []):
-            data['nodes'].append({
-                'type': 'tension',
-                **tension
-            })
-
         # Character movements
         for move in mutations.get('character_movements', []):
             data['movements'].append(move)
@@ -500,77 +512,42 @@ class Orchestrator:
 
         logger.info("[Orchestrator] New game started")
 
-        # -------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
+    # World Injection File Management
+    # -------------------------------------------------------------------------
 
-        # World Injection File Management
+    def _world_injection_path(self) -> Path:
+        """Get path to world_injection.json for this playthrough."""
+        if not self.playthrough_dir.exists():
+            self.playthrough_dir.mkdir(parents=True, exist_ok=True)
+        return self.playthrough_dir / "world_injection.json"
 
-        # -------------------------------------------------------------------------
+    def _get_world_tick(self) -> Optional[int]:
+        """Get current world tick from graph state."""
+        try:
+            result = self.read._query("""
+                MATCH (w:World)
+                RETURN w.tick
+                LIMIT 1
+            """)
+            if result and result[0]:
+                tick_value = result[0][0]
+                if tick_value is not None:
+                    return int(tick_value)
+        except Exception as exc:
+            logger.debug(f"[Orchestrator] Failed to load world tick: {exc}")
+        return None
 
-    
-
-        def _world_injection_path(self) -> Path:
-
-            """Get path to world_injection.json for this playthrough."""
-
-            if not self.playthrough_dir.exists():
-
-                self.playthrough_dir.mkdir(parents=True, exist_ok=True)
-
-            return self.playthrough_dir / "world_injection.json"
-
-    
-
-        def _get_world_tick(self) -> Optional[int]:
-
-            """Get current world tick from graph state."""
-
+    def _load_world_injection(self) -> Optional[Dict[str, Any]]:
+        """Load world_injection dictionary from file if it exists."""
+        path = self._world_injection_path()
+        if path.exists():
             try:
-
-                result = self.read._query("""
-
-                    MATCH (w:World)
-
-                    RETURN w.tick
-
-                    LIMIT 1
-
-                """)
-
-                if result and result[0]:
-
-                    tick_value = result[0][0]
-
-                    if tick_value is not None:
-
-                        return int(tick_value)
-
-            except Exception as exc:
-
-                logger.debug(f"[Orchestrator] Failed to load world tick: {exc}")
-
-            return None
-
-    
-
-        def _load_world_injection(self) -> Optional[Dict[str, Any]]:
-
-            """Load world_injection dictionary from file if it exists."""
-
-            path = self._world_injection_path()
-
-            if path.exists():
-
-                try:
-
-                    with open(path, 'r') as f:
-
-                        return json.load(f)
-
-                except Exception as e:
-
-                    logger.error(f"[Orchestrator] Failed to load world_injection: {e}")
-
-            return None
+                with open(path, 'r') as f:
+                    return json.load(f)
+            except Exception as e:
+                logger.error(f"[Orchestrator] Failed to load world_injection: {e}")
+        return None
 
     def _save_world_injection(self, injection: Dict[str, Any]):
         """Save world_injection dictionary to file."""

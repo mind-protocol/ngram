@@ -1,0 +1,247 @@
+# NGRAM Graph Schema v1
+# Minimal authoritative schema
+# Copied to .ngram/ at init
+
+version: "1.0"
+updated: "2025-12-23"
+
+# =============================================================================
+# NODE BASE (all nodes share these)
+# =============================================================================
+
+NodeBase:
+  fields:
+    id:
+      type: string
+      required: true
+    name:
+      type: string
+      required: true
+    node_type:
+      type: enum
+      values: [actor, space, thing, narrative, moment]
+      required: true
+    type:
+      type: string
+      required: true
+      description: "Subtype within node_type"
+    description:
+      type: string
+      default: ""
+    weight:
+      type: float
+      range: [0, 1]
+      default: 0.5
+      description: "Persistent importance"
+    energy:
+      type: float
+      range: [0, 1]
+      default: 0.0
+      description: "Instantaneous/computed"
+    created_at_s:
+      type: int
+      required: true
+    updated_at_s:
+      type: int
+      required: true
+
+# =============================================================================
+# NODE TYPES (type-specific fields only)
+# =============================================================================
+#
+# `type` is a FREE STRING - each project defines its own subtypes.
+# Examples below are conventions, not constraints.
+#
+# ngram (dev tooling):
+#   actor: human, agent, system
+#   space: module, folder, topic, conversation
+#   thing: file, url, artifact, commit
+#   narrative: pattern, mechanism, validation, health, implementation
+#   moment: task, event, tick
+#
+# blood-ledger (narrative game):
+#   actor: player, companion, major, minor, background
+#   space: region, city, hold, village, monastery, camp, road, wilderness
+#   thing: weapon, armor, document, relic, treasure, title, land, horse
+#   narrative: memory, rumor, oath, debt, blood, enmity, love, secret
+#   moment: input, output, thought
+
+nodes:
+
+  actor:
+    description: "Anyone/anything that can act"
+    fields: {}
+
+  space:
+    description: "Container or location"
+    fields: {}
+
+  thing:
+    description: "Object that can be referenced, possessed, transferred"
+    fields:
+      uri:
+        type: string
+        required: false
+        description: "Optional locator (file path, URL, etc.)"
+
+  narrative:
+    description: "Story, pattern, or knowledge about nodes"
+    fields:
+      content:
+        type: string
+        default: ""
+
+  moment:
+    description: "Temporal event in the graph"
+    fields:
+      prose:
+        type: string
+        default: ""
+      sketch:
+        type: string
+        nullable: true
+      status:
+        type: enum
+        values: [possible, active, completed, rejected, interrupted, overridden]
+        default: possible
+      tick_created:
+        type: int
+        default: 0
+      tick_activated:
+        type: int
+        nullable: true
+      tick_resolved:
+        type: int
+        nullable: true
+      energy:
+        type: float
+        default: 0.0
+      weight:
+        type: float
+        default: 0.5
+
+# =============================================================================
+# LINK BASE (all links share these)
+# =============================================================================
+
+LinkBase:
+  fields:
+    node_a:
+      type: string
+      required: true
+    node_b:
+      type: string
+      required: true
+    type:
+      type: enum
+      values: [contains, leads_to, expresses, sequence, primes, can_become, relates]
+      required: true
+    conductivity:
+      type: float
+      default: 1.0
+    weight:
+      type: float
+      default: 1.0
+    energy:
+      type: float
+      default: 0.0
+    strength:
+      type: float
+      default: 0.0
+    emotions:
+      type: list
+      default: []
+      description: "[[name, intensity], ...] — Hebbian colored by energy flow"
+    created_at_s:
+      type: int
+      default: 0
+
+# =============================================================================
+# LINK TYPES (type-specific fields only, most have none)
+# =============================================================================
+
+links:
+
+  at:
+    description: "Presence in a space"
+    valid_from: [actor, moment, thing]
+    valid_to: [space]
+    fields: {}
+
+  contains:
+    description: "Hierarchy"
+    valid_from: [space, thing]
+    valid_to: [space, thing, narrative]
+    fields: {}
+
+  leads_to:
+    description: "Pointer/source reference"
+    valid_from: [narrative, thing, space]
+    valid_to: [thing, narrative, space]
+    fields: {}
+
+  relates:
+    description: "Semantic relation (use polarity for contradict/support)"
+    valid_from: [actor, space, thing, narrative, moment]
+    valid_to: [actor, space, thing, narrative, moment]
+    fields: {}
+
+  primes:
+    description: "Soft causality / triggering"
+    valid_from: [narrative, moment, actor]
+    valid_to: [actor, moment, space]
+    fields:
+      lag_ticks:
+        type: int
+        default: 0
+      decay_half_life_ticks:
+        type: float
+        default: 100.0
+
+  then:
+    description: "Moment sequence (canonical history)"
+    valid_from: [moment]
+    valid_to: [moment]
+    fields:
+      tick:
+        type: int
+        required: true
+
+  said:
+    description: "Actor spoke moment"
+    valid_from: [actor]
+    valid_to: [moment]
+    fields: {}
+
+  can_lead_to:
+    description: "Possible transition"
+    valid_from: [moment]
+    valid_to: [moment]
+    fields:
+      trigger:
+        type: enum
+        values: [player, auto, wait]
+        default: player
+
+  attached_to:
+    description: "Moment anchored to node"
+    valid_from: [moment]
+    valid_to: [actor, space, thing, narrative]
+    fields: {}
+
+  about:
+    description: "Semantic anchoring"
+    valid_from: [moment, narrative]
+    valid_to: [actor, space, thing, narrative]
+    fields: {}
+
+# =============================================================================
+# INVARIANTS
+# =============================================================================
+
+invariants:
+  - "Every link.from_id and to_id must exist"
+  - "weight, energy, strength in [0,1]"
+  - "polarity in [-1,+1]"
+  - "Queries cannot mutate graph"
+  - "Hot path (traversal/surface) cannot invoke LLM"

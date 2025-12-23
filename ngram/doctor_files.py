@@ -91,19 +91,22 @@ def load_doctor_config(target_dir: Path) -> DoctorConfig:
     protocol_ignore_path = target_dir / ".ngramignore"
 
     config = DoctorConfig()
+    
+    # Use a set to maintain unique ignore patterns
+    ignore_patterns = set(config.ignore)
 
     # Add patterns from .ngramignore (primary ignore file)
-    protocol_ignore_patterns = parse_gitignore(protocol_ignore_path)
-    config.ignore.extend(protocol_ignore_patterns)
+    ignore_patterns.update(parse_gitignore(protocol_ignore_path))
 
     # Add patterns from .gitignore (secondary)
-    gitignore_patterns = parse_gitignore(gitignore_path)
-    config.ignore.extend(gitignore_patterns)
+    ignore_patterns.update(parse_gitignore(gitignore_path))
 
     if not config_path.exists():
+        config.ignore = sorted(list(ignore_patterns))
         return config
 
     if not HAS_YAML:
+        config.ignore = sorted(list(ignore_patterns))
         return config
 
     try:
@@ -119,8 +122,7 @@ def load_doctor_config(target_dir: Path) -> DoctorConfig:
         if "docs_ref_search_chars" in doctor_config:
             config.docs_ref_search_chars = int(doctor_config["docs_ref_search_chars"])
         if "ignore" in doctor_config:
-            # Extend defaults, don't replace
-            config.ignore.extend(doctor_config["ignore"])
+            ignore_patterns.update(doctor_config["ignore"])
         if "disabled_checks" in doctor_config:
             config.disabled_checks = list(doctor_config["disabled_checks"])
         if "gemini_model_fallback_status" in doctor_config:
@@ -129,6 +131,7 @@ def load_doctor_config(target_dir: Path) -> DoctorConfig:
     except Exception:
         pass  # Use defaults on error
 
+    config.ignore = sorted(list(ignore_patterns))
     return config
 
 

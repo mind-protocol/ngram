@@ -26,6 +26,7 @@ def get_doc_instructions(issue: DoctorIssue, target_dir: Path) -> Dict[str, Any]
             "docs_to_read": [
                 ".ngram/views/VIEW_Document_Create_Module_Documentation.md",
                 ".ngram/PROTOCOL.md",
+                ".ngram/templates/OBJECTIVES_TEMPLATE.md",
                 ".ngram/templates/PATTERNS_TEMPLATE.md",
                 ".ngram/templates/SYNC_TEMPLATE.md",
                 "modules.yaml",
@@ -54,7 +55,7 @@ Before creating anything, search for existing documentation:
    c. Choose a descriptive module name (e.g., `cli`, `auth`) not the code path
    d. Follow the pattern: `docs/{{module}}/` or `docs/{{area}}/{{module}}/`
    e. Add mapping to `modules.yaml`
-   f. Create minimum viable docs: PATTERNS_*.md + SYNC_*.md
+   f. Create minimum viable docs: OBJECTIVES_*.md + PATTERNS_*.md + SYNC_*.md
 5. Add DOCS: reference to main source file
 6. Update SYNC_Project_State.md
 
@@ -205,7 +206,7 @@ MANDATORY FINAL LINE:
 2. Add a DOCS: reference near the top of the file:
    - Python: `# DOCS: docs/path/to/PATTERNS_*.md`
    - JS/TS: `// DOCS: docs/path/to/PATTERNS_*.md`
-3. If no docs exist, create minimum PATTERNS + SYNC docs first
+3. If no docs exist, create minimum OBJECTIVES + PATTERNS + SYNC docs first
 
 ## Success Criteria:
 - Source file has DOCS: reference in header

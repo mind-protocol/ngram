@@ -1,5 +1,5 @@
 """
-Blood Ledger — Orchestrator
+Orchestrator
 
 Coordinates Narrator, World Runner, and graph ticks.
 

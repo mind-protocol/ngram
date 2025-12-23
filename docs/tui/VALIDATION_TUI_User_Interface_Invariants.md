@@ -212,4 +212,12 @@ RESULT: NOT RUN (no implementation yet)
 <!-- @ngram:todo Invariant for concurrent command handling (what if user types during repair?) -->
 <!-- @ngram:proposition Fuzzing for command parser -->
 <!-- @ngram:proposition Stress test with many rapid commands -->
-<!-- @ngram:escalation How to test async Textual apps effectively? -->
+<!-- @ngram:escalation
+title: "How to test async Textual apps effectively?"
+priority: 5
+response:
+  status: resolved
+  choice: "N/A — TUI deprecated"
+  behavior: "TUI replaced by Next.js web interface. CLI is for agents, web is for humans."
+  notes: "2025-12-23: Architecture changed. ngram CLI = agent interface, Next.js = human interface."
+-->

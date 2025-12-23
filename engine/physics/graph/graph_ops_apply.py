@@ -1,5 +1,5 @@
 """
-Blood Ledger — Graph Operations: Apply Method and Helpers
+Graph Operations: Apply Method and Helpers
 
 Mixin class for the apply() method and its extraction helpers.
 Extracted from graph_ops.py to reduce file size.
@@ -30,7 +30,7 @@ class ApplyOperationsMixin:
     - Loading and applying mutation files (YAML/JSON)
     - Extracting arguments from mutation dicts
     - Validating links and detecting orphaned nodes
-    - Applying updates to nodes and tensions
+    - Applying updates to nodes
 
     Ref: docs/engine/GRAPH_OPERATIONS_GUIDE.md
     """
@@ -143,7 +143,7 @@ class ApplyOperationsMixin:
                 result.errors.append({
                     'item': str(node),
                     'message': 'Node missing type or id',
-                    'fix': 'Every node needs: type (character/place/thing/narrative/tension/moment) and id'
+                    'fix': 'Every node needs: type (character/place/thing/narrative/moment) and id'
                 })
                 result.rejected.append(str(node))
                 continue
@@ -176,15 +176,13 @@ class ApplyOperationsMixin:
                     self.add_thing(**self._extract_thing_args(node))
                 elif node_type == 'narrative':
                     self.add_narrative(**self._extract_narrative_args(node))
-                elif node_type == 'tension':
-                    self.add_tension(**self._extract_tension_args(node))
                 elif node_type == 'moment':
                     self.add_moment(**self._extract_moment_args(node))
                 else:
                     result.errors.append({
                         'item': node_id,
                         'message': f'Invalid node type: {node_type}',
-                        'fix': 'Valid types: character, place, thing, narrative, tension, moment'
+                        'fix': 'Valid types: character, place, thing, narrative, moment'
                     })
                     result.rejected.append(node_id)
                     continue
@@ -404,9 +402,6 @@ class ApplyOperationsMixin:
                 if 'node' in update:
                     self._apply_node_update(update)
                     result.persisted.append(f"update:{update.get('node')}")
-                elif 'tension' in update:
-                    self._apply_tension_update(update)
-                    result.persisted.append(f"update:{update.get('tension')}")
             except WriteError as e:
                 result.errors.append({
                     'item': str(update),
@@ -588,31 +583,17 @@ class ApplyOperationsMixin:
             'narrator_notes': node.get('narrator_notes'),
         }
 
-    def _extract_tension_args(self, node: Dict) -> Dict:
-        return {
-            'id': node['id'],
-            'narratives': node.get('narratives', []),
-            'description': node.get('description', ''),
-            'pressure': node.get('pressure', 0.0),
-            'pressure_type': node.get('pressure_type', 'gradual'),
-            'breaking_point': node.get('breaking_point', 0.9),
-            'base_rate': node.get('base_rate', 0.001),
-            'trigger_at': node.get('trigger_at'),
-            'progression': node.get('progression'),
-            'narrator_notes': node.get('narrator_notes'),
-        }
-
     def _extract_moment_args(self, node: Dict) -> Dict:
         return {
             'id': node['id'],
             'text': node.get('text', ''),
             'type': node.get('moment_type', 'narration'),
-            'tick': node.get('tick', 0),
-            'status': node.get('status', 'spoken'),
+            'tick_created': node.get('tick_created', 0),
+            'status': node.get('status', 'completed'),
             'weight': node.get('weight', 0.5),
             'tone': node.get('tone'),
-            'tick_spoken': node.get('tick_spoken'),
-            'tick_decayed': node.get('tick_decayed'),
+            'tick_resolved': node.get('tick_resolved'),
+            'tick_resolved': node.get('tick_resolved'),
             'speaker': node.get('speaker'),  # Used for SAID link, not stored as attribute
             'place_id': node.get('place_id'),
             'after_moment_id': node.get('after_moment_id'),
@@ -702,21 +683,3 @@ class ApplyOperationsMixin:
             # TODO: Proper modifier handling
 
         # Add other update types as needed
-
-    def _apply_tension_update(self, update: Dict):
-        """Apply an update to a tension."""
-        tension_id = update['tension']
-        props = {}
-
-        if 'pressure' in update:
-            props['pressure'] = update['pressure']
-        if 'resolved' in update:
-            props['resolved'] = update['resolved']
-
-        if props:
-            props_str = ', '.join(f"t.{k} = {repr(v)}" for k, v in props.items())
-            cypher = f"""
-            MATCH (t:Tension {{id: '{tension_id}'}})
-            SET {props_str}
-            """
-            self._query(cypher)

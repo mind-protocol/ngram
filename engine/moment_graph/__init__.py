@@ -1,5 +1,5 @@
 """
-Blood Ledger — Moment Graph Engine
+Moment Graph Engine
 
 Core mechanics for instant-response dialogue traversal.
 No LLM on hot path. Pure graph operations.

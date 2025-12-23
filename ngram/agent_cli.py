@@ -1,4 +1,4 @@
-# DOCS: docs/ngram_cli_core/OBJECTIFS_ngram_cli_core.md
+# DOCS: docs/ngram_cli_core/OBJECTIVES_ngram_cli_core.md
 import os
 import random
 from dataclasses import dataclass

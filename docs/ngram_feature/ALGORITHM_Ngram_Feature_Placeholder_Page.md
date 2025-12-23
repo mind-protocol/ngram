@@ -11,7 +11,7 @@ VERIFIED: N/A against N/A
 ## CHAIN
 
 ```
-OBJECTIFS:       ./OBJECTIFS_Ngram_Feature.md
+OBJECTIVES:       ./OBJECTIVES_Ngram_Feature.md
 BEHAVIORS:       ./BEHAVIORS_Ngram_Feature_Placeholder_Page.md
 PATTERNS:        ./PATTERNS_Ngram_Feature.md
 THIS:            ALGORITHM_Ngram_Feature_Placeholder_Page.md
@@ -134,11 +134,13 @@ N/A - The `NgramPage` component does not contain any helper functions of its own
 
 <!-- @ngram:todo
 title: "Replace ConnectomePageShell with Ngram-specific UI"
-priority: high
+priority: low
+deferred_until: 2025-01-06
 context: |
   The NgramPage currently serves as a placeholder, directly rendering the ConnectomePageShell. As the Ngram feature evolves, it will require its own distinct user interface.
 task: |
   Develop Ngram-specific UI components and replace the `ConnectomePageShell` import and rendering with the new Ngram UI. This will involve designing and implementing the core layout, navigation, and content areas unique to Ngram.
+decision: "2024-12-23: Deferred 2 weeks. CLI-focused work takes priority. Revisit after 2025-01-06."
 -->
 
 <!-- @ngram:proposition

@@ -104,9 +104,9 @@ def mock_moment_surface():
         mock_instance.get_surface_stats.return_value = {
             "possible": 10,
             "active": 3,
-            "spoken": 50,
+            "completed": 50,
             "dormant": 5,
-            "decayed": 20
+            "rejected": 20
         }
 
         mock_instance.set_moment_weight.return_value = None
@@ -348,7 +348,7 @@ class TestMomentStats:
         assert "stats" in data
         assert data["stats"]["possible"] == 10
         assert data["stats"]["active"] == 3
-        assert data["stats"]["spoken"] == 50
+        assert data["stats"]["completed"] == 50
 
 
 # =============================================================================

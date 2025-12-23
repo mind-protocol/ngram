@@ -6,6 +6,7 @@ Each agent follows the protocol: read docs, fix issue, update SYNC.
 """
 # DOCS: docs/cli/core/PATTERNS_Why_CLI_Over_Copy.md
 
+import asyncio
 import json
 import subprocess
 import sys
@@ -33,6 +34,7 @@ from .repair_core import (
     get_depth_types,
     build_agent_prompt,
     parse_decisions_from_output,
+    spawn_repair_agent_async,
 )
 from .repair_escalation_interactive import (
     Colors,
@@ -115,7 +117,7 @@ def spawn_repair_agent(
     github_issue_number: Optional[int] = None,
     escalation_decisions: Optional[List['EscalationDecision']] = None,
     agent_symbol: str = "→",
-    agent_provider: str = "claude",
+    agent_provider: str = "codex",
 ) -> RepairResult:
     """Spawn a repair agent to fix a single issue."""
     agent_provider = normalize_agent(agent_provider)
@@ -160,19 +162,22 @@ def spawn_repair_agent(
     # Build system prompt with learnings
     system_prompt = AGENT_SYSTEM_PROMPT + get_learnings_content(target_dir)
 
+    async def _on_output(output: str):
+        pass
+
     # The actual agent spawning is in repair_core.py
-    return spawn_repair_agent_async(
+    return asyncio.run(spawn_repair_agent_async(
         issue,
         target_dir,
-        # on_output - not used in this sync wrapper (used by TUI directly)
-        lambda x: None, 
+        _on_output,
         instructions,
         config, # Pass config here
         github_issue_number,
         escalation_decisions,
         agent_symbol=agent_symbol,
         agent_provider=agent_provider,
-    )
+    ))
+
 
 # print_progress_bar, input_listener_thread, spawn_manager_agent,
 # check_for_manager_input, resolve_escalation_interactive imported from repair_escalation_interactive.py
@@ -185,10 +190,14 @@ def repair_command(
     depth: str = "docs",
     dry_run: bool = False,
     parallel: int = 5,
-    agent_provider: str = "claude",
+    agent_provider: str = "codex",
 ) -> int:
     """Run the repair command."""
     agent_provider = normalize_agent(agent_provider)
+
+    # Set default parallel to 6 when model is "all"
+    if agent_provider == "all" and parallel == 5:
+        parallel = 6
 
     depth_labels = {
         "links": "Links only (refs, mappings)",
@@ -247,13 +256,13 @@ def repair_command(
             print(f"  {Colors.DIM}All link/reference issues are resolved.{Colors.RESET}")
             if has_other_issues:
                 print(f"  {Colors.DIM}There are {total_critical} critical + {total_warnings} warning issues at deeper depths.{Colors.RESET}")
-            print(f"  {Colors.DIM}To check documentation issues: {Colors.RESET}{Colors.BOLD}ngram repair --depth docs{Colors.RESET}")
-            print(f"  {Colors.DIM}To check all issues:           {Colors.RESET}{Colors.BOLD}ngram repair --depth full{Colors.RESET}")
+            print(f"  {Colors.DIM}To check documentation issues: {Colors.RESET}{Colors.BOLD}ngram work --depth docs{Colors.RESET}")
+            print(f"  {Colors.DIM}To check all issues:           {Colors.RESET}{Colors.BOLD}ngram work --depth full{Colors.RESET}")
         elif depth == "docs":
             print(f"  {Colors.DIM}All documentation issues are resolved.{Colors.RESET}")
             if has_other_issues:
                 print(f"  {Colors.DIM}There are {total_critical} critical + {total_warnings} warning issues at 'full' depth.{Colors.RESET}")
-            print(f"  {Colors.DIM}To check implementation issues: {Colors.RESET}{Colors.BOLD}ngram repair --depth full{Colors.RESET}")
+            print(f"  {Colors.DIM}To check implementation issues: {Colors.RESET}{Colors.BOLD}ngram work --depth full{Colors.RESET}")
         else:  # full
             print(f"  {Colors.DIM}Project is healthy at all depths!{Colors.RESET}")
             print(f"  {Colors.DIM}Run {Colors.RESET}{Colors.BOLD}ngram doctor{Colors.RESET}{Colors.DIM} to see the full health report.{Colors.RESET}")
@@ -534,6 +543,7 @@ def repair_command(
             result = spawn_repair_agent(
                 issue,
                 target_dir,
+                config,
                 dry_run=False,
                 github_issue_number=github_issue_num,
                 agent_provider=agent_provider,
@@ -548,6 +558,10 @@ def repair_command(
                 print(f"\n  {color('✓ Complete', Colors.SUCCESS)} ({result.duration_seconds:.1f}s)")
             else:
                 print(f"\n  {color('✗ Failed', Colors.FAILURE)}: {result.error or 'Unknown error'}")
+                if result.agent_output:
+                    print(f"  {Colors.DIM}Last few lines of agent output:{Colors.RESET}")
+                    for line in result.agent_output.splitlines()[-15:]:
+                        print(f"    {Colors.DIM}{line}{Colors.RESET}")
 
         print_progress_bar(len(issues_to_fix), len(issues_to_fix), status="Done!")
 

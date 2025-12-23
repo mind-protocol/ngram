@@ -29,7 +29,6 @@ except ImportError:
 from .state import SessionState, ConversationHistory
 from .manager import ManagerSupervisor, DriftWarning, ClaudePTY
 from .widgets.manager_panel import ManagerPanel, ClickableStatic
-from .app_manager import start_manager_with_overview
 
 
 def check_textual() -> None:
@@ -74,7 +73,7 @@ class NgramApp(App if TEXTUAL_AVAILABLE else object):
         Binding("ctrl+shift+tab", "prev_tab", "Prev Tab", show=False),
     ]
 
-    def __init__(self, target_dir: Optional[Path] = None, agent_provider: str = "claude") -> None:
+    def __init__(self, target_dir: Optional[Path] = None, agent_provider: str = "codex") -> None:
         """Initialize the TUI app."""
         from ..agent_cli import normalize_agent
 
@@ -89,7 +88,6 @@ class NgramApp(App if TEXTUAL_AVAILABLE else object):
         self.claude_pty: Optional[ClaudePTY] = None
         self._ctrl_c_pending = False  # Track first Ctrl+C press
         self._running_process: Optional[asyncio.subprocess.Process] = None  # Track agent subprocess
-        self._manager_wakeup_animation_task: Optional[asyncio.Task] = None
         self._manager_force_new_session: bool = False
         self._changes_last_refresh = 0.0
         self._changes_refresh_interval = 300.0
@@ -97,6 +95,7 @@ class NgramApp(App if TEXTUAL_AVAILABLE else object):
         self._sync_last_refresh = 0.0
         self._sync_refresh_interval = 120.0
         self._sync_refresh_inflight = False
+        self._auto_repair_started = False
         self._map_last_refresh = 0.0
         self._map_refresh_interval = 120.0
         self._map_refresh_inflight = False
@@ -184,31 +183,26 @@ class NgramApp(App if TEXTUAL_AVAILABLE else object):
         # Mark new session start
         self.conversation.start_new_session()
 
-        # Add welcome messages in blue
+        # Add welcome message
         health_check_msg = manager.add_message("[blue]Running health check...[/]")
-        manager_wakeup_msg = manager.add_message("[blue]Waking up ngram manager...[/]")
-        self._manager_wakeup_animation_task = asyncio.create_task(self._animate_loading(manager_wakeup_msg))
 
         # Run startup tasks in background so UI appears immediately
-        asyncio.create_task(self._startup_sequence(manager, health_check_msg, manager_wakeup_msg))
+        asyncio.create_task(self._startup_sequence(manager, health_check_msg))
 
-    async def _startup_sequence(self, manager: ManagerPanel, health_check_msg: ClickableStatic, manager_wakeup_msg: ClickableStatic) -> None:
-        """Run startup tasks: doctor check then manager overview."""
+    async def _startup_sequence(self, manager: ManagerPanel, health_check_msg: ClickableStatic) -> None:
+        """Run startup tasks: doctor check then auto-repair immediately."""
         # Run initial health check and show issues
         await self._run_doctor_with_display(manager)
 
-        manager = self.query_one("#manager-panel")
-        manager_wakeup_msg = manager.add_message("[blue]Waking up ngram manager[/] [dim]...[/]")
-        self._manager_wakeup_animation_task = asyncio.create_task(
-            self._animate_loading(manager_wakeup_msg, prefix="[blue]Waking up ngram manager[/] ")
-        )
-
-        # Start manager session (also in this background task)
-        await self._start_manager_with_overview(manager)
-
-        if self._manager_wakeup_animation_task:
-            self._manager_wakeup_animation_task.cancel()
-        manager_wakeup_msg.remove()
+        # Auto-repair runs FIRST, immediately after doctor finds issues
+        if not self._auto_repair_started:
+            self._auto_repair_started = True
+            try:
+                from .commands import handle_repair
+                await handle_repair(self, "")
+            except Exception as e:
+                manager.add_message(f"[red]Auto /repair failed: {e}[/]")
+                self.log_error(f"Auto /repair failed: {e}")
 
     async def _start_claude_pty(self) -> None:
         """Start the interactive Claude PTY session."""
@@ -236,10 +230,6 @@ class NgramApp(App if TEXTUAL_AVAILABLE else object):
         success = await self.claude_pty.start()
         if not success:
             manager.add_message("[dim]Manager agent not available - using fallback mode[/dim]")
-
-    async def _start_manager_with_overview(self, manager: ManagerPanel) -> None:
-        """Start manager and prompt for project overview."""
-        await start_manager_with_overview(self, manager)
 
     async def _animate_loading(self, widget, prefix: str = "") -> None:
         """Animate the loading indicator until cancelled."""

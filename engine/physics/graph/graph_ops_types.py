@@ -1,5 +1,5 @@
 """
-Blood Ledger — Graph Operations: Types and Exceptions
+Graph Operations: Types and Exceptions
 
 Common types and exceptions used by graph operations.
 Extracted from graph_ops.py to reduce file size.

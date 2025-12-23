@@ -1,89 +1,223 @@
 # Archived: SYNC_Project_State.md
 
-Archived on: 2025-12-20
+Archived on: 2025-12-23
 Original file: SYNC_Project_State.md
 
 ---
 
+## ACTIVE WORK
+
+### Schema v1.2 — Energy Physics Migration
+
+- **Area:** `engine/`
+- **Status:** IN PROGRESS
+- **Owner:** Next agent
+- **Tracking:** `.ngram/state/SYNC_Schema_v1.2_Migration.md`
+- **Context:** Complete spec provided. Major changes from v1.1:
+  - Remove all decay logic
+  - Add link.energy (hot/cold) + link.strength (permanent)
+  - Unified traversal function for all energy flows
+  - Top-20 link filter per node
+  - New Phase 4 (moment interaction) and Phase 6 (link cooling)
+
+### Health System (DONE)
+
+- **Area:** `engine/health/`, `app/api/sse/`
+- **Status:** Complete
+- **What:** Unified health service + activity logging + SSE integration
+- **Files:**
+  - `engine/health/connectome_health_service.py`
+  - `engine/health/activity_logger.py`
+  - `app/api/sse/route.ts`
+  - `tools/test_health_live.py`
+
+---
+
+
 ## RECENT CHANGES
 
-### 2025-12-20: Ran ngram validate after connectome doc import
+### 2025-12-23: Generic Schema Migration (Blood Ledger → Generic)
 
-- **What:** Executed `ngram validate` to check doc chain integrity after the bundle imports.
-- **Why:** Confirm health of protocol docs and surface broken CHAIN links.
-- **Impact:** Validation reports missing VIEW and multiple broken CHAIN links (details in latest CLI output); remediation needed.
+- **What:** Removed all game-specific "Blood Ledger" references, migrated Character→Actor, Place→Space
+- **Why:** Decision: models should be generic, not game-specific
+- **Files changed:**
+  - `engine/models/nodes.py`: Header changed, docstrings updated (Actor, Space)
+  - `engine/models/base.py`: Header changed to generic
+  - `engine/models/links.py`: Header changed to generic
+  - `engine/tests/test_spec_consistency.py`: EXPECTED_NODE_TYPES uses Actor/Space
+  - 32+ engine files: Removed "Blood Ledger" from headers
+  - `docs/schema/OBJECTIVES_Schema.md`: Escalation marked resolved
+  - `docs/schema/IMPLEMENTATION_Schema.md`: Escalation marked resolved
+- **Impact:** Schema is now project-agnostic, no game-specific terminology
 
-### 2025-12-20: Strengthen prompt addition against symptom fixes
+### 2025-12-23: Schema v1.1 Implementation Progress
 
-- **What:** Added an instruction + example to `templates/CODEX_SYSTEM_PROMPT_ADDITION.md` emphasizing underlying-issue fixes (BROKEN_IMPL_LINK example).
-- **Why:** Make "fix root cause" behavior explicit in the Codex prompt template.
-- **Impact:** Future AGENTS/CLAUDE prompt generation will include the new instruction.
+- **What:** Implemented core Schema v1.1 models and physics utilities
+- **Files changed:**
+  - `engine/models/base.py`: MomentStatus enum with 6 states
+  - `engine/models/nodes.py`: Moment (prose, sketch, tick_activated, tick_resolved), unbounded energy/weight on all nodes
+  - `engine/models/links.py`: LinkType enum, LinkBase class, blend_emotions()
+  - `engine/physics/constants.py`: v1.1 constants (GENERATION_RATE, MOMENT_DRAW_RATE, etc.)
+  - `engine/physics/graph/graph_query_utils.py`: calculate_link_resistance(), dijkstra_with_resistance()
+  - `engine/physics/graph/graph_ops.py`: Fixed duplicate tick_resolved parameter
+- **Remaining:** Tick phases, state transitions, liquidation, agent responsibilities, tests
 
-### 2025-12-20: Expand operational proactivity guidance
+### 2025-12-23: Major Decisions Session
 
-- **What:** Added "don't pause before acting" and "always run HEALTH checks + verify doc chain" guidance to `templates/CODEX_SYSTEM_PROMPT_ADDITION.md`.
-- **Why:** Ensure agents act immediately and verify changes end-to-end, with docs kept current.
-- **Impact:** Prompt template now explicitly requires action-first execution and health/doc verification.
+- **What:** Resolved 17 escalations covering architecture, schema evolution, validation philosophy
+- **Why:** Clean up decision debt, establish clear patterns
+- **Impact:**
+  - TUI deprecated → Next.js web interface
+  - All enums → free text except `node_type`
+  - Doctor stays deterministic
+  - Validation: persist valid, return precise errors
+  - SYNC updates: summary + pointers with function names
 
-### 2025-12-20: Split connectome doc bundle into module docs
+### 2025-12-23: tick → tick_created Migration
 
-- **What:** Added a splitter script and generated `docs/connectome/module/**` docs from `data/connectome/1.md`, rewriting `$$$` fences to Markdown ``` fences.
-- **Why:** Turn the bundled connectome doc export into individual module docs that align with the protocol.
-- **Impact:** New connectome doc chain files exist under `docs/connectome/module/`; script is reusable for future bundles.
+- **What:** Renamed Moment.tick to tick_created, removed backwards compat alias
+- **Why:** Schema evolution policy — no deprecated fields
+- **Impact:**
+  - `engine/models/nodes.py:Moment`
+  - `engine/physics/graph/graph_ops.py:add_moment`
+  - `engine/physics/graph/graph_queries_moments.py`
+  - Migration script: `engine/migrations/migrate_tick_to_tick_created.py`
 
-### 2025-12-20: Split additional connectome bundles (2.md/3.md/4.md)
+---
 
-- **What:** Ran the bundle splitter on `data/connectome/2.md`, `data/connectome/3.md`, and `data/connectome/4.md`, rewriting `$$$` fences.
-- **Why:** Import the remaining connectome documentation bundles into individual module docs.
-- **Impact:** Additional connectome doc files were created/updated under `docs/connectome/`.
 
-### 2025-12-20: Split connectome bundle 5.md
+## TODO
 
-- **What:** Ran the bundle splitter on `data/connectome/5.md`, rewriting `$$$` fences.
-- **Why:** Import the remaining connectome documentation bundle into individual module docs.
-- **Impact:** Additional connectome doc files were created/updated under `docs/connectome/`.
+### Schema v1.1 — Energy Physics (Full Implementation)
 
-### 2025-12-20: Import graph ownership files
+Reference: `schema_v1.1_complete.md` (provided in session)
 
-- **What:** Copied 157 non-conflicting files from `~/the-blood-ledger` based on `data/graph_scope_classification.yaml`; skipped 45 conflicts; 4 source paths were missing upstream.
-- **Why:** Bring the graph schema/physics/engine materials into this repo without overwriting existing protocol assets.
-- **Impact:** New docs and engine files now exist under `docs/` and `engine/`, with remaining conflicts awaiting a decision.
+#### Schema Changes
 
-### 2025-12-20: Reinitialize protocol + map
+- [x] **1. Moment Model** (`engine/models/nodes.py`) ✓ DONE
+  - Added `status` enum: `possible | active | completed | rejected | interrupted | overridden`
+  - Added `tick_activated: Optional[int]`
+  - Added `tick_resolved: Optional[int]`
+  - Added `prose: str`, `sketch: Optional[str]`
+  - Ensured `energy: float` exists (0-∞, unbounded)
 
-- **What:** Ran `ngram init` and `ngram map` to refresh `.ngram/` assets and regenerate the project map.
-- **Why:** Ensure protocol files and map outputs are consistent after the intake.
-- **Impact:** `map.md` updated and a temporary HTML map was generated at `/tmp/tmpk8j8x4s2.html`.
+- [x] **2. Link Model** (`engine/models/links.py`) ✓ DONE
+  - Added `LinkType` enum with 7 types
+  - Added `LinkBase` with: `node_a/node_b`, `energy`, `strength`, `emotions`, `conductivity`
+  - Added `blend_emotions()` function for Hebbian coloring
 
-### 2025-12-20: Template skills for init installs
+- [x] **3. Actor Model** (`engine/models/nodes.py`) ✓ DONE
+  - `weight` and `energy` are unbounded (0-∞)
+  - No `energy_capacity` — decay handles runaway energy naturally
 
-- **What:** Added `templates/ngram/skills` so `ngram init` can copy skills into `.ngram/skills`, `.claude/skills`, and `$CODEX_HOME/skills`.
-- **Why:** Ensure protocol refreshes keep skills installed across agents without manual copying.
-- **Impact:** `init_protocol` now installs skills and the behavior is verified with a temp init run.
+#### Physics Changes
 
-### 2025-12-20: Strengthen prompt addition testing directive
+- [x] **4. Tick Phases** (`engine/physics/tick.py`) ✓ DONE
+  - `run_v1_1()` implements all 6 phases
+  - Phase 1: `_phase_generation()` — actors generate energy
+  - Phase 2: `_phase_moment_draw()` — moments draw from actors
+  - Phase 3: `_phase_moment_flow()` — moments flow to nodes
+  - Phase 4: `_phase_narrative_backflow()` — narratives radiate
+  - Phase 5: `_phase_decay()` — link/node decay
+  - Phase 6: `_phase_completion()` — liquidate + crystallize
 
-- **What:** Updated `templates/CODEX_SYSTEM_PROMPT_ADDITION.md` to make the "always test" directive an explicit numbered requirement.
-- **Why:** Make the testing mandate unmistakable in generated AGENTS/CLAUDE prompts.
-- **Impact:** Future protocol bootstrap prompts will emphasize health checks and doc-chain verification.
+- [x] **5. Unified Flow Formula** (`engine/physics/tick.py`) ✓ DONE
+  - Implemented in phase methods: `flow = source.energy × rate × conductivity × weight`
+  - `emotion_proximity()` available in constants.py
 
-### 2025-12-20: Add "never ask or wait" directive
+- [x] **6. Path Resistance** (`engine/physics/graph/graph_query_utils.py`) ✓ DONE
+  - `calculate_link_resistance()`: resistance = 1/(conductivity × weight × emotion_factor)
+  - `dijkstra_with_resistance()`: Dijkstra with hop limit, returns path + total_resistance
 
-- **What:** Added a directive to `templates/CODEX_SYSTEM_PROMPT_ADDITION.md` to proceed without pausing for user input.
-- **Why:** Align agent operating posture with the current instruction set.
-- **Impact:** Generated prompts will push autonomous execution and escalation markers when uncertain.
+- [x] **7. Emotion Proximity** (`engine/physics/constants.py`) ✓ DONE
+  - `emotion_proximity()`: returns [0.5, 1.5] factor based on emotion alignment
+  - Returns 1.0 baseline when either list empty
 
-### 2025-12-20: Consolidate skills into `.ngram/skills`
+- [x] **8. Hebbian Coloring** (`engine/models/links.py`) ✓ DONE
+  - `blend_emotions()`: blends incoming emotions into link emotions
+  - Blend rate: `flow/(flow+1)` per formula
 
-- **What:** Used `ngram refactor batch` to move legacy skill files from `.claude/skills` into `.ngram/skills/legacy`, retaining the canonical `SKILL_*` set at `.ngram/skills`.
-- **Why:** Standardize skills under `.ngram/skills` while preserving older variants for reference.
-- **Impact:** `.claude/skills` is now empty and skill assets live under `.ngram/skills`.
+#### New Mechanisms
 
-### 2025-12-20: Refactor overwrite defaults
+- [ ] **9. Moment State Transitions** (`engine/infrastructure/canon/canon_holder.py`)
+  - `possible → active`: Canon holder validates coherence
+  - `active → completed`: Energy threshold + duration + validation → liquidate
+  - `active → interrupted`: Superseded → liquidate to connected
+  - `active → overridden`: Contradicted → redirect through player
+  - `possible → rejected`: Incoherent → return energy to player
 
-- **What:** Set `ngram refactor` to overwrite targets by default and added `--no-overwrite` to opt out.
-- **Why:** Make batch operations deterministic even when targets already exist.
-- **Impact:** Refactor collisions now default to replacement unless explicitly disabled.
+- [x] **10. Liquidation** (`engine/physics/tick.py`) ✓ DONE
+  - `_liquidate_moment()`: distributes energy to connected nodes by weight share
+  - Sets moment.energy = 0, moment becomes inert bridge
+
+- [ ] **11. Redirect (Override)** (`engine/infrastructure/canon/canon_holder.py`)
+  - Calculate emotion proximity between old and new moment
+  - Transfer: `base (30%) + proximity × 70%` → new targets
+  - Remainder "haunts" original narrative
+
+- [x] **12. Link Crystallization** (`engine/physics/tick.py`) ✓ DONE
+  - `_crystallize_actor_links()`: creates RELATES links between actors on moment completion
+  - Initial strength from CRYSTALLIZATION_INITIAL_STRENGTH constant
+
+- [x] **13. Narrative Backflow** (`engine/physics/tick.py`) ✓ DONE
+  - `_phase_narrative_backflow()`: narratives above threshold radiate to believers
+
+#### Agent Responsibilities
+
+- [ ] **14. Runner Creates** (`engine/infrastructure/orchestration/world_runner.py`)
+  - Creates possible moments
+  - Creates new actors
+  - Creates moment→actor links (expresses, about)
+  - Does NOT create moment→narrative links (narrator does that)
+
+- [ ] **15. Canon Holder Validates** (`engine/infrastructure/canon/canon_holder.py`)
+  - Validates possible→active (coherence check)
+  - Approves active→completed (threshold + validity)
+  - Triggers interrupt/override
+  - Rejects incoherent (returns energy to player)
+
+- [ ] **16. Narrator Creates Semantic Links** (`engine/infrastructure/orchestration/narrator.py`)
+  - Creates moment→narrative links (what it's "about")
+  - Uses moment emotions for prose generation
+
+#### Constants
+
+- [x] **17. Add Physics Constants** (`engine/physics/constants.py`) ✓ DONE
+  ```python
+  GENERATION_RATE = 1.0
+  MOMENT_DRAW_RATE = 0.5
+  FLOW_RATE = 0.3
+  LINK_ENERGY_DECAY_RATE = 0.4
+  LINK_STRENGTH_DECAY_RATE = 0.1
+  NODE_ENERGY_DECAY_RATE = 0.2
+  MOMENT_COMPLETION_THRESHOLD = 0.8  # @ngram:escalation
+  CRYSTALLIZATION_THRESHOLD = 3
+  MAX_EMOTIONS_PER_LINK = 7
+  ```
+
+#### Tests
+
+- [x] **18. Energy Flow Tests** (`engine/tests/test_energy_flow_v11.py`) ✓ DONE
+  - 39 tests covering: flow formula, emotion proximity, path resistance, blend_emotions, models, constants
+  - Test unified formula produces correct ratios
+  - Test speaker draws more than witness via link properties only
+  - Test path resistance uses conductivity not hops
+  - Test liquidation distributes correctly
+  - Test crystallization creates new links
+  - Test override redirects with haunting
+  - Test rejection returns to player
+
+### ngram Framework
+
+- [ ] Implement `ngram work <path> [objective]` to replace `repair`
+- [ ] Remove deprecated TUI code (after web interface ready)
+- [ ] Add `ngram doctor --benchmark` for latency measurement
+
+### Backlog
+
+- [ ] Remaining escalation review (~40+ open)
+- [ ] Web interface (Next.js) setup
+- IDEA: `ngram review` as separate AI-powered quality command
 
 ---
 

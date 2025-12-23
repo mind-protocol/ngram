@@ -3935,7 +3935,7 @@
 - ## MARKERS
 
 **Sections:**
-- # Moment Graph Engine — Validation: Void Tension (Stub)
+- # Moment Graph Engine — Validation: Void Pressure (Stub)
 - ## CHAIN
 - ## BEHAVIORS GUARANTEED
 - ## INVARIANTS

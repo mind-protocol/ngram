@@ -11,7 +11,7 @@ VERIFIED: N/A against N/A
 ## CHAIN
 
 ```
-OBJECTIFS:      ./OBJECTIFS_ngram_cli_core.md
+OBJECTIVES:      ./OBJECTIVES_ngram_cli_core.md
 THIS:            BEHAVIORS_ngram_cli_core.md (you are here)
 PATTERNS:        ./PATTERNS_ngram_cli_core.md
 ALGORITHM:       ./ALGORITHM_ngram_cli_core.md
@@ -87,7 +87,7 @@ THEN:   A report on the project's adherence to documentation and code standards 
 
 **Side Effects:**
 
-- Modification of project files (e.g., during `ngram repair`).
+- Modification of project files (e.g., during `ngram work`).
 - Generation of reports or logs.
 - Interaction with external tools (e.g., git, python interpreters).
 

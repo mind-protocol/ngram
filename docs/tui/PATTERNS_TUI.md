@@ -36,4 +36,4 @@
 ## CHAIN
 - [PROTOCOL.md](../../PROTOCOL.md)
 - [modules.yaml](../../modules.yaml)
-- [OBJECTIFS_TUI.md](OBJECTIFS_TUI.md)
+- [OBJECTIVES_TUI.md](OBJECTIVES_TUI.md)

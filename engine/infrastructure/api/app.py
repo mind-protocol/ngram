@@ -1,5 +1,5 @@
 """
-Blood Ledger — FastAPI Application
+FastAPI Application
 
 Main API application with endpoints for:
 - Scene generation and clicks
@@ -34,6 +34,7 @@ from engine.physics.graph import GraphQueries, GraphOps, add_mutation_listener
 from engine.infrastructure.api.moments import create_moments_router
 from engine.infrastructure.api.playthroughs import create_playthroughs_router
 from engine.infrastructure.api.tempo import create_tempo_router
+from engine.infrastructure.api.graphs import create_graphs_router
 
 # =============================================================================
 # LOGGING SETUP
@@ -127,8 +128,8 @@ def create_app(
         Configured FastAPI app
     """
     app = FastAPI(
-        title="Blood Ledger API",
-        description="API for The Blood Ledger narrative RPG",
+        title="Graph Engine API",
+        description="API for The Graph Engine narrative RPG",
         version="0.1.0"
     )
 
@@ -162,9 +163,11 @@ def create_app(
     def get_orchestrator(playthrough_id: str) -> Orchestrator:
         """Get or create orchestrator for a playthrough."""
         if playthrough_id not in _orchestrators:
+            # Use playthrough_id as graph name (each playthrough has its own graph)
+            pt_graph_name = playthrough_id if playthrough_id.startswith("pt_") else graph_name
             _orchestrators[playthrough_id] = Orchestrator(
                 playthrough_id=playthrough_id,
-                graph_name=graph_name,
+                graph_name=pt_graph_name,
                 host=host,
                 port=port,
                 playthroughs_dir=playthroughs_dir
@@ -233,6 +236,11 @@ def create_app(
     )
     app.include_router(tempo_router, prefix="/api")
 
+    # Mount the graphs API router for generic graph management
+    # Endpoints: POST /api/graph/create, DELETE /api/graph/{name}, GET /api/graph
+    graphs_router = create_graphs_router()
+    app.include_router(graphs_router)
+
     # =========================================================================
     # HEALTH CHECK
     # =========================================================================
@@ -285,7 +293,7 @@ def create_app(
 
         Sets up playthrough directory for mutations and world injections.
         Player psychology tracked in narrator's conversation context.
-        Story notes live in the graph (narrative.narrator_notes, tension.narrator_notes).
+        Story notes live in the graph (narrative.narrator_notes).
         """
         import uuid
         playthrough_id = f"pt_{uuid.uuid4().hex[:8]}"
@@ -568,20 +576,20 @@ def create_app(
 
             # Get all places
             places = read.query("""
-                MATCH (p:Place)
+                MATCH (p:Space)
                 RETURN p.id, p.name, p.type, p.mood
             """)
 
             # Get connections
             connections = read.query("""
-                MATCH (p1:Place)-[r:CONNECTS]->(p2:Place)
+                MATCH (p1:Space)-[r:CONNECTS]->(p2:Space)
                 WHERE r.path > 0.5
                 RETURN p1.id, p2.id, r.path_distance, r.path_difficulty
             """)
 
             # Get player location
             player_loc = read.query(f"""
-                MATCH (c:Character {{id: '{player_id}'}})-[:AT]->(p:Place)
+                MATCH (c:Actor {{id: '{player_id}'}})-[:AT]->(p:Space)
                 RETURN p.id
             """)
 
@@ -612,7 +620,7 @@ def create_app(
 
             # Get core narratives (oath, debt, blood) that player believes
             ledger_items = read.query(f"""
-                MATCH (c:Character {{id: '{player_id}'}})-[b:BELIEVES]->(n:Narrative)
+                MATCH (c:Actor {{id: '{player_id}'}})-[b:BELIEVES]->(n:Narrative)
                 WHERE n.type IN ['oath', 'debt', 'blood', 'enmity']
                   AND b.heard > 0.5
                 RETURN n.id, n.name, n.content, n.type, n.tone, b.believes
@@ -635,14 +643,14 @@ def create_app(
             # Get characters the player knows about (major characters and those in narratives)
             # Note: about_characters is stored as JSON string, so we use a simpler query
             characters = read.query("""
-                MATCH (c:Character)
+                MATCH (c:Actor)
                 WHERE c.type IN ['major', 'minor'] AND c.type <> 'player'
                 RETURN DISTINCT c.id, c.name, c.type, c.face
             """)
 
             # Get companion info
             companions = read.query("""
-                MATCH (c:Character {type: 'companion'})
+                MATCH (c:Actor {type: 'companion'})
                 RETURN c.id, c.name, c.face, c.voice_tone
             """)
 
@@ -664,7 +672,7 @@ def create_app(
 
             # Get memory and account narratives the player believes
             events = read.query(f"""
-                MATCH (c:Character {{id: '{player_id}'}})-[b:BELIEVES]->(n:Narrative)
+                MATCH (c:Actor {{id: '{player_id}'}})-[b:BELIEVES]->(n:Narrative)
                 WHERE n.type IN ['memory', 'account']
                   AND b.heard > 0.5
                 RETURN n.id, n.name, n.content, n.type, n.tone, b.believes

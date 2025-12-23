@@ -24,6 +24,7 @@ from .doctor_checks_docs import (
     doctor_check_orphan_docs,
     doctor_check_placeholder_docs,
     doctor_check_stale_impl,
+    doctor_check_validation_behaviors_list,
 )
 from .doctor_checks_metadata import (
     doctor_check_missing_tests,
@@ -70,6 +71,7 @@ __all__ = [
     "doctor_check_large_doc_module",
     "doctor_check_incomplete_chain",
     "doctor_check_doc_template_drift",
+    "doctor_check_validation_behaviors_list",
     "doctor_check_nonstandard_doc_type",
     "doctor_check_missing_tests",
     "doctor_check_orphan_docs",

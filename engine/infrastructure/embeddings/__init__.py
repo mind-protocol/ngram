@@ -1,5 +1,5 @@
 """
-Blood Ledger — Embedding Service
+Embedding Service
 
 Generate and query embeddings for semantic search.
 

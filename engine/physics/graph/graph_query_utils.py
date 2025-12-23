@@ -1,5 +1,5 @@
 """
-Blood Ledger — Graph Query Utilities
+Graph Query Utilities
 
 Standalone helper functions for graph query operations.
 Extracted from graph_queries.py to reduce file size.
@@ -100,6 +100,12 @@ def extract_link_props(rel, system_fields: set = None) -> Optional[Dict[str, Any
         return None
 
     try:
+        if hasattr(rel, "relation") and hasattr(rel, "properties"):
+            props = rel.properties or {}
+            return {
+                "type": rel.relation,
+                **{k: v for k, v in props.items() if k not in system_fields},
+            }
         # FalkorDB relationship format varies
         if isinstance(rel, list) and len(rel) >= 3:
             rel_type = rel[0]
@@ -111,7 +117,10 @@ def extract_link_props(rel, system_fields: set = None) -> Optional[Dict[str, Any
             return link
 
         elif isinstance(rel, dict):
-            return {k: v for k, v in rel.items() if k not in system_fields}
+            cleaned = {k: v for k, v in rel.items() if k not in system_fields}
+            if "type" not in cleaned and "relation" in rel:
+                cleaned["type"] = rel.get("relation")
+            return cleaned
 
         return None
 
@@ -208,6 +217,125 @@ def to_markdown(search_result: Dict[str, Any]) -> str:
             lines.append("")  # Blank line between clusters
 
     return '\n'.join(lines)
+
+
+# =============================================================================
+# PATH RESISTANCE (v1.1)
+# =============================================================================
+
+def calculate_link_resistance(
+    conductivity: float,
+    weight: float,
+    emotion_factor: float = 1.0
+) -> float:
+    """
+    Calculate link resistance for path finding.
+
+    Schema v1.1 formula: resistance = 1 / (conductivity × weight × emotion_factor)
+    If any factor is 0, returns infinity (path blocked).
+
+    Args:
+        conductivity: Link conductivity [0-1]
+        weight: Link weight [0-∞]
+        emotion_factor: Emotion alignment factor [0.5-1.5]
+
+    Returns:
+        Resistance value (lower is better), inf if blocked
+    """
+    product = conductivity * weight * emotion_factor
+    if product <= 0:
+        return float('inf')
+    return 1.0 / product
+
+
+def dijkstra_with_resistance(
+    edges: List[Dict[str, Any]],
+    start: str,
+    end: str,
+    max_hops: int = 5
+) -> Optional[Dict[str, Any]]:
+    """
+    Find shortest path using Dijkstra with v1.1 resistance formula.
+
+    Args:
+        edges: List of dicts with:
+            - node_a: First node ID
+            - node_b: Second node ID
+            - conductivity: Link conductivity [0-1]
+            - weight: Link weight [0-∞]
+            - emotion_factor: (optional) Emotion alignment [0.5-1.5]
+        start: Starting node ID
+        end: Target node ID
+        max_hops: Maximum path length (default 5)
+
+    Returns:
+        Dict with:
+            - path: List of node IDs from start to end
+            - total_resistance: Sum of resistances
+            - hops: Number of edges traversed
+        Or None if no path found within max_hops
+    """
+    import heapq
+
+    # Build adjacency list with resistances
+    graph: Dict[str, List[tuple]] = {}
+    for edge in edges:
+        node_a = edge.get('node_a')
+        node_b = edge.get('node_b')
+        conductivity = edge.get('conductivity', 1.0)
+        weight = edge.get('weight', 1.0)
+        emotion_factor = edge.get('emotion_factor', 1.0)
+
+        if not node_a or not node_b:
+            continue
+
+        resistance = calculate_link_resistance(conductivity, weight, emotion_factor)
+
+        # Bidirectional
+        if node_a not in graph:
+            graph[node_a] = []
+        if node_b not in graph:
+            graph[node_b] = []
+
+        graph[node_a].append((node_b, resistance))
+        graph[node_b].append((node_a, resistance))
+
+    if start not in graph:
+        return None
+
+    # Dijkstra with hop limit
+    # Priority queue: (resistance, hops, node, path)
+    pq = [(0.0, 0, start, [start])]
+    visited = set()
+
+    while pq:
+        resistance, hops, node, path = heapq.heappop(pq)
+
+        if node == end:
+            return {
+                'path': path,
+                'total_resistance': resistance,
+                'hops': hops
+            }
+
+        if node in visited:
+            continue
+        visited.add(node)
+
+        if hops >= max_hops:
+            continue
+
+        for neighbor, edge_resistance in graph.get(node, []):
+            if neighbor not in visited:
+                new_resistance = resistance + edge_resistance
+                heapq.heappush(pq, (
+                    new_resistance,
+                    hops + 1,
+                    neighbor,
+                    path + [neighbor]
+                ))
+
+    return None
 
 
 def view_to_scene_tree(view_result: Dict[str, Any]) -> Dict[str, Any]:

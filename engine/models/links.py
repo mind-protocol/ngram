@@ -1,47 +1,343 @@
 """
-Blood Ledger — Link Models
+Link Models — Generic Schema Types
 
-The 6 link types that connect nodes.
-Based on SCHEMA.md v5.1
+The link types that connect nodes.
+Based on schema.yaml v1.2
+
+v1.2 CHANGES:
+    - Added link types: about (Moment → Any), attached_to (Thing → Actor/Space)
+    - Added LinkDirection enum: support, oppose, elaborate, subsume, supersede
+    - Added semantic properties: name, role, direction, description
+    - energy: current attention (hot/cold filter) — NO DECAY
+    - strength: accumulated depth (permanent, grows with traversal)
+    - Link cooling: 30% drain to nodes, 10% converts to strength
+    - Migration: 14 old types → 9 new types (old types become property values)
+
+v1.1 CHANGES:
+    - Added LinkType enum: contains, leads_to, expresses, sequence, primes, can_become, relates
+    - Added LinkBase with unified fields: node_a, node_b, conductivity, weight, energy, strength, emotions
+    - emotions: Hebbian-colored by energy flow ([[name, intensity], ...])
+    - Bidirectional: node_a/node_b replaces from_id/to_id
+
+MIGRATION (legacy → v1.2):
+    BELIEVES → relates + role:believer
+    ORIGINATED → relates + role:originator
+    SUPPORTS → relates + direction:support
+    CONTRADICTS → relates + direction:oppose
+    WITNESSED → relates + role:witness
+    OWES → relates + role:debtor + name:'owes debt to'
+    CAN_SPEAK/SAID → expresses
+    AT → contains (inverted)
+    CARRIES → attached_to (inverted)
 
 TESTS:
-    engine/tests/test_models.py::TestCharacterNarrativeLink
+    engine/tests/test_models.py::TestActorNarrativeLink
     engine/tests/test_models.py::TestNarrativeNarrativeLink
-    engine/tests/test_models.py::TestCharacterPlaceLink
-    engine/tests/test_models.py::TestCharacterThingLink
-    engine/tests/test_models.py::TestThingPlaceLink
-    engine/tests/test_models.py::TestPlacePlaceLink
-
-VALIDATES:
-    V3.1: BELIEVES link (Character -> Narrative)
-    V3.2: NARRATIVE_NARRATIVE links (contradicts, supports, etc.)
-    V3.3: Ground truth links (AT, CARRIES, LOCATED_AT, CONTAINS, ROUTE)
 
 SEE ALSO:
-    docs/engine/VALIDATION_Complete_Spec.md
-    docs/engine/TEST_Complete_Spec.md
+    docs/schema/schema.yaml
 """
 
-from typing import Optional
+from typing import Optional, List, Tuple
 from datetime import datetime
+from enum import Enum
 from pydantic import BaseModel, Field
 
 from .base import BeliefSource, PathDifficulty
 
 
-class CharacterNarrative(BaseModel):
-    """
-    CHARACTER_NARRATIVE - What a character knows, believes, doubts, hides, or spreads.
+# =============================================================================
+# LINK TYPE ENUM (v1.1)
+# =============================================================================
 
-    This link IS how characters know things. There is no "knowledge" stat.
+class LinkType(str, Enum):
+    """The 9 link types in schema v1.2.
+
+    Taxonomy:
+        Energy carriers: expresses, about, relates, attached_to
+        Structural only: contains, leads_to, sequence, primes, can_become
+
+    Migration from legacy types:
+        BELIEVES, ORIGINATED, SUPPORTS, CONTRADICTS, ELABORATES → relates
+        CAN_SPEAK, SAID → expresses
+        ATTACHED_TO (moment) → about
+        CARRIES → attached_to (inverted)
+        AT → contains (inverted)
+        THEN → sequence
+        CAN_LEAD_TO → primes
+    """
+    # Energy carriers (participate in physics tick)
+    EXPRESSES = "expresses"      # Actor → Moment (draw phase)
+    ABOUT = "about"              # Moment → Any (flow phase)
+    ATTACHED_TO = "attached_to"  # Thing → Actor/Space (flow phase)
+    RELATES = "relates"          # Any → Any (flow, backflow)
+
+    # Structural (no energy flow)
+    CONTAINS = "contains"      # Space → Actor/Thing/Space (hierarchy)
+    LEADS_TO = "leads_to"      # Space → Space (path)
+    SEQUENCE = "sequence"      # Moment → Moment (history)
+    PRIMES = "primes"          # Moment → Moment (traversal possibility)
+    CAN_BECOME = "can_become"  # Thing → Thing (transformation)
+
+
+class LinkDirection(str, Enum):
+    """Semantic direction for relates links (v1.2).
+
+    Replaces old type differentiation:
+        SUPPORTS → direction: support
+        CONTRADICTS → direction: oppose
+        ELABORATES → direction: elaborate
+        SUBSUMES → direction: subsume
+        SUPERSEDES → direction: supersede
+    """
+    SUPPORT = "support"       # Reinforces, aligns with
+    OPPOSE = "oppose"         # Contradicts, conflicts with
+    ELABORATE = "elaborate"   # Adds detail to
+    SUBSUME = "subsume"       # Is a specific case of
+    SUPERSEDE = "supersede"   # Replaces, obsoletes
+
+
+# =============================================================================
+# LINK BASE (v1.2)
+# =============================================================================
+
+class LinkBase(BaseModel):
+    """Unified link model for schema v1.2.
+
+    All links have:
+        - node_a, node_b: bidirectional endpoints
+        - type: one of the 9 LinkTypes
+        - conductivity: percentage of energy that passes through [0-1]
+        - weight: link importance (unbounded)
+        - energy: current attention (hot/cold filter) — NO DECAY
+        - strength: accumulated depth (permanent, grows with each traversal)
+        - emotions: Hebbian-colored by energy flow
+        - name: link label (e.g., 'believes', 'owes debt to')
+        - role: semantic role (originator, believer, witness, subject, creditor, debtor)
+        - direction: semantic direction (support, oppose, elaborate, subsume, supersede)
+        - description: human-readable description
+
+    Hot vs Cold:
+        link.energy × link.weight > COLD_THRESHOLD → HOT → in physics
+        link.energy × link.weight ≤ COLD_THRESHOLD → COLD → excluded
+
+    Link Cooling (per tick):
+        - 30% of energy drains to connected nodes (50/50 split)
+        - 10% of energy converts to permanent strength
+        - No arbitrary decay
+
+    Semantic Differentiation (v1.2):
+        Instead of 14+ link types, use 9 types + semantic properties:
+        - BELIEVES → relates + role:believer
+        - ORIGINATED → relates + role:originator + higher weight
+        - SUPPORTS → relates + direction:support + emotions:[[alignment, X]]
+        - CONTRADICTS → relates + direction:oppose + emotions:[[opposition, X]]
+        - WITNESSED → relates + role:witness
+        - OWES → relates + role:debtor + name:'owes debt to'
+    """
+    # Endpoints (bidirectional)
+    node_a: str = Field(description="First node ID")
+    node_b: str = Field(description="Second node ID")
+
+    # Type
+    type: LinkType = Field(default=LinkType.RELATES, description="Link type")
+
+    # Physics (v1.2)
+    conductivity: float = Field(
+        default=1.0, ge=0.0, le=1.0,
+        description="Percentage of energy that passes through"
+    )
+    weight: float = Field(
+        default=1.0, ge=0.0,
+        description="Link importance (unbounded)"
+    )
+    energy: float = Field(
+        default=0.0, ge=0.0,
+        description="Current attention (hot/cold filter, no decay)"
+    )
+    strength: float = Field(
+        default=0.0, ge=0.0,
+        description="Accumulated depth (permanent, grows with traversal)"
+    )
+
+    # Emotions (Hebbian-colored by energy flow)
+    emotions: List[List] = Field(
+        default_factory=list,
+        description="[[name, intensity], ...] — colored by what flows through"
+    )
+
+    # Semantic properties (v1.2)
+    name: str = Field(
+        default="",
+        description="Link name/label (e.g., 'believes', 'owes debt to', 'witnessed')"
+    )
+    role: Optional[str] = Field(
+        default=None,
+        description="Semantic role: originator, believer, witness, subject, creditor, debtor"
+    )
+    direction: Optional[LinkDirection] = Field(
+        default=None,
+        description="Semantic direction: support, oppose, elaborate, subsume, supersede"
+    )
+    description: str = Field(
+        default="",
+        description="Human-readable description of the link"
+    )
+    created_at_s: int = Field(
+        default=0, ge=0,
+        description="Unix timestamp when link was created"
+    )
+
+    @property
+    def heat_score(self) -> float:
+        """Calculate heat score for top-N filtering.
+
+        v1.2: score = energy × weight
+        """
+        return self.energy * self.weight
+
+    def is_hot(self, threshold: float = 0.01) -> bool:
+        """Check if link is hot (in physics) vs cold (excluded).
+
+        v1.2: hot if energy × weight > COLD_THRESHOLD
+        """
+        return self.heat_score > threshold
+
+    def is_energy_carrier(self) -> bool:
+        """Check if this link type carries energy.
+
+        v1.2: expresses, about, attached_to, relates carry energy.
+        """
+        return self.type in [
+            LinkType.EXPRESSES,
+            LinkType.ABOUT,
+            LinkType.ATTACHED_TO,
+            LinkType.RELATES,
+        ]
+
+
+# =============================================================================
+# EMOTION UTILITIES (v1.2)
+# =============================================================================
+
+def consolidate_emotions(emotions: List[List]) -> List[List]:
+    """
+    Merge duplicate emotions with diminishing returns.
+
+    Example:
+        [["fear", 0.7], ["respect", 0.4], ["fear", 0.3]]
+        → [["fear", 0.85], ["respect", 0.4]]
+
+    Uses diminishing returns: new = old + delta * (1 - old)
+    So emotions asymptote toward 1.0 rather than hard clamping.
+    """
+    merged = {}
+    for item in emotions:
+        if len(item) != 2:
+            continue
+        emotion, intensity = item[0], float(item[1])
+        if emotion in merged:
+            # Diminishing returns
+            merged[emotion] = min(1.0, merged[emotion] + intensity * (1 - merged[emotion]))
+        else:
+            merged[emotion] = min(1.0, max(0.0, intensity))
+    return [[e, round(i, 3)] for e, i in merged.items()]
+
+
+def add_emotion(
+    emotions: List[List],
+    emotion: str,
+    intensity: float,
+    max_emotions: int = 7
+) -> List[List]:
+    """
+    Add an emotion to a list, consolidating duplicates.
+
+    If max_emotions exceeded, drops lowest intensity emotions.
+
+    Args:
+        emotions: Current emotion list
+        emotion: Emotion name to add
+        intensity: Intensity [0, 1]
+        max_emotions: Cap on list length (default 7)
+
+    Returns:
+        Updated emotion list
+    """
+    updated = emotions + [[emotion, intensity]]
+    consolidated = consolidate_emotions(updated)
+
+    # Cap at max_emotions, keeping highest intensity
+    if len(consolidated) > max_emotions:
+        consolidated.sort(key=lambda x: x[1], reverse=True)
+        consolidated = consolidated[:max_emotions]
+
+    return consolidated
+
+
+def blend_emotions(
+    link_emotions: List[List],
+    incoming_emotions: List[List],
+    blend_rate: float,
+    max_emotions: int = 7
+) -> List[List]:
+    """
+    Hebbian coloring: blend incoming emotions into link emotions.
+
+    Energy flow colors the link — links "learn" what passes through them.
+
+    Args:
+        link_emotions: Current emotions on the link
+        incoming_emotions: Emotions from the flowing moment
+        blend_rate: How much to blend (typically flow/(flow+1))
+        max_emotions: Cap on list length (default 7)
+
+    Returns:
+        Updated emotion list
+
+    Example:
+        link_emotions = [["trust", 0.5]]
+        incoming_emotions = [["fear", 0.9], ["urgency", 0.6]]
+        blend_rate = 0.3
+
+        Result: [["trust", 0.5], ["fear", 0.27], ["urgency", 0.18]]
+    """
+    result = {e[0]: e[1] for e in link_emotions}
+
+    for item in incoming_emotions:
+        if len(item) != 2:
+            continue
+        name, intensity = item[0], float(item[1])
+        incoming_contrib = intensity * blend_rate
+
+        if name in result:
+            # Diminishing returns
+            result[name] = min(1.0, result[name] + incoming_contrib * (1 - result[name]))
+        else:
+            result[name] = min(1.0, incoming_contrib)
+
+    # Convert back to list and cap
+    emotion_list = [[e, round(i, 3)] for e, i in result.items() if i > 0.01]
+    if len(emotion_list) > max_emotions:
+        emotion_list.sort(key=lambda x: x[1], reverse=True)
+        emotion_list = emotion_list[:max_emotions]
+
+    return emotion_list
+
+
+class ActorNarrative(BaseModel):
+    """
+    ACTOR_NARRATIVE - What an actor knows, believes, doubts, hides, or spreads.
+
+    This link IS how actors know things. There is no "knowledge" stat.
     Aldric knows about the betrayal because he has a link to that narrative
     with heard=1.0 and believes=0.9.
 
-    History: Every memory is mediated through a BELIEVES link. Characters can be
+    History: Every memory is mediated through a BELIEVES link. Actors can be
     wrong, confidence varies, sources can be traced.
     """
     # Link endpoints
-    character_id: str
+    actor_id: str
     narrative_id: str
 
     # Knowledge (0-1) - how much do they know/believe?
@@ -63,10 +359,8 @@ class CharacterNarrative(BaseModel):
     when: Optional[datetime] = None
     where: Optional[str] = Field(default=None, description="Place ID where they learned this")
 
-    @property
-    def belief_intensity(self) -> float:
-        """Combined intensity of belief for energy calculations."""
-        return max(self.believes, self.originated) * self.heard
+    # Physics (v1.1: conductivity replaces weight/strength/energy)
+    conductivity: float = Field(default=0.5, ge=0.0, le=1.0, description="Percentage of energy that passes through")
 
 
 class NarrativeNarrative(BaseModel):
@@ -88,92 +382,80 @@ class NarrativeNarrative(BaseModel):
     subsumes: float = Field(default=0.0, ge=0.0, le=1.0, description="Specific case of")
     supersedes: float = Field(default=0.0, ge=0.0, le=1.0, description="Replaces - old fades")
 
-    @property
-    def link_type(self) -> str:
-        """Return the dominant relationship type."""
-        attrs = {
-            'contradicts': self.contradicts,
-            'supports': self.supports,
-            'elaborates': self.elaborates,
-            'subsumes': self.subsumes,
-            'supersedes': self.supersedes
-        }
-        return max(attrs, key=attrs.get)
+    # Physics (v1.1: conductivity replaces weight/strength/energy)
+    conductivity: float = Field(default=0.5, ge=0.0, le=1.0, description="Percentage of energy that passes through")
 
 
-class CharacterPlace(BaseModel):
+class ActorSpace(BaseModel):
     """
-    CHARACTER_PLACE - Where a character physically is (ground truth).
+    ACTOR_SPACE - Where an actor physically is (ground truth).
 
-    This is GROUND TRUTH, not belief. A character IS at a place,
+    This is GROUND TRUTH, not belief. An actor IS at a space,
     regardless of what anyone believes.
     """
     # Link endpoints
-    character_id: str
-    place_id: str
+    actor_id: str
+    space_id: str
 
     # Physical state
     present: float = Field(default=0.0, ge=0.0, le=1.0, description="1=here, 0=not here")
     visible: float = Field(default=1.0, ge=0.0, le=1.0, description="0=hiding, 1=visible")
 
-    @property
-    def is_present(self) -> bool:
-        return self.present > 0.5
+    # Physics (v1.1: conductivity replaces weight/strength/energy)
+    conductivity: float = Field(default=0.5, ge=0.0, le=1.0, description="Percentage of energy that passes through")
 
 
-class CharacterThing(BaseModel):
+class ActorThing(BaseModel):
     """
-    CHARACTER_THING - What a character physically carries (ground truth).
+    ACTOR_THING - What an actor physically carries (ground truth).
 
     Ground truth. They HAVE it or they don't.
     Separate from ownership narratives (who SHOULD have it).
     """
     # Link endpoints
-    character_id: str
+    actor_id: str
     thing_id: str
 
     # Physical state
     carries: float = Field(default=0.0, ge=0.0, le=1.0, description="1=has it, 0=doesn't")
     carries_hidden: float = Field(default=0.0, ge=0.0, le=1.0, description="1=secretly, 0=openly")
 
-    @property
-    def has_item(self) -> bool:
-        return self.carries > 0.5 or self.carries_hidden > 0.5
+    # Physics (v1.1: conductivity replaces weight/strength/energy)
+    conductivity: float = Field(default=0.5, ge=0.0, le=1.0, description="Percentage of energy that passes through")
 
 
-class ThingPlace(BaseModel):
+class ThingSpace(BaseModel):
     """
-    THING_PLACE - Where an uncarried thing physically is (ground truth).
+    THING_SPACE - Where an uncarried thing physically is (ground truth).
 
     Where things ARE, not where people think they are.
     """
     # Link endpoints
     thing_id: str
-    place_id: str
+    space_id: str
 
     # Physical state
     located: float = Field(default=0.0, ge=0.0, le=1.0, description="1=here, 0=not here")
     hidden: float = Field(default=0.0, ge=0.0, le=1.0, description="1=concealed, 0=visible")
     specific_location: str = Field(default="", description="Where exactly")
 
-    @property
-    def is_here(self) -> bool:
-        return self.located > 0.5
+    # Physics (v1.1: conductivity replaces weight/strength/energy)
+    conductivity: float = Field(default=0.5, ge=0.0, le=1.0, description="Percentage of energy that passes through")
 
 
-class PlacePlace(BaseModel):
+class SpaceSpace(BaseModel):
     """
-    PLACE_PLACE - How locations connect: contains, path, borders (ground truth).
+    SPACE_SPACE - How locations connect: contains, path, borders (ground truth).
 
     Geography determines travel time, which affects proximity,
-    which affects how much characters matter to the player.
+    which affects how much actors matter to the player.
     """
     # Link endpoints
-    source_place_id: str
-    target_place_id: str
+    source_space_id: str
+    target_space_id: str
 
     # Spatial relationships
-    contains: float = Field(default=0.0, ge=0.0, le=1.0, description="This place is inside that")
+    contains: float = Field(default=0.0, ge=0.0, le=1.0, description="This space is inside that")
     path: float = Field(default=0.0, ge=0.0, le=1.0, description="Can travel between")
     path_distance: str = Field(default="", description="How far: '2 days', '4 hours'")
     path_difficulty: PathDifficulty = PathDifficulty.MODERATE

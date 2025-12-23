@@ -1,0 +1,13 @@
+[19:04:58] ═══ TICK 1 START ═══ graph=seed
+[19:04:59] [tick:1] energy 0.0→55.0 pressure 0.56→0.56 | energy grew by 54.96 | pressure building (+0.003)
+[19:04:59]   └─ updated: 135 narratives, 22 tensions, 0 moments decayed
+[19:05:00] ═══ TICK 2 START ═══ graph=seed
+[19:05:01] [tick:2] energy 0.0→54.2 pressure 0.56→0.56 | energy grew by 54.20 | pressure building (+0.003)
+[19:05:01]   └─ updated: 135 narratives, 22 tensions, 0 moments decayed
+[19:56:11] ═══ TICK 1 START ═══ graph=test
+[19:56:11] ═══ TICK 1 START ═══ graph=test
+[19:56:11] ═══ TICK 1 START ═══ graph=test
+[20:01:01] ═══ TICK 1 START ═══ graph=test
+[20:01:01] ═══ TICK 1 START ═══ graph=test
+[20:01:01] ═══ TICK 1 START ═══ graph=test
+[20:05:26] ═══ TICK 1 START ═══ graph=test

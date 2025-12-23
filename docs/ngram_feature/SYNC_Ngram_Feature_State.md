@@ -6,7 +6,7 @@
 
 ## 1. Current Status
 -   **Module Created:** The `ngram_feature` module has been defined in `modules.yaml`.
--   **Initial Documentation:** `OBJECTIFS_Ngram_Feature.md`, `PATTERNS_Ngram_Feature.md`, and this `SYNC_Ngram_Feature_State.md` have been created.
+-   **Initial Documentation:** `OBJECTIVES_Ngram_Feature.md`, `PATTERNS_Ngram_Feature.md`, and this `SYNC_Ngram_Feature_State.md` have been created.
 -   **Code Reference:** `app/ngram/page.tsx` has been identified as the primary source file for this module.
 
 ## 2. Decisions

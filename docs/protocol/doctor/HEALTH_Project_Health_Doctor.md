@@ -182,4 +182,12 @@ ngram doctor --format json
 ## MARKERS
 
 <!-- @ngram:todo Add `ngram doctor --benchmark` to measure check latency. -->
-<!-- @ngram:escalation Should we add a check for "documentation quality" (AI-assisted)? -->
+<!-- @ngram:escalation
+title: "Should we add a check for documentation quality (AI-assisted)?"
+priority: 5
+response:
+  status: resolved
+  choice: "No"
+  behavior: "Doctor stays purely deterministic. No LLM calls. Fast, cheap, CI-friendly. Agents using CLI can assess quality themselves — they ARE AIs."
+  notes: "2025-12-23: Decided by Nicolas."
+-->

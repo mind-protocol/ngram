@@ -1,0 +1,18 @@
+[Unit]
+Description=ngram backend (FastAPI)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/ngram
+Environment=PYTHONUNBUFFERED=1
+ExecStartPre=/bin/mkdir -p %h/ngram/.ngram/logs
+ExecStart=/bin/bash -lc '/usr/bin/python3 -m engine.infrastructure.api.app 2> >(tee -a %h/ngram/.ngram/error.log >&2) | tee -a %h/ngram/.ngram/logs/ngram-be.log'
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

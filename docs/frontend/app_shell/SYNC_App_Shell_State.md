@@ -38,7 +38,7 @@ The `app_shell` module provides the foundational Next.js frontend application st
 - **Started:** 2024-02-23
 - **By:** agent  
 - **Status:** In progress - docs created, `DOCS:` references pending.
-- **Context:** This task aims to establish baseline documentation for the `app_shell` module, addressing the "UNDOCUMENTED" issue. The core doc files (OBJECTIFS, PATTERNS, SYNC) have been created, and the module is mapped in `modules.yaml`. The next step is to add `DOCS:` references to the primary source files.
+- **Context:** This task aims to establish baseline documentation for the `app_shell` module, addressing the "UNDOCUMENTED" issue. The core doc files (OBJECTIVES, PATTERNS, SYNC) have been created, and the module is mapped in `modules.yaml`. The next step is to add `DOCS:` references to the primary source files.
 
 ---
 
@@ -46,11 +46,11 @@ The `app_shell` module provides the foundational Next.js frontend application st
 
 ### 2024-02-23: Initial Documentation of App Shell Module
 
-- **What:** Created `OBJECTIFS_App_Shell.md`, `PATTERNS_App_Shell.md`, and `SYNC_App_Shell_State.md` in `docs/frontend/app_shell/`. Updated `modules.yaml` to include the `app_shell` module mapping.
+- **What:** Created `OBJECTIVES_App_Shell.md`, `PATTERNS_App_Shell.md`, and `SYNC_App_Shell_State.md` in `docs/frontend/app_shell/`. Updated `modules.yaml` to include the `app_shell` module mapping.
 - **Why:** To address the "UNDOCUMENTED" issue for the `app` directory and provide a clear definition of the Next.js frontend application's core structure and responsibilities, following the `VIEW_Document_Create_Module_Documentation.md`.
 - **Files:**
     - `modules.yaml`
-    - `docs/frontend/app_shell/OBJECTIFS_App_Shell.md`
+    - `docs/frontend/app_shell/OBJECTIVES_App_Shell.md`
     - `docs/frontend/app_shell/PATTERNS_App_Shell.md`
     - `docs/frontend/app_shell/SYNC_App_Shell_State.md`
 - **Struggles/Insights:** Identifying the exact scope of the "app" module, as subdirectories like `app/connectome` already have specific documentation. Decided to define `app_shell` as the overarching Next.js root, including global files and top-level feature directories (`api`, `ngram`).
@@ -104,7 +104,7 @@ Initial documentation for the Next.js frontend application shell (`app_shell`) h
 
 ## POINTERS
 
-- **OBJECTIFS**: `docs/frontend/app_shell/OBJECTIFS_App_Shell.md`
+- **OBJECTIVES**: `docs/frontend/app_shell/OBJECTIVES_App_Shell.md`
 - **PATTERNS**: `docs/frontend/app_shell/PATTERNS_App_Shell.md`
 - **MODULES MAPPING**: `modules.yaml` (See the `app_shell` entry for module scope definition.)
 

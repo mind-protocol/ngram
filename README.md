@@ -37,7 +37,7 @@ ngram validate
 ngram doctor
 
 # Auto-fix issues with agents
-ngram repair
+ngram work
 
 # Get documentation context for a file
 ngram context src/your_file.py
@@ -80,7 +80,7 @@ your-project/
 | `ngram init` | Initialize protocol in project |
 | `ngram validate` | Check protocol invariants |
 | `ngram doctor` | Project health check |
-| `ngram repair` | Auto-fix issues with agents |
+| `ngram work` | Auto-fix issues with agents |
 | `ngram context <file>` | Get doc context for a file |
 | `ngram sync` | Show SYNC file status |
 | `ngram prompt` | Generate LLM bootstrap prompt |
@@ -103,9 +103,9 @@ Checks for:
 ### Repair Command
 
 ```bash
-ngram repair              # Fix all issues
-ngram repair --max 3      # Limit to 3 agents
-ngram repair --dry-run    # Preview what would be fixed
+ngram work              # Fix all issues
+ngram work --max 3      # Limit to 3 agents
+ngram work --dry-run    # Preview what would be fixed
 ```
 
 Spawns agents (Claude or Codex) to autonomously fix issues found by doctor.

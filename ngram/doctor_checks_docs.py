@@ -285,7 +285,16 @@ def doctor_check_incomplete_chain(target_dir: Path, config: DoctorConfig) -> Lis
     if not docs_dir.exists():
         return issues
 
-    full_chain = ["PATTERNS_", "BEHAVIORS_", "ALGORITHM_", "VALIDATION_", "IMPLEMENTATION_", "HEALTH_", "SYNC_"]
+    full_chain = [
+        "OBJECTIVES_",
+        "BEHAVIORS_",
+        "PATTERNS_",
+        "ALGORITHM_",
+        "VALIDATION_",
+        "IMPLEMENTATION_",
+        "HEALTH_",
+        "SYNC_",
+    ]
     modules = find_module_directories(docs_dir)
 
     for module_dir in modules:
@@ -318,6 +327,7 @@ def doctor_check_incomplete_chain(target_dir: Path, config: DoctorConfig) -> Lis
 
 
 DOC_TYPE_TEMPLATES = {
+    "OBJECTIVES": ".ngram/templates/OBJECTIVES_TEMPLATE.md",
     "PATTERNS": ".ngram/templates/PATTERNS_TEMPLATE.md",
     "BEHAVIORS": ".ngram/templates/BEHAVIORS_TEMPLATE.md",
     "ALGORITHM": ".ngram/templates/ALGORITHM_TEMPLATE.md",
@@ -473,6 +483,40 @@ def doctor_check_doc_template_drift(target_dir: Path, config: DoctorConfig) -> L
     return issues
 
 
+def doctor_check_validation_behaviors_list(
+    target_dir: Path,
+    config: DoctorConfig
+) -> List[DoctorIssue]:
+    """Ensure VALIDATION docs list the behaviors they guarantee."""
+    if "VALIDATION_BEHAVIORS_MISSING" in config.disabled_checks:
+        return []
+
+    issues: List[DoctorIssue] = []
+    required_section = "BEHAVIORS GUARANTEED"
+
+    for doc_path in _iter_doc_files(target_dir, config):
+        if not doc_path.name.startswith("VALIDATION_"):
+            continue
+
+        doc_content = doc_path.read_text(errors="ignore")
+        doc_sections = _extract_h2_sections(doc_content)
+
+        if required_section in doc_sections:
+            continue
+
+        rel_path = str(doc_path.relative_to(target_dir))
+        issues.append(DoctorIssue(
+            issue_type="VALIDATION_BEHAVIORS_MISSING",
+            severity="info",
+            path=rel_path,
+            message=f"Missing: {required_section}",
+            details={"missing": [required_section]},
+            suggestion="Add a BEHAVIORS GUARANTEED section listing covered behaviors"
+        ))
+
+    return issues
+
+
 def doctor_check_nonstandard_doc_type(target_dir: Path, config: DoctorConfig) -> List[DoctorIssue]:
     """Check for docs that don't use standard doc type prefixes."""
     if "NON_STANDARD_DOC_TYPE" in config.disabled_checks:
@@ -503,7 +547,7 @@ def doctor_check_nonstandard_doc_type(target_dir: Path, config: DoctorConfig) ->
             path=rel_path,
             message="Doc filename does not use a standard prefix",
             details={"prefixes": list(STANDARD_DOC_PREFIXES)},
-            suggestion="Rename to PATTERNS_/BEHAVIORS_/ALGORITHM_/VALIDATION_/IMPLEMENTATION_/HEALTH_/SYNC_"
+            suggestion="Rename to OBJECTIVES_/BEHAVIORS_/PATTERNS_/ALGORITHM_/VALIDATION_/IMPLEMENTATION_/HEALTH_/SYNC_"
         ))
 
     return issues

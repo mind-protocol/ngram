@@ -1,5 +1,5 @@
 """
-Blood Ledger — Moment Graph Surface Engine
+Moment Graph Surface Engine
 
 Determines which moments should surface (become active).
 Handles weight-based activation and decay.
@@ -90,7 +90,7 @@ class MomentSurface:
         decayed_cypher = """
         MATCH (m:Moment)
         WHERE m.status IN ['possible', 'active'] AND m.weight < $threshold
-        SET m.status = 'decayed', m.tick_decayed = $tick
+        SET m.status = 'rejected', m.tick_resolved = $tick
         RETURN count(m)
         """
         result = self.write._query(decayed_cypher, {
@@ -126,7 +126,7 @@ class MomentSurface:
 
         if old_location_id:
             dormant_cypher = """
-            MATCH (m:Moment)-[a:ATTACHED_TO]->(p:Place {id: $location_id})
+            MATCH (m:Moment)-[a:ATTACHED_TO]->(p:Space {id: $location_id})
             WHERE a.persistent = true AND m.status IN ['possible', 'active']
             SET m.status = 'dormant'
             RETURN count(m)
@@ -135,9 +135,9 @@ class MomentSurface:
             dormant_count = result[0][0] if result and result[0] else 0
 
             decayed_cypher = """
-            MATCH (m:Moment)-[a:ATTACHED_TO]->(p:Place {id: $location_id})
+            MATCH (m:Moment)-[a:ATTACHED_TO]->(p:Space {id: $location_id})
             WHERE a.persistent = false AND m.status IN ['possible', 'active']
-            SET m.status = 'decayed', m.tick_decayed = $tick
+            SET m.status = 'rejected', m.tick_resolved = $tick
             RETURN count(m)
             """
             result = self.write._query(decayed_cypher, {
@@ -148,7 +148,7 @@ class MomentSurface:
 
         if new_location_id:
             reactivate_cypher = """
-            MATCH (m:Moment)-[:ATTACHED_TO]->(p:Place {id: $location_id})
+            MATCH (m:Moment)-[:ATTACHED_TO]->(p:Space {id: $location_id})
             WHERE m.status = 'dormant'
             SET m.status = 'possible',
                 m.weight = CASE
@@ -188,9 +188,9 @@ class MomentSurface:
         stats = {
             "possible": 0,
             "active": 0,
-            "spoken": 0,
+            "completed": 0,
             "dormant": 0,
-            "decayed": 0
+            "rejected": 0
         }
 
         for row in rows:

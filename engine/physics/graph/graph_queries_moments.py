@@ -1,5 +1,5 @@
 """
-Blood Ledger — Moment and View Query Methods
+Moment and View Query Methods
 
 Mixin class providing moment-related query methods for GraphQueries.
 Extracted from graph_queries.py to reduce file size.
@@ -67,16 +67,16 @@ class MomentQueryMixin:
         """
         cypher = """
         MATCH (m:Moment {id: $id})
-        OPTIONAL MATCH (c:Character)-[:SAID]->(m)
-        RETURN m.id, m.text, m.type, m.tick, m.line,
-               m.status, m.weight, m.tone, m.tick_spoken, m.tick_decayed,
+        OPTIONAL MATCH (c:Actor)-[:SAID]->(m)
+        RETURN m.id, m.text, m.type, m.tick_created, m.line,
+               m.status, m.weight, m.tone, m.tick_resolved, m.tick_resolved,
                c.id as speaker
         """
         rows = self._query(cypher, {"id": moment_id})
         if not rows:
             return None
-        fields = ["id", "text", "type", "tick", "line",
-                  "status", "weight", "tone", "tick_spoken", "tick_decayed",
+        fields = ["id", "text", "type", "tick_created", "line",
+                  "status", "weight", "tone", "tick_resolved", "tick_resolved",
                   "speaker"]
         moment = self._parse_node(rows[0], fields)
         self._maybe_inject_energy("Moment", moment.get("id"))
@@ -91,14 +91,14 @@ class MomentQueryMixin:
         Get moments that occurred at a specific place, including speaker via SAID link.
         """
         cypher = f"""
-        MATCH (m:Moment)-[:AT]->(p:Place {{id: '{place_id}'}})
-        OPTIONAL MATCH (c:Character)-[:SAID]->(m)
-        RETURN m.id, m.text, m.type, m.tick, m.line, c.id as speaker
-        ORDER BY m.tick DESC
+        MATCH (m:Moment)-[:AT]->(p:Space {{id: '{place_id}'}})
+        OPTIONAL MATCH (c:Actor)-[:SAID]->(m)
+        RETURN m.id, m.text, m.type, m.tick_created, m.line, c.id as speaker
+        ORDER BY m.tick_created DESC
         LIMIT {limit}
         """
         rows = self._query(cypher)
-        fields = ["id", "text", "type", "tick", "line", "speaker"]
+        fields = ["id", "text", "type", "tick_created", "line", "speaker"]
         moments = []
         for row in rows:
             moment = self._parse_node(row, fields)
@@ -115,13 +115,13 @@ class MomentQueryMixin:
         Get moments where a character spoke or acted (via SAID link).
         """
         cypher = f"""
-        MATCH (c:Character {{id: '{character_id}'}})-[:SAID]->(m:Moment)
-        RETURN m.id, m.text, m.type, m.tick, m.line
-        ORDER BY m.tick DESC
+        MATCH (c:Actor {{id: '{character_id}'}})-[:SAID]->(m:Moment)
+        RETURN m.id, m.text, m.type, m.tick_created, m.line
+        ORDER BY m.tick_created DESC
         LIMIT {limit}
         """
         rows = self._query(cypher)
-        fields = ["id", "text", "type", "tick", "line"]
+        fields = ["id", "text", "type", "tick_created", "line"]
         moments = []
         for row in rows:
             moment = self._parse_node(row, fields)
@@ -140,22 +140,22 @@ class MomentQueryMixin:
         """
         if place_id:
             cypher = f"""
-            MATCH (m:Moment)-[:AT]->(p:Place {{id: '{place_id}'}})
-            WHERE m.tick >= {start_tick} AND m.tick <= {end_tick}
-            OPTIONAL MATCH (c:Character)-[:SAID]->(m)
-            RETURN m.id, m.text, m.type, m.tick, m.line, c.id as speaker
-            ORDER BY m.tick ASC
+            MATCH (m:Moment)-[:AT]->(p:Space {{id: '{place_id}'}})
+            WHERE m.tick_created >= {start_tick} AND m.tick_created <= {end_tick}
+            OPTIONAL MATCH (c:Actor)-[:SAID]->(m)
+            RETURN m.id, m.text, m.type, m.tick_created, m.line, c.id as speaker
+            ORDER BY m.tick_created ASC
             """
         else:
             cypher = f"""
             MATCH (m:Moment)
-            WHERE m.tick >= {start_tick} AND m.tick <= {end_tick}
-            OPTIONAL MATCH (c:Character)-[:SAID]->(m)
-            RETURN m.id, m.text, m.type, m.tick, m.line, c.id as speaker
-            ORDER BY m.tick ASC
+            WHERE m.tick_created >= {start_tick} AND m.tick_created <= {end_tick}
+            OPTIONAL MATCH (c:Actor)-[:SAID]->(m)
+            RETURN m.id, m.text, m.type, m.tick_created, m.line, c.id as speaker
+            ORDER BY m.tick_created ASC
             """
         rows = self._query(cypher)
-        fields = ["id", "text", "type", "tick", "line", "speaker"]
+        fields = ["id", "text", "type", "tick_created", "line", "speaker"]
         moments = []
         for row in rows:
             moment = self._parse_node(row, fields)
@@ -173,12 +173,12 @@ class MomentQueryMixin:
         """
         cypher = f"""
         MATCH path = (start:Moment {{id: '{start_moment_id}'}})-[:THEN*0..{limit}]->(m:Moment)
-        OPTIONAL MATCH (c:Character)-[:SAID]->(m)
-        RETURN m.id, m.text, m.type, m.tick, m.line, c.id as speaker, length(path) as depth
+        OPTIONAL MATCH (c:Actor)-[:SAID]->(m)
+        RETURN m.id, m.text, m.type, m.tick_created, m.line, c.id as speaker, length(path) as depth
         ORDER BY depth ASC
         """
         rows = self._query(cypher)
-        fields = ["id", "text", "type", "tick", "line", "speaker", "depth"]
+        fields = ["id", "text", "type", "tick_created", "line", "speaker", "depth"]
         moments = []
         for row in rows:
             moment = self._parse_node(row, fields)
@@ -195,12 +195,12 @@ class MomentQueryMixin:
         """
         cypher = f"""
         MATCH (n:Narrative {{id: '{narrative_id}'}})-[:FROM]->(m:Moment)
-        OPTIONAL MATCH (c:Character)-[:SAID]->(m)
-        RETURN m.id, m.text, m.type, m.tick, m.line, c.id as speaker
-        ORDER BY m.tick ASC
+        OPTIONAL MATCH (c:Actor)-[:SAID]->(m)
+        RETURN m.id, m.text, m.type, m.tick_created, m.line, c.id as speaker
+        ORDER BY m.tick_created ASC
         """
         rows = self._query(cypher)
-        fields = ["id", "text", "type", "tick", "line", "speaker"]
+        fields = ["id", "text", "type", "tick_created", "line", "speaker"]
         moments = []
         for row in rows:
             moment = self._parse_node(row, fields)
@@ -257,8 +257,8 @@ class MomentQueryMixin:
         cypher = """
         MATCH (n:Moment)
         WHERE n.embedding IS NOT NULL
-        OPTIONAL MATCH (c:Character)-[:SAID]->(n)
-        RETURN n.id, n.text, n.type, n.tick, n.embedding, c.id as speaker
+        OPTIONAL MATCH (c:Actor)-[:SAID]->(n)
+        RETURN n.id, n.text, n.type, n.tick_created, n.embedding, c.id as speaker
         """
         rows = self._query(cypher)
 
@@ -287,7 +287,7 @@ class MomentQueryMixin:
                     "id": moment_id,
                     "text": row[1],
                     "type": row[2],
-                    "tick": row[3],
+                    "tick_created": row[3],
                     "speaker": row[5],  # speaker is 6th field (index 5)
                     "score": similarity
                 })
@@ -341,7 +341,7 @@ class MomentQueryMixin:
         active_moments = self.get_live_moments(
             location_id,
             present_character_ids,
-            status_filter=['active', 'spoken']
+            status_filter=['active', 'completed']
         )
 
         # Get possible moments that could surface
@@ -407,24 +407,23 @@ class MomentQueryMixin:
         // For each required target, check if it's "present":
         // - Character: must be in present_character_ids
         // - Place: must be the current location
-        // - Thing/Narrative/Tension: always considered present (no location check)
+        // - Thing/Narrative: always considered present (no location check)
         WHERE ALL(t IN required_targets WHERE
-            (t:Character AND t.id IN {char_list})
-            OR (t:Place AND t.id = '{location_id}')
+            (t:Actor AND t.id IN {char_list})
+            OR (t:Space AND t.id = '{location_id}')
             OR (t:Thing)
             OR (t:Narrative)
-            OR (t:Tension)
         )
 
         // Get speaker if any
-        OPTIONAL MATCH (speaker:Character)-[:CAN_SPEAK]->(m)
+        OPTIONAL MATCH (speaker:Actor)-[:CAN_SPEAK]->(m)
         WHERE speaker.id IN {char_list}
 
         // Also check for SAID (for spoken moments)
-        OPTIONAL MATCH (said_by:Character)-[:SAID]->(m)
+        OPTIONAL MATCH (said_by:Actor)-[:SAID]->(m)
 
         RETURN m.id, m.text, m.type, m.status, m.weight, m.tone,
-               m.tick, m.tick_spoken,
+               m.tick_created, m.tick_resolved,
                speaker.id as potential_speaker,
                said_by.id as actual_speaker
         ORDER BY m.weight DESC
@@ -433,7 +432,7 @@ class MomentQueryMixin:
 
         rows = self._query(cypher)
         fields = ["id", "text", "type", "status", "weight", "tone",
-                  "tick", "tick_spoken",
+                  "tick_created", "tick_resolved",
                   "potential_speaker", "actual_speaker"]
 
         moments = []
@@ -467,7 +466,7 @@ class MomentQueryMixin:
         char_list = str(present_character_ids)
 
         cypher = f"""
-        MATCH (c:Character)-[r:CAN_SPEAK]->(m:Moment {{id: '{moment_id}'}})
+        MATCH (c:Actor)-[r:CAN_SPEAK]->(m:Moment {{id: '{moment_id}'}})
         WHERE c.id IN {char_list}
         RETURN c.id, c.name, r.weight
         ORDER BY r.weight DESC

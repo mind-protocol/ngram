@@ -11,12 +11,14 @@ VERIFIED: {DATE} against {COMMIT}
 ## CHAIN
 
 ```
-PATTERNS:        ./PATTERNS_*.md
+OBJECTIVES:      ./OBJECTIVES_{name}.md
 THIS:            BEHAVIORS_*.md (you are here)
+PATTERNS:        ./PATTERNS_*.md
+MECHANISMS:      ./MECHANISMS_*.md (if applicable)
 ALGORITHM:       ./ALGORITHM_*.md
 VALIDATION:      ./VALIDATION_{name}.md
-IMPLEMENTATION:  ./IMPLEMENTATION_*.md
 HEALTH:          ./HEALTH_{name}.md
+IMPLEMENTATION:  ./IMPLEMENTATION_*.md
 SYNC:            ./SYNC_{name}.md
 
 IMPL:            {path/to/main/source/file.py}
@@ -28,7 +30,13 @@ IMPL:            {path/to/main/source/file.py}
 
 ## BEHAVIORS
 
-### B1: {Behavior Name}
+> **Naming:** Name behaviors by observable result, not by concept.
+> Bad: "Moment Creation — Exhaust of Thinking"
+> Good: "Thinking Produces Graph State"
+
+### B1: {Observable Result}
+
+**Why:** {Why this behavior exists. What problem it solves. What objective it serves.}
 
 ```
 GIVEN:  {precondition — what state must exist}
@@ -37,7 +45,9 @@ THEN:   {outcome — what should result}
 AND:    {additional outcome if needed}
 ```
 
-### B2: {Behavior Name}
+### B2: {Observable Result}
+
+**Why:** {Why this behavior matters.}
 
 ```
 GIVEN:  {precondition}
@@ -45,13 +55,24 @@ WHEN:   {action}
 THEN:   {outcome}
 ```
 
-### B3: {Behavior Name}
+### B3: {Observable Result}
+
+**Why:** {Why this behavior matters.}
 
 ```
 GIVEN:  {precondition}
 WHEN:   {action}
 THEN:   {outcome}
 ```
+
+---
+
+## OBJECTIVES SERVED
+
+| Behavior ID | Objective | Why It Matters |
+|-------------|-----------|----------------|
+| B1 | {Objective} | {what the behavior protects or enables} |
+| B2 | {Objective} | {what the behavior protects or enables} |
 
 ---
 
@@ -121,9 +142,10 @@ INSTEAD:  {correct outcome}
 
 ---
 
-## GAPS / IDEAS / QUESTIONS
+## MARKERS
 
-- [ ] {Open question}
-- [ ] {Behavior that needs clarification}
-- IDEA: {Potential future behavior}
-- QUESTION: {Uncertain edge case}
+> See PRINCIPLES.md "Feedback Loop" section for marker format and usage.
+
+<!-- @ngram:todo {Behavior that needs clarification} -->
+<!-- @ngram:proposition {Potential future behavior} -->
+<!-- @ngram:escalation {Uncertain edge case needing decision} -->

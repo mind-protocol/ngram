@@ -1,5 +1,5 @@
 """
-Blood Ledger — Playthrough Management API Endpoints
+Playthrough Management API Endpoints
 
 Endpoints for creating and managing playthroughs, sending player moments,
 and discussion tree navigation.
@@ -341,7 +341,7 @@ def create_playthroughs_router(
                         text=line,
                         type="dialogue" if speaker else "narration",
                         speaker=speaker,
-                        tick=0,
+                        tick_created=0,
                         place_id=location_id,
                         status="active", # Mark as active so they surface immediately
                         weight=1.0 - (i * 0.01) # Slight weight gradient for ordering
@@ -350,7 +350,7 @@ def create_playthroughs_router(
                     # Create ATTACHED_TO link to location (presence_required=false for opening)
                     graph.query(
                         """
-                        MATCH (m:Moment {id: $moment_id}), (p:Place {id: $place_id})
+                        MATCH (m:Moment {id: $moment_id}), (p:Space {id: $place_id})
                         MERGE (m)-[:ATTACHED_TO {presence_required: false, persistent: false}]->(p)
                         """,
                         params={"moment_id": moment_id, "place_id": location_id}
@@ -477,7 +477,7 @@ def create_playthroughs_router(
                 player_id="char_player",
                 action_type=request.moment_type,
                 initial_weight=1.0,
-                initial_status="spoken"
+                initial_status = 'completed'
             )
 
             # Broadcast to SSE listeners so UI refreshes immediately.

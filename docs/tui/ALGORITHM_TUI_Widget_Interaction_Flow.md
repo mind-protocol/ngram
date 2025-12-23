@@ -260,4 +260,12 @@ User Input
 <!-- @ngram:todo How to handle agent output parsing for progress indicators -->
 <!-- @ngram:proposition Progress bars for agents based on output patterns -->
 <!-- @ngram:proposition Pause/resume agent execution -->
-<!-- @ngram:escalation Should ngram manager run continuously in background? -->
+<!-- @ngram:escalation
+title: "Should ngram manager run continuously in background?"
+priority: 5
+response:
+  status: resolved
+  choice: "N/A — TUI deprecated"
+  behavior: "TUI replaced by Next.js web interface. CLI is for agents, web is for humans."
+  notes: "2025-12-23: Architecture changed. ngram CLI = agent interface, Next.js = human interface."
+-->

@@ -115,7 +115,7 @@ SYNC:            ./SYNC_LLM_Agents_State.md
 
 ## VERIFICATION PROCEDURE
 
-1. Run `NG_ENV=dev ngram repair --provider gemini` and assert the output structure rules hold.
+1. Run `NG_ENV=dev ngram work --provider gemini` and assert the output structure rules hold.
 2. Validate error detection by unsetting `GEMINI_API_KEY` and confirming the CLI exits with a JSON error.
 3. Add a new provider and verify these invariants via the same tests before marking the change canonical.
 

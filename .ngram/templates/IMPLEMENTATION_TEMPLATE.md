@@ -10,7 +10,7 @@ CREATED: {DATE}
 ## CHAIN
 
 ```
-OBJECTIFS:      ./OBJECTIFS_{name}.md
+OBJECTIVES:      ./OBJECTIVES_{name}.md
 BEHAVIORS:      ./BEHAVIORS_{name}.md
 PATTERNS:       ./PATTERNS_{name}.md
 MECHANISMS:     ./MECHANISMS_{name}.md (if applicable)
@@ -338,34 +338,8 @@ Files approaching WATCH/SPLIT status - identify what can be extracted:
 
 ## MARKERS
 
-> See VIEW_Escalation for full YAML formats. Use `ngram solve-markers` to triage.
+> See PRINCIPLES.md "Feedback Loop" section for marker format and usage.
 
-<!-- @ngram:todo
-title: "{Missing feature or technical debt}"
-priority: {low|medium|high|critical}
-context: |
-  {Why this needs attention}
-task: |
-  {Concrete implementation work}
--->
-
-<!-- @ngram:proposition
-title: "{Architecture improvement or pattern to apply}"
-priority: {1-10}
-context: |
-  {Current state, why improvement is beneficial}
-implications: |
-  {Code structure impacts}
-suggested_changes: |
-  {Proposed refactors or additions}
--->
-
-<!-- @ngram:escalation
-task_name: "{Design uncertainty or pattern choice needing decision}"
-priority: {1-10}
-category: {design-choice-needed|tradeoff-needed|...}
-context: |
-  {Current implementation, alternatives}
-questions:
-  - "{Direct question requiring human decision}"
--->
+<!-- @ngram:todo {Missing feature or technical debt} -->
+<!-- @ngram:proposition {Architecture improvement or pattern to apply} -->
+<!-- @ngram:escalation {Design uncertainty or pattern choice needing decision} -->

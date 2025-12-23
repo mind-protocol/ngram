@@ -68,6 +68,27 @@ def _extract_title_from_content(content: str, marker_tags: Tuple[str, ...]) -> s
     return ""
 
 
+def _count_unresolved_markers(content: str, marker_tags: Tuple[str, ...]) -> int:
+    """Count markers that are NOT marked as resolved."""
+    import re
+    count = 0
+    for tag in marker_tags:
+        # Find all occurrences of this tag
+        start = 0
+        while True:
+            pos = content.find(tag, start)
+            if pos == -1:
+                break
+            # Look at the next 500 chars for status: resolved
+            end = min(pos + 500, len(content))
+            section = content[pos:end]
+            # Check if this marker is resolved
+            if not re.search(r'status:\s*resolved', section, re.IGNORECASE):
+                count += 1
+            start = pos + 1
+    return count
+
+
 def _find_markers_in_files(target_dir: Path, marker_tags: Tuple[str, ...], issue_type: str) -> List[Tuple[int, int, str, str, str]]:
     """Return file paths with given markers, ordered by priority (highest first).
 
@@ -76,9 +97,11 @@ def _find_markers_in_files(target_dir: Path, marker_tags: Tuple[str, ...], issue
     config = load_doctor_config(target_dir)
     matches: List[Tuple[int, int, str, str, str]] = []
 
-    # Directories to ignore (examples, internal docs)
+    # Directories to ignore (templates, skills contain instructional examples)
     ignore_dirs = {
-        "templates/ngram/views",
+        "templates/",  # Template sources - markers apply to .claude/ and .ngram/ copies
+        ".claude/skills/",  # Skill docs contain marker examples, not actual escalations
+        ".ngram/skills/",  # Same for .ngram skills
         ".ngram/views",
     }
 
@@ -111,10 +134,14 @@ def _find_markers_in_files(target_dir: Path, marker_tags: Tuple[str, ...], issue
         if not any(tag in content for tag in marker_tags):
             continue
 
+        # Count only unresolved markers (skip status: resolved)
+        occurrences = _count_unresolved_markers(content, marker_tags)
+        if occurrences == 0:
+            continue  # All markers in this file are resolved
+
         # Extract priority from YAML (0-10, higher = more urgent)
         priority = _extract_priority_from_content(content, marker_tags)
         title = _extract_title_from_content(content, marker_tags)
-        occurrences = sum(content.count(tag) for tag in marker_tags)
 
         # Sort key: -priority (so higher priority comes first), then by occurrences
         matches.append((-priority, -occurrences, rel_path, issue_type, title))

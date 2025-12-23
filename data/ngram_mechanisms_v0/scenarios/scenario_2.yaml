@@ -1,0 +1,48 @@
+# Scenario 2 — Merchant entry causes focus reconfiguration (sometimes)
+
+meta:
+  id: scn_inn_merchant_focus_split
+  created: 2025-12-21
+  purpose: "A witnessed narrative enters sinks; may deactivate current dominant moment."
+graph:
+  place: P1_Inn_CommonRoom
+  actors:
+    - id: A2_Player
+      attention_budget: 1.0
+  narratives:
+    - id: N_Witness_Merchant
+      focus: 1.1
+      truth: 0.6
+  moments:
+    - id: M1_Cold
+      text: "J'ai froid"
+      status: active
+      energy: 0.80
+links:
+  - type: AT
+    from: A2_Player
+    to: P1_Inn_CommonRoom
+    present: 1.0
+    visible: 1.0
+    strength: 1.0
+  - type: AT
+    from: M1_Cold
+    to: P1_Inn_CommonRoom
+    visible: 1.0
+    strength: 1.0
+  - type: RELATES
+    from: N_Witness_Merchant
+    to: A2_Player
+    role: evidential
+    mode: semantic
+    strength: 0.7
+    confidence: 0.7
+    polarity: 0.1
+expected:
+  after_tick_1:
+    - "allocation shifts toward N_Witness_Merchant"
+    - "dominant may change or stay; if deactivates below threshold => interrupt YES"
+observability:
+  log:
+    - top_sinks
+    - interrupt_reason

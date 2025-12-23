@@ -273,7 +273,7 @@ class EscalationDecision:
 
 
 # Agent system prompt template
-AGENT_SYSTEM_PROMPT = """You are an ngram repair agent. Your job is to fix ONE specific issue in the project.
+AGENT_SYSTEM_PROMPT = """You are an ngram work agent. Your job is to fix ONE specific issue in the project.
 
 CRITICAL RULES:
 1. FIRST: Read all documentation listed in "Docs to Read" before making changes

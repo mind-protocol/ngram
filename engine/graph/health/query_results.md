@@ -1,6 +1,6 @@
 # Query Results - Actual Data
 
-Real outputs from the Blood Ledger graph database.
+Real outputs from the Graph Engine graph database.
 
 ---
 
@@ -11,7 +11,6 @@ Real outputs from the Blood Ledger graph database.
 | Narrative | 139 |
 | Place | 87 |
 | Character | 49 |
-| Tension | 22 |
 | Thing | 34 |
 
 | Relationship | Count |
@@ -305,44 +304,6 @@ Seven religious houses. York Minster and Durham Cathedral are power centers; Whi
 | Malton | town |
 
 From York you can reach: local villages (Easingwold, Sheriff Hutton, Crayke), the historic battlefield (Stamford Bridge), key towns (Tadcaster, Selby, Malton), and internal locations (Castle, Minster, Ford). Note: travel times not yet populated.
-
----
-
-## TENSIONS
-
-### All active tensions
-**Quality: 10/10** | **17 rows** (showing top)
-
-| Tension | Description | Pressure | Breaking |
-|---------|-------------|----------|----------|
-| tension_cumin_cruelty | Robert Cumin's cruelty builds a fire. Durham will burn before long. | **0.65** | 0.85 |
-| tension_northern_rebellion | The North will rise against Norman rule. | **0.60** | 0.90 |
-| tension_waltheof_oath | Waltheof swore to William but his heart is Saxon. How long can he serve two masters? | **0.55** | 0.90 |
-| tension_york_whispers | York whispers of resistance. The Normans grow suspicious. | 0.50 | 0.80 |
-| tension_aldric_revenge | Aldric's brother died fighting invaders. Now more invaders hold the land. | 0.50 | 0.90 |
-| tension_aethelwine_resistance | Bishop Æthelwine guards Cuthbert's bones and dreams of Saxon freedom. | 0.50 | 0.85 |
-| tension_danish_intervention | Sweyn of Denmark waits for the right moment. | 0.50 | 0.80 |
-| tension_thornwick_taxes | The harvest was poor but the Normans still demand their share. | 0.45 | 0.80 |
-| tension_scottish_raids | Malcolm of Scotland shelters the ætheling and eyes the North. | 0.45 | 0.85 |
-| tension_reinfrid_guilt | Can rebuilding an abbey atone for the blood at Hastings? | 0.40 | 0.95 |
-
-**Cumin's cruelty is closest to breaking** (0.65/0.85 = 76%). The **northern rebellion** (0.60/0.90 = 67%) and **Waltheof's conflict** (0.55/0.90 = 61%) follow close behind. Multiple tensions at 0.50—the North is a powder keg.
-
----
-
-### Tensions near breaking (>0.5 pressure)
-**Quality: 10/10** | **3 rows**
-
-| Tension | Pressure | Breaking Point |
-|---------|----------|----------------|
-| tension_cumin_cruelty | 0.65 | 0.85 |
-| tension_northern_rebellion | 0.60 | 0.90 |
-| tension_waltheof_oath | 0.55 | 0.90 |
-
-Three imminent crises:
-1. **Cumin's cruelty** → Durham uprising
-2. **Northern rebellion** → Coordinated resistance
-3. **Waltheof's oath** → His loyalty will break one way or another
 
 ---
 

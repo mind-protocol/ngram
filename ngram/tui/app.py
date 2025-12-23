@@ -9,7 +9,7 @@ from typing import Optional
 from .app_core import NgramApp, check_textual
 
 
-def main(target_dir: Optional[Path] = None, agent_provider: str = "claude") -> None:
+def main(target_dir: Optional[Path] = None, agent_provider: str = "codex") -> None:
     """
     Launch the ngram TUI.
 

@@ -1,0 +1,51 @@
+# Scenario 1 — Inn cold + Oath attractor
+
+meta:
+  id: scn_inn_cold_oath
+  created: 2025-12-21
+  purpose: "M1 becomes active next tick; Oath narrative captures attention share."
+graph:
+  place: P1_Inn_CommonRoom
+  actors:
+    - id: A2_Player
+      attention_budget: 1.0
+      mood:
+        cold: 0.7
+  narratives:
+    - id: N1_Oath
+      focus: 1.6
+      truth: 0.8
+  moments:
+    - id: M1_Cold
+      text: "J'ai froid"
+      status: possible
+      energy: 0.65
+links:
+  - type: AT
+    from: A2_Player
+    to: P1_Inn_CommonRoom
+    present: 1.0
+    visible: 1.0
+    strength: 1.0
+  - type: AT
+    from: M1_Cold
+    to: P1_Inn_CommonRoom
+    visible: 1.0
+    strength: 1.0
+  - type: RELATES
+    from: N1_Oath
+    to: A2_Player
+    role: descriptive
+    mode: semantic
+    strength: 0.9
+    confidence: 0.8
+    polarity: 0.6
+expected:
+  after_tick_1:
+    - "M1_Cold becomes active OR becomes top-1 by energy in neighborhood"
+    - "attention allocation shows non-trivial share toward N1_Oath"
+observability:
+  log:
+    - sink_set_size
+    - top_sinks
+    - dominant_active_before_after

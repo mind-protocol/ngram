@@ -9,7 +9,7 @@ Original file: SYNC_TUI_State.md
 
 ### Entry Point: `ngram`
 
-Running `ngram` with no subcommand launches the TUI. All other subcommands (`ngram doctor`, `ngram repair`, etc.) continue to work as CLI tools.
+Running `ngram` with no subcommand launches the TUI. All other subcommands (`ngram doctor`, `ngram work`, etc.) continue to work as CLI tools.
 
 **Rationale**: Mirrors Claude Code where just typing `claude` launches the interface.
 

@@ -1,0 +1,82 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap");
+
+:root {
+  color-scheme: dark;
+  --substrate: #2a2b2a;
+  --potential: #a9a9a9;
+  --stream: #b7410e;
+  --canon: #b8860b;
+  --membrane: #493f64;
+  --bg-0: #1f201f;
+  --bg-1: #242624;
+  --bg-2: #2a2b2a;
+  --ink-0: #f2ede1;
+  --ink-1: #d7d2c5;
+  --ink-2: #b9b4a8;
+  --accent-0: var(--stream);
+  --accent-1: var(--membrane);
+  --accent-2: var(--canon);
+  --accent-3: var(--potential);
+  --line-0: rgba(242, 237, 225, 0.12);
+  --line-1: rgba(242, 237, 225, 0.2);
+  --shadow-0: 0 18px 40px rgba(5, 5, 5, 0.4);
+  --shadow-1: 0 10px 24px rgba(5, 5, 5, 0.45);
+  --ease-inertial-snap: cubic-bezier(0.16, 0.8, 0.2, 1);
+  --ease-viscous-decay: cubic-bezier(0.25, 0.1, 0.2, 1);
+  --ease-tension-release: cubic-bezier(0.2, 0.6, 0.2, 1);
+  --radius-lg: 20px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+  --font-sans: "IBM Plex Sans", system-ui, sans-serif;
+  --font-serif: "Cormorant Garamond", "Times New Roman", serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--ink-0);
+  background:
+    radial-gradient(1200px 800px at 10% 0%, rgba(73, 63, 100, 0.18), transparent 60%),
+    radial-gradient(900px 700px at 90% 10%, rgba(183, 65, 14, 0.12), transparent 60%),
+    linear-gradient(180deg, var(--bg-0), var(--bg-1) 40%, var(--bg-2) 100%);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+@keyframes floatIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}

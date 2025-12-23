@@ -3,12 +3,15 @@ Init command for ngram CLI.
 
 Initializes the ngram in a project directory by:
 - Copying protocol files to .ngram/
-- Creating/updating .ngram/CLAUDE.md and root AGENTS.md with protocol bootstrap (inlined content)
+- Creating/updating .ngram/CLAUDE.md with inlined content (standalone)
+- Creating/updating root CLAUDE.md with @ references (Claude expands these)
+- Creating/updating root AGENTS.md with protocol bootstrap (inlined content)
 """
 # DOCS: docs/cli/core/PATTERNS_Why_CLI_Over_Copy.md
 
 import shutil
 import os
+import re
 import stat
 from pathlib import Path
 
@@ -40,6 +43,88 @@ def _copy_skills(skills_src: Path, target_dir: Path) -> None:
         print(f"✓ Updated: {target_dir}")
     except PermissionError:
         print(f"  ○ Skipped (permission): {target_dir}")
+
+
+def _update_root_claude_md(target_dir: Path) -> None:
+    """Update or create root CLAUDE.md with ngram section using @ references.
+
+    If CLAUDE.md exists, replaces the '# ngram' section (or appends if not found).
+    If CLAUDE.md doesn't exist, creates it with just the ngram section.
+    """
+    root_claude = target_dir / "CLAUDE.md"
+    ngram_section = _build_root_claude_section()
+
+    if root_claude.exists():
+        content = root_claude.read_text()
+
+        # Find and replace the ngram section
+        # Look for "# ngram" heading and replace until next "# " heading or end
+        pattern = r'(^# ngram\n).*?(?=^# |\Z)'
+
+        if re.search(pattern, content, re.MULTILINE | re.DOTALL):
+            # Replace existing ngram section
+            new_content = re.sub(pattern, ngram_section + '\n', content, flags=re.MULTILINE | re.DOTALL)
+            root_claude.write_text(new_content)
+            print(f"✓ Updated ngram section in: {root_claude}")
+        else:
+            # Append ngram section
+            new_content = content.rstrip() + '\n\n' + ngram_section
+            root_claude.write_text(new_content)
+            print(f"✓ Added ngram section to: {root_claude}")
+    else:
+        # Create new file with just ngram section
+        root_claude.write_text(ngram_section)
+        print(f"✓ Created: {root_claude}")
+
+
+def _build_root_claude_section() -> str:
+    """Build ngram section for root CLAUDE.md using @ references.
+
+    Root CLAUDE.md uses @ references which Claude expands automatically.
+    This is preferred over inlined content for the root file.
+    """
+    return """# ngram
+
+@.ngram/PRINCIPLES.md
+
+---
+
+@.ngram/PROTOCOL.md
+
+---
+
+## Before Any Task
+
+Check project state:
+```
+.ngram/state/SYNC_Project_State.md
+```
+
+What's happening? What changed recently? Any handoffs for you?
+
+## Choose Your VIEW
+
+Based on your task, load ONE view from `.ngram/views/`:
+
+| Task | VIEW |
+|------|------|
+| Processing raw data (chats, PDFs) | VIEW_Ingest_Process_Raw_Data_Sources.md |
+| Getting oriented | VIEW_Onboard_Understand_Existing_Codebase.md |
+| Analyzing structure | VIEW_Analyze_Structural_Analysis.md |
+| Defining architecture | VIEW_Specify_Design_Vision_And_Architecture.md |
+| Writing/modifying code | VIEW_Implement_Write_Or_Modify_Code.md |
+| Adding features | VIEW_Extend_Add_Features_To_Existing.md |
+| Pair programming | VIEW_Collaborate_Pair_Program_With_Human.md |
+| Health checks | VIEW_Health_Define_Health_Checks_And_Verify.md |
+| Debugging | VIEW_Debug_Investigate_And_Fix_Issues.md |
+| Reviewing changes | VIEW_Review_Evaluate_Changes.md |
+| Refactoring | VIEW_Refactor_Improve_Code_Structure.md |
+
+## After Any Change
+
+Update `.ngram/state/SYNC_Project_State.md` with what you did.
+If you changed a module, update its `docs/{area}/{module}/SYNC_*.md` too.
+"""
 
 
 def _build_claude_addition(templates_path: Path) -> str:
@@ -108,7 +193,7 @@ ngram init [--force]    # Initialize/re-sync protocol files
 ngram validate          # Check protocol invariants
 ngram doctor            # Health checks (auto-archives large SYNCs)
 ngram sync              # Show SYNC status (auto-archives large SYNCs)
-ngram repair [--max N]  # Auto-fix issues using Claude Code agents
+ngram work [path] [objective]           # AI-assisted work on a path
 ngram solve-markers     # Review escalations and propositions
 ngram context <file>    # Get doc context for a file
 ngram prompt            # Generate bootstrap prompt for LLM
@@ -278,6 +363,18 @@ def init_protocol(target_dir: Path, force: bool = False) -> bool:
         except PermissionError:
             print(f"  ○ Skipped (permission): {doctor_ignore}")
 
+    # Copy schema.yaml from docs/schema/ to .ngram/ (authoritative schema)
+    schema_source = target_dir / "docs" / "schema" / "schema.yaml"
+    schema_dest = protocol_dest / "schema.yaml"
+    if schema_source.exists():
+        try:
+            shutil.copy2(schema_source, schema_dest)
+            print(f"✓ Copied: {schema_dest}")
+        except PermissionError:
+            print(f"  ○ Skipped (permission): {schema_dest}")
+    else:
+        print(f"○ Schema not found: {schema_source}")
+
     # Restore preserved LEARNINGS files
     if preserved_learnings:
         views_dir = protocol_dest / "views"
@@ -358,6 +455,12 @@ def init_protocol(target_dir: Path, force: bool = False) -> bool:
     except PermissionError:
         print(f"  ○ Skipped (permission): {claude_md}")
 
+    # Update root CLAUDE.md with ngram section (using @ references)
+    try:
+        _update_root_claude_md(target_dir)
+    except PermissionError:
+        print(f"  ○ Skipped (permission): {target_dir / 'CLAUDE.md'}")
+
     gemini_md = protocol_dest / "GEMINI.md"
     try:
         gemini_md.write_text(gemini_content)
@@ -393,6 +496,7 @@ def init_protocol(target_dir: Path, force: bool = False) -> bool:
         protocol_dest / "GEMINI.md",
         protocol_dest / "PRINCIPLES.md",
         protocol_dest / "PROTOCOL.md",
+        protocol_dest / "schema.yaml",
         claude_md,
     ]
     for ro_path in read_only_targets:

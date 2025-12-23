@@ -11,7 +11,7 @@ VERIFIED: N/A against N/A
 ## CHAIN
 
 ```
-OBJECTIFS:      ./OBJECTIFS_Ngram_Feature.md
+OBJECTIVES:      ./OBJECTIVES_Ngram_Feature.md
 PATTERNS:        ./PATTERNS_Ngram_Feature.md
 BEHAVIORS:       ./BEHAVIORS_Ngram_Feature_Placeholder_Page.md
 ALGORITHM:       ./ALGORITHM_Ngram_Feature_Placeholder_Page.md

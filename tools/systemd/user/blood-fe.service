@@ -1,0 +1,18 @@
+[Unit]
+Description=the-blood-ledger frontend
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/the-blood-ledger
+Environment=PATH=%h/.nvm/versions/node/v24.10.0/bin:/usr/bin:/bin
+ExecStartPre=/bin/mkdir -p %h/ngram/.ngram/logs
+ExecStart=/bin/bash -lc 'cd %h/the-blood-ledger/frontend && %h/.nvm/versions/node/v24.10.0/bin/npm run dev 2> >(tee -a %h/ngram/.ngram/error.log >&2) | tee -a %h/ngram/.ngram/logs/blood-fe.log'
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

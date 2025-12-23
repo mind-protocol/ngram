@@ -237,4 +237,17 @@ INSTEAD:  Load VIEW, follow VIEW instructions, load only what's specified
 <!-- @ngram:todo Behavior for handling merge conflicts in SYNC files -->
 <!-- @ngram:todo Behavior for multi-agent concurrent work -->
 <!-- @ngram:proposition VIEW for onboarding new agents to a project -->
-<!-- @ngram:escalation How detailed should SYNC updates be? -->
+<!-- @ngram:escalation
+title: "How detailed should SYNC updates be?"
+priority: 5
+response:
+  status: resolved
+  choice: "Summary + pointers"
+  behavior: "What changed, why, and pointers to paths (with section/function names when possible). Not exhaustive trace — git has that. Stays scannable."
+  pattern: |
+    ### 2025-12-23 — tick → tick_created migration
+    Changed Moment.tick to tick_created. Migration script created.
+    Why: Remove backwards compat per schema evolution policy.
+    Pointers: engine/models/nodes.py:Moment, engine/physics/graph/graph_ops.py:add_moment
+  notes: "2025-12-23: Decided by Nicolas."
+-->

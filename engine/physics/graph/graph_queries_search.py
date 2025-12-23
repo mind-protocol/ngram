@@ -1,5 +1,5 @@
 """
-Blood Ledger — Search Query Methods
+Search Query Methods
 
 Mixin class providing semantic search methods for GraphQueries.
 Extracted from graph_queries.py to reduce file size.
@@ -93,7 +93,7 @@ class SearchQueryMixin:
         # Search all node types with embeddings
         matches = []
 
-        for label in ['Character', 'Place', 'Thing', 'Narrative']:
+        for label in ['Actor', 'Space', 'Thing', 'Narrative']:
             similar = self._find_similar_by_embedding(label, query_embedding, top_k)
             matches.extend(similar)
 

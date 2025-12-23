@@ -12,7 +12,7 @@ from engine.physics.display_snap_transition_checker import (
 
 
 def test_snap_only_triggers_on_interrupts():
-    moment = SnapMomentContext(references={'player'}, tension_pressure=0.95)
+    moment = SnapMomentContext(references={'player'}, dramatic_pressure=0.95)
     state = SnapDisplayState(speed='3x')
 
     assert should_display(moment, '3x')
