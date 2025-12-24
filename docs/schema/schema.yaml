@@ -75,7 +75,12 @@ nodes:
 
   actor:
     description: "Anyone/anything that can act"
-    fields: {}
+    fields:
+      status:
+        type: enum
+        values: [ready, running]
+        default: ready
+        description: "Agent execution state. Set to 'running' on start, 'ready' on stop."
 
   space:
     description: "Container or location"

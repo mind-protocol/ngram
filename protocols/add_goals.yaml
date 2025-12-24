@@ -1,0 +1,264 @@
+# Protocol: add_goals
+# Create goal narratives for a space
+
+protocol: add_goals
+version: "1.1"
+description: Create goal narratives for a space
+
+triggers:
+  - gap: "Module or space needs explicit goals"
+  - event: "New objectives discovered during work"
+
+requires_skills:
+  - SKILL_Define_Module_Boundaries_Objectives_And_Scope.md
+
+contextual_knowledge:
+  domain: |
+    Goals = concrete targets (measurable, time-bounded).
+    Objectives = broader directional aims.
+    Goals attach to spaces and link to objectives.
+    Goals have status: active, completed, blocked, abandoned.
+
+  constraints: |
+    - Goals must be measurable (what does "done" look like?)
+    - Goals link to parent objectives
+    - Goals need clear acceptance criteria
+
+  dependencies: |
+    Requires: space exists
+    Enables: progress tracking, completion verification
+
+  quality_criteria: |
+    Good: "Goal: Implement decay algorithm. Done when: 3 test cases pass. Parent: performance_objective."
+    Bad: "Make it faster"
+
+steps:
+  load_context:
+    type: query
+    auto_fetch:
+      - query: { find: narrative, type: objective, in_space: "{space}" }
+        store_as: objectives
+      - query: { find: narrative, type: goal, in_space: "{space}" }
+        store_as: existing_goals
+    next: gather_goals
+
+  gather_goals:
+    type: ask
+    context: |
+      {contextual_knowledge.domain}
+
+      Space: {space}
+      Existing objectives: {objectives | list}
+      Existing goals: {existing_goals | list}
+
+    questions:
+      - name: goal_name
+        ask: "Goal name (verb + noun)?"
+        expects: { type: string }
+
+      - name: acceptance_criteria
+        ask: "What does 'done' look like? (measurable criteria)"
+        expects: { type: string }
+
+      - name: parent_objective
+        ask: "Which objective does this goal serve?"
+        expects:
+          type: reference
+          from: objectives
+
+      - name: priority
+        ask: "Priority?"
+        expects:
+          type: enum
+          options: [high, medium, low]
+
+    next: gather_thoughts
+
+  gather_thoughts:
+    type: ask
+    context: |
+      ## Protocol Reflection
+
+      Before creating the goal, share any thoughts on this protocol.
+      Your feedback helps improve future executions.
+
+    questions:
+      - name: protocol_thoughts
+        ask: "Any thoughts or suggestions on how to improve this add_goals protocol?"
+        why_it_matters: "Continuous improvement through reflection"
+        good_answer: "Could suggest breaking large goals into sub-goals automatically. E.g., if acceptance criteria has multiple conditions, offer to split them."
+        expects:
+          type: string
+          required: false
+
+      - name: context_observations
+        ask: "Anything about the context or process that could be better?"
+        expects:
+          type: string
+          required: false
+
+    next: create_goal
+
+  create_goal:
+    type: create
+    nodes:
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # NODE: Goal
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - id: "goal_{goal_name | slugify}_{timestamp}"
+        node_type: narrative
+        type: goal
+        name: "{goal_name}"
+        acceptance_criteria: "{acceptance_criteria}"
+        priority: "{priority}"
+        status: active
+        weight: 0.7
+        # ━━━ ATTRIBUTE EXPLANATIONS ━━━
+        #
+        # id: "goal_{goal_name | slugify}_{timestamp}"
+        #   WHAT: Unique identifier with timestamp
+        #   WHY: Multiple goals can have similar names
+        #   FORMAT: goal_{slugified_name}_{timestamp}
+        #
+        # node_type: narrative
+        #   WHAT: Persistent knowledge node
+        #   WHY: Goals are ongoing (vs moments = point events)
+        #   CONTRAST: narratives persist, moments record events
+        #
+        # type: goal
+        #   WHAT: Concrete measurable target
+        #   WHY: Distinguishes from objectives (broader aims)
+        #   QUERY: "Show all active goals" filters by type=goal
+        #
+        # name: "{goal_name}"
+        #   WHAT: Display name (verb + noun)
+        #   WHY: Makes goal action-oriented and clear
+        #   EXAMPLE: "Implement decay algorithm", "Add test coverage"
+        #
+        # acceptance_criteria: "{acceptance_criteria}"
+        #   WHAT: Measurable definition of "done"
+        #   WHY: Makes goal verifiable, not subjective
+        #   EXAMPLE: "3 test cases pass", "Latency < 100ms"
+        #
+        # priority: "{priority}"
+        #   WHAT: Triage ordering
+        #   WHY: Helps agents decide what to work on next
+        #   OPTIONS: high, medium, low
+        #
+        # status: active
+        #   WHAT: Goal lifecycle state
+        #   WHY: Tracks progress and completion
+        #   OPTIONS: active, completed, blocked, abandoned
+        #
+        # weight: 0.7
+        #   WHAT: Importance score for graph queries
+        #   WHY: Goals are high priority (0.7)
+        #   RANGE: 0.7 for goals, 0.5 for todos
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # NODE: Moment (Goal Creation Event)
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - id: "moment_add_goal_{timestamp}"
+        node_type: moment
+        type: goal_creation
+        prose: "Added goal: {goal_name}"
+        status: completed
+        # ━━━ ATTRIBUTE EXPLANATIONS ━━━
+        #
+        # id: "moment_add_goal_{timestamp}"
+        #   WHAT: Unique ID with timestamp for ordering
+        #   WHY: Moments are ordered chronologically
+        #   FORMAT: moment_{action}_{timestamp}
+        #
+        # node_type: moment
+        #   WHAT: Point-in-time event record
+        #   WHY: Creates history that can be queried
+        #   CONTRAST: narratives persist, moments record events
+        #
+        # type: goal_creation
+        #   WHAT: Categorizes this moment type
+        #   WHY: Enables queries like "show all goal creations"
+        #   OTHER_TYPES: protocol_create, sync_update, decision
+        #
+        # prose: "Added goal: {goal_name}"
+        #   WHAT: Human-readable description
+        #   WHY: Displayed in activity feeds and history
+        #   FORMAT: Past tense, specific about what happened
+        #
+        # status: completed
+        #   WHAT: Moment completion state
+        #   WHY: Tracks whether action finished successfully
+        #   OPTIONS: completed, pending, failed
+
+    links:
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Space Contains Goal
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - type: contains
+        from: "{space}"
+        to: "goal_{goal_name | slugify}_{timestamp}"
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: contains
+        #   WHAT: Hierarchical ownership relationship
+        #   WHY: Establishes "space owns this goal"
+        #   QUERY: "What goals are in space X?" follows contains
+        #   DIRECTION: from=container, to=contained
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Goal Supports Objective
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - type: supports
+        from: "goal_{goal_name | slugify}_{timestamp}"
+        to: "{parent_objective}"
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: supports
+        #   WHAT: Goal-to-objective relationship
+        #   WHY: Establishes "goal serves this objective"
+        #   QUERY: "What goals support objective X?" follows supports
+        #   DIRECTION: from=goal, to=objective
+        #   NOTE: Multiple goals can support same objective
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Actor Expresses Moment
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - type: expresses
+        from: "{actor_id}"
+        to: "moment_add_goal_{timestamp}"
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: expresses
+        #   WHAT: Attribution link
+        #   WHY: Records who/what created this moment
+        #   QUERY: "What did agent X do?" follows expresses
+        #   DIRECTION: from=actor, to=moment
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Moment About Goal
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - type: about
+        from: "moment_add_goal_{timestamp}"
+        to: "goal_{goal_name | slugify}_{timestamp}"
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: about
+        #   WHAT: Topic/subject relationship
+        #   WHY: Records what the moment relates to
+        #   QUERY: "What happened to goal X?" follows about
+        #   DIRECTION: from=moment/narrative, to=subject
+
+    next: call_handoff
+
+  call_handoff:
+    type: call_protocol
+    protocol: completion_handoff
+    inputs:
+      space_id: "{space}"
+      task_id: "add_goal_{goal_name | slugify}_{timestamp}"
+    next: $complete
+
+output:
+  goal_created: "goal_{goal_name | slugify}_{timestamp}"
+  parent_objective: "{parent_objective}"
+  moment: "moment_add_goal_{timestamp}"

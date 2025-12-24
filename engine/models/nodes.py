@@ -215,19 +215,20 @@ class Moment(BaseModel):
     MOMENT - A single unit of narrated content OR a potential moment.
 
     In the Moment Graph architecture, moments exist in a possibility space.
-    They can be:
+    Lifecycle (v1.2):
     - possible: Created but not yet surfaced
-    - active: Visible to player, can be triggered
-    - spoken: Part of history
-    - dormant: Waiting for player return
-    - decayed: Pruned
+    - active: Visible to player, draws from actors
+    - completed: Part of history, liquidated to connected nodes
+    - rejected: Canon holder refused, energy returns to player
+    - interrupted: Superseded by another event
+    - overridden: Contradicted by new moment
 
     Links:
         Actor -[CAN_SPEAK]-> Moment (who can say this)
-        Actor -[SAID]-> Moment (who said this - after spoken)
+        Actor -[SAID]-> Moment (who said this - after completion)
         Moment -[ATTACHED_TO]-> Actor|Space|Thing|Narrative
         Moment -[CAN_LEAD_TO]-> Moment (traversal)
-        Moment -[THEN]-> Moment (sequence after spoken)
+        Moment -[THEN]-> Moment (sequence after completion)
         Moment -[AT]-> Space (where it occurred)
         Narrative -[FROM]-> Moment (source attribution)
 

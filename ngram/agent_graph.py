@@ -12,7 +12,7 @@ The 10 agents (by posture, not role):
 - voice: naming-first, finds right words for concepts
 - scout: exploration-first, navigates and surveys
 - architect: structure-first, shapes systems
-- fixer: repair-first, resolves without breaking
+- fixer: work-first, resolves without breaking
 - herald: communication-first, broadcasts changes
 - steward: coordination-first, prioritizes and assigns
 
@@ -93,7 +93,7 @@ ISSUE_TO_POSTURE: Dict[str, str] = {
     "YAML_DRIFT": "architect",
     "PLACEHOLDER_DOCS": "architect",
 
-    # fixer: repair-first (fixes, patches)
+    # fixer: work-first (fixes, patches)
     "STUB_IMPL": "fixer",
     "INCOMPLETE_IMPL": "fixer",
     "NO_DOCS_REF": "fixer",

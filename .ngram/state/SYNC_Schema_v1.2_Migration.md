@@ -97,10 +97,37 @@ Schema v1.2 redesigns energy physics:
 - `run_until_disrupted(max_ticks, narrative_ids)` → runs until narrative shift
 
 **Remaining items (separate tasks):**
-- [ ] Full Dijkstra path resistance (currently simplified hop count)
-- [ ] Moment recall/reactivation (narrator creates)
+- [x] Full Dijkstra path resistance — IMPLEMENTED 2025-12-24
+- [x] Moment recall/reactivation — IMPLEMENTED 2025-12-24
 
 **Blockers:** None.
+
+---
+
+### 2025-12-24: Final Schema v1.2 Items Completed
+
+**Full Dijkstra Path Resistance:**
+- Updated `tick_v1_2.py:_path_resistance()` to use proper Dijkstra with v1.2 formula
+- Fetches edges with conductivity, weight, emotions from graph
+- Calculates `edge_resistance = 1 / (conductivity × weight × emotion_factor)`
+- Falls back to hop-count if subgraph query fails
+- Uses existing `dijkstra_with_resistance()` from `graph_query_utils.py`
+
+**Moment Recall/Reactivation (in `canon_holder.py`):**
+- `recall_moment()`: Creates new recall moment referencing completed/interrupted original
+  - New moment gets `is_recall: true`, `recalls_moment: <original_id>`
+  - Linked via `RECALLS` relationship
+  - Copies narrative links with reduced weight (0.7×)
+- `get_recallable_moments()`: Finds moments that can be recalled by context
+  - Filters by actor, narrative, location
+  - Returns with relevance scores
+- `reactivate_moment()`: Revives rejected/interrupted moments if conditions changed
+  - Re-validates before allowing transition
+  - Tracks `reactivation_count` for repeated attempts
+
+**Files Modified:**
+- `engine/physics/tick_v1_2.py` — Full Dijkstra path resistance
+- `engine/infrastructure/canon/canon_holder.py` — Recall/reactivation API
 
 ---
 

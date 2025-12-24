@@ -96,7 +96,7 @@ class AgentContainer(Container):
     Tabbed container for the right panel.
 
     Tabs:
-    - AGENTS: Running repair agents (columns or nested tabs for 4+)
+    - AGENTS: Running work agents (columns or nested tabs for 4+)
     - SYNC: Project state from SYNC_Project_State.md
     - DOCTOR: Health check results
     """
@@ -206,7 +206,7 @@ class AgentContainer(Container):
             yield TabPane(
                 "AGENTS",
                 VerticalScroll(
-                    Static("Agent summaries will appear here during /repair", classes="placeholder"),
+                    Static("Agent summaries will appear here during /work", classes="placeholder"),
                     id="summary-log"
                 ),
                 id="agents-tab"
@@ -373,6 +373,6 @@ class AgentContainer(Container):
             scroll = self.app.query_one("#summary-log", VerticalScroll)
             for child in list(scroll.children):
                 child.remove()
-            scroll.mount(Static("Agent summaries will appear here during /repair", classes="placeholder"))
+            scroll.mount(Static("Agent summaries will appear here during /work", classes="placeholder"))
         except Exception as e:
             self.log.error(f"clear_summary failed: {e}")

@@ -1,0 +1,574 @@
+# Protocol: add_patterns
+# Define design decisions and anti-patterns for a module/space
+
+protocol: add_patterns
+version: "1.1"
+description: Capture design decisions (patterns) and what to avoid (anti-patterns) for a space
+
+triggers:
+  - gap: "D-NO-PATTERNS: Missing PATTERNS for module"
+  - event: "Design decision made that should be documented"
+  - event: "Anti-pattern discovered during development"
+
+requires_skills:
+  - SKILL_Define_Module_Boundaries_Objectives_And_Scope.md
+
+contextual_knowledge:
+  domain: |
+    Patterns in ngram:
+    - Pattern = design decision with rationale ("why this shape")
+    - Anti-pattern = what to avoid with rationale ("why not this")
+    - Both link to objectives they serve
+
+    Structure:
+    - narrative.pattern ← relates[achieves] ← narrative.objective
+    - narrative.anti_pattern ← relates[protects] ← narrative.objective
+
+    Patterns capture:
+    1. The decision (what we chose)
+    2. The alternatives (what we didn't choose)
+    3. The rationale (why this choice)
+  constraints: |
+    - Patterns must have rationale (not just "we do X")
+    - Anti-patterns must explain the harm they cause
+    - Both should link to objectives they serve
+    - Avoid patterns without teeth (so vague they can't be violated)
+  quality_criteria: |
+    Good pattern: "YAML as single source - all other artifacts derive from it. Why: machine-parseable, human-readable, diffable."
+    Bad pattern: "Use good practices"
+
+    Good anti-pattern: "Orphan detection - detection without skill handler. Harm: gap goes unaddressed."
+    Bad anti-pattern: "Don't do bad things"
+
+steps:
+  identify_space:
+    type: ask
+    auto_fetch:
+      - query: { find: space }
+        store_as: available_spaces
+    context: |
+      Patterns capture design decisions with rationale.
+      First, identify which space/module needs patterns.
+    questions:
+      - name: space_id
+        ask: "Which space/module needs patterns?"
+        expects:
+          type: id
+          node_type: space
+    # Auto-derive module_name from space_id for ID generation
+    computed:
+      module_name: "{space_id | strip_prefix('space_MODULE_') | strip_prefix('space_AREA_') | strip_prefix('space_CONCEPT_') | strip_prefix('space_PROJECT_')}"
+      # Examples:
+      #   space_id=space_MODULE_engine-physics → module_name=engine-physics
+      #   space_id=space_AREA_engine → module_name=engine
+    moment:
+      agent_provides: [description]
+    next: load_context
+
+  load_context:
+    type: query
+    auto_fetch:
+      - query:
+          find: narrative
+          type: objective
+          in_space: "{space_id}"
+        store_as: objectives
+      - query:
+          find: narrative
+          type: pattern
+          in_space: "{space_id}"
+        store_as: existing_patterns
+      - query:
+          find: narrative
+          type: anti_pattern
+          in_space: "{space_id}"
+        store_as: existing_anti_patterns
+    purpose: "Load objectives and existing patterns for context"
+    next: check_objectives
+
+  check_objectives:
+    type: branch
+    condition: "len({objectives}) == 0"
+    then: need_objectives
+    else: show_context
+
+  need_objectives:
+    type: ask
+    context: |
+      No objectives found for {space_id}.
+      Patterns should link to objectives they serve.
+    questions:
+      - name: proceed_anyway
+        ask: "Create patterns without objectives, or define objectives first?"
+        expects:
+          type: enum
+          options: [proceed, define_objectives_first]
+    next: route_objectives
+
+  route_objectives:
+    type: branch
+    on: "{proceed_anyway}"
+    cases:
+      proceed: show_context
+      define_objectives_first: call_add_objectives
+
+  call_add_objectives:
+    type: call_protocol
+    protocol: add_objectives
+    context:
+      space_id: "{space_id}"
+    on_complete: load_context
+
+  show_context:
+    type: ask
+    context: |
+      Space: {space_id}
+
+      Objectives:
+      {objectives | format_list}
+
+      Existing patterns:
+      {existing_patterns | format_list}
+
+      Existing anti-patterns:
+      {existing_anti_patterns | format_list}
+    questions:
+      - name: pattern_type
+        ask: "Add pattern, anti-pattern, or both?"
+        expects:
+          type: enum
+          options: [pattern, anti_pattern, both]
+    next: route_type
+
+  route_type:
+    type: branch
+    on: "{pattern_type}"
+    cases:
+      pattern: ask_pattern_count
+      anti_pattern: ask_anti_pattern_count
+      both: ask_pattern_count
+
+  ask_pattern_count:
+    type: ask
+    questions:
+      - name: pattern_count
+        ask: "How many patterns to add? (1-5)"
+        expects:
+          type: number
+          min: 1
+          max: 5
+    next: pattern_loop
+
+  pattern_loop:
+    type: loop
+    count: "{pattern_count}"
+    step:
+      type: ask
+      context: |
+        {contextual_knowledge.quality_criteria}
+
+        Objectives this pattern might serve:
+        {objectives | format_list}
+      questions:
+        - name: pattern_name
+          ask: "Pattern name? (short identifier)"
+          good_answer: "YAML as Single Source"
+          expects:
+            type: string
+            min_length: 3
+        - name: pattern_decision
+          ask: "What is the design decision?"
+          good_answer: "All coverage data flows from specs/coverage.yaml. Other artifacts (docs, reports) derive from it."
+          expects:
+            type: string
+            min_length: 20
+        - name: pattern_alternatives
+          ask: "What alternatives were considered? (what we didn't choose)"
+          good_answer: "Separate markdown docs that must be manually kept in sync"
+          expects:
+            type: string
+        - name: pattern_rationale
+          ask: "Why this choice over alternatives?"
+          good_answer: "YAML is machine-parseable, human-readable, diffable, versionable. Manual sync drifts."
+          expects:
+            type: string
+            min_length: 10
+        - name: serves_objectives
+          ask: "Which objectives does this pattern serve? (IDs, comma-separated)"
+          expects:
+            type: id_list
+            node_type: narrative
+            min: 0
+    collect_as: patterns
+    next: check_anti_patterns
+
+  check_anti_patterns:
+    type: branch
+    condition: "{pattern_type} == 'both' or {pattern_type} == 'anti_pattern'"
+    then: ask_anti_pattern_count
+    else: confirm
+
+  ask_anti_pattern_count:
+    type: ask
+    questions:
+      - name: anti_pattern_count
+        ask: "How many anti-patterns to add? (1-5)"
+        expects:
+          type: number
+          min: 1
+          max: 5
+    next: anti_pattern_loop
+
+  anti_pattern_loop:
+    type: loop
+    count: "{anti_pattern_count}"
+    step:
+      type: ask
+      context: |
+        {contextual_knowledge.quality_criteria}
+
+        Objectives this anti-pattern might protect:
+        {objectives | format_list}
+      questions:
+        - name: anti_pattern_name
+          ask: "Anti-pattern name? (what to avoid)"
+          good_answer: "Orphan Detection"
+          expects:
+            type: string
+            min_length: 3
+        - name: anti_pattern_description
+          ask: "What is the anti-pattern? (what not to do)"
+          good_answer: "Detection exists but no skill handles it"
+          expects:
+            type: string
+            min_length: 10
+        - name: anti_pattern_harm
+          ask: "What harm does this cause?"
+          good_answer: "Gap goes unaddressed. Doctor detects issue but system can't respond."
+          expects:
+            type: string
+            min_length: 10
+        - name: protects_objectives
+          ask: "Which objectives does avoiding this protect? (IDs)"
+          expects:
+            type: id_list
+            node_type: narrative
+            min: 0
+    collect_as: anti_patterns
+    next: confirm
+
+  confirm:
+    type: ask
+    context: |
+      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      PATTERNS PREVIEW for {space_id}
+      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+      PATTERNS:
+      {patterns | format_numbered}
+
+      ANTI-PATTERNS:
+      {anti_patterns | format_numbered}
+
+      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    questions:
+      - name: confirmed
+        ask: "Create these patterns?"
+        expects:
+          type: enum
+          options: [create, revise, cancel]
+    next: route_confirm
+
+  route_confirm:
+    type: branch
+    on: "{confirmed}"
+    cases:
+      create: gather_thoughts
+      revise: show_context
+      cancel: cancelled
+
+  cancelled:
+    type: complete
+    status: cancelled
+    message: "Patterns unchanged"
+
+  gather_thoughts:
+    type: ask
+    context: |
+      ## Protocol Reflection
+
+      Before creating the patterns, share any thoughts on this protocol.
+      Your feedback helps improve future executions.
+
+    questions:
+      - name: protocol_thoughts
+        ask: "Any thoughts or suggestions on how to improve this add_patterns protocol?"
+        why_it_matters: "Continuous improvement through reflection"
+        good_answer: "Could suggest common anti-patterns based on module type (e.g., backend modules often have 'orphan detection' anti-pattern)"
+        expects:
+          type: string
+          required: false
+
+      - name: context_observations
+        ask: "Anything about the context or process that could be better?"
+        expects:
+          type: string
+          required: false
+
+    next: create_patterns
+
+  create_patterns:
+    type: create
+    nodes:
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # NODE: Patterns (Design Decisions)
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - for_each: patterns
+        id: "narrative_PATTERN_{module_name}-{item.pattern_name | slugify}_{loop_index | pad2}"
+        node_type: narrative
+        type: pattern
+        name: "{item.pattern_name}"
+        content: "{item.pattern_decision}"
+        alternatives: "{item.pattern_alternatives}"
+        rationale: "{item.pattern_rationale}"
+        weight: 0.8
+        # ━━━ ATTRIBUTE EXPLANATIONS ━━━
+        #
+        # id: "narrative_PATTERN_{module_name}-{item.pattern_name | slugify}_{loop_index | pad2}"
+        #   WHAT: Unique identifier for pattern
+        #   WHY: Used in queries and links to objectives
+        #   FORMAT: narrative_PATTERN_<module>-<slug>_<index>
+        #   Example: narrative_PATTERN_engine-physics-yaml-source_01
+        #
+        # node_type: narrative
+        #   WHAT: Persistent design decision
+        #   WHY: Patterns persist across implementations
+        #   CONTRAST: moment (events), thing (entities)
+        #
+        # type: pattern
+        #   WHAT: Categorization within narratives
+        #   WHY: Enables queries like "show all patterns"
+        #   OTHER_TYPES: objective, anti_pattern, sync, behaviors
+        #
+        # content: "{item.pattern_decision}"
+        #   WHAT: The design decision being made
+        #   WHY: Documents what we chose
+        #   FORMAT: Clear statement of the approach
+        #
+        # alternatives: "{item.pattern_alternatives}"
+        #   WHAT: What we didn't choose
+        #   WHY: Context for why this pattern matters
+        #   FORMAT: List or description of other options
+        #
+        # rationale: "{item.pattern_rationale}"
+        #   WHAT: Why this choice over alternatives
+        #   WHY: Justifies the pattern
+        #   FORMAT: 1-3 sentences explaining tradeoffs
+        #
+        # weight: 0.8
+        #   WHAT: Importance score (0.0-1.0)
+        #   WHY: Patterns are high-value (0.8)
+        #   RANGE: 0.8 for patterns, 0.7 for anti-patterns
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # NODE: Anti-Patterns (What to Avoid)
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - for_each: anti_patterns
+        id: "narrative_ANTI-PATTERN_{module_name}-{item.anti_pattern_name | slugify}_{loop_index | pad2}"
+        node_type: narrative
+        type: anti_pattern
+        name: "{item.anti_pattern_name}"
+        content: "{item.anti_pattern_description}"
+        harm: "{item.anti_pattern_harm}"
+        weight: 0.7
+        # ━━━ ATTRIBUTE EXPLANATIONS ━━━
+        #
+        # id: "narrative_ANTI-PATTERN_{module_name}-{slug}_{index}"
+        #   WHAT: Unique identifier for anti-pattern
+        #   FORMAT: narrative_ANTI-PATTERN_<module>-<slug>_<index>
+        #   Example: narrative_ANTI-PATTERN_engine-physics-orphan-detection_01
+        #
+        # type: anti_pattern
+        #   WHAT: Things to avoid
+        #   WHY: Documents what NOT to do
+        #   CONSTRAINT: Must be plausible (not obvious mistakes)
+        #
+        # content: "{item.anti_pattern_description}"
+        #   WHAT: Description of the anti-pattern
+        #   WHY: Makes it clear what to avoid
+        #   FORMAT: Specific description of the bad practice
+        #
+        # harm: "{item.anti_pattern_harm}"
+        #   WHAT: What harm this causes
+        #   WHY: Explains why this is anti-pattern
+        #   FORMAT: Clear explanation of consequences
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # NODE: Moment (Creation Event)
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - id: "moment_ADD-PATTERNS_{module_name}_{timestamp_short}"
+        node_type: moment
+        type: protocol_create
+        prose: |
+          Added patterns for {space_id}:
+          - Patterns: {patterns | count}
+          - Anti-patterns: {anti_patterns | count}
+        status: spoken
+        # ━━━ ATTRIBUTE EXPLANATIONS ━━━
+        #
+        # id: "moment_ADD-PATTERNS_{module_name}_{timestamp_short}"
+        #   WHAT: Unique identifier with SUBTYPE in ALLCAPS
+        #   FORMAT: moment_ADD-PATTERNS_<module>_<hash>
+        #   Example: moment_ADD-PATTERNS_engine-physics_a7
+        #
+        # node_type: moment
+        #   WHAT: Point-in-time event record
+        #   WHY: Creates history that can be queried
+        #   CONTRAST: narratives are persistent, moments are events
+        #
+        # type: protocol_create
+        #   WHAT: Categorizes this moment type
+        #   WHY: Enables queries like "show all creation events"
+        #   OTHER_TYPES: sync_update, decision, escalation_raised
+        #
+        # status: spoken
+        #   WHAT: Moment state
+        #   WHY: "spoken" = articulated/public, "internal" = private thought
+        #   OPTIONS: spoken, internal, pending
+
+    links:
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Space Contains Patterns
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - for_each: patterns
+        type: contains
+        from: "{space_id}"
+        to: "narrative_PATTERN_{module_name}-{item.pattern_name | slugify}_{loop_index | pad2}"
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: contains
+        #   WHAT: Parent-child relationship
+        #   WHY: Space owns these patterns
+        #   QUERY: "What patterns are in space X?" follows contains
+        #   DIRECTION: from=space, to=pattern
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Space Contains Anti-Patterns
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - for_each: anti_patterns
+        type: contains
+        from: "{space_id}"
+        to: "narrative_ANTI-PATTERN_{module_name}-{item.anti_pattern_name | slugify}_{loop_index | pad2}"
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: contains
+        #   WHAT: Space owns anti-patterns
+        #   WHY: Design boundaries belong to the space
+        #   DIRECTION: from=space, to=anti_pattern
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Pattern Achieves Objectives
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - for_each: patterns
+        for_each_inner: item.serves_objectives
+        type: relates
+        from: "narrative_PATTERN_{module_name}-{item.pattern_name | slugify}_{loop_index | pad2}"
+        to: "{inner_item}"
+        properties:
+          direction: achieves
+          strength: 0.8
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: relates
+        #   WHAT: Semantic relationship to objectives
+        #   WHY: Shows how pattern serves objectives
+        #   QUERY: "What achieves this objective?" follows relates[achieves]
+        #   DIRECTION: from=pattern, to=objective
+        #
+        # properties.direction: achieves
+        #   WHAT: Pattern implements objective
+        #   WHY: Distinguishes from supports, bounds, protects
+        #   MEANING: This pattern directly enables the objective
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Anti-Pattern Protects Objectives
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - for_each: anti_patterns
+        for_each_inner: item.protects_objectives
+        type: relates
+        from: "narrative_ANTI-PATTERN_{module_name}-{item.anti_pattern_name | slugify}_{loop_index | pad2}"
+        to: "{inner_item}"
+        properties:
+          direction: protects
+          strength: 0.7
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: relates
+        #   WHAT: Semantic relationship showing protection
+        #   WHY: Avoiding anti-pattern protects objective
+        #   QUERY: "What protects this objective?" follows relates[protects]
+        #   DIRECTION: from=anti_pattern, to=objective
+        #
+        # properties.direction: protects
+        #   WHAT: Not doing this protects objective
+        #   WHY: Negative constraint on design space
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Actor Expresses Moment
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - type: expresses
+        from: "{actor_id}"
+        to: "moment_ADD-PATTERNS_{module_name}_{timestamp_short}"
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: expresses
+        #   WHAT: Attribution link
+        #   WHY: Records who/what created this moment
+        #   QUERY: "What did agent X do?" follows expresses
+        #   DIRECTION: from=actor, to=moment
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Moment About Space
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - type: about
+        from: "moment_ADD-PATTERNS_{module_name}_{timestamp_short}"
+        to: "{space_id}"
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: about
+        #   WHAT: Topic/subject relationship
+        #   WHY: Records what the moment relates to
+        #   QUERY: "What happened to space X?" follows about
+        #   DIRECTION: from=moment, to=subject
+
+    next: call_handoff
+
+  call_handoff:
+    type: call_protocol
+    protocol: completion_handoff
+    inputs:
+      space_id: "{space_id}"
+      task_id: "add_patterns_{space_id}"
+    next: $complete
+
+output:
+  cluster:
+    nodes:
+      - narrative_PATTERN (1-5)
+      - narrative_ANTI-PATTERN (0-5)
+      - moment_ADD-PATTERNS
+    links:
+      - contains (space → patterns)
+      - relates[achieves] (pattern → objective)
+      - relates[protects] (anti-pattern → objective)
+      - expresses (actor → moment)
+      - about (moment → space)
+  summary: "Created {patterns | count} patterns, {anti_patterns | count} anti-patterns for {space_id}"
+  returns:
+    patterns_created: "narrative_PATTERN_{module_name}-*"
+    anti_patterns_created: "narrative_ANTI-PATTERN_{module_name}-*"
+    moment: "moment_ADD-PATTERNS_{module_name}_{timestamp_short}"
+
+# ID Convention Reference:
+# See docs/schema/PATTERNS_Schema.md section 3 for full ID format specification.
+# Format: {node-type}_{SUBTYPE}_{instance-context}_{disambiguator}

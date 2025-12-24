@@ -6,6 +6,7 @@ Initializes the ngram in a project directory by:
 - Creating/updating .ngram/CLAUDE.md with inlined content (standalone)
 - Creating/updating root CLAUDE.md with @ references (Claude expands these)
 - Creating/updating root AGENTS.md with protocol bootstrap (inlined content)
+- Creating graph named after repo and injecting seed-injection.yaml files
 """
 # DOCS: docs/cli/core/PATTERNS_Why_CLI_Over_Copy.md
 
@@ -13,10 +14,15 @@ import shutil
 import os
 import re
 import stat
+import yaml
+import logging
 from pathlib import Path
+from typing import List, Dict, Any
 
 from .core_utils import get_templates_path
 from .repo_overview import generate_and_save
+
+logger = logging.getLogger(__name__)
 
 
 def _escape_marker_tokens(content: str) -> str:
@@ -198,7 +204,7 @@ ngram solve-markers     # Review escalations and propositions
 ngram context <file>    # Get doc context for a file
 ngram prompt            # Generate bootstrap prompt for LLM
 ngram overview          # Generate repo map with file tree, links, definitions
-ngram docs-fix          # Repair doc chains and create minimal missing docs
+ngram docs-fix          # Work doc chains and create minimal missing docs
 ```
 
 ### Overview Command
@@ -268,16 +274,213 @@ def _enforce_readonly_for_templates(templates_root: Path) -> None:
         _remove_write_permissions(child)
 
 
+# =============================================================================
+# GRAPH INITIALIZATION
+# =============================================================================
 
-def init_protocol(target_dir: Path, force: bool = False) -> bool:
+def _find_seed_injection_files(docs_dir: Path) -> List[Path]:
+    """Find all seed-injection.yaml files in docs directory."""
+    if not docs_dir.exists():
+        return []
+
+    seed_files = []
+    for yaml_file in docs_dir.rglob("seed-injection.yaml"):
+        seed_files.append(yaml_file)
+    for yml_file in docs_dir.rglob("seed-injection.yml"):
+        seed_files.append(yml_file)
+
+    return sorted(seed_files)
+
+
+def _init_graph_and_inject_seeds(target_dir: Path, clear: bool = False) -> bool:
+    """
+    Initialize graph named after repo and inject seed data.
+
+    1. Get repo name from directory
+    2. Connect to FalkorDB and create/select graph
+    3. Optionally clear existing data (if --clear)
+    4. Find all seed-injection.yaml files in docs/
+    5. Upsert nodes and links from each file
+
+    Args:
+        target_dir: Project directory
+        clear: If True, delete all nodes/links before injection
+
+    Returns:
+        True if successful, False if graph connection failed
+    """
+    repo_name = target_dir.name
+    docs_dir = target_dir / "docs"
+
+    # Find seed files first (don't need DB connection if none exist)
+    seed_files = _find_seed_injection_files(docs_dir)
+
+    print()
+    print(f"Initializing graph: {repo_name}")
+
+    try:
+        from engine.physics.graph.graph_ops import GraphOps
+    except ImportError as e:
+        print(f"  ○ Graph init skipped (engine not available): {e}")
+        return False
+
+    try:
+        graph_ops = GraphOps(graph_name=repo_name)
+        print(f"  ✓ Connected to graph: {repo_name}")
+    except Exception as e:
+        print(f"  ○ Graph connection failed: {e}")
+        print("    To enable graph features, start FalkorDB:")
+        print("      docker run -p 6379:6379 falkordb/falkordb")
+        return False
+
+    # Clear graph if requested
+    if clear:
+        try:
+            graph_ops._query("MATCH (n) DETACH DELETE n")
+            print(f"  ✓ Cleared all nodes and links")
+        except Exception as e:
+            print(f"  ✗ Failed to clear graph: {e}")
+
+    if not seed_files:
+        print(f"  ○ No seed-injection.yaml files found in docs/")
+        return True
+
+    # Inject each seed file
+    total_nodes = 0
+    total_links = 0
+
+    for seed_file in seed_files:
+        print(f"  Injecting: {seed_file.relative_to(target_dir)}")
+
+        try:
+            with open(seed_file) as f:
+                seed_data = yaml.safe_load(f)
+
+            if not seed_data:
+                print(f"    ○ Empty file, skipped")
+                continue
+
+            nodes = seed_data.get("nodes", [])
+            links = seed_data.get("links", [])
+
+            # Upsert nodes
+            nodes_created = 0
+            for node in nodes:
+                try:
+                    _upsert_node(graph_ops, node)
+                    nodes_created += 1
+                except Exception as e:
+                    print(f"    ✗ Node {node.get('id', '?')}: {e}")
+
+            # Upsert links
+            links_created = 0
+            for link in links:
+                try:
+                    _upsert_link(graph_ops, link)
+                    links_created += 1
+                except Exception as e:
+                    print(f"    ✗ Link {link.get('id', '?')}: {e}")
+
+            print(f"    ✓ {nodes_created} nodes, {links_created} links")
+            total_nodes += nodes_created
+            total_links += links_created
+
+        except yaml.YAMLError as e:
+            print(f"    ✗ Invalid YAML: {e}")
+        except Exception as e:
+            print(f"    ✗ Error: {e}")
+
+    print(f"  ✓ Total injected: {total_nodes} nodes, {total_links} links")
+    return True
+
+
+def _upsert_node(graph_ops, node: Dict[str, Any]) -> None:
+    """Upsert a node into the graph."""
+    node_id = node.get("id")
+    node_type = node.get("node_type", "thing")
+
+    if not node_id:
+        raise ValueError("Node missing 'id' field")
+
+    # Map node_type to label
+    label_map = {
+        "actor": "Actor",
+        "space": "Space",
+        "thing": "Thing",
+        "narrative": "Narrative",
+        "moment": "Moment",
+    }
+    label = label_map.get(node_type, "Thing")
+
+    # Build properties
+    props = {k: v for k, v in node.items() if k not in ("node_type",) and v is not None}
+
+    # Handle special types
+    if "content" in props and isinstance(props["content"], str):
+        # Multiline content needs escaping
+        props["content"] = props["content"].replace("'", "\\'").replace("\n", "\\n")
+
+    # Build MERGE query
+    props_str = ", ".join(f"{k}: ${k}" for k in props.keys())
+    query = f"MERGE (n:{label} {{id: $id}}) SET n += {{{props_str}}} RETURN n.id"
+
+    graph_ops._query(query, props)
+
+
+def _upsert_link(graph_ops, link: Dict[str, Any]) -> None:
+    """Upsert a link into the graph."""
+    node_a = link.get("node_a")
+    node_b = link.get("node_b")
+    link_type = link.get("type", "relates")
+
+    if not node_a or not node_b:
+        raise ValueError("Link missing 'node_a' or 'node_b' field")
+
+    # Map link type to relationship name
+    rel_type = link_type.upper()
+
+    # Build properties (exclude structural fields)
+    exclude = {"node_a", "node_b", "type"}
+    props = {k: v for k, v in link.items() if k not in exclude and v is not None}
+
+    # Handle null values
+    for k, v in list(props.items()):
+        if v is None:
+            del props[k]
+
+    # Build MERGE query
+    if props:
+        props_str = ", ".join(f"{k}: ${k}" for k in props.keys())
+        query = f"""
+        MATCH (a {{id: $node_a}})
+        MATCH (b {{id: $node_b}})
+        MERGE (a)-[r:{rel_type}]->(b)
+        SET r += {{{props_str}}}
+        RETURN type(r)
+        """
+    else:
+        query = f"""
+        MATCH (a {{id: $node_a}})
+        MATCH (b {{id: $node_b}})
+        MERGE (a)-[r:{rel_type}]->(b)
+        RETURN type(r)
+        """
+
+    params = {"node_a": node_a, "node_b": node_b, **props}
+    graph_ops._query(query, params)
+
+
+def init_protocol(target_dir: Path, force: bool = False, clear_graph: bool = False) -> bool:
     """
     Initialize the ngram in a project directory.
 
     Copies protocol files and updates .ngram/CLAUDE.md and root AGENTS.md with inlined content.
+    Also initializes graph and injects seed-injection.yaml files from docs/.
 
     Args:
         target_dir: The project directory to initialize
         force: If True, overwrite existing .ngram/
+        clear_graph: If True, clear existing graph data before injection
     Returns:
         True if successful, False otherwise
     """
@@ -420,7 +623,7 @@ def init_protocol(target_dir: Path, force: bool = False) -> bool:
     gitignore_path = target_dir / ".gitignore"
     ngram_gitignore_entries = [
         "# ngram agent working directories",
-        ".ngram/agents/repair/",
+        ".ngram/agents/work/",
         ".ngram/traces/",
     ]
     try:
@@ -503,6 +706,9 @@ def init_protocol(target_dir: Path, force: bool = False) -> bool:
         _remove_write_permissions(ro_path)
     _enforce_readonly_for_views(protocol_dest / "views")
     _enforce_readonly_for_templates(protocol_dest / "templates")
+
+    # Initialize graph and inject seeds
+    _init_graph_and_inject_seeds(target_dir, clear=clear_graph)
 
     print()
     print("ngram initialized!")

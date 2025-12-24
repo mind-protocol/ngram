@@ -51,14 +51,140 @@ modules:
 # YOUR MODULES
 # =============================================================================
 
-# Uncomment and modify as you create modules:
+  # ---------------------------------------------------------------------------
+  # ENGINE - Core graph engine and physics
+  # ---------------------------------------------------------------------------
+  engine_core:
+    code: "engine/**"
+    docs: "docs/engine/"
+    maturity: DESIGNING
+    owner: agent
+    notes: Core graph engine infrastructure
 
-# types:
-#   code: "src/types/**"
-#   docs: "docs/core/types/"
-#   maturity: CANONICAL
-#   owner: human
-#   notes: |
-#     Core type definitions. Changes affect entire codebase.
+  engine_physics:
+    code: "engine/physics/**"
+    docs: "docs/physics/"
+    maturity: DESIGNING
+    owner: agent
+    notes: Energy physics, tick system, v1.2 migration
 
-# Add more modules as they emerge...
+  engine_models:
+    code: "engine/models/**"
+    docs: "docs/engine/models/"
+    maturity: CANONICAL
+    owner: agent
+    notes: Pydantic schema models for 5 node types
+
+  engine_connectome:
+    code: "engine/connectome/**"
+    docs: "docs/connectome/"
+    maturity: DESIGNING
+    owner: agent
+    notes: Connectome runtime integration
+
+  engine_membrane:
+    code: "engine/membrane/**"
+    docs: "docs/membrane/"
+    maturity: DESIGNING
+    owner: agent
+    notes: Structured dialogue membrane system
+
+  engine_infrastructure:
+    code: "engine/infrastructure/**"
+    docs: "docs/infrastructure/"
+    maturity: DESIGNING
+    owner: agent
+    notes: API, canon, embeddings, memory, orchestration, tempo
+
+  engine_tests:
+    code: "engine/tests/**"
+    docs: null
+    maturity: CANONICAL
+    owner: agent
+    internal: true
+    notes: Engine test suite (internal)
+
+  # ---------------------------------------------------------------------------
+  # APP - Next.js frontend / Connectome UI
+  # ---------------------------------------------------------------------------
+  app_connectome:
+    code: "app/connectome/**"
+    docs: "docs/connectome/"
+    maturity: DESIGNING
+    owner: agent
+    notes: Connectome visualization UI
+
+  app_api:
+    code: "app/api/**"
+    docs: "docs/api/"
+    maturity: DESIGNING
+    owner: agent
+    notes: Next.js API routes
+
+  app_ngram:
+    code: "app/ngram/**"
+    docs: "docs/cli/"
+    maturity: DESIGNING
+    owner: agent
+    notes: Ngram page in web UI
+
+  # ---------------------------------------------------------------------------
+  # NGRAM - CLI tooling for agents
+  # ---------------------------------------------------------------------------
+  ngram_cli:
+    code: "ngram/**"
+    docs: "docs/cli/"
+    maturity: CANONICAL
+    owner: agent
+    notes: CLI commands - doctor, validate, work, etc.
+
+  ngram_llms:
+    code: "ngram/llms/**"
+    docs: "docs/llm_agents/"
+    maturity: DESIGNING
+    owner: agent
+    notes: LLM provider adapters
+
+  ngram_tui:
+    code: "ngram/tui/**"
+    docs: null
+    maturity: DEPRECATED
+    owner: agent
+    internal: true
+    notes: TUI is deprecated, replaced by web UI
+
+  # ---------------------------------------------------------------------------
+  # TOOLS - Utility scripts
+  # ---------------------------------------------------------------------------
+  tools:
+    code: "tools/**"
+    docs: "docs/tools/"
+    maturity: DESIGNING
+    owner: agent
+    notes: Migration scripts, coverage validation, MCP server
+
+  tools_mcp:
+    code: "tools/mcp/**"
+    docs: "docs/membrane/"
+    maturity: DESIGNING
+    owner: agent
+    notes: MCP membrane server
+
+  tools_archive:
+    code: "tools/archive/**"
+    docs: null
+    maturity: DEPRECATED
+    owner: agent
+    internal: true
+    notes: Archived/deprecated tools
+
+  # ---------------------------------------------------------------------------
+  # TESTS - Test fixtures
+  # ---------------------------------------------------------------------------
+  tests_connectome:
+    code: "tests/connectome_v0/**"
+    docs: null
+    maturity: DESIGNING
+    owner: agent
+    internal: true
+    notes: Connectome v0 test fixtures

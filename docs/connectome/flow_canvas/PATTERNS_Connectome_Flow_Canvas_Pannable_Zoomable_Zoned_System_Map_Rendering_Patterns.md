@@ -1,10 +1,9 @@
+# flow_canvas — Patterns: Graph Node Visualization
+
 ```
-
-# flow_canvas — Patterns: Pannable/Zoomable Zoned Map with Stable Edge Readability
-
 STATUS: DRAFT
 CREATED: 2025-12-20
-VERIFIED: 2025-12-20 against ?
+UPDATED: 2025-12-23
 ```
 
 ---
@@ -21,153 +20,96 @@ HEALTH:          ./HEALTH_Connectome_Flow_Canvas_Runtime_Verification_Of_Render_
 SYNC:            ./SYNC_Connectome_Flow_Canvas_Sync_Current_State.md
 ```
 
-The following behavior statements describe what the canvas must reliably do and what hazards it must prevent so the zoomable system map stays legible as complexity grows.
-
-## BEHAVIORS SUPPORTED
-
-* Interactive pan, zoom, fit-to-view, and reset controls keep camera motion responsive so analysts can zoom into dense clusters without losing the context of the current step in the runtime engine.
-* Deterministic zone placement and label decluttering keep the FE/BE/GRAPH/AGENTS backdrops visible so focus transitions highlight the right region without hiding adjacent lanes.
-* Stable edge glow, hover persistence, and node click hooks surface the current focus so the canvas reinforces runtime intent rather than merely showing a static projection.
-* Camera transforms are limited to explicit UI actions so the navigation experience always matches the user's recent input and never drifts to an unexpected orientation.
-
-## BEHAVIORS PREVENTED
-
-* Prevents edges from disappearing by keying each connector to a stable identifier and factoring camera transforms out of the render loop so step transitions never drop or flicker lines.
-* Prevents label overcrowding by decluttering noisy text until users zoom in, avoiding bold reflows that would overwhelm the tracing narrative when thousands of nodes spill into view.
-* Prevents inadvertent layout jumps by only updating camera state via the dedicated controls, so stepper advances never trigger abrupt pan/zoom resets that would tear the spatial memory.
-
-These behavior statements connect back to the health and validation narratives so the monitoring systems know what guarantees to verify when rendering large graphs.
-
-### Bidirectional Contract
-
-```
-Before modifying this doc or the code:
-
-1. Read ALL docs in this chain
-2. Read event_model + state_store (canvas is a projection)
-
-After modifying this doc:
-
-* Update implementation OR record mismatch in SYNC
-
-After modifying the code:
-
-* Update docs OR record mismatch in SYNC
-
-Never degrade:
-
-* pan/zoom correctness
-* edge label readability
-* stable rendering (no disappearing edges)
-  ```
-
 ---
 
 ## THE PROBLEM
 
-The connectome diagram must function as a **debugging instrument**, not a poster.
+The connectome must visualize the **actual graph data** from FalkorDB — the nodes and edges that represent the narrative world (Actors, Spaces, Things, Narratives, Moments).
 
-The current failure modes (already observed):
-
-* edges become unreadable (over-bold, overlapping labels)
-* edges “disappear” during step transitions (resize/viewBox race)
-* nodes are too close and visually ungrouped
-* player vs UI vs hook nodes are not distinguishable
-* no pan/zoom means you choose between “readable” and “fits on screen”
-
-We need a canvas pattern that stays readable as complexity increases and can scale to thousands of nodes.
+Previous failure: The canvas showed system architecture (Frontend/Backend/Agents zones) instead of the graph content. Users saw an empty canvas because no system events were occurring, even though hundreds of graph nodes existed.
 
 ---
 
 ## THE PATTERN
 
-**Force-directed projection with interactive camera (zones as optional context).**
+**Force-directed graph visualization of FalkorDB nodes and edges.**
 
-* “Zones” are explicit containers:
+Node types from Schema v1.2:
+- **Actor** — Characters in the world
+- **Space** — Locations and places
+- **Thing** — Objects and items
+- **Narrative** — Beliefs, memories, oaths, rumors
+- **Moment** — Discrete story beats
 
-  * FRONTEND
-  * BACKEND
-  * GRAPH
-  * AGENTS
-* Nodes are placed by a force-directed layout that scales to large graphs
-* Zones remain as optional, low-contrast contextual backdrops
-* Camera supports:
+Edge types:
+- **BELIEVES** — Actor → Narrative (with strength)
+- **AT** — Actor/Thing → Space (presence)
+- **OWNS** — Actor → Thing
+- **RELATES_TO** — Narrative → Narrative
+- **FOLLOWS** — Moment → Moment (sequence)
 
-  * pan
-  * zoom
-  * fit-to-view
-  * reset view
-
-Key insight:
-
-> If the diagram is a projection of a ledger, the layout must remain legible as the graph grows.
-> We accept force layout to preserve scalability, then rely on zoom + hover for precision.
+Layout:
+- Force-directed for automatic clustering
+- Node color by type (Actor=gold, Space=blue, Narrative=purple, etc.)
+- Edge color by relationship type
+- Pan/zoom for navigation
 
 ---
 
 ## PRINCIPLES
 
-### Principle 1: Camera-first (pan/zoom) before layout cleverness
+### Principle 1: Graph data is the source of truth
 
-A readable diagram needs:
+The canvas renders nodes and edges from `GET /api/connectome/graph?graph={name}`.
+No hardcoded system architecture nodes. The graph IS the visualization.
 
-* space between nodes (no tight packing)
-* pan/zoom to inspect without shrinking labels into noise
-* “reset camera” to recover orientation
+### Principle 2: Force layout for organic clustering
 
-### Principle 2: Force layout for scale, stepper for semantics
+Related nodes cluster naturally:
+- Characters near their locations
+- Narratives near their believers
+- Moments near their speakers
 
-The connectome “main data flow” is a system diagram, but the graph must scale to thousands of nodes:
+### Principle 3: Type-based visual encoding
 
-* force layout preserves legibility under growth
-* stepper semantics remain deterministic (one step per click)
-* spatial memory is supported by consistent force parameters
+Each node type has distinct appearance:
 
-### Principle 3: Label readability over style bravado
+| Type | Color | Shape |
+|------|-------|-------|
+| Actor | Gold (#b8860b) | Circle |
+| Space | Blue (#4a90d9) | Square |
+| Thing | Gray (#808080) | Diamond |
+| Narrative | Purple (#9b59b6) | Hexagon |
+| Moment | Orange (#e67e22) | Rounded rect |
 
-* link titles are NOT bold
-* labels must remain readable at 100% zoom and not overwhelm nodes
-* label background or halo should ensure contrast against edges
+### Principle 4: Energy as visual weight
 
-### Principle 4: Rendering stability is a correctness requirement
-
-Edges must not disappear:
-
-* no manual SVG viewBox recompute races
-* stable edge objects keyed by id
-* camera transforms must not detach edges from nodes
+Node energy (0-1) maps to:
+- Size: higher energy = larger node
+- Glow: high energy nodes have visible aura
+- Opacity: low energy nodes fade slightly
 
 ---
 
 ## DATA
 
-| Data           | Description                                                              |
-| -------------- | ------------------------------------------------------------------------ |
-| `nodes[]`      | UI nodes with force-directed positions and zone membership               |
-| `edges[]`      | Flow edges derived from FlowEvents (or a base map + active highlighting) |
-| `active_focus` | which node/edge is active; glow persists                                 |
-| `camera`       | x,y,zoom (view state)                                                    |
-| `zones`        | FE/BE/GRAPH/AGENTS rectangles and labels                                 |
+| Data | Source | Description |
+|------|--------|-------------|
+| `nodes[]` | `/api/connectome/graph` | Graph nodes with id, name, type, energy |
+| `links[]` | `/api/connectome/graph` | Graph edges with from_id, to_id, type |
+| `camera` | Local state | Pan (x,y) and zoom level |
+| `selected` | Local state | Currently selected node/edge for detail view |
 
 ---
 
 ## DEPENDENCIES
 
-| Module           | Why We Depend On It                                  |
-| ---------------- | ---------------------------------------------------- |
-| `state_store`    | provides nodes/edges list + active_focus             |
-| `runtime_engine` | drives step releases that change active focus        |
-| `edge_kit`       | provides edge types and visual components            |
-| `node_kit`       | provides node renderers                              |
-| `event_model`    | provides callType/trigger semantics used for styling |
-
----
-
-## INSPIRATIONS
-
-* React Flow / node editor UIs
-* trace viewers with stable timelines
-* “systems maps” with swimlanes (zones)
+| Module | Why We Depend On It |
+|--------|---------------------|
+| `connectome_read_cli.py` | Fetches graph data from FalkorDB |
+| `state_store` | Holds current graph selection and camera |
+| `node_kit` | Renders typed nodes with energy glow |
+| `edge_kit` | Renders typed edges with labels |
 
 ---
 
@@ -175,82 +117,34 @@ Edges must not disappear:
 
 ### In Scope
 
-* pannable/zoomable canvas camera behavior
-* zone containers (visual grouping)
-* deterministic layout strategy for v1
-* label decluttering strategy (minimal but stable)
-* fit-to-view + reset view controls
+- Rendering all nodes from selected graph
+- Force-directed layout with D3
+- Pan/zoom camera controls
+- Node selection and detail panel
+- Edge visibility based on zoom level
+- Search highlighting
 
 ### Out of Scope
 
-* node and edge styling details (owned by node_kit / edge_kit)
-* log/explain panel (owned by log_panel)
-* telemetry ingestion (owned by telemetry_adapter)
-* health invariants for backend truth (not owned here)
-
----
-
-## PATTERNS USED (SUB-PATTERNS)
-
-### P1: Zoned containers as “semantic declutter”
-
-Zones reduce cognitive load:
-
-* users can instantly locate FE vs BE vs GRAPH vs AGENTS
-* edges crossing zones become meaningful and easier to read
-
-### P2: Stable keying and memoization of graph elements
-
-Nodes and edges must be keyed by stable ids:
-
-* node id: stable module/entity id
-* edge id: stable link id (from FlowEvent or base map)
-
-### P3: Layering: edges above nodes (but interaction-friendly)
-
-* edges visually on top (as requested)
-* but must still allow node interaction
-* solution: edges in a higher visual layer with pointer events carefully controlled
+- System architecture visualization (removed)
+- Runtime event tracing (separate feature)
+- Graph mutations (read-only view)
 
 ---
 
 ## ENTRY POINTS
 
-| Entry                                                         | Purpose                                                  |
-| ------------------------------------------------------------- | -------------------------------------------------------- |
-| `render_connectome_canvas(nodes, edges, zones, active_focus)` | projection render                                        |
-| `set_camera_pan_zoom(new_state)`                              | camera updates                                           |
-| `fit_view_to_zones()`                                         | reset/fit                                                |
-| `on_node_click(node_id)`                                      | interacts with runtime (player message, pin focus, etc.) |
-
----
-
-## DATA FLOW AND DOCKING (FLOW-BY-FLOW)
-
-### canvas_renders_store_projection
-
-```
-flow:
-name: canvas_renders_store_projection
-purpose: Render stable map from store state.
-steps:
-- read nodes/edges/zones/active_focus from store selectors
-- render zones first
-- render nodes and edges with stable keys
-- apply active_focus glow persistence
-- apply camera transform
-docking_points:
-- dock_canvas_render_commit (event): used by HEALTH for “no disappearing edges”
-```
+| Entry | Purpose |
+|-------|---------|
+| `GET /api/connectome/graph?graph={name}` | Fetch nodes and edges |
+| `GET /api/connectome/graphs` | List available graphs |
+| `GET /api/connectome/search?q={query}&graph={name}` | Semantic search |
 
 ---
 
 ## MARKERS
 
-* [ ] Tune force parameters for very large graphs (nodes > 1k).
-* IDEA: optional “declutter toggle” hides secondary labels until zoom > threshold.
-* QUESTION: do we need minimap in v1? (nice-to-have)
-
----
-
----
+<!-- @ngram:todo Add node type filtering (show/hide by type) -->
+<!-- @ngram:todo Add edge type filtering -->
+<!-- @ngram:todo Add minimap for large graphs -->
+<!-- @ngram:todo Add node clustering for dense regions -->

@@ -600,6 +600,286 @@ class CanonHolder:
         return (True, energy_to_redirect)
 
     # =========================================================================
+    # MOMENT RECALL/REACTIVATION (v1.2)
+    # =========================================================================
+
+    def recall_moment(
+        self,
+        moment_id: str,
+        current_tick: int,
+        recall_trigger: str = None,
+        actor_id: str = None
+    ) -> Tuple[bool, str]:
+        """
+        Recall a completed or interrupted moment for re-experience.
+
+        Transition: completed/interrupted → possible (via new recall moment)
+
+        This creates a "memory recall" — the original moment stays in its state,
+        but a new RECALL moment is created that references it. The recall moment
+        draws energy from the recalling actor and can become active like any other.
+
+        Args:
+            moment_id: The moment to recall (must be completed or interrupted)
+            current_tick: Current world tick
+            recall_trigger: What triggered the recall (narrative, location, actor)
+            actor_id: The actor doing the recalling (default: player)
+
+        Returns:
+            (success, recall_moment_id or error message)
+        """
+        # Get original moment
+        moment = self.graph_queries.query(
+            """MATCH (m:Moment {id: $id})
+            RETURN m.status as status, m.text as text, m.tone as tone,
+                   m.emotions as emotions, m.weight as weight""",
+            params={"id": moment_id}
+        )
+
+        if not moment:
+            return (False, f"Moment {moment_id} not found")
+
+        moment_data = moment[0]
+        status = moment_data.get("status", "unknown")
+
+        # Only completed or interrupted moments can be recalled
+        if status not in ["completed", "interrupted"]:
+            return (False, f"Cannot recall moment in status '{status}' (must be completed or interrupted)")
+
+        # Create recall moment ID
+        import hashlib
+        recall_id = f"recall_{moment_id}_{current_tick}"
+
+        # Get actors from original moment for the recall
+        actors_query = """
+        MATCH (a:Actor)-[r]->(m:Moment {id: $moment_id})
+        WHERE type(r) IN ['EXPRESSES', 'CAN_SPEAK']
+        RETURN a.id as actor_id
+        """
+        actors = self.graph_queries.query(actors_query, params={"moment_id": moment_id})
+        actor_ids = [a.get("actor_id") for a in actors if a.get("actor_id")]
+
+        # Create the recall moment
+        original_text = moment_data.get("text", "")
+        recall_text = f"[Memory: {original_text}]"
+
+        create_query = """
+        CREATE (m:Moment {
+            id: $recall_id,
+            text: $text,
+            status: 'possible',
+            tone: $tone,
+            emotions: $emotions,
+            weight: $weight,
+            is_recall: true,
+            recalls_moment: $original_id,
+            recall_trigger: $trigger,
+            tick_created: $tick,
+            energy: 0.0
+        })
+        RETURN m.id as id
+        """
+        result = self.graph_queries.query(
+            create_query,
+            params={
+                "recall_id": recall_id,
+                "text": recall_text,
+                "tone": moment_data.get("tone", "reflective"),
+                "emotions": moment_data.get("emotions", []),
+                "weight": (moment_data.get("weight", 1.0) or 1.0) * 0.7,  # Recalls have reduced weight
+                "original_id": moment_id,
+                "trigger": recall_trigger or "unknown",
+                "tick": current_tick
+            }
+        )
+
+        if not result:
+            return (False, "Failed to create recall moment")
+
+        # Link recall moment to original via RECALLS relationship
+        link_query = """
+        MATCH (recall:Moment {id: $recall_id})
+        MATCH (original:Moment {id: $original_id})
+        CREATE (recall)-[:RECALLS {
+            tick: $tick,
+            trigger: $trigger
+        }]->(original)
+        """
+        self.graph_queries.query(
+            link_query,
+            params={
+                "recall_id": recall_id,
+                "original_id": moment_id,
+                "tick": current_tick,
+                "trigger": recall_trigger or "unknown"
+            }
+        )
+
+        # Link actors to recall moment (CAN_SPEAK, not EXPRESSES yet)
+        recaller_id = actor_id or "char_player"
+        for aid in actor_ids:
+            # Primary recaller gets CAN_SPEAK link
+            link_type = "CAN_SPEAK" if aid == recaller_id else "WITNESSES"
+            actor_link = f"""
+            MATCH (a:Actor {{id: '{aid}'}})
+            MATCH (m:Moment {{id: '{recall_id}'}})
+            CREATE (a)-[:{link_type} {{
+                conductivity: 0.5,
+                weight: 0.5,
+                energy: 0.0
+            }}]->(m)
+            """
+            self.graph_queries.query(actor_link)
+
+        # Copy narrative links from original to recall
+        narrative_copy = """
+        MATCH (original:Moment {id: $original_id})-[r:ABOUT]->(n:Narrative)
+        MATCH (recall:Moment {id: $recall_id})
+        CREATE (recall)-[:ABOUT {
+            weight: coalesce(r.weight, 1.0) * 0.7,
+            conductivity: coalesce(r.conductivity, 1.0)
+        }]->(n)
+        """
+        self.graph_queries.query(
+            narrative_copy,
+            params={"original_id": moment_id, "recall_id": recall_id}
+        )
+
+        logger.info(f"[CanonHolder] Created recall moment {recall_id} for {moment_id} (trigger: {recall_trigger})")
+        return (True, recall_id)
+
+    def get_recallable_moments(
+        self,
+        actor_id: str = None,
+        narrative_id: str = None,
+        location_id: str = None,
+        limit: int = 10
+    ) -> List[Dict[str, Any]]:
+        """
+        Find moments that can be recalled based on context.
+
+        Moments are recallable if:
+        - Status is 'completed' or 'interrupted'
+        - Connected to the specified actor, narrative, or location
+        - Has sufficient weight (not fully faded)
+
+        Args:
+            actor_id: Filter by actor participation
+            narrative_id: Filter by narrative connection
+            location_id: Filter by location
+            limit: Maximum moments to return
+
+        Returns:
+            List of recallable moment dicts with relevance scores
+        """
+        conditions = ["m.status IN ['completed', 'interrupted']"]
+        params = {"limit": limit}
+
+        if actor_id:
+            conditions.append("EXISTS((a:Actor {id: $actor_id})-[]->(m))")
+            params["actor_id"] = actor_id
+
+        if narrative_id:
+            conditions.append("EXISTS((m)-[:ABOUT]->(n:Narrative {id: $narrative_id}))")
+            params["narrative_id"] = narrative_id
+
+        if location_id:
+            conditions.append("EXISTS((m)-[:AT]->(l:Space {id: $location_id}))")
+            params["location_id"] = location_id
+
+        where_clause = " AND ".join(conditions)
+
+        query = f"""
+        MATCH (m:Moment)
+        WHERE {where_clause}
+        OPTIONAL MATCH (a:Actor)-[r]->(m)
+        WITH m, count(DISTINCT a) as actor_count
+        RETURN m.id as id, m.text as text, m.status as status,
+               m.weight as weight, m.tick_resolved as tick_resolved,
+               m.tone as tone, actor_count,
+               coalesce(m.weight, 0.5) * (1 + actor_count * 0.1) as relevance
+        ORDER BY relevance DESC
+        LIMIT $limit
+        """
+
+        results = self.graph_queries.query(query, params=params)
+        return results or []
+
+    def reactivate_moment(
+        self,
+        moment_id: str,
+        current_tick: int,
+        new_context: Dict[str, Any] = None
+    ) -> Tuple[bool, str]:
+        """
+        Reactivate a rejected or interrupted moment with new context.
+
+        Unlike recall (which creates a new moment referencing the old),
+        reactivation attempts to revive the original moment if conditions
+        have changed (e.g., blocking actor is now dead, contradiction resolved).
+
+        Transition: rejected/interrupted → possible
+
+        Args:
+            moment_id: The moment to reactivate
+            current_tick: Current world tick
+            new_context: Optional new context to attach
+
+        Returns:
+            (success, message)
+        """
+        # Get moment
+        moment = self.graph_queries.query(
+            """MATCH (m:Moment {id: $id})
+            RETURN m.status as status, m.energy as energy""",
+            params={"id": moment_id}
+        )
+
+        if not moment:
+            return (False, f"Moment {moment_id} not found")
+
+        status = moment[0].get("status", "unknown")
+
+        # Only rejected or interrupted moments can be reactivated
+        if status not in ["rejected", "interrupted"]:
+            return (False, f"Cannot reactivate moment in status '{status}' (must be rejected or interrupted)")
+
+        # Re-validate before reactivation
+        validation = self.validate_for_activation(moment_id)
+        if not validation.valid:
+            return (False, f"Still invalid: {validation.reason}")
+
+        # Reactivate: set back to possible with some initial energy
+        base_energy = 0.1  # Small initial energy to restart accumulation
+
+        update_query = """
+        MATCH (m:Moment {id: $id})
+        SET m.status = 'possible',
+            m.energy = $energy,
+            m.tick_reactivated = $tick,
+            m.reactivation_count = coalesce(m.reactivation_count, 0) + 1
+        RETURN m.id
+        """
+        self.graph_queries.query(
+            update_query,
+            params={"id": moment_id, "energy": base_energy, "tick": current_tick}
+        )
+
+        # Record reactivation context if provided
+        if new_context:
+            context_query = """
+            MATCH (m:Moment {id: $id})
+            SET m.reactivation_context = $context
+            """
+            self.graph_queries.query(
+                context_query,
+                params={"id": moment_id, "context": str(new_context)}
+            )
+
+        logger.info(f"[CanonHolder] Reactivated moment {moment_id} at tick {current_tick}")
+        return (True, f"Moment {moment_id} reactivated to 'possible' status")
+
+    # =========================================================================
     # LEGACY API (backwards compat)
     # =========================================================================
 

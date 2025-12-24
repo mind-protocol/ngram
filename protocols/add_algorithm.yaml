@@ -1,0 +1,268 @@
+# Protocol: add_algorithm
+# Document procedures and pseudocode for a module
+
+protocol: add_algorithm
+version: "1.1"
+description: Document procedures and pseudocode for a module
+
+triggers:
+  - gap: "Module has behaviors but no documented algorithms"
+  - event: "Complex logic added that needs explanation"
+
+requires_skills:
+  - SKILL_Define_Module_Boundaries_Objectives_And_Scope.md
+
+contextual_knowledge:
+  domain: |
+    Algorithms = procedures (HOW the module works, pseudocode).
+    Algorithms implement behaviors.
+    Format: numbered steps, pseudocode, flow diagrams.
+    Should be language-agnostic where possible.
+
+  constraints: |
+    - Algorithms must be traceable to behaviors
+    - Avoid implementation details specific to language/framework
+    - Focus on core logic, not boilerplate
+
+  dependencies: |
+    Requires: behaviors exist (algorithms implement behaviors)
+    Enables: implementation, code review, optimization
+
+  quality_criteria: |
+    Good: "1. Collect all edges where weight > threshold. 2. For each edge: new_weight = weight * (1 - decay_rate). 3. If new_weight < min_threshold: remove edge."
+    Bad: "Uses a for loop to decay weights"
+
+steps:
+  load_context:
+    type: query
+    auto_fetch:
+      - query: { find: narrative, type: behaviors, in_space: "{space}" }
+        store_as: behaviors
+      - query: { find: narrative, type: algorithm, in_space: "{space}" }
+        store_as: existing_algorithms
+    next: check_behaviors
+
+  check_behaviors:
+    type: branch
+    checks:
+      - condition: "{behaviors | count} == 0"
+        action:
+          type: call_protocol
+          protocol: add_behaviors
+          context:
+            space: "{space}"
+            actor_id: "{actor_id}"
+          on_complete: gather_algorithm
+      - condition: "ready"
+        action: { goto: gather_algorithm }
+
+  gather_algorithm:
+    type: ask
+    context: |
+      {contextual_knowledge.domain}
+
+      Space: {space}
+      Behaviors to implement: {behaviors | list}
+      Existing algorithms: {existing_algorithms | count}
+
+    questions:
+      - name: algorithm_name
+        ask: "Algorithm name (what procedure is this)?"
+        expects: { type: string }
+
+      - name: implements_behavior
+        ask: "Which behavior does this algorithm implement?"
+        expects:
+          type: reference
+          from: behaviors
+
+      - name: pseudocode
+        ask: "Pseudocode (numbered steps)?"
+        expects: { type: string }
+
+      - name: complexity
+        ask: "Time/space complexity if relevant?"
+        expects: { type: string, min_length: 0 }
+
+      - name: edge_cases
+        ask: "Edge cases to handle?"
+        expects: { type: string_list, min: 0 }
+
+    next: gather_thoughts
+
+  gather_thoughts:
+    type: ask
+    context: |
+      ## Protocol Reflection
+
+      Before creating the algorithm documentation, share any thoughts on this protocol.
+      Your feedback helps improve future executions.
+
+    questions:
+      - name: protocol_thoughts
+        ask: "Any thoughts or suggestions on how to improve this add_algorithm protocol?"
+        why_it_matters: "Continuous improvement through reflection"
+        good_answer: "Could provide templates for common algorithm patterns (iteration, recursion, state machine)"
+        expects:
+          type: string
+          required: false
+
+      - name: context_observations
+        ask: "Anything about the context or process that could be better?"
+        expects:
+          type: string
+          required: false
+
+    next: create_algorithm
+
+  create_algorithm:
+    type: create
+    nodes:
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # NODE: Algorithm Documentation
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - id: "doc_algorithm_{space}"
+        node_type: narrative
+        type: algorithm
+        name: "ALGORITHM for {space}"
+        algorithms:
+          - name: "{algorithm_name}"
+            implements: "{implements_behavior}"
+            pseudocode: "{pseudocode}"
+            complexity: "{complexity}"
+            edge_cases: "{edge_cases}"
+        weight: 0.7
+        # ━━━ ATTRIBUTE EXPLANATIONS ━━━
+        #
+        # id: "doc_algorithm_{space}"
+        #   WHAT: Unique identifier for algorithm doc
+        #   WHY: Used in queries and links
+        #   FORMAT: doc_algorithm_<space>
+        #
+        # node_type: narrative
+        #   WHAT: Persistent documentation
+        #   WHY: Algorithms persist across implementations
+        #   CONTRAST: moment (events), thing (entities)
+        #
+        # type: algorithm
+        #   WHAT: Categorization within narratives
+        #   WHY: Distinguishes from behaviors, patterns
+        #   PURPOSE: Documents procedures (HOW, not WHAT)
+        #
+        # algorithms: [...]
+        #   WHAT: List of algorithm specifications
+        #   WHY: Structured format for pseudocode and complexity
+        #   FORMAT: Numbered steps, language-agnostic where possible
+        #
+        # algorithms[].implements: "{implements_behavior}"
+        #   WHAT: Link to behavior this algorithm satisfies
+        #   WHY: Traces algorithm to observable effect
+        #   RELATIONSHIP: algorithm implements behavior
+        #
+        # algorithms[].complexity: "{complexity}"
+        #   WHAT: Time/space complexity analysis
+        #   WHY: Performance characteristics
+        #   FORMAT: Big-O notation or plain text
+        #
+        # weight: 0.7
+        #   WHAT: Importance score (0.0-1.0)
+        #   WHY: Algorithms are moderately high priority
+        #   RANGE: Same as behaviors (0.7)
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # NODE: Moment (Documentation Event)
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - id: "moment_add_algorithm_{timestamp}"
+        node_type: moment
+        type: documentation
+        prose: "Documented algorithm: {algorithm_name}"
+        status: spoken
+        # ━━━ ATTRIBUTE EXPLANATIONS ━━━
+        #
+        # node_type: moment
+        #   WHAT: Point-in-time event record
+        #   WHY: Creates history that can be queried
+        #   CONTRAST: narratives are persistent, moments are events
+        #
+        # type: documentation
+        #   WHAT: Categorizes this moment type
+        #   WHY: Enables queries like "show all documentation events"
+        #   OTHER_TYPES: protocol_create, sync_update, decision
+        #
+        # status: spoken
+        #   WHAT: Moment state
+        #   WHY: "spoken" = articulated/public
+        #   OPTIONS: spoken, internal, pending
+
+    links:
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Space Contains Algorithm
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - type: contains
+        from: "{space}"
+        to: "doc_algorithm_{space}"
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: contains
+        #   WHAT: Parent-child relationship
+        #   WHY: Space owns this algorithm documentation
+        #   QUERY: "What algorithms are in space X?" follows contains
+        #   DIRECTION: from=space, to=algorithm
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Algorithm Implements Behavior
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - type: implements
+        from: "doc_algorithm_{space}"
+        to: "{implements_behavior}"
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: implements
+        #   WHAT: Implementation relationship
+        #   WHY: Algorithm realizes behavior
+        #   QUERY: "What implements this behavior?" follows implements
+        #   DIRECTION: from=algorithm, to=behavior
+        #   CHAIN: objective → behavior (serves) → algorithm (implements) → code
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Actor Expresses Moment
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - type: expresses
+        from: "{actor_id}"
+        to: "moment_add_algorithm_{timestamp}"
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: expresses
+        #   WHAT: Attribution link
+        #   WHY: Records who created this documentation
+        #   QUERY: "What did agent X do?" follows expresses
+        #   DIRECTION: from=actor, to=moment
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Moment About Algorithm
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - type: about
+        from: "moment_add_algorithm_{timestamp}"
+        to: "doc_algorithm_{space}"
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: about
+        #   WHAT: Topic/subject relationship
+        #   WHY: Records what the moment relates to
+        #   QUERY: "What happened to algorithm doc?" follows about
+        #   DIRECTION: from=moment, to=algorithm
+
+    next: call_handoff
+
+  call_handoff:
+    type: call_protocol
+    protocol: completion_handoff
+    inputs:
+      space_id: "{space}"
+      task_id: "add_algorithm_{space}"
+    next: $complete
+
+output:
+  algorithm_doc: "doc_algorithm_{space}"
+  implements_behavior: "{implements_behavior}"
+  moment: "moment_add_algorithm_{timestamp}"

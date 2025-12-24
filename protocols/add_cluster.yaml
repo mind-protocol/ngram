@@ -1,0 +1,704 @@
+# Protocol: add_cluster
+# Primitive for dynamic cluster creation
+# Schema-guided, step-by-step, with link choices
+
+protocol: add_cluster
+version: "1.1"
+description: Create any well-formed cluster dynamically with schema guidance
+
+triggers:
+  - event: "Need to create nodes not covered by domain protocol"
+  - event: "Bootstrapping new area"
+  - event: "Exploring cluster shapes"
+
+requires_skills:
+  - SKILL_Add_Cluster_Dynamic_Creation.md
+
+config:
+  record_moments: true
+  max_enrichment_queries: 5
+  allow_recursive_create: true
+
+# =============================================================================
+# STEPS
+# =============================================================================
+
+steps:
+
+  # ---------------------------------------------------------------------------
+  # 1. UNDERSTAND GOAL
+  # ---------------------------------------------------------------------------
+
+  ask_goal:
+    type: ask
+
+    context: |
+      You're creating a cluster - a group of nodes with links.
+      Before picking types, understand the purpose.
+
+    questions:
+      - name: goal
+        ask: "What are you creating? What purpose does it serve?"
+        why_it_matters: "Determines node types and cluster shape"
+        expects:
+          type: string
+          min_length: 10
+
+    moment:
+      agent_provides: [description]
+    next: ask_primary_type
+
+  # ---------------------------------------------------------------------------
+  # 2. CHOOSE PRIMARY NODE TYPE
+  # ---------------------------------------------------------------------------
+
+  ask_primary_type:
+    type: ask
+
+    auto_fetch:
+      - query: { preset: schema_node_types }
+        store_as: node_types
+
+    context: |
+      Goal: {goal}
+
+      Available node types:
+      - actor: Anyone/anything that can act
+      - space: Container or location
+      - thing: Object that can be referenced/possessed
+      - narrative: Story, pattern, or knowledge
+      - moment: Temporal event (auto-created, don't pick this)
+
+    questions:
+      - name: primary_type
+        ask: "Primary node type for this cluster?"
+        why_it_matters: "Determines fields and valid links"
+        expects:
+          type: enum
+          options: [actor, space, thing, narrative]
+
+    moment:
+      agent_provides: [description]
+    next: inject_schema
+
+  # ---------------------------------------------------------------------------
+  # 3. INJECT SCHEMA FOR CHOSEN TYPE
+  # ---------------------------------------------------------------------------
+
+  inject_schema:
+    type: inject
+    source: schema
+    node_type: "{primary_type}"
+    store_as: schema
+    next: ask_subtype
+
+  # ---------------------------------------------------------------------------
+  # 4. CHOOSE SUBTYPE
+  # ---------------------------------------------------------------------------
+
+  ask_subtype:
+    type: ask
+
+    context: |
+      Creating: {primary_type}
+
+      The 'type' field is a free string - your project defines subtypes.
+
+      Common subtypes by node_type:
+      - actor: human, agent, system
+      - space: module, folder, topic, region, area
+      - thing: file, url, artifact, dock, document
+      - narrative: pattern, mechanism, validation, health, implementation, objective, goal, decision, escalation
+
+    questions:
+      - name: subtype
+        ask: "Subtype? (e.g., 'validation', 'dock', 'objective')"
+        why_it_matters: "Clarifies what kind of {primary_type} this is"
+        expects:
+          type: string
+          pattern: "^[a-z_]+$"
+
+    moment:
+      agent_provides: [description]
+    next: ask_space
+
+  # ---------------------------------------------------------------------------
+  # 5. CHOOSE SPACE (CONTAINMENT)
+  # ---------------------------------------------------------------------------
+
+  ask_space:
+    type: ask
+
+    auto_fetch:
+      - query: { find: space }
+        store_as: available_spaces
+
+    context: |
+      Every node must be contained in a space.
+
+      Available spaces:
+      {available_spaces | format_list}
+
+    questions:
+      - name: space
+        ask: "Which space contains this {primary_type}.{subtype}?"
+        why_it_matters: "Establishes hierarchy, affects energy scope"
+        expects:
+          type: id
+          node_type: space
+
+      - name: create_space
+        ask: "Space not listed? Create new? (leave empty if space selected above)"
+        expects:
+          type: string
+          required: false
+
+    moment:
+      agent_provides: [description]
+    next: check_create_space
+
+  check_create_space:
+    type: branch
+    condition: "{create_space} is not empty"
+    then: spawn_create_space
+    else: ask_base_fields
+
+  spawn_create_space:
+    type: call_protocol
+    protocol: add_cluster
+    context:
+      goal: "Create space: {create_space}"
+      suggested_type: space
+    collect_created: new_space
+    next: use_new_space
+
+  use_new_space:
+    type: set
+    space: "{new_space.id}"
+    next: ask_base_fields
+
+  # ---------------------------------------------------------------------------
+  # 6. BASE FIELDS (all nodes)
+  # ---------------------------------------------------------------------------
+
+  ask_base_fields:
+    type: ask
+
+    context: |
+      Creating: {primary_type}.{subtype}
+      In space: {space}
+
+      Base fields (all nodes have these):
+      - name: human-readable identifier
+      - description: optional clarification
+      - weight: importance (default 1.0)
+
+    questions:
+      - name: name
+        ask: "Name? (human-readable identifier)"
+        why_it_matters: "How this node is referenced"
+        good_answer: "energy_bounds_check"
+        bad_answer: "thing1"
+        expects:
+          type: string
+          min_length: 2
+
+      - name: description
+        ask: "Description? (optional, clarifies purpose)"
+        expects:
+          type: string
+          required: false
+
+      - name: weight
+        ask: "Weight? (importance, default 1.0)"
+        why_it_matters: "Affects ranking and physics inertia. Protagonist=10, background=0.1"
+        expects:
+          type: number
+          min: 0
+          default: 1.0
+
+    moment:
+      agent_provides: [description]
+    next: ask_type_fields
+
+  # ---------------------------------------------------------------------------
+  # 7. TYPE-SPECIFIC FIELDS
+  # ---------------------------------------------------------------------------
+
+  ask_type_fields:
+    type: branch
+    on: "{primary_type}"
+    cases:
+      narrative: ask_narrative_fields
+      thing: ask_thing_fields
+      actor: ask_link_existing
+      space: ask_link_existing
+
+  ask_narrative_fields:
+    type: ask
+    context: |
+      Narrative requires content - the actual story/pattern/knowledge.
+    questions:
+      - name: content
+        ask: "Content? (the narrative text)"
+        why_it_matters: "This IS the narrative"
+        expects:
+          type: string
+          min_length: 10
+    moment:
+      agent_provides: [description]
+    next: ask_link_existing
+
+  ask_thing_fields:
+    type: ask
+    context: |
+      Things can have a URI pointing to a resource.
+    questions:
+      - name: uri
+        ask: "URI? (file path, URL, or leave empty)"
+        expects:
+          type: string
+          required: false
+    moment:
+      agent_provides: [description]
+    next: ask_link_existing
+
+  # ---------------------------------------------------------------------------
+  # 8. LINK TO EXISTING NODES
+  # ---------------------------------------------------------------------------
+
+  ask_link_existing:
+    type: ask
+
+    auto_fetch:
+      - query:
+          contents_of: "{space}"
+          depth: 1
+        store_as: space_contents
+
+    context: |
+      Cluster so far:
+      - {primary_type}.{subtype}: {name}
+      - In space: {space}
+
+      Link types (energy carriers):
+      - relates: Any → Any (most common, use properties for semantics)
+      - attached_to: Thing → Actor/Space
+
+      Nodes in this space:
+      {space_contents | format_list}
+
+      Dense clusters link to existing nodes. Sparse clusters are orphans.
+
+    questions:
+      - name: link_targets
+        ask: "Link to existing nodes? Select IDs (comma-separated, or empty for none)"
+        why_it_matters: "Connections enable energy flow and queryability"
+        expects:
+          type: id_list
+          min: 0
+
+    moment:
+      agent_provides: [description, reasoning]
+    next: check_has_links
+
+  check_has_links:
+    type: branch
+    condition: "len({link_targets}) > 0"
+    then: ask_link_details
+    else: ask_create_linked
+
+  # ---------------------------------------------------------------------------
+  # 9. LINK DETAILS (for each existing link)
+  # ---------------------------------------------------------------------------
+
+  ask_link_details:
+    type: ask
+    for_each: link_targets
+
+    context: |
+      Linking {name} to {item}
+
+      Link type options:
+      - relates: general relationship (use direction property)
+      - attached_to: only if {name} is a thing
+
+      Direction options (on relates):
+      - support: this supports/enables that
+      - oppose: this contradicts that
+      - elaborate: this adds detail to that
+      - ensures: this guarantees that (validation → behavior)
+      - verifies: this checks that (health → validation)
+
+    questions:
+      - name: link_type
+        ask: "Link type to {item}?"
+        expects:
+          type: enum
+          options: [relates, attached_to]
+          default: relates
+
+      - name: direction
+        ask: "Direction/relationship?"
+        expects:
+          type: enum
+          options: [support, oppose, elaborate, ensures, verifies]
+          default: support
+
+      - name: strength
+        ask: "Strength? (0.0-1.0)"
+        expects:
+          type: number
+          min: 0
+          max: 10
+          default: 1.0
+
+    collect_as: link_details
+    moment:
+      agent_provides: [description]
+    next: ask_create_linked
+
+  # ---------------------------------------------------------------------------
+  # 10. CREATE NEW LINKED NODES?
+  # ---------------------------------------------------------------------------
+
+  ask_create_linked:
+    type: ask
+
+    context: |
+      Current cluster:
+      - {primary_type}.{subtype}: {name}
+      - Space: {space}
+      - Links to existing: {link_targets | count}
+
+      Some node types commonly need supporting nodes:
+      - health → needs docks (input, output)
+      - implementation → needs docks
+      - validation → often links to behaviors
+
+    questions:
+      - name: create_linked
+        ask: "Create new nodes to link to this cluster?"
+        expects:
+          type: enum
+          options: [yes, no]
+
+    moment:
+      agent_provides: [description, reasoning]
+    next: route_create_linked
+
+  route_create_linked:
+    type: branch
+    on: "{create_linked}"
+    cases:
+      yes: ask_linked_details
+      no: confirm_cluster
+
+  ask_linked_details:
+    type: ask
+
+    questions:
+      - name: linked_count
+        ask: "How many new nodes to create? (1-5)"
+        expects:
+          type: number
+          min: 1
+          max: 5
+
+    next: create_linked_loop
+
+  create_linked_loop:
+    type: loop
+    count: "{linked_count}"
+
+    step:
+      type: ask
+      questions:
+        - name: linked_node_type
+          ask: "Node type for linked node #{loop_index}?"
+          expects:
+            type: enum
+            options: [actor, space, thing, narrative]
+
+        - name: linked_subtype
+          ask: "Subtype?"
+          expects:
+            type: string
+
+        - name: linked_name
+          ask: "Name?"
+          expects:
+            type: string
+
+        - name: linked_link_type
+          ask: "How does it link to {name}?"
+          expects:
+            type: enum
+            options: [relates, attached_to]
+
+    collect_as: linked_nodes
+    next: confirm_cluster
+
+  # ---------------------------------------------------------------------------
+  # 11. CONFIRM
+  # ---------------------------------------------------------------------------
+
+  confirm_cluster:
+    type: ask
+
+    context: |
+      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      CLUSTER PREVIEW
+      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+      Primary node:
+        type: {primary_type}.{subtype}
+        name: {name}
+        space: {space}
+        weight: {weight}
+
+      Links to existing: {link_targets | count}
+      New linked nodes: {linked_nodes | count}
+
+      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    questions:
+      - name: confirmed
+        ask: "Create this cluster?"
+        expects:
+          type: enum
+          options: [create, revise, cancel]
+
+    moment:
+      agent_provides: [description]
+    next: route_confirm
+
+  route_confirm:
+    type: branch
+    on: "{confirmed}"
+    cases:
+      create: gather_thoughts
+      revise: ask_goal
+      cancel: cancelled
+
+  # ---------------------------------------------------------------------------
+  # 12a. GATHER THOUGHTS (Protocol Reflection)
+  # ---------------------------------------------------------------------------
+
+  gather_thoughts:
+    type: ask
+    context: |
+      ## Protocol Reflection
+
+      Before creating the cluster, share any thoughts on this protocol.
+      Your feedback helps improve future executions.
+
+    questions:
+      - name: protocol_thoughts
+        ask: "Any thoughts or suggestions on how to improve this add_cluster protocol?"
+        why_it_matters: "Continuous improvement through reflection"
+        good_answer: "The link direction options could include more semantic relationships like 'implements' or 'extends'"
+        expects:
+          type: string
+          required: false
+
+      - name: context_observations
+        ask: "Anything about the context or process that could be better?"
+        expects:
+          type: string
+          required: false
+
+    next: create_cluster
+
+  cancelled:
+    type: complete
+    status: cancelled
+    message: "Cluster creation cancelled"
+
+  # ---------------------------------------------------------------------------
+  # 12. CREATE
+  # ---------------------------------------------------------------------------
+
+  create_cluster:
+    type: create
+
+    nodes:
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # NODE: Primary (Dynamic Type)
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - id: "{primary_type}_{subtype}_{name | slugify}"
+        node_type: "{primary_type}"
+        type: "{subtype}"
+        name: "{name}"
+        description: "{description}"
+        weight: "{weight}"
+        content: "{content}"      # narrative only
+        uri: "{uri}"              # thing only
+        # ━━━ ATTRIBUTE EXPLANATIONS ━━━
+        #
+        # id: "{primary_type}_{subtype}_{name | slugify}"
+        #   WHAT: Unique identifier combining type info and name
+        #   WHY: Enables targeted queries like "find all narrative.validation nodes"
+        #   FORMAT: {node_type}_{subtype}_{slugified_name}
+        #
+        # node_type: "{primary_type}"
+        #   WHAT: Schema node type (actor, space, thing, narrative, moment)
+        #   WHY: Determines available fields and valid link types
+        #   CONSTRAINT: Must be one of the 5 schema types
+        #
+        # type: "{subtype}"
+        #   WHAT: Project-defined subtype (free string)
+        #   WHY: Enables domain-specific queries within a node_type
+        #   EXAMPLES: validation, health, dock, objective, decision
+        #
+        # weight: "{weight}"
+        #   WHAT: Importance/inertia score (0.0+)
+        #   WHY: Affects energy flow and query ranking
+        #   RANGE: 0.1 (background) to 10.0 (protagonist)
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # NODES: Linked (from loop)
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - for_each: linked_nodes
+        id: "{item.linked_node_type}_{item.linked_subtype}_{item.linked_name | slugify}"
+        node_type: "{item.linked_node_type}"
+        type: "{item.linked_subtype}"
+        name: "{item.linked_name}"
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # NODE: Moment (Creation Event)
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - id: "moment_create_{timestamp}"
+        node_type: moment
+        type: protocol_create
+        text: |
+          Created {primary_type}.{subtype}: {name}
+          Goal: {goal}
+        status: completed
+        # ━━━ ATTRIBUTE EXPLANATIONS ━━━
+        #
+        # type: protocol_create
+        #   WHAT: Categorizes moment as a creation event
+        #   WHY: Enables activity queries like "show all creations"
+        #
+        # status: completed
+        #   WHAT: Moment lifecycle state
+        #   WHY: "completed" = finalized and visible in history
+        #   OPTIONS: possible, active, completed, rejected
+
+    links:
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Space Contains Primary
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - type: contains
+        from: "{space}"
+        to: "{primary_type}_{subtype}_{name | slugify}"
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: contains
+        #   WHAT: Parent-child containment
+        #   WHY: Establishes scope - queries can filter by space
+        #   DIRECTION: from=container, to=contained
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Space Contains Linked Nodes
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - for_each: linked_nodes
+        type: contains
+        from: "{space}"
+        to: "{item.linked_node_type}_{item.linked_subtype}_{item.linked_name | slugify}"
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINKS: Primary Relates To Existing
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - for_each: link_details
+        type: "{item.link_type}"
+        from: "{primary_type}_{subtype}_{name | slugify}"
+        to: "{item.target}"
+        properties:
+          direction: "{item.direction}"
+          strength: "{item.strength}"
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: relates / attached_to
+        #   WHAT: Semantic relationship between nodes
+        #   WHY: Enables traversal and energy flow
+        #
+        # properties.direction
+        #   WHAT: Relationship semantics
+        #   OPTIONS: support, oppose, elaborate, ensures, verifies
+        #
+        # properties.strength
+        #   WHAT: Connection strength (0.0-10.0)
+        #   WHY: Affects energy conductivity during flow
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINKS: Primary To New Linked Nodes
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - for_each: linked_nodes
+        type: "{item.linked_link_type}"
+        from: "{primary_type}_{subtype}_{name | slugify}"
+        to: "{item.linked_node_type}_{item.linked_subtype}_{item.linked_name | slugify}"
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Actor Expresses Moment
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - type: expresses
+        from: "{actor_id}"
+        to: "moment_create_{timestamp}"
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: expresses
+        #   WHAT: Attribution link (who did this)
+        #   WHY: Tracks agent activity for history
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Moment About Primary
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - type: about
+        from: "moment_create_{timestamp}"
+        to: "{primary_type}_{subtype}_{name | slugify}"
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: about
+        #   WHAT: Topic/subject relationship
+        #   WHY: Enables queries like "what happened to node X"
+
+    moment:
+      agent_provides: [description]
+    next: call_handoff
+
+  # ---------------------------------------------------------------------------
+  # 13. CALL HANDOFF
+  # ---------------------------------------------------------------------------
+
+  call_handoff:
+    type: call_protocol
+    protocol: completion_handoff
+    inputs:
+      space_id: "{space}"
+      task_id: "add_cluster_{primary_type}_{subtype}_{name | slugify}"
+    next: $complete
+
+# =============================================================================
+# OUTPUT
+# =============================================================================
+
+output:
+  cluster:
+    nodes:
+      - primary: "{primary_type}_{subtype}_{name | slugify}"
+      - linked: "{linked_nodes | map(id)}"
+      - moment: "moment_create_{timestamp}"
+    links:
+      - contains (space → primary)
+      - contains (space → linked nodes)
+      - relates/attached_to (primary → existing)
+      - relates/attached_to (primary → linked)
+      - expresses (actor → moment)
+      - about (moment → primary)
+  summary: "Created {primary_type}.{subtype}: {name}"
+  returns:
+    primary_id: "{primary_type}_{subtype}_{name | slugify}"
+    linked_ids: "{linked_nodes | map(id)}"
+    moment_id: "moment_create_{timestamp}"

@@ -150,3 +150,38 @@ No task queues. No explicit assignment. Hot Narratives in an agent's Space = wor
 <!-- @ngram:proposition Explicit "focus" command where human enters Space (like cd) to concentrate energy injection -->
 <!-- @ngram:proposition "Narrative merge" when two Narratives become redundant — physics-driven consolidation? -->
 <!-- @ngram:proposition Agent can "flag" a Narrative for human attention by boosting its energy artificially -->
+
+<!-- @ngram:escalation [D2] Speed modes x1/x2/x3 — how to handle in multiplayer?
+  Options:
+    A) Global speed — all actors share same tick rate
+    B) Per-actor speed — each actor has own tempo
+    C) Hybrid — global base with actor modifiers
+  Opinion: (A) Global speed. Per-actor breaks physics causality — if agent A runs 3x and agent B runs 1x, their Moments interleave unpredictably. Energy flow assumes synchronized ticks. Start simple.
+  Phase: 6 -->
+
+<!-- @ngram:escalation [D4] Agent Space Assignment — initial assignment to which Space(s)?
+  Options:
+    A) All agents start in root Space
+    B) Each agent assigned to different module Space
+    C) Dynamic — first interaction determines affinity
+    D) Configured in agents.yaml per agent
+  Opinion: (D) Config in agents.yaml. Explicit is better than emergent for bootstrap. Let agents drift later through physics. Default unassigned agents to root. Avoids cold-start problem where agents have no context.
+  Phase: 3 -->
+
+<!-- @ngram:escalation [D7] Human Query Mechanism — how does human query graph directly?
+  Options:
+    A) CLI commands (ngram query "...")
+    B) API endpoints (REST/GraphQL)
+    C) Physics-aware queries (respects energy thresholds)
+    D) Raw graph queries (bypasses physics)
+  Opinion: Start (A) CLI with (D) raw queries. Human needs to see full graph for debugging, not just hot items. Physics-aware queries are for agents. Add API later for tooling integration.
+  Phase: 2 -->
+
+<!-- @ngram:escalation [Q8] Agent Count Strategy — fixed 6 agents or dynamic spawn?
+  Options:
+    A) Fixed 6 forever
+    B) Dynamic spawn based on hot Space count
+    C) Dynamic spawn based on total energy
+    D) Manual scaling by human
+  Opinion: (A) Fixed 6 initially. Dynamic spawn adds complexity — when to spawn? when to kill? Memory of dead agents? Start with 6, observe differentiation patterns. Revisit in Phase 6 when we understand agent behavior better. Premature optimization otherwise.
+  Phase: 6 -->

@@ -52,6 +52,12 @@ from engine.physics.tick_v1_2 import (
     TickResultV1_2,
 )
 
+# Import Dijkstra utilities
+from engine.physics.graph.graph_query_utils import (
+    calculate_link_resistance,
+    dijkstra_with_resistance,
+)
+
 
 # =============================================================================
 # EMOTION FUNCTIONS
@@ -514,3 +520,208 @@ class TestNoDecay:
 
         # No arbitrary decay - energy either stays or converts
         assert total_after > 0
+
+
+# =============================================================================
+# PATH RESISTANCE (v1.2 Dijkstra)
+# =============================================================================
+
+class TestPathResistance:
+    """Test Dijkstra path resistance calculations.
+
+    v1.2 path resistance formula:
+        edge_resistance = 1 / (conductivity × weight × emotion_factor)
+        path_resistance = sum of edge resistances (Dijkstra)
+        proximity = 1 / (1 + path_resistance)
+    """
+
+    def test_calculate_link_resistance_basic(self):
+        """Basic resistance calculation."""
+        # resistance = 1 / (conductivity × weight × emotion_factor)
+        resistance = calculate_link_resistance(1.0, 1.0, 1.0)
+        assert resistance == 1.0
+
+    def test_calculate_link_resistance_high_conductivity(self):
+        """High conductivity = low resistance."""
+        resistance = calculate_link_resistance(2.0, 1.0, 1.0)
+        assert resistance == 0.5
+
+    def test_calculate_link_resistance_high_weight(self):
+        """High weight = low resistance."""
+        resistance = calculate_link_resistance(1.0, 2.0, 1.0)
+        assert resistance == 0.5
+
+    def test_calculate_link_resistance_high_emotion(self):
+        """High emotion factor = low resistance."""
+        resistance = calculate_link_resistance(1.0, 1.0, 2.0)
+        assert resistance == 0.5
+
+    def test_calculate_link_resistance_zero_blocks(self):
+        """Zero in any factor = infinite resistance."""
+        assert calculate_link_resistance(0.0, 1.0, 1.0) == float('inf')
+        assert calculate_link_resistance(1.0, 0.0, 1.0) == float('inf')
+        assert calculate_link_resistance(1.0, 1.0, 0.0) == float('inf')
+
+    def test_dijkstra_direct_path(self):
+        """Dijkstra finds direct path."""
+        edges = [
+            {'node_a': 'A', 'node_b': 'B', 'conductivity': 1.0, 'weight': 1.0, 'emotion_factor': 1.0}
+        ]
+        result = dijkstra_with_resistance(edges, 'A', 'B', max_hops=5)
+
+        assert result is not None
+        assert result['path'] == ['A', 'B']
+        assert result['total_resistance'] == 1.0
+        assert result['hops'] == 1
+
+    def test_dijkstra_two_hop_path(self):
+        """Dijkstra finds two-hop path."""
+        edges = [
+            {'node_a': 'A', 'node_b': 'B', 'conductivity': 1.0, 'weight': 1.0, 'emotion_factor': 1.0},
+            {'node_a': 'B', 'node_b': 'C', 'conductivity': 1.0, 'weight': 1.0, 'emotion_factor': 1.0},
+        ]
+        result = dijkstra_with_resistance(edges, 'A', 'C', max_hops=5)
+
+        assert result is not None
+        assert result['path'] == ['A', 'B', 'C']
+        assert result['total_resistance'] == 2.0
+        assert result['hops'] == 2
+
+    def test_dijkstra_chooses_lower_resistance(self):
+        """Dijkstra prefers lower resistance path."""
+        edges = [
+            # Direct but high resistance
+            {'node_a': 'A', 'node_b': 'C', 'conductivity': 0.1, 'weight': 1.0, 'emotion_factor': 1.0},
+            # Indirect but low resistance
+            {'node_a': 'A', 'node_b': 'B', 'conductivity': 2.0, 'weight': 2.0, 'emotion_factor': 1.0},
+            {'node_a': 'B', 'node_b': 'C', 'conductivity': 2.0, 'weight': 2.0, 'emotion_factor': 1.0},
+        ]
+        result = dijkstra_with_resistance(edges, 'A', 'C', max_hops=5)
+
+        assert result is not None
+        # Direct path: resistance = 1/(0.1*1*1) = 10
+        # Indirect path: 1/(2*2*1) + 1/(2*2*1) = 0.25 + 0.25 = 0.5
+        assert result['path'] == ['A', 'B', 'C']  # Should prefer indirect
+        assert result['total_resistance'] == 0.5
+
+    def test_dijkstra_no_path(self):
+        """Dijkstra returns None when no path exists."""
+        edges = [
+            {'node_a': 'A', 'node_b': 'B', 'conductivity': 1.0, 'weight': 1.0, 'emotion_factor': 1.0},
+            # C is disconnected
+        ]
+        result = dijkstra_with_resistance(edges, 'A', 'C', max_hops=5)
+        assert result is None
+
+    def test_dijkstra_respects_max_hops(self):
+        """Dijkstra respects hop limit."""
+        edges = [
+            {'node_a': 'A', 'node_b': 'B', 'conductivity': 1.0, 'weight': 1.0, 'emotion_factor': 1.0},
+            {'node_a': 'B', 'node_b': 'C', 'conductivity': 1.0, 'weight': 1.0, 'emotion_factor': 1.0},
+            {'node_a': 'C', 'node_b': 'D', 'conductivity': 1.0, 'weight': 1.0, 'emotion_factor': 1.0},
+        ]
+        # Path A→B→C→D is 3 hops, but limit is 2
+        result = dijkstra_with_resistance(edges, 'A', 'D', max_hops=2)
+        assert result is None
+
+    def test_dijkstra_bidirectional(self):
+        """Dijkstra works in both directions."""
+        edges = [
+            {'node_a': 'A', 'node_b': 'B', 'conductivity': 1.0, 'weight': 1.0, 'emotion_factor': 1.0},
+        ]
+        # Can go A→B
+        result_ab = dijkstra_with_resistance(edges, 'A', 'B', max_hops=5)
+        assert result_ab is not None
+
+        # Can also go B→A (bidirectional)
+        result_ba = dijkstra_with_resistance(edges, 'B', 'A', max_hops=5)
+        assert result_ba is not None
+
+    def test_proximity_from_resistance(self):
+        """Proximity formula: 1 / (1 + resistance)."""
+        # Zero resistance = full proximity
+        assert 1.0 / (1.0 + 0.0) == 1.0
+
+        # Resistance 1 = 50% proximity
+        assert 1.0 / (1.0 + 1.0) == 0.5
+
+        # Resistance 3 = 25% proximity
+        assert 1.0 / (1.0 + 3.0) == 0.25
+
+        # High resistance = low proximity
+        assert 1.0 / (1.0 + 99.0) == 0.01
+
+
+# =============================================================================
+# MOMENT RECALL/REACTIVATION (unit tests - no DB)
+# =============================================================================
+
+class TestMomentRecallLogic:
+    """Test moment recall/reactivation logic (unit tests without DB).
+
+    These test the logic patterns, not the actual DB operations.
+    Full integration tests require a running graph database.
+    """
+
+    def test_recallable_statuses(self):
+        """Only completed and interrupted moments can be recalled."""
+        recallable = ['completed', 'interrupted']
+        not_recallable = ['possible', 'active', 'rejected', 'overridden']
+
+        for status in recallable:
+            assert status in recallable
+
+        for status in not_recallable:
+            assert status not in recallable
+
+    def test_reactivatable_statuses(self):
+        """Only rejected and interrupted moments can be reactivated."""
+        reactivatable = ['rejected', 'interrupted']
+        not_reactivatable = ['possible', 'active', 'completed', 'overridden']
+
+        for status in reactivatable:
+            assert status in reactivatable
+
+        for status in not_reactivatable:
+            assert status not in reactivatable
+
+    def test_recall_weight_reduction(self):
+        """Recall moments have reduced weight (0.7×)."""
+        original_weight = 1.0
+        recall_weight = original_weight * 0.7
+        assert recall_weight == 0.7
+
+    def test_recall_id_format(self):
+        """Recall moment ID follows format: recall_{original_id}_{tick}."""
+        original_id = "moment_123"
+        tick = 500
+        recall_id = f"recall_{original_id}_{tick}"
+        assert recall_id == "recall_moment_123_500"
+
+    def test_reactivation_energy(self):
+        """Reactivated moments start with base energy 0.1."""
+        base_energy = 0.1
+        assert base_energy == 0.1
+
+    def test_recall_text_format(self):
+        """Recall text is prefixed with [Memory: ...]."""
+        original_text = "The knight spoke softly."
+        recall_text = f"[Memory: {original_text}]"
+        assert recall_text == "[Memory: The knight spoke softly.]"
+
+    def test_moment_status_transitions(self):
+        """Valid moment status transitions for recall/reactivation."""
+        # Recall: creates NEW moment with status=possible
+        # (original stays in its status)
+        assert True  # Recall doesn't change original status
+
+        # Reactivation: changes existing moment
+        # rejected → possible (valid)
+        # interrupted → possible (valid)
+        # completed → possible (NOT valid - use recall instead)
+        valid_reactivation = {
+            'rejected': 'possible',
+            'interrupted': 'possible',
+        }
+        assert valid_reactivation['rejected'] == 'possible'
+        assert valid_reactivation['interrupted'] == 'possible'

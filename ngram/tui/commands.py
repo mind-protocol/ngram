@@ -4,7 +4,7 @@ Slash command handlers for the TUI.
 
 Commands:
 - /help - Show available commands
-- /repair - Start repair session
+- /work - Start work session
 - /doctor - Run health check
 - /issues - Display issues list
 - /logs - View completed agent logs
@@ -86,7 +86,7 @@ async def handle_command(app: "NgramApp", command: str) -> None:
 
         handlers = {
             "/help": handle_help,
-            "/repair": handle_repair,
+            "/work": handle_work,
             "/doctor": handle_doctor,
             "/quit": handle_quit,
             "/clear": handle_clear,
@@ -166,7 +166,7 @@ async def handle_help(app: "NgramApp", args: str) -> None:
     help_text = """Available commands:
   /help    - Show this help
   /run CMD - Run shell command with streaming output
-  /repair  - Start repair session
+  /work  - Start work session
   /doctor  - Run health check
   /issues  - Display issues list
   /logs    - View completed agent logs (collapsible)
@@ -177,7 +177,7 @@ async def handle_help(app: "NgramApp", args: str) -> None:
 Keyboard shortcuts:
   Ctrl+C   - Interrupt (2x to quit)
   Ctrl+D   - Run doctor
-  Ctrl+R   - Start repair"""
+  Ctrl+R   - Start work"""
     manager.add_message(help_text)
     app.conversation.add_message("system", "/help\n" + help_text)
 
@@ -257,27 +257,27 @@ async def _run_shell_command(app: "NgramApp", command: str, output_widget) -> No
         app.conversation.add_message("system", f"$ {command}\nError: {e}")
 
 
-async def handle_repair(app: "NgramApp", args: str) -> None:
-    """Start a repair session."""
+async def handle_work(app: "NgramApp", args: str) -> None:
+    """Start a work session."""
     import asyncio
     from datetime import datetime
     from ..doctor import run_doctor
     from ..doctor_files import load_doctor_config
-    from ..repair_core import AGENT_SYMBOLS
+    from ..work_core import AGENT_SYMBOLS
     from .state import AgentHandle
 
     manager = app.query_one("#manager-panel")
     agent_container = app.query_one("#agent-container")
 
     manager.add_message("")
-    manager.add_message("[bold]Starting repair session...[/]")
+    manager.add_message("[bold]Starting work session...[/]")
 
     # Create session folder with timestamp
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    session_dir = app.target_dir / ".ngram" / "repairs" / timestamp
+    session_dir = app.target_dir / ".ngram" / "works" / timestamp
     session_dir.mkdir(parents=True, exist_ok=True)
-    app._repair_session_dir = session_dir
-    manager.add_message(f"[dim]Session: .ngram/repairs/{timestamp}/[/]")
+    app._work_session_dir = session_dir
+    manager.add_message(f"[dim]Session: .ngram/works/{timestamp}/[/]")
 
     # Reset rate-limited providers for new session
     app._rate_limited_providers = set()
@@ -286,7 +286,7 @@ async def handle_repair(app: "NgramApp", args: str) -> None:
     try:
         loop = asyncio.get_event_loop()
         config = load_doctor_config(app.target_dir)
-        app._repair_doctor_config = config
+        app._work_doctor_config = config
         result = await loop.run_in_executor(
             None,
             lambda: run_doctor(app.target_dir, config)
@@ -295,7 +295,7 @@ async def handle_repair(app: "NgramApp", args: str) -> None:
         # Flatten issues from dict structure
         issues_dict = result.get("issues", {}) if isinstance(result, dict) else {}
         all_issues = []
-        for severity in ["critical", "warning"]:  # Skip info for repair
+        for severity in ["critical", "warning"]:  # Skip info for work
             all_issues.extend(issues_dict.get(severity, []))
 
         # Deduplicate by (issue_type, path)
@@ -309,7 +309,7 @@ async def handle_repair(app: "NgramApp", args: str) -> None:
         all_issues = unique_issues
 
         # Sort by priority (lower = fix first)
-        from ..repair_core import ISSUE_PRIORITY
+        from ..work_core import ISSUE_PRIORITY
         all_issues.sort(key=lambda i: ISSUE_PRIORITY.get(i.issue_type, 50))
 
     except Exception as e:
@@ -321,42 +321,42 @@ async def handle_repair(app: "NgramApp", args: str) -> None:
 
     if not all_issues:
         manager.add_message("[green]No issues found. Project is healthy![/]")
-        app.conversation.add_message("system", "/repair\nNo issues found. Project is healthy!")
+        app.conversation.add_message("system", "/work\nNo issues found. Project is healthy!")
         return
 
     # Show progress bar immediately with all issues as pending
-    status_bar.set_repair_progress(len(all_issues), 0, 0)
+    status_bar.set_work_progress(len(all_issues), 0, 0)
 
-    manager.add_message(f"Found {len(all_issues)} issues to repair.")
+    manager.add_message(f"Found {len(all_issues)} issues to work.")
     # Show all issues in a single block to avoid extra spacing between items
-    from ..repair_core import AGENT_SYMBOLS
+    from ..work_core import AGENT_SYMBOLS
     issue_lines = []
     for i, issue in enumerate(all_issues):
         symbol = AGENT_SYMBOLS[i % len(AGENT_SYMBOLS)]
         issue_lines.append(f"[dim]{symbol} {issue.issue_type}: {issue.path}[/]")
     manager.add_message("\n".join(issue_lines))
-    # Log repair start
+    # Log work start
     issue_list = "\n".join(f"  - {i.issue_type}: {i.path}" for i in all_issues[:10])
-    app.conversation.add_message("system", f"/repair\nFound {len(all_issues)} issues:\n{issue_list}")
+    app.conversation.add_message("system", f"/work\nFound {len(all_issues)} issues:\n{issue_list}")
 
     # Switch to agents tab and clear summary log
     agent_container.switch_to_tab("agents-tab")
     agent_container.clear_summary()
-    agent_container.add_summary(f"[bold cyan]═══ REPAIR SESSION ═══[/]")
+    agent_container.add_summary(f"[bold cyan]═══ WORK SESSION ═══[/]")
     agent_container.add_summary(f"[dim]Issues to fix:[/] [bold]{len(all_issues)}[/]")
 
     # Store issue queue on app for agent completion to pull from
-    from ..repair_instructions import get_issue_instructions
+    from ..work_instructions import get_issue_instructions
 
     # Set default concurrency to 6 when model is "all"
     max_agents = 6 if app.agent_provider == "all" else 3
     
-    app._repair_queue = list(all_issues[max_agents:])  # Remaining issues
-    app._repair_total = len(all_issues)
+    app._work_queue = list(all_issues[max_agents:])  # Remaining issues
+    app._work_total = len(all_issues)
     app._work_agent_index = max_agents  # Next agent index for symbol
 
     running_count = min(len(all_issues), max_agents)
-    status_bar.set_repair_progress(len(all_issues), 0, running_count)
+    status_bar.set_work_progress(len(all_issues), 0, running_count)
 
     for i, issue in enumerate(all_issues[:max_agents]):
         await _spawn_agent(app, issue, i, config)
@@ -463,11 +463,11 @@ Format exactly: SYMBOL: summary"""
 
 
 async def _spawn_agent(app: "NgramApp", issue, agent_index: int, config) -> None:
-    """Spawn a single repair agent for an issue."""
+    """Spawn a single work agent for an issue."""
     import asyncio
     import time
-    from ..repair_instructions import get_issue_instructions
-    from ..repair_core import AGENT_SYMBOLS, get_issue_folder_name
+    from ..work_instructions import get_issue_instructions
+    from ..work_core import AGENT_SYMBOLS, get_issue_folder_name
     from .state import AgentHandle
 
     manager = app.query_one("#manager-panel")
@@ -479,13 +479,13 @@ async def _spawn_agent(app: "NgramApp", issue, agent_index: int, config) -> None
     agent_id = f"agent-{uuid.uuid4().hex[:8]}"
 
     # Get session dir if available
-    session_dir = getattr(app, '_repair_session_dir', None)
+    session_dir = getattr(app, '_work_session_dir', None)
 
     # Calculate agent directory path
     if session_dir:
         agent_dir = session_dir / folder_name
     else:
-        agent_dir = app.target_dir / ".ngram" / "agents" / "repair" / agent_id
+        agent_dir = app.target_dir / ".ngram" / "agents" / "work" / agent_id
 
     agent = AgentHandle(
         id=agent_id,
@@ -521,9 +521,9 @@ async def _spawn_agent(app: "NgramApp", issue, agent_index: int, config) -> None
 
 
 async def _run_agent(app: "NgramApp", agent, issue, instructions: dict, on_output, config, session_dir=None, folder_name=None) -> None:
-    """Run a single repair agent."""
+    """Run a single work agent."""
     import asyncio
-    from ..repair_core import spawn_work_agent_async
+    from ..work_core import spawn_work_agent_async
 
     manager = app.query_one("#manager-panel")
     agent_container = app.query_one("#agent-container")
@@ -571,14 +571,14 @@ async def _run_agent(app: "NgramApp", agent, issue, instructions: dict, on_outpu
                 manager.add_message(f"[bold]Rate limit on {actual_provider} - switching to {app.agent_provider}[/]")
 
                 # Re-queue the failed issue at the front
-                if hasattr(app, '_repair_queue'):
-                    app._repair_queue.insert(0, issue)
+                if hasattr(app, '_work_queue'):
+                    app._work_queue.insert(0, issue)
             else:
                 # All providers rate limited
-                agent_container.add_summary(f"[red]⛔ ALL PROVIDERS RATE LIMITED - stopping repair[/]")
-                manager.add_message("[red]All providers rate limited - repair stopped. Wait and retry later.[/]")
-                if hasattr(app, '_repair_queue'):
-                    app._repair_queue.clear()
+                agent_container.add_summary(f"[red]⛔ ALL PROVIDERS RATE LIMITED - stopping work[/]")
+                manager.add_message("[red]All providers rate limited - work stopped. Wait and retry later.[/]")
+                if hasattr(app, '_work_queue'):
+                    app._work_queue.clear()
             return
 
         # Stop shimmer and show final status
@@ -614,12 +614,12 @@ async def _run_agent(app: "NgramApp", agent, issue, instructions: dict, on_outpu
 
         if result.success:
             manager.add_message(f"[green]{agent.symbol} Done: {agent.issue_type}[/]")
-            app.conversation.add_message("system", f"Repair {agent.symbol} completed: {agent.issue_type} ({agent.target_path})")
-            # Refresh map async after successful repair
+            app.conversation.add_message("system", f"Work {agent.symbol} completed: {agent.issue_type} ({agent.target_path})")
+            # Refresh map async after successful work
             asyncio.create_task(_refresh_map(app))
         else:
             manager.add_message(f"[red]{agent.symbol} Failed: {result.error or 'unknown'}[/]")
-            app.conversation.add_message("system", f"Repair {agent.symbol} failed: {agent.issue_type} - {result.error or 'unknown'}")
+            app.conversation.add_message("system", f"Work {agent.symbol} failed: {agent.issue_type} - {result.error or 'unknown'}")
 
     except Exception as e:
         agent.status = "failed"
@@ -628,7 +628,7 @@ async def _run_agent(app: "NgramApp", agent, issue, instructions: dict, on_outpu
         # Stop shimmer with error status
         agent_container.stop_shimmer_agent(agent.id, f"[red]✗[/] {agent.symbol} [red]Error[/] [dim]{e}[/]")
         manager.add_message(f"[red]{agent.symbol} Error: {e}[/]")
-        app.conversation.add_message("system", f"Repair {agent.symbol} error: {e}")
+        app.conversation.add_message("system", f"Work {agent.symbol} error: {e}")
 
     # Spawn background manager review (non-blocking)
     if result is not None:
@@ -639,37 +639,37 @@ async def _run_agent(app: "NgramApp", agent, issue, instructions: dict, on_outpu
 
 
 async def _spawn_next_from_queue(app: "NgramApp") -> None:
-    """Spawn the next agent from the repair queue if available."""
+    """Spawn the next agent from the work queue if available."""
     status_bar = app.query_one("#status-bar")
 
     # Check if there are queued issues
-    if not hasattr(app, '_repair_queue') or not app._repair_queue:
+    if not hasattr(app, '_work_queue') or not app._work_queue:
         # No more queued issues - update progress and maybe clear
         completed = len([a for a in app.state.active_agents if a.status in ("completed", "failed")])
         running = len([a for a in app.state.active_agents if a.status == "running"])
-        total = getattr(app, '_repair_total', 0)
-        status_bar.set_repair_progress(total, completed, running)
+        total = getattr(app, '_work_total', 0)
+        status_bar.set_work_progress(total, completed, running)
         if total > 0 and completed >= total:
-            status_bar.clear_repair_progress()
+            status_bar.clear_work_progress()
         return
 
     # Pop next issue from queue
-    next_issue = app._repair_queue.pop(0)
+    next_issue = app._work_queue.pop(0)
     agent_index = getattr(app, '_work_agent_index', 0)
     app._work_agent_index = agent_index + 1
 
     # Update progress before spawning
     completed = len([a for a in app.state.active_agents if a.status in ("completed", "failed")])
     running = len([a for a in app.state.active_agents if a.status == "running"]) + 1  # +1 for new agent
-    total = getattr(app, '_repair_total', 0)
-    status_bar.set_repair_progress(total, completed, running)
+    total = getattr(app, '_work_total', 0)
+    status_bar.set_work_progress(total, completed, running)
 
     # Spawn the new agent
-    config = getattr(app, "_repair_doctor_config", None)
+    config = getattr(app, "_work_doctor_config", None)
     if config is None:
         from ..doctor_files import load_doctor_config
         config = load_doctor_config(app.target_dir)
-        app._repair_doctor_config = config
+        app._work_doctor_config = config
     await _spawn_agent(app, next_issue, agent_index, config)
 
 

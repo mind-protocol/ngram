@@ -2,49 +2,128 @@
 @ngram:id: SKILL.ORCH.FEATURE_INTEGRATION.PIPELINE.ORCHESTRATOR
 
 ## Maps to VIEW
-`(wrapper skill; calls the sequence below)`
+`(wrapper skill; calls the pipeline sequence)`
+
+---
+
+## Context
+
+Orchestration in ngram = running the full integration pipeline with work conservation.
+
+Pipeline order:
+1. **Ingest** → Parse raw inputs, produce routing table
+2. **Per-module loop** → For each module: scaffold → document → implement → verify
+3. **Close-out** → Update project SYNC, collect remaining escalations
+
+Work conservation: Work never halts. If blocked on one module, switch to next unblocked. Track all blockers as `@ngram:escalation`.
+
+Task graph: Deterministic mapping of modules to todos and verification plans.
+
+Progress log: Status per module: scaffolded → documented → implemented → verified.
+
+---
 
 ## Purpose
 Run the full pipeline: ingest → per-module loop → close-out, enforcing never-stop work conservation and deterministic routing.
 
-## Inputs (YAML)
+---
+
+## Inputs
 ```yaml
-objective: "<goal + acceptance criteria>"
+objective: "<goal + acceptance criteria>"     # string
 data_sources:
-  - "<path-or-url>"
+  - "<path or url>"                           # list
 scope_hints:
-  areas: ["<optional>"]
-  modules: ["<optional>"]
+  areas: ["<area>"]                           # optional filter
+  modules: ["<module>"]                       # optional filter
 constraints:
-  do_not_touch: ["<paths/surfaces>"]
-  patterns: ["<canon patterns to respect>"]
+  do_not_touch: ["<paths>"]                   # off-limits
+  patterns: ["<canon patterns>"]              # must respect
 ```
 
-## Outputs (YAML)
+## Outputs
 ```yaml
 task_graph:
   - module: "<area/module>"
     todos: ["<todo-id>"]
-    chosen_view: "<implement|extend|debug>"
-    verification_plan: ["<health-check>"]
+    chosen_view: "implement|extend|debug"
+    verification_plan: ["<health check>"]
 progress_log:
   - module: "<area/module>"
-    status: "<scaffolded|documented|implemented|verified>"
+    status: "scaffolded|documented|implemented|verified"
+    blockers: ["<escalation if any>"]
 ```
 
-## Gates (non-negotiable)
-- Must load PROTOCOL and required VIEWS referenced by downstream skills.
-- Must create at least one `@ngram:TODO` per module/task discovered.
-- Must enforce pipeline order and never-stop work conservation.
+---
 
-## Evidence & referencing
-- Docs: `@ngram:id + file + header path`
+## Gates
+
+- Must load PROTOCOL and required VIEWs — pipeline needs context
+- Must create at least one `@ngram:TODO` per module discovered — track all work
+- Must enforce pipeline order and never-stop — no halting, just switching
+
+---
+
+## Process
+
+### 1. Ingest raw inputs
+Call `ngram.ingest_raw_data_sources` skill.
+Produce routing table.
+
+### 2. Build task graph
+For each routed item:
+```yaml
+task:
+  module: "<target module>"
+  view: "<implement|extend|debug based on nature>"
+  todos: ["<specific tasks>"]
+  verification: ["<how to verify>"]
+```
+
+### 3. Per-module loop
+For each module in task graph:
+1. Load module context (PATTERNS, SYNC, IMPLEMENTATION)
+2. Execute chosen VIEW skill
+3. Update module SYNC
+4. If blocked → `@ngram:escalation`, switch to next module
+
+### 4. Close-out
+- Update project SYNC (`SYNC_Project_State.md`)
+- Collect all remaining escalations
+- Report progress log
+
+---
+
+## Skills Called
+
+| Skill | When |
+|-------|------|
+| `ngram.ingest_raw_data_sources` | Phase 1: Ingest |
+| `ngram.create_module_documentation` | If scaffolding needed |
+| `ngram.implement_write_or_modify_code` | If implementing |
+| `ngram.extend_add_features` | If extending |
+| `ngram.debug_investigate_fix_issues` | If debugging |
+| `ngram.sync_update_module_state` | After each module |
+
+---
+
+## Protocols Referenced
+
+| Protocol | When | Creates |
+|----------|------|---------|
+| `protocol:explore_space` | Before each module | Context |
+| `protocol:record_work` | After each module | progress moment |
+
+---
+
+## Evidence
+- Docs: `@ngram:id + file + header`
 - Code: `file + symbol`
 
 ## Markers
-- `@ngram:TODO <plan description>`
-- `@ngram:escalation <blocker/problem>`
-- `@ngram:proposition <suggestion/improvement>`
+- `@ngram:TODO`
+- `@ngram:escalation`
+- `@ngram:proposition`
 
-## Never-stop rule
-If blocked, log `@ngram:escalation` + `@ngram:proposition`, then switch to the next unblocked task.
+## Never-stop
+If blocked → `@ngram:escalation` + `@ngram:proposition` → switch to next unblocked module.

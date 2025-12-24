@@ -341,7 +341,7 @@ indicator:
 
 ```yaml
 throttling:
-  trigger: ngram agent/repair invocation with Gemini provider
+  trigger: ngram agent/work invocation with Gemini provider
   max_frequency: 5/min
   burst_limit: 10
   backoff: exponential starting at 15s to avoid repeated auth failures.

@@ -33,7 +33,45 @@ Each project defines its own subtypes:
 
 This keeps the schema lean while allowing project-specific vocabulary.
 
-### 3. Two Physics Fields
+### 3. ID Convention (for auto-generation)
+
+All node and link IDs follow a consistent pattern for agent scanning:
+
+```
+{node-type}_{SUBTYPE}_{instance-context}_{disambiguator}
+```
+
+| Component | Case | Purpose |
+|-----------|------|---------|
+| `node-type` | lowercase | Schema type (`narrative`, `space`, `thing`, `actor`, `moment`) |
+| `SUBTYPE` | ALLCAPS | High-info scan target (`ISSUE`, `TASK`, `OBJECTIVE`, `MODULE`, `FILE`) |
+| `instance-context` | lowercase, `-` between words | Descriptive path (`engine-physics-graph-ops`) |
+| `disambiguator` | lowercase | 2-char hash or index (`a7`, `01`) |
+
+**Examples:**
+```yaml
+# Nodes
+narrative_ISSUE_monolith-engine-physics-graph-ops_a7
+narrative_OBJECTIVE_engine-physics-documented
+narrative_TASK_serve-engine-physics-documented_01
+space_MODULE_engine-physics
+thing_FILE_engine-physics-graph-ops_a7
+moment_TICK_1000_a7
+
+# Links
+relates_BLOCKS_narrative-issue-a7_TO_narrative-objective-b3
+contains_space-module-engine_TO_narrative-issue-a7
+```
+
+**Rationale:**
+- SUBTYPE in ALLCAPS: When scanning a list of IDs, the subtype differentiates entries — ALLCAPS makes it jump out
+- Lowercase node-type: Already known context, low information value
+- Dashes within sections, underscores between: Clear visual separation
+- Short hash: 2 chars = 256 buckets, sufficient collision safety
+
+**Auto-generation:** Systems creating nodes MUST use this convention. See `ngram/doctor_graph.py` for `generate_*_id()` functions.
+
+### 4. Two Physics Fields
 
 ```yaml
 weight: float [0,1]  # persistent importance
@@ -45,7 +83,7 @@ energy: float [0,1]  # instantaneous/computed
 
 All physics mechanisms operate on these two fields.
 
-### 4. Links Have Polarity
+### 5. Links Have Polarity
 
 ```yaml
 polarity: float [-1, +1]  # negative = contradict, positive = support
@@ -53,7 +91,7 @@ polarity: float [-1, +1]  # negative = contradict, positive = support
 
 This enables the contradiction pressure mechanism — when two narratives contradict, their polarity creates tension that must be resolved.
 
-### 5. Minimal Type-Specific Fields
+### 6. Minimal Type-Specific Fields
 
 Most nodes only have base fields. Type-specific additions are rare:
 - `thing.uri` — optional locator

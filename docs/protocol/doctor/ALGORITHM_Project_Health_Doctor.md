@@ -1,532 +1,597 @@
 # ALGORITHM: Project Health Doctor
 
-**Step-by-step procedures for health checks.**
+**Step-by-step procedures for graph-based health checks.**
+
+---
+
+## OVERVIEW
+
+Doctor is a graph-native issue detection and task creation system:
+
+1. **Surface Issues** — Static analysis, tests, health checks create Narrative nodes (type: issue)
+2. **Traverse Up** — From issues to objectives via graph links
+3. **Create Tasks** — Group issues into Narrative nodes (type: task) based on outcome
+
+All entities follow schema v1.2:
+- Issues, Objectives, Tasks are **Narrative** nodes with different `type` attributes
+- Modules are **Space** nodes
+- Files are **Thing** nodes
+- Links use **relates** with `direction` property for semantic meaning
+
+---
+
+## ID CONVENTION
+
+All node and link IDs follow a consistent naming pattern optimized for agent scanning:
+
+```
+{node-type}_{SUBTYPE}_{instance-context}_{disambiguator}
+```
+
+| Component | Case | Purpose | Example |
+|-----------|------|---------|---------|
+| `node-type` | lowercase | Schema type (low info, already known) | `narrative`, `space`, `thing` |
+| `SUBTYPE` | ALLCAPS | What you scan for (high info) | `ISSUE`, `OBJECTIVE`, `TASK`, `MODULE`, `FILE` |
+| `instance-context` | lowercase, `-` between words | Which one (descriptive context) | `monolith-engine-physics-graph-ops` |
+| `disambiguator` | lowercase | Collision safety (2-char hash or index) | `a7`, `01` |
+
+### Node ID Examples
+
+```yaml
+# Issues
+narrative_ISSUE_monolith-engine-physics-graph-ops_a7
+narrative_ISSUE_stale-sync-ngram-cli-doctor_f2
+
+# Objectives
+narrative_OBJECTIVE_engine-physics-documented
+narrative_OBJECTIVE_ngram-cli-tested
+
+# Tasks
+narrative_TASK_serve-engine-physics-documented_01
+narrative_TASK_reconstruct-orphan-utils_01
+narrative_TASK_triage-legacy-code_01
+
+# Spaces (modules)
+space_MODULE_engine-physics
+space_MODULE_ngram-cli
+
+# Things (files)
+thing_FILE_engine-physics-graph-ops_a7
+thing_FILE_doctor-checks_f2
+```
+
+### Link ID Examples
+
+```yaml
+# Semantic links (with role name)
+relates_BLOCKS_narrative-issue-a7_TO_narrative-objective-b3
+relates_SERVES_narrative-task-01_TO_narrative-objective-b3
+relates_INCLUDES_narrative-task-01_TO_narrative-issue-a7
+relates_ABOUT_narrative-issue-a7_TO_thing-file-b3
+
+# Structural links
+contains_space-module-engine-physics_TO_narrative-issue-a7
+```
+
+### Rationale
+
+- **SUBTYPE in ALLCAPS**: When scanning a list of IDs, the subtype is what differentiates entries. ALLCAPS makes it jump out.
+- **Lowercase node-type**: You already know you're looking at a node. Low information value.
+- **Dashes within sections**: Words like `engine-physics` stay together visually.
+- **Underscores between sections**: `_` clearly separates the structural parts.
+- **Short hash**: 2 characters provide 256 collision buckets — sufficient for most modules.
 
 ---
 
 ## MAIN FLOW
 
 ```
-doctor(project_dir, options):
-    1. Load configuration
-    2. Discover project structure
-    3. Run enabled checks
-    4. Aggregate results
-    5. Calculate score
-    6. Generate output
-    7. Return exit code
+┌────────────────────────────────────────────────────────────────┐
+│ 1. FETCH OBJECTIVES                                            │
+│    Query graph for existing Narrative nodes (type: objective)  │
+└────────────────────────────────────────────────────────────────┘
+                              ↓
+┌────────────────────────────────────────────────────────────────┐
+│ 2. SURFACE ISSUES                                              │
+│    Static analysis + Tests + Health checks                     │
+│    Create Narrative nodes (type: issue) with links             │
+└────────────────────────────────────────────────────────────────┘
+                              ↓
+┌────────────────────────────────────────────────────────────────┐
+│ 3. TRAVERSE UP                                                 │
+│    From each issue → Space → Objective                         │
+│    Determine outcome: SERVE | RECONSTRUCT | TRIAGE             │
+└────────────────────────────────────────────────────────────────┘
+                              ↓
+┌────────────────────────────────────────────────────────────────┐
+│ 4. CREATE TASKS                                                │
+│    Group issues by outcome and objective                       │
+│    Create Narrative nodes (type: task)                         │
+│    Link tasks to issues and objectives                         │
+└────────────────────────────────────────────────────────────────┘
+                              ↓
+┌────────────────────────────────────────────────────────────────┐
+│ 5. OUTPUT                                                      │
+│    Return tasks with linked issues, objectives, skills         │
+└────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 1. LOAD CONFIGURATION
+## 1. FETCH OBJECTIVES
+
+Objectives are Narrative nodes (type: objective) that already exist in the graph.
+Doctor reads them, doesn't create them.
 
 ```python
-def load_config(project_dir: Path) -> DoctorConfig:
-    config_path = project_dir / ".ngram" / "config.yaml"
-
-    defaults = {
-        "monolith_lines": 500,
-        "god_function_lines": 100,
-        "stale_sync_days": 14,
-        "designing_stuck_days": 21,
-        "nesting_depth": 4,
-        "ignore": [],
-        "disabled_checks": [],
-        "severity_overrides": {}
-    }
-
-    if config_path.exists():
-        user_config = yaml.load(config_path)
-        return merge(defaults, user_config.get("doctor", {}))
-
-    return defaults
-```
-
----
-
-## 2. DISCOVER PROJECT STRUCTURE
-
-```python
-def discover_project(project_dir: Path) -> ProjectStructure:
-    return ProjectStructure(
-        code_dirs = find_code_directories(project_dir),
-        doc_dirs = find_doc_directories(project_dir),
-        modules = load_modules_yaml(project_dir),
-        sync_files = find_sync_files(project_dir),
-        source_files = find_source_files(project_dir)
+def fetch_objectives(store: DoctorGraphStore) -> List[ObjectiveNarrative]:
+    """Query existing objectives from graph."""
+    return store.query_nodes(
+        node_type="narrative",
+        subtype="objective"
     )
 ```
 
-### Find Code Directories
+### Objective Schema
+
+```yaml
+node:
+  id: "narrative_OBJECTIVE_{module}-{type}"
+  # Example: narrative_OBJECTIVE_engine-physics-documented
+  node_type: narrative
+  type: objective
+  name: "Module {module} is {type}"
+  content: "All {type}-related issues resolved"
+  weight: 1.0
+  energy: 0.0
+
+  # Objective-specific fields
+  objective_type: documented | synced | maintainable | tested | healthy | secure | resolved
+  module: "{module_id}"
+  status: open | achieved | deferred | deprecated
+```
+
+### Standard Objective Types
+
+| Type | Meaning | Blocking Issues |
+|------|---------|-----------------|
+| `documented` | Complete doc chain | UNDOCUMENTED, INCOMPLETE_CHAIN, PLACEHOLDER, NO_DOCS_REF |
+| `synced` | Docs reflect current state | STALE_SYNC, STALE_IMPL, CODE_DOC_DELTA_COUPLING |
+| `maintainable` | Code is clean | MONOLITH, NAMING_CONVENTION, MAGIC_VALUES, STUB_IMPL |
+| `tested` | Has test coverage | MISSING_TESTS, TEST_FAILED, INVARIANT_UNTESTED |
+| `healthy` | Health signals pass | HEALTH_FAILED, INVARIANT_VIOLATED, LOG_ERROR |
+| `secure` | No vulnerabilities | HARDCODED_SECRET |
+| `resolved` | No open conflicts | ESCALATION, SUGGESTION, UNRESOLVED_QUESTION |
+
+---
+
+## 2. SURFACE ISSUES
+
+Issues come from three sources:
+
+### 2.1 Static Analysis
+
+Scan codebase for structural problems:
 
 ```python
-def find_code_directories(project_dir: Path) -> List[Path]:
-    """Find directories likely containing source code."""
-    candidates = ["src", "lib", "app", "pkg", "components", "modules"]
-    found = []
+def run_static_checks(target_dir: Path, config: DoctorConfig) -> List[DoctorIssue]:
+    issues = []
+    issues.extend(check_monolith(target_dir, config))
+    issues.extend(check_undocumented(target_dir, config))
+    issues.extend(check_stale_sync(target_dir, config))
+    issues.extend(check_naming_convention(target_dir, config))
+    # ... etc
+    return issues
+```
 
-    for candidate in candidates:
-        path = project_dir / candidate
-        if path.exists() and path.is_dir():
-            found.append(path)
-            # Also find subdirectories
-            for subdir in path.iterdir():
-                if subdir.is_dir() and not subdir.name.startswith('.'):
-                    found.append(subdir)
+### 2.2 Test Runner
 
-    return found
+Execute tests and surface failures:
+
+```python
+def run_tests(target_dir: Path) -> List[TestResult]:
+    """Run pytest/jest and parse results."""
+    # Each failure becomes an issue
+    # TEST_FAILED, TEST_ERROR, TEST_TIMEOUT
+```
+
+### 2.3 Health Checks
+
+Execute health signals from HEALTH_*.md:
+
+```python
+def run_health_checks(target_dir: Path, modules: Dict) -> List[HealthResult]:
+    """Run health checks defined in HEALTH docs."""
+    # Each failure becomes an issue
+    # HEALTH_FAILED, INVARIANT_VIOLATED
+```
+
+### Issue Schema
+
+```yaml
+node:
+  id: "narrative_ISSUE_{issue-type}-{module}-{file}_{hash}"
+  # Example: narrative_ISSUE_monolith-engine-physics-graph-ops_a7
+  node_type: narrative
+  type: issue
+  name: "{ISSUE_TYPE} in {module}/{file}"
+  content: |
+    ## {ISSUE_TYPE}
+
+    **Module:** {module}
+    **File:** {path}
+    **Severity:** {severity}
+
+    ### Description
+    {message}
+  weight: 1.0
+  energy: 1.0 | 0.5 | 0.2  # critical | warning | info
+
+  # Issue-specific fields
+  issue_type: "MONOLITH"
+  severity: critical | warning | info
+  status: open | resolved | in_progress
+  module: "{module_id}"
+  path: "{file_path}"
+  message: "{human description}"
+  detected_at: "{ISO timestamp}"
+```
+
+### Issue Creation with Links
+
+When an issue is created, these links are also created:
+
+```yaml
+links:
+  # Space contains Issue
+  - id: "contains_space-module-engine-physics_TO_narrative-issue-a7"
+    node_a: "space_MODULE_engine-physics"
+    node_b: "narrative_ISSUE_monolith-engine-physics-graph-ops_a7"
+    type: contains
+
+  # Issue relates to Thing (file)
+  - id: "relates_ABOUT_narrative-issue-a7_TO_thing-file-b3"
+    node_a: "narrative_ISSUE_monolith-engine-physics-graph-ops_a7"
+    node_b: "thing_FILE_engine-physics-graph-ops_a7"
+    type: relates
+    name: "about"
+```
+
+### Upsert Logic
+
+```python
+def upsert_issue(issue_type, severity, path, message, module, store):
+    """Create or update issue node."""
+    issue_id = generate_issue_id(issue_type, module, path)
+    existing = store.get_node(issue_id)
+
+    if existing:
+        # Update: severity, message, detected_at, status=open
+        existing.severity = severity
+        existing.message = message
+        existing.detected_at = now()
+        existing.status = "open"
+        store.upsert_node(existing)
+    else:
+        # Create new with links
+        issue = create_issue_node(...)
+        store.upsert_node(issue)
+        store.create_link(space_contains_issue)
+        store.create_link(issue_about_thing)
+
+    return issue
 ```
 
 ---
 
-## 3. RUN CHECKS
+## 3. TRAVERSE UP
 
-Each check returns a list of issues:
+For each issue, traverse up to find which objective it blocks.
+
+### Traversal Logic
 
 ```python
-@dataclass
-class Issue:
-    type: str           # MONOLITH, STALE_SYNC, etc.
-    severity: str       # critical, warning, info
-    path: str           # Affected file/directory
-    message: str        # Human description
-    details: dict       # Type-specific data
-    suggestion: str     # How to fix
+def traverse_to_objective(issue: IssueNarrative, store, modules) -> TraversalResult:
+    """
+    Traverse: Issue → Space → Objective
+
+    Returns:
+        - SERVE: Found objective
+        - RECONSTRUCT: Missing nodes in chain
+        - TRIAGE: No objective defined
+    """
+    missing_nodes = []
+
+    # Step 1: Find Space
+    # ID: space_MODULE_{module}
+    space_id = generate_space_id(issue.module)  # → space_MODULE_engine-physics
+    space = store.get_node(space_id)
+    if not space:
+        missing_nodes.append(f"Space:{issue.module}")
+
+    # Step 2: Check doc chain exists
+    module_info = modules.get(issue.module, {})
+    if module_info.get("docs"):
+        for doc_type in ["patterns", "sync"]:
+            doc_id = f"narrative_{doc_type}_{issue.module}"
+            if not store.get_node(doc_id):
+                missing_nodes.append(f"{doc_type.upper()}:{issue.module}")
+
+    # Step 3: Find objective
+    # ID: narrative_OBJECTIVE_{module}-{type}
+    objective_types = ISSUE_BLOCKS_OBJECTIVE[issue.issue_type]
+    objective = None
+    for obj_type in objective_types:
+        obj_id = generate_objective_id(obj_type, issue.module)
+        # → narrative_OBJECTIVE_engine-physics-documented
+        obj_node = store.get_node(obj_id)
+        if obj_node:
+            objective = obj_node
+            break
+
+    # Determine outcome
+    if missing_nodes:
+        return TraversalResult(outcome=RECONSTRUCT, missing_nodes=missing_nodes)
+    elif objective:
+        return TraversalResult(outcome=SERVE, objective=objective)
+    else:
+        return TraversalResult(outcome=TRIAGE)
 ```
 
-### Check: Monolith Files
+### Traversal Outcomes
 
-```python
-def check_monolith(project: ProjectStructure, config: DoctorConfig) -> List[Issue]:
-    issues = []
-    threshold = config["monolith_lines"]
+| Outcome | Condition | Task Type | Skill |
+|---------|-----------|-----------|-------|
+| `SERVE` | Objective found | Normal task | (by objective type) |
+| `RECONSTRUCT` | Missing nodes in chain | Rebuild chain | `create_module_documentation` |
+| `TRIAGE` | No objective exists | Evaluate usefulness | `triage_unmapped_code` |
 
-    for source_file in project.source_files:
-        if should_ignore(source_file, config["ignore"]):
-            continue
+---
 
-        line_count = count_lines(source_file)
+## 4. CREATE TASKS
 
-        if line_count > threshold:
-            issues.append(Issue(
-                type="MONOLITH",
-                severity="critical",
-                path=str(source_file),
-                message=f"{line_count} lines (threshold: {threshold})",
-                details={"lines": line_count, "threshold": threshold},
-                suggestion=suggest_split(source_file)
-            ))
+Group issues by outcome and create Task narrative nodes.
 
-    return issues
+### Task Schema
+
+```yaml
+node:
+  id: "narrative_TASK_{task-type}-{module}-{objective}_{index}"
+  # Example: narrative_TASK_serve-engine-physics-documented_01
+  node_type: narrative
+  type: task
+  name: "Serve {objective} for {module}" | "Reconstruct chain for {module}" | "Triage: {module}"
+  content: |
+    ## Task: Serve documented for engine-physics
+
+    **Type:** serve
+    **Module:** engine-physics
+    **Objective:** narrative_OBJECTIVE_engine-physics-documented
+    **Skill:** create_module_documentation
+
+    ### Issues (3)
+    - [ ] `narrative_ISSUE_undocumented-engine-physics-root_a7`
+    - [ ] `narrative_ISSUE_incomplete-chain-engine-physics-patterns_b2`
+    - [ ] `narrative_ISSUE_no-docs-ref-engine-physics-runner_c3`
+  weight: 1.0
+  energy: 0.0
+
+  # Task-specific fields
+  task_type: serve | reconstruct | triage
+  objective_id: "narrative_OBJECTIVE_{...}" | null
+  module: "{module_id}"
+  skill: "{skill_name}"
+  status: open | in_progress | completed
+  issue_ids: ["narrative_ISSUE_{...}", ...]
+  missing_nodes: ["Space:...", "PATTERNS:..."]  # for reconstruct
 ```
 
-### Check: Doc Template Drift
+### Task Links
 
-```python
-def check_doc_template_drift(project: ProjectStructure) -> List[Issue]:
-    issues = []
-    for doc in project.doc_files:
-        if doc.type not in templates:
-            continue
-        required_sections = templates[doc.type].sections
-        missing = required_sections - doc.sections
-        short = [s for s in required_sections if len(doc.section_text(s)) < 50]
-        if missing or short:
-            issues.append(Issue(
-                type="DOC_TEMPLATE_DRIFT",
-                severity="warning",
-                path=doc.path,
-                message=summary(missing, short),
-                suggestion="Fill missing sections and expand short ones"
-            ))
-    return issues
+```yaml
+links:
+  # Task serves Objective (direction: support)
+  - id: "relates_SERVES_narrative-task-01_TO_narrative-objective-b3"
+    node_a: "narrative_TASK_serve-engine-physics-documented_01"
+    node_b: "narrative_OBJECTIVE_engine-physics-documented"
+    type: relates
+    name: "serves"
+    direction: support
+
+  # Task includes Issue (direction: subsume)
+  - id: "relates_INCLUDES_narrative-task-01_TO_narrative-issue-a7"
+    node_a: "narrative_TASK_serve-engine-physics-documented_01"
+    node_b: "narrative_ISSUE_monolith-engine-physics-graph-ops_a7"
+    type: relates
+    name: "includes"
+    direction: subsume
+
+  # Issue blocks Objective (direction: oppose)
+  - id: "relates_BLOCKS_narrative-issue-a7_TO_narrative-objective-b3"
+    node_a: "narrative_ISSUE_monolith-engine-physics-graph-ops_a7"
+    node_b: "narrative_OBJECTIVE_engine-physics-documented"
+    type: relates
+    name: "blocks"
+    direction: oppose
 ```
 
-### Check: Non-Standard Doc Type
+### Task Creation Logic
 
 ```python
-def check_nonstandard_doc_type(project: ProjectStructure) -> List[Issue]:
-    issues = []
-    for doc in project.doc_files:
-        if doc.filename.starts_with_standard_prefix():
-            continue
-        issues.append(Issue(
-            type="NON_STANDARD_DOC_TYPE",
-            severity="warning",
-            path=doc.path,
-            message="Doc filename does not use a standard prefix",
-            suggestion="Rename to PATTERNS_/BEHAVIORS_/ALGORITHM_/VALIDATION_/IMPLEMENTATION_/HEALTH_/SYNC_"
-        ))
-    return issues
-```
+MAX_ISSUES_PER_TASK = 5
 
-### Check: Undocumented Code
+def create_tasks_from_issues(issues, store, modules):
+    tasks = []
 
-```python
-def check_undocumented(project: ProjectStructure, config: DoctorConfig) -> List[Issue]:
-    issues = []
+    # Group by outcome
+    grouped = group_issues_by_outcome(issues, store, modules)
 
-    for code_dir in project.code_dirs:
-        # Check if mapped in modules.yaml
-        mapping = find_mapping(code_dir, project.modules)
+    # SERVE tasks: group by objective, split if > MAX
+    for module, issue_results in grouped[SERVE].items():
+        by_objective = group_by_objective(issue_results)
+        for obj_id, obj_issues in by_objective.items():
+            chunks = split_chunks(obj_issues, MAX_ISSUES_PER_TASK)
+            for idx, chunk in enumerate(chunks, 1):
+                task = create_task_node(
+                    task_type="serve",
+                    module=module,
+                    skill=OBJECTIVE_TO_SKILL[objective.objective_type],
+                    issue_ids=[i.id for i in chunk],
+                    objective_id=obj_id,
+                    index=idx
+                )
+                store.upsert_node(task)
+                # Create links
+                store.create_link(task_serves_objective(task.id, obj_id))
+                for issue in chunk:
+                    store.create_link(task_includes_issue(task.id, issue.id))
+                    store.create_link(issue_blocks_objective(issue.id, obj_id))
+                tasks.append(task)
 
-        if mapping is None:
-            issues.append(Issue(
-                type="UNDOCUMENTED",
-                severity="critical",
-                path=str(code_dir),
-                message="No documentation exists",
-                details={"files": count_files(code_dir)},
-                suggestion=f"Create docs and add to modules.yaml"
-            ))
-        elif not Path(mapping["docs"]).exists():
-            issues.append(Issue(
-                type="MISSING_DOCS",
-                severity="critical",
-                path=str(code_dir),
-                message=f"Mapped to {mapping['docs']} but path doesn't exist",
-                details={"mapped_to": mapping["docs"]},
-                suggestion=f"Create {mapping['docs']} or fix mapping"
-            ))
+    # RECONSTRUCT tasks: one per module with gaps
+    for module, issue_results in grouped[RECONSTRUCT].items():
+        missing = collect_missing_nodes(issue_results)
+        task = create_task_node(
+            task_type="reconstruct",
+            module=module,
+            skill="create_module_documentation",
+            issue_ids=[i.id for i, _ in issue_results],
+            missing_nodes=list(missing)
+        )
+        store.upsert_node(task)
+        tasks.append(task)
 
-    return issues
-```
+    # TRIAGE tasks: one per orphan module
+    for module, issue_results in grouped[TRIAGE].items():
+        task = create_task_node(
+            task_type="triage",
+            module=module,
+            skill="triage_unmapped_code",
+            issue_ids=[i.id for i, _ in issue_results]
+        )
+        store.upsert_node(task)
+        tasks.append(task)
 
-### Check: Stale SYNC
-
-```python
-def check_stale_sync(project: ProjectStructure, config: DoctorConfig) -> List[Issue]:
-    issues = []
-    threshold_days = config["stale_sync_days"]
-    threshold = datetime.now() - timedelta(days=threshold_days)
-
-    for sync_file in project.sync_files:
-        last_updated = parse_sync_date(sync_file)
-
-        if last_updated and last_updated < threshold:
-            days_old = (datetime.now() - last_updated).days
-            commits_since = count_commits_since(sync_file.parent, last_updated)
-
-            issues.append(Issue(
-                type="STALE_SYNC",
-                severity="warning",
-                path=str(sync_file),
-                message=f"Last updated {days_old} days ago, {commits_since} commits since",
-                details={"days": days_old, "commits": commits_since},
-                suggestion="Review and update SYNC with current state"
-            ))
-
-    return issues
-```
-
-### Check: Placeholder Docs
-
-```python
-def check_placeholder_docs(project: ProjectStructure, config: DoctorConfig) -> List[Issue]:
-    issues = []
-    placeholder_patterns = ["{", "TODO:", "FIXME:", "XXX:"]
-
-    for doc_file in project.doc_dirs.glob("**/*.md"):
-        content = doc_file.read_text()
-
-        # Check for template placeholders
-        if re.search(r'\{[A-Z_]+\}', content):
-            issues.append(Issue(
-                type="PLACEHOLDER",
-                severity="critical",
-                path=str(doc_file),
-                message="Contains template placeholders",
-                details={"placeholders": find_placeholders(content)},
-                suggestion="Fill in actual content"
-            ))
-
-    return issues
-```
-
-### Check: No DOCS Reference
-
-```python
-def check_no_docs_ref(project: ProjectStructure, config: DoctorConfig) -> List[Issue]:
-    issues = []
-
-    for source_file in project.source_files:
-        if should_ignore(source_file, config["ignore"]):
-            continue
-
-        content = source_file.read_text()
-
-        # Look for DOCS: comment
-        if not re.search(r'#\s*DOCS:', content) and \
-           not re.search(r'//\s*DOCS:', content):
-            issues.append(Issue(
-                type="NO_DOCS_REF",
-                severity="warning",
-                path=str(source_file),
-                message="No DOCS: reference comment",
-                details={},
-                suggestion="Add: # DOCS: path/to/PATTERNS.md"
-            ))
-
-    return issues
-```
-
-### Check: Incomplete Chain
-
-```python
-def check_incomplete_chain(project: ProjectStructure, config: DoctorConfig) -> List[Issue]:
-    issues = []
-    required_types = ["PATTERNS", "BEHAVIORS", "ALGORITHM", "VALIDATION", "IMPLEMENTATION", "HEALTH", "SYNC"]
-
-    for doc_dir in find_module_doc_dirs(project):
-        present = set()
-        for doc_file in doc_dir.glob("*.md"):
-            for doc_type in required_types:
-                if doc_file.name.startswith(doc_type):
-                    present.add(doc_type)
-
-        missing = set(required_types) - present
-
-        if missing:
-            issues.append(Issue(
-                type="INCOMPLETE_CHAIN",
-                severity="warning",
-                path=str(doc_dir),
-                message=f"Missing: {', '.join(sorted(missing))}",
-                details={"missing": list(missing), "present": list(present)},
-                suggestion="Create missing docs or mark as intentionally skipped"
-            ))
-
-    return issues
-```
-
-### Check: Activity Gaps
-
-```python
-def check_activity_gaps(project: ProjectStructure, config: DoctorConfig) -> List[Issue]:
-    """Detect periods of no SYNC updates across the project."""
-    issues = []
-    threshold_days = config.get("activity_gap_days", 14)
-    threshold = datetime.now() - timedelta(days=threshold_days)
-
-    # Find most recent SYNC update across all SYNC files
-    most_recent = None
-    for sync_file in project.sync_files:
-        last_updated = parse_sync_date(sync_file)
-        if last_updated and (most_recent is None or last_updated > most_recent):
-            most_recent = last_updated
-
-    if most_recent and most_recent < threshold:
-        days_silent = (datetime.now() - most_recent).days
-        issues.append(Issue(
-            type="ACTIVITY_GAP",
-            severity="warning",
-            path=".ngram/",
-            message=f"No SYNC updates in {days_silent} days",
-            details={"days_silent": days_silent, "last_activity": str(most_recent.date())},
-            suggestion="Review project state and update relevant SYNC files"
-        ))
-
-    return issues
-```
-
-### Check: Naming Conventions
-
-```python
-def check_naming_conventions(project: ProjectStructure, config: DoctorConfig) -> List[Issue]:
-    """Flag files/directories violating naming conventions."""
-    violations = []
-    
-    # 1. Folders must be snake_case
-    for directory in project.code_dirs:
-        if not is_snake_case(directory.name):
-            violations.append({"path": directory, "type": "directory", "expected": "snake_case"})
-            
-    # 2. Code files must be snake_case.py and not contain 'and'
-    for source_file in project.source_files:
-        if source_file.suffix == ".py":
-            if not is_snake_case(source_file.stem):
-                violations.append({"path": source_file, "type": "code file", "expected": "snake_case"})
-            if "_and_" in source_file.stem.lower():
-                violations.append({"path": source_file, "type": "code file", "expected": "single responsibility (no 'and')"})
-            
-    # 3. Doc files must be PREFIX_PascalCase_With_Underscores.md
-    for doc_file in project.doc_files:
-        prefix, rest = split_prefix(doc_file.name)
-        if not is_pascal_case_with_underscores(rest):
-            violations.append({"path": doc_file, "type": "doc file", "expected": "PREFIX_PascalCase_With_Underscores.md"})
-            
-    # Group into tasks of 10
-    issues = []
-    for i in range(0, len(violations), 10):
-        group = violations[i:i+10]
-        issues.append(Issue(
-            type="NAMING_CONVENTION",
-            severity="warning",
-            path=group[0]["path"],
-            message=f"Naming convention violations task ({i//10 + 1}): {len(group)} items",
-            details={"violations": group},
-            suggestion=f"Rename these files/folders to follow {group[0]['expected']}"
-        ))
-    return issues
-```
-
-### Check: Abandoned Areas
-
-```python
-def check_abandoned_areas(project: ProjectStructure, config: DoctorConfig) -> List[Issue]:
-    """Find documentation that was started but never completed."""
-    issues = []
-    threshold_days = config.get("abandoned_days", 30)
-    threshold = datetime.now() - timedelta(days=threshold_days)
-
-    for doc_dir in find_module_doc_dirs(project):
-        docs = list(doc_dir.glob("*.md"))
-
-        # Skip if no docs at all (that's UNDOCUMENTED, not ABANDONED)
-        if not docs:
-            continue
-
-        # Check if only has PATTERNS or SYNC (started but not continued)
-        doc_types = set()
-        for doc in docs:
-            for prefix in ["PATTERNS_", "BEHAVIORS_", "ALGORITHM_", "VALIDATION_", "HEALTH_", "SYNC_"]:
-                if doc.name.startswith(prefix):
-                    doc_types.add(prefix.rstrip("_"))
-
-        # Started (has 1-2 docs) but incomplete (missing 3+ docs)
-        if 1 <= len(doc_types) <= 2:
-            # Check if stale
-            newest_mod = max(doc.stat().st_mtime for doc in docs)
-            newest_date = datetime.fromtimestamp(newest_mod)
-
-            if newest_date < threshold:
-                days_stale = (datetime.now() - newest_date).days
-                issues.append(Issue(
-                    type="ABANDONED",
-                    severity="warning",
-                    path=str(doc_dir),
-                    message=f"Started {days_stale} days ago, only has {', '.join(doc_types)}",
-                    details={
-                        "present": list(doc_types),
-                        "days_stale": days_stale
-                    },
-                    suggestion="Either complete documentation or remove if no longer relevant"
-                ))
-
-    return issues
-```
-
-### Check: Vague Names
-
-```python
-def check_vague_names(project: ProjectStructure, config: DoctorConfig) -> List[Issue]:
-    """Flag files/directories with non-descriptive names."""
-    issues = []
-
-    vague_patterns = {
-        "utils": "Consider naming by what it actually does (e.g., string_helpers, date_formatters)",
-        "helpers": "Consider naming by domain (e.g., auth_helpers, payment_utils)",
-        "misc": "Split into specific, named modules",
-        "stuff": "Rename to describe actual contents",
-        "common": "Consider naming by what's common (e.g., shared_types, base_classes)",
-        "lib": "Consider more specific names for subdirectories",
-        "core": "Consider what 'core' means in this context",
-        "base": "Consider naming by what it's a base for",
-        "general": "Split into specific concerns",
-        "other": "Categorize contents properly",
-    }
-
-    # Check directories
-    for code_dir in project.code_dirs:
-        dir_name = code_dir.name.lower()
-        if dir_name in vague_patterns:
-            issues.append(Issue(
-                type="VAGUE_NAME",
-                severity="info",
-                path=str(code_dir),
-                message=f"Directory named '{code_dir.name}' is non-descriptive",
-                details={"name": code_dir.name, "type": "directory"},
-                suggestion=vague_patterns[dir_name]
-            ))
-
-    # Check files
-    for source_file in project.source_files:
-        file_stem = source_file.stem.lower()
-        if file_stem in vague_patterns:
-            issues.append(Issue(
-                type="VAGUE_NAME",
-                severity="info",
-                path=str(source_file),
-                message=f"File named '{source_file.name}' is non-descriptive",
-                details={"name": source_file.name, "type": "file"},
-                suggestion=vague_patterns[file_stem]
-            ))
-
-    return issues
+    return tasks
 ```
 
 ---
 
-## 4. AGGREGATE RESULTS
+## 5. OUTPUT
 
-```python
-def aggregate_results(all_issues: List[Issue], config: DoctorConfig) -> Dict:
-    # Apply severity overrides
-    for issue in all_issues:
-        if issue.type in config["severity_overrides"]:
-            issue.severity = config["severity_overrides"][issue.type]
+### Task Surface Result
 
-    # Group by severity
-    return {
-        "critical": [i for i in all_issues if i.severity == "critical"],
-        "warning": [i for i in all_issues if i.severity == "warning"],
-        "info": [i for i in all_issues if i.severity == "info"]
-    }
+```yaml
+summary:
+  issues_surfaced: 45
+  issues_from_checks: 40
+  issues_from_tests: 3
+  issues_from_health: 2
+  tasks_created: 12
+  tasks_serve: 8
+  tasks_reconstruct: 2
+  tasks_triage: 2
+
+tasks:
+  - id: "narrative_TASK_serve-engine-physics-documented_01"
+    type: serve
+    module: engine-physics
+    skill: create_module_documentation
+    objective: "narrative_OBJECTIVE_engine-physics-documented"
+    issues:
+      - "narrative_ISSUE_undocumented-engine-physics-root_a7"
+      - "narrative_ISSUE_incomplete-chain-engine-physics-patterns_b2"
+
+  - id: "narrative_TASK_reconstruct-orphan-utils_01"
+    type: reconstruct
+    module: orphan-utils
+    skill: create_module_documentation
+    missing:
+      - "Space:orphan-utils"
+      - "PATTERNS:orphan-utils"
+    issues:
+      - "narrative_ISSUE_no-docs-ref-orphan-utils-helpers_c3"
 ```
 
 ---
 
-## 5. CALCULATE SCORE
+## OBJECTIVE → SKILL MAPPING
 
-```python
-def calculate_score(results: Dict) -> int:
-    score = 100
+| Objective Type | Skill |
+|----------------|-------|
+| `documented` | `create_module_documentation` |
+| `synced` | `update_module_sync_state` |
+| `maintainable` | `implement_write_or_modify_code` |
+| `tested` | `test_integrate_and_gate` |
+| `healthy` | `health_define_and_verify` |
+| `resolved` | `review_evaluate_changes` |
+| `secure` | `implement_write_or_modify_code` |
 
-    score -= len(results["critical"]) * 10
-    score -= len(results["warning"]) * 3
-    score -= len(results["info"]) * 1
+---
 
-    return max(0, score)
+## ISSUE TYPE → OBJECTIVE MAPPING
+
+### Documentation Issues → `documented`
+UNDOCUMENTED, INCOMPLETE_CHAIN, PLACEHOLDER, DOC_TEMPLATE_DRIFT, NO_DOCS_REF, BROKEN_IMPL_LINK, ORPHAN_DOCS, NON_STANDARD_DOC_TYPE, DOC_DUPLICATION, DOC_LINK_INTEGRITY
+
+### Sync Issues → `synced`
+STALE_SYNC, STALE_IMPL, CODE_DOC_DELTA_COUPLING, DOC_GAPS
+
+### Code Quality Issues → `maintainable`
+MONOLITH, STUB_IMPL, INCOMPLETE_IMPL, NAMING_CONVENTION, MAGIC_VALUES, HARDCODED_CONFIG, LONG_PROMPT, LONG_SQL, LEGACY_MARKER
+
+### Test Issues → `tested`
+MISSING_TESTS, TEST_FAILED, TEST_ERROR, TEST_TIMEOUT, INVARIANT_UNTESTED, TEST_NO_VALIDATES
+
+### Health Issues → `healthy`
+HEALTH_FAILED, INVARIANT_VIOLATED, INVARIANT_NO_TEST, VALIDATION_BEHAVIORS_MISSING, CONFIG_MISSING, LOG_ERROR, MEMBRANE_*
+
+### Review Issues → `resolved`
+ESCALATION, SUGGESTION, UNRESOLVED_QUESTION
+
+### Security Issues → `secure`
+HARDCODED_SECRET
+
+---
+
+## CLI INTEGRATION
+
+```bash
+# Basic doctor (static only)
+ngram doctor
+
+# With tests
+ngram doctor --tests
+
+# With health checks
+ngram doctor --health
+
+# Full (static + tests + health)
+ngram doctor --full
+
+# Output formats
+ngram doctor --format yaml
+ngram doctor --format json
+
+# Show tasks only
+ngram doctor --tasks
 ```
 
 ---
 
-## 6. GENERATE OUTPUT
+## AUTO-RESOLVE
+
+When a previously failing test/health check passes, the issue is resolved:
 
 ```python
-def generate_output(results: Dict, score: int, format: str) -> str:
-    if format == "json":
-        return json.dumps({
-            "score": score,
-            "issues": results,
-            "summary": {k: len(v) for k, v in results.items()}
-        })
-    elif format == "markdown":
-        return render_markdown_report(results, score)
-    else:  # text
-        return render_text_report(results, score)
-```
-
----
-
-## 7. EXIT CODE
-
-```python
-def get_exit_code(results: Dict) -> int:
-    if results["critical"]:
-        return 1
-    return 0
+def auto_resolve(issue_id: str, store: DoctorGraphStore):
+    """Mark issue as resolved when underlying problem is fixed."""
+    issue = store.get_node(issue_id)
+    if issue and issue.status == "open":
+        issue.status = "resolved"
+        issue.resolved_at = now()
+        issue.energy = 0.0  # No longer active
+        store.upsert_node(issue)
 ```
 
 ---

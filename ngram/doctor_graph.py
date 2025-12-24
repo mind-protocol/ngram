@@ -620,6 +620,8 @@ def create_issue_node(
     return IssueNarrative(
         id=issue_id,
         name=f"{issue_type} in {module}/{file_stem}",
+        node_type=NodeType.NARRATIVE.value,
+        type=NarrativeSubtype.ISSUE.value,
         content=content,
         description=message,
         issue_type=issue_type,
@@ -694,6 +696,8 @@ def create_objective_node(objective_type: str, module: str) -> ObjectiveNarrativ
     return ObjectiveNarrative(
         id=obj_id,
         name=f"{module} is {objective_type}",
+        node_type=NodeType.NARRATIVE.value,
+        type=NarrativeSubtype.OBJECTIVE.value,
         content=content,
         description=f"Objective: module {module} achieves {objective_type} status",
         objective_type=objective_type,
@@ -791,6 +795,8 @@ def create_task_node(
     return TaskNarrative(
         id=task_id,
         name=name,
+        node_type=NodeType.NARRATIVE.value,
+        type=NarrativeSubtype.TASK.value,
         content=content,
         description=content_lines[0].replace("## Task: ", ""),
         task_type=task_type,
@@ -1335,7 +1341,11 @@ def upsert_all_file_things(
     Scan all files in target_dir and create Thing nodes for each.
 
     Respects .gitignore and .ngramignore patterns.
-    Creates Space nodes for modules and links files to them.
+    Creates Space nodes for areas/modules with hierarchy links.
+    Creates Thing nodes for files with contains links.
+
+    Graph structure:
+        Space (AREA) --contains--> Space (MODULE) --contains--> Thing (FILE)
 
     Args:
         target_dir: Project root directory
@@ -1344,7 +1354,7 @@ def upsert_all_file_things(
         modules_config: Optional modules.yaml config for module mapping
 
     Returns:
-        Dict with stats: {files_scanned, things_created, things_updated, spaces_created}
+        Dict with stats: {files_scanned, things_created, things_updated, spaces_created, space_links}
     """
     from .doctor_files import should_ignore_path, is_binary_file
     from .core_utils import IGNORED_EXTENSIONS
@@ -1354,8 +1364,13 @@ def upsert_all_file_things(
         "things_created": 0,
         "things_updated": 0,
         "spaces_created": 0,
+        "space_links": 0,
         "modules": set(),
+        "areas": set(),
     }
+
+    # Track Space hierarchy: parent_space_id -> set of child_space_ids
+    space_hierarchy: Dict[str, Set[str]] = {}
 
     # Skip directories that should never be scanned
     skip_dirs = {
@@ -1364,27 +1379,68 @@ def upsert_all_file_things(
         '.pytest_cache', '.mypy_cache', 'coverage', '.tox',
     }
 
-    def get_module_for_path(file_path: Path) -> str:
-        """Determine module name for a file path."""
-        try:
-            rel_path = file_path.relative_to(target_dir)
-        except ValueError:
-            return "root"
+    def ensure_space_hierarchy(rel_path: Path) -> str:
+        """
+        Ensure Space nodes exist for directory hierarchy.
+        Returns the immediate parent Space ID for the file.
 
-        parts = rel_path.parts
+        For path like 'engine/physics/graph.py':
+        - Creates space_AREA_engine (if not exists)
+        - Creates space_MODULE_engine-physics (if not exists)
+        - Links: engine --contains--> engine-physics
+        - Returns: space_MODULE_engine-physics
+        """
+        parts = rel_path.parts[:-1]  # Exclude filename
 
-        # Check modules_config for explicit mapping
-        if modules_config:
-            for module_name, module_info in modules_config.items():
-                if isinstance(module_info, dict):
-                    module_path = module_info.get("path", "")
-                    if module_path and str(rel_path).startswith(module_path):
-                        return module_name
+        if not parts:
+            # Root-level file
+            return generate_space_id("root", "MODULE")
 
-        # Default: use first directory component
-        if len(parts) > 1:
-            return parts[0]
-        return "root"
+        # First level = AREA
+        area_name = parts[0]
+        area_id = generate_space_id(area_name, "AREA")
+
+        if not store.get_node(area_id):
+            area_node = SpaceNode(
+                id=area_id,
+                name=area_name,
+                node_type=NodeType.SPACE.value,
+                type="area",
+                description=f"Area: {area_name}"
+            )
+            store.upsert_node(area_node)
+            stats["spaces_created"] += 1
+        stats["areas"].add(area_name)
+
+        if len(parts) == 1:
+            # File directly in area (e.g., engine/runner.py)
+            return area_id
+
+        # Second level = MODULE (area-subdir)
+        module_name = f"{parts[0]}-{parts[1]}" if len(parts) > 1 else parts[0]
+        module_id = generate_space_id(module_name, "MODULE")
+
+        if not store.get_node(module_id):
+            module_node = SpaceNode(
+                id=module_id,
+                name=module_name,
+                node_type=NodeType.SPACE.value,
+                type="module",
+                description=f"Module: {module_name}"
+            )
+            store.upsert_node(module_node)
+            stats["spaces_created"] += 1
+
+            # Link area -> module
+            if area_id not in space_hierarchy:
+                space_hierarchy[area_id] = set()
+            if module_id not in space_hierarchy[area_id]:
+                space_hierarchy[area_id].add(module_id)
+                store.create_link(link_space_contains(area_id, module_id))
+                stats["space_links"] += 1
+
+        stats["modules"].add(module_name)
+        return module_id
 
     def scan_directory(directory: Path, depth: int = 0) -> None:
         """Recursively scan directory for files."""
@@ -1424,16 +1480,17 @@ def upsert_all_file_things(
 
                 # Get relative path for storage
                 try:
-                    rel_path = str(item.relative_to(target_dir))
+                    rel_path = item.relative_to(target_dir)
+                    rel_path_str = str(rel_path)
                 except ValueError:
-                    rel_path = str(item)
+                    rel_path = Path(str(item))
+                    rel_path_str = str(item)
 
-                # Determine module
-                module = get_module_for_path(item)
-                stats["modules"].add(module)
+                # Ensure Space hierarchy exists and get parent Space
+                parent_space_id = ensure_space_hierarchy(rel_path)
 
                 # Check if Thing already exists
-                thing_id = generate_thing_id(rel_path)
+                thing_id = generate_thing_id(rel_path_str)
                 existing = store.get_node(thing_id)
 
                 if existing:
@@ -1441,23 +1498,21 @@ def upsert_all_file_things(
                 else:
                     stats["things_created"] += 1
 
-                # Upsert the file Thing
-                upsert_file_thing(rel_path, module, store)
+                # Create Thing node
+                thing = create_thing_node(rel_path_str)
+                store.upsert_node(thing)
+
+                # Link parent Space -> Thing
+                store.create_link(link_space_contains(parent_space_id, thing.id))
 
     # Start scan from target_dir
     scan_directory(target_dir)
 
-    # Count spaces created
-    for module in stats["modules"]:
-        space_id = generate_space_id(module)
-        space = store.get_node(space_id)
-        if space and space.created_at_s == space.updated_at_s:
-            # Newly created (timestamps match)
-            stats["spaces_created"] += 1
-
-    # Convert set to count for return
+    # Convert sets to counts for return
     stats["modules_count"] = len(stats["modules"])
+    stats["areas_count"] = len(stats["areas"])
     del stats["modules"]
+    del stats["areas"]
 
     return stats
 

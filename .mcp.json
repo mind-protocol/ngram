@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "membrane": {
+      "command": "python3",
+      "args": ["tools/mcp/membrane_server.py"],
+      "cwd": "/home/mind-protocol/ngram"
+    }
+  }
+}

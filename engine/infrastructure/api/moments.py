@@ -400,7 +400,7 @@ def create_moments_router(
 
         Events:
         - moment_activated: A moment became active (weight >= 0.8)
-        - moment_spoken: A moment was spoken
+        - moment_spoken: A moment was completed
         - moment_decayed: A moment decayed (weight < 0.1)
         - weight_updated: A moment's weight changed
         - click_traversed: A click traversal occurred

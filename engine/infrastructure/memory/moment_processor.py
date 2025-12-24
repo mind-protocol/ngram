@@ -143,7 +143,7 @@ class MomentProcessor:
             name: Optional short name for the moment ID
             tone: Emotional tone (curious, defiant, vulnerable, warm, cold, etc.)
             initial_weight: Starting weight for the moment (0-1, default 1.0 for spoken)
-            initial_status: Status (possible, active, spoken). Default "completed" for immediate display.
+            initial_status: Status (possible, active, completed). Default "completed" for immediate display.
 
         Returns:
             The created moment ID
@@ -206,7 +206,7 @@ class MomentProcessor:
             name: Optional short name for the moment ID
             tone: Atmospheric tone (tense, peaceful, ominous, etc.)
             initial_weight: Starting weight for the moment (0-1, default 1.0 for spoken)
-            initial_status: Status (possible, active, spoken). Default "completed" for immediate display.
+            initial_status: Status (possible, active, completed). Default "completed" for immediate display.
 
         Returns:
             The created moment ID
@@ -271,7 +271,7 @@ class MomentProcessor:
             name: Optional short name for the moment ID
             tone: Tone of the action (questioning, demanding, etc.)
             initial_weight: Starting weight for the moment (0-1, default 1.0 for spoken)
-            initial_status: Status (possible, active, spoken). Default "completed" for immediate display.
+            initial_status: Status (possible, active, completed). Default "completed" for immediate display.
 
         Returns:
             The created moment ID
@@ -334,7 +334,7 @@ class MomentProcessor:
             name: Optional short name for the moment ID
             tone: Tone of the hint (urgent, subtle, etc.)
             initial_weight: Starting weight for the moment (0-1, default 0.8 - high but not max)
-            initial_status: Status (possible, active, spoken). Default "active" for hints.
+            initial_status: Status (possible, active, completed). Default "active" for hints.
 
         Returns:
             The created moment ID
@@ -470,7 +470,7 @@ class MomentProcessor:
             trigger: "player" (click/type), "wait", or "auto"
             require_words: Words that trigger this transition (for trigger="player")
             weight_transfer: How much weight flows to target
-            consumes_origin: If True, origin status → spoken after traversal
+            consumes_origin: If True, origin status → completed after traversal
         """
         self.ops.add_can_lead_to(
             from_moment_id=from_moment_id,

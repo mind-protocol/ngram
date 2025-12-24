@@ -162,7 +162,7 @@ class MomentOperationsMixin:
 
                 logger.info(f"[GraphOps] Moment flipped: {target['id']} (weight={new_weight})")
 
-        # If consumes_origin and we had flips, mark source as spoken
+        # If consumes_origin and we had flips, mark source as completed
         if flipped_moments and matching_targets[0].get("consumes_origin"):
             current_tick = self._get_current_tick()
             cypher_consume = """

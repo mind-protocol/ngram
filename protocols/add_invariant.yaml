@@ -1,0 +1,314 @@
+# Protocol: add_invariant
+# Create a validation invariant with full context and links
+
+protocol: add_invariant
+version: "1.1"
+description: Create a validation invariant with full context and links
+
+triggers:
+  - gap: "Behavior exists without validation coverage"
+  - event: "New constraint discovered during implementation"
+
+requires_skills:
+  - SKILL_Define_And_Verify_Health_Signals_Mapped_To_Validation_Invariants.md
+
+contextual_knowledge:
+  domain: |
+    Validations = invariants that must always hold.
+    Priority: HIGH (system breaks), MED (degraded), LOW (inconvenience).
+    Link to behaviors via RELATES with direction=ensures.
+    Name pattern: V-<AREA>-<INVARIANT> (e.g., V-ENERGY-BOUNDED).
+    Failure mode = what breaks if violated.
+
+  constraints: |
+    - Must have failure_mode (what breaks)
+    - Should link to at least one behavior
+    - Name must follow V-<AREA>-<INVARIANT> pattern
+    - Priority required
+
+  dependencies: |
+    Requires: space exists, behaviors exist (optional but recommended)
+    Enables: health coverage, test generation
+
+  quality_criteria: |
+    Good: "Energy values must remain in [0,1] range after every tick phase"
+    Bad: "Energy should be valid"
+
+steps:
+  load_context:
+    type: query
+    auto_fetch:
+      - query: { find: narrative, type: behavior, in_space: "{space}" }
+        store_as: behaviors
+      - query: { find: narrative, type: validation, in_space: "{space}" }
+        store_as: existing_validations
+    purpose: "Load behaviors to link and existing validations to avoid duplication"
+    next: check_exists
+
+  check_exists:
+    type: branch
+    checks:
+      - condition: "{existing_validations | contains name: '{validation_name}'}"
+        action:
+          type: complete
+          message: "Validation {validation_name} already exists"
+      - condition: "ready"
+        action: { goto: gather_details }
+
+  gather_details:
+    type: ask
+    context: |
+      {contextual_knowledge.domain}
+
+      Space: {space}
+      Existing validations: {existing_validations | list names}
+      Available behaviors to link: {behaviors | list names with ids}
+
+    questions:
+      - name: validation_id
+        ask: "Validation ID? Must follow pattern V-<AREA>-<INVARIANT>"
+        why_it_matters: "Consistent naming enables search and grouping"
+        good_answer: "V-ENERGY-BOUNDED"
+        bad_answer: "energy_check"
+        expects:
+          type: string
+          pattern: "^V-[A-Z]+-[A-Z-]+$"
+
+      - name: invariant_statement
+        ask: "What must always hold? State the invariant precisely."
+        why_it_matters: "This is the core constraint being validated"
+        good_answer: "Energy values must remain in [0,1] range after every tick phase"
+        bad_answer: "Energy should be valid"
+        expects: { type: string, min_length: 20 }
+
+      - name: priority
+        ask: "Priority? HIGH=system breaks, MED=degraded, LOW=inconvenience"
+        why_it_matters: "Determines health check urgency"
+        expects:
+          type: enum
+          options: [HIGH, MED, LOW]
+
+      - name: failure_mode
+        ask: "What breaks if this fails? Be specific."
+        why_it_matters: "Explains why this validation matters"
+        expects: { type: string, min_length: 10 }
+
+      - name: linked_behaviors
+        ask: "Which behaviors does this ensure? Select from available."
+        why_it_matters: "Links validation to what it protects"
+        expects:
+          type: id_list
+          from: "{behaviors}"
+          min: 0
+
+    moment:
+      agent_provides: [invariant_statement, failure_mode]
+    next: gather_thoughts
+
+  gather_thoughts:
+    type: ask
+    context: |
+      ## Protocol Reflection
+
+      Before creating the validation invariant, share any thoughts on this protocol.
+      Your feedback helps improve future executions.
+
+    questions:
+      - name: protocol_thoughts
+        ask: "Any thoughts or suggestions on how to improve this add_invariant protocol?"
+        why_it_matters: "Continuous improvement through reflection"
+        good_answer: "Could validate that behavior IDs exist before linking. Could suggest priority based on failure_mode keywords."
+        expects:
+          type: string
+          required: false
+
+      - name: context_observations
+        ask: "Anything about the context or process that could be better?"
+        expects:
+          type: string
+          required: false
+
+    next: create_validation
+
+  create_validation:
+    type: create
+    nodes:
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # NODE: Validation Narrative
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - id: "validation_{validation_id | slugify}"
+        node_type: narrative
+        type: validation
+        name: "{validation_id}"
+        content: "{invariant_statement}"
+        priority: "{priority}"
+        failure_mode: "{failure_mode}"
+        weight: 0.85
+        # ━━━ ATTRIBUTE EXPLANATIONS ━━━
+        #
+        # id: "validation_{validation_id | slugify}"
+        #   WHAT: Unique identifier derived from validation_id
+        #   WHY: Enables graph queries and linking from health indicators
+        #   FORMAT: validation_<slugified_id>
+        #
+        # node_type: narrative
+        #   WHAT: Persistent story/knowledge type
+        #   WHY: Validations are enduring constraints, not point-in-time events
+        #   ALTERNATIVES: space, thing, moment, todo
+        #
+        # type: validation
+        #   WHAT: Categorization within narratives
+        #   WHY: Distinguishes from behaviors, patterns, implementations
+        #   QUERY: "find all validations" uses this
+        #
+        # name: "{validation_id}"
+        #   WHAT: Display name following V-<AREA>-<INVARIANT> pattern
+        #   WHY: Consistent naming enables search and grouping by area
+        #   EXAMPLE: "V-ENERGY-BOUNDED"
+        #
+        # content: "{invariant_statement}"
+        #   WHAT: The actual invariant that must hold
+        #   WHY: Core constraint being validated
+        #   FORMAT: Precise statement, e.g., "Energy values must remain in [0,1] range"
+        #
+        # priority: "{priority}"
+        #   WHAT: Severity level (HIGH/MED/LOW)
+        #   WHY: Determines health check urgency and response
+        #   OPTIONS:
+        #     - HIGH: System breaks if violated
+        #     - MED: Degraded performance
+        #     - LOW: Inconvenience
+        #
+        # failure_mode: "{failure_mode}"
+        #   WHAT: What breaks if this invariant is violated
+        #   WHY: Explains why this validation matters
+        #   EXAMPLE: "Narratives can gain unbounded energy, breaking physics model"
+        #
+        # weight: 0.85
+        #   WHAT: Importance score (0.0-1.0)
+        #   WHY: Validations are high-weight (0.85) - critical constraints
+        #   RANGE: Higher than behaviors (0.75) but lower than spaces (1.0)
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # NODE: Moment (Creation Event)
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - id: "moment_create_validation_{timestamp}"
+        node_type: moment
+        type: protocol_create
+        prose: "Created validation {validation_id}: {invariant_statement}"
+        status: completed
+        # ━━━ ATTRIBUTE EXPLANATIONS ━━━
+        #
+        # id: "moment_create_validation_{timestamp}"
+        #   WHAT: Unique ID with timestamp for ordering
+        #   WHY: Moments are ordered by creation time
+        #   FORMAT: moment_<action>_<timestamp>
+        #
+        # node_type: moment
+        #   WHAT: Point-in-time event record
+        #   WHY: Creates history that can be queried
+        #   CONTRAST: narratives are persistent, moments are events
+        #
+        # type: protocol_create
+        #   WHAT: Categorizes this moment type
+        #   WHY: Enables queries like "show all creation events"
+        #   OTHER_TYPES: sync_update, decision, escalation_raised
+        #
+        # prose: "Created validation..."
+        #   WHAT: Human-readable description
+        #   WHY: Displayed in activity feeds and history
+        #   FORMAT: Past tense, specific about what happened
+        #
+        # status: completed
+        #   WHAT: Moment state
+        #   WHY: "completed" = action finished, "spoken" = articulated
+        #   OPTIONS: completed, spoken, internal, pending
+
+    links:
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Space Contains Validation
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - type: contains
+        from: "{space}"
+        to: "validation_{validation_id | slugify}"
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: contains
+        #   WHAT: Parent-child relationship
+        #   WHY: Groups validation within its module/space
+        #   QUERY: "What validations are in space X?" follows contains
+        #   DIRECTION: from=space, to=validation
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Validation Ensures Behaviors
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - for_each: linked_behaviors
+        type: relates
+        from: "validation_{validation_id | slugify}"
+        to: "{item}"
+        properties:
+          direction: ensures
+          strength: 0.8
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: relates
+        #   WHAT: Semantic relationship between nodes
+        #   WHY: Links validation to behaviors it protects
+        #   QUERY: "What does this validation ensure?" follows relates
+        #   DIRECTION: from=validation, to=behavior
+        #
+        # properties.direction: ensures
+        #   WHAT: Specifies relationship type
+        #   WHY: "ensures" means validation guarantees behavior works
+        #   ALTERNATIVES: verifies, depends_on, implements
+        #
+        # properties.strength: 0.8
+        #   WHAT: Relationship weight (0.0-1.0)
+        #   WHY: Strong coupling - validation exists to ensure behavior
+        #   RANGE: 0.8 for ensures, 0.9 for verifies
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Actor Expresses Moment
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - type: expresses
+        from: "{actor_id}"
+        to: "moment_create_validation_{timestamp}"
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: expresses
+        #   WHAT: Attribution link
+        #   WHY: Records who/what created this moment
+        #   QUERY: "What did agent X do?" follows expresses
+        #   DIRECTION: from=actor, to=moment
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Moment About Validation
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - type: about
+        from: "moment_create_validation_{timestamp}"
+        to: "validation_{validation_id | slugify}"
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: about
+        #   WHAT: Topic/subject relationship
+        #   WHY: Records what the moment relates to
+        #   QUERY: "What happened to validation X?" follows about
+        #   DIRECTION: from=moment/narrative, to=subject
+
+    next: call_handoff
+
+  call_handoff:
+    type: call_protocol
+    protocol: completion_handoff
+    inputs:
+      space_id: "{space}"
+      task_id: "add_invariant_{validation_id}"
+    next: $complete
+
+output:
+  created:
+    validation_id: "validation_{validation_id | slugify}"
+    name: "{validation_id}"
+    priority: "{priority}"
+    linked_to: "{linked_behaviors | count} behaviors"
+  moment: "moment_create_validation_{timestamp}"

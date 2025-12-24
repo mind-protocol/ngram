@@ -205,7 +205,7 @@ class TestMomentProcessorSchema:
         assert call["status"] == "active"  # Hints default to active
 
     def test_completed_status_sets_tick_resolved(self, mock_moment_processor, mock_graph_ops):
-        """Test that spoken status sets tick_resolved."""
+        """Test that completed status sets tick_resolved."""
         mock_moment_processor.process_dialogue(
             text="Hello there.",
             speaker="char_aldric",

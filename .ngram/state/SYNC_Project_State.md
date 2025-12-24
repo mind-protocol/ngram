@@ -1,27 +1,9 @@
 # Project — Sync: Current State
 
 ```
-LAST_UPDATED: 2025-12-23
-UPDATED_BY: Claude (Tension entity type removal from docs/engine/)
+LAST_UPDATED: 2025-12-24
+UPDATED_BY: Claude (Schema v1.2 final — Dijkstra + Recall)
 ```
-
----
-
-## RECENT CHANGES
-
-### 2025-12-23: Removed Tension entity type references from docs/engine/
-
-- **What:** Systematically removed all references to "Tension" as a graph node/entity type from 10 files in `docs/engine/` directory, replacing with appropriate pressure terminology per Schema v1.2.
-- **Why:** Schema v1.2 defines only 5 node types (Actor, Space, Thing, Narrative, Moment). Tension has been replaced with "pressure" computed from narrative contradictions.
-- **Changes:**
-  - `tension_pressure` → `dramatic_pressure`
-  - `tension_boost` → `dramatic_boost`
-  - `dominant_tension_age` → `dominant_pressure_age`
-  - "tension scaling" → "pressure scaling"
-  - "tensions" (plural entity) → "pressure dynamics" or removed
-  - Kept "tension" where used as narrative/dramatic concept (e.g., "tension shaping")
-- **Files modified:** 10 files across `docs/engine/membrane/`, `docs/engine/models/`, `docs/engine/moment-graph-engine/`
-- **Verification:** Remaining "tension" occurrences are all narrative/dramatic concepts or proper names (e.g., "Void Tension" validation doc), not entity types.
 
 ---
 
@@ -141,6 +123,13 @@ Check `modules.yaml` (project root) for full manifest.
 
 **Coverage notes:**
 Physics docs need major update to reflect v1.1 unified formula and phases.
+
+
+---
+
+## ARCHIVE
+
+Older content archived to: `SYNC_Project_State_archive_2025-12.md`
 
 
 ---

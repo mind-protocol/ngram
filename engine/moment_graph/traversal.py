@@ -23,7 +23,7 @@ class MomentTraversal:
     Core operations:
     - Click a word -> traverse to linked moment
     - Update weights on traversal
-    - Mark moments as spoken
+    - Mark moments as completed
     - Create THEN links for history
     """
 
@@ -101,11 +101,11 @@ class MomentTraversal:
         tick: int,
         speaker_id: str = None
     ) -> None:
-        """Mark moment as spoken and create SAID link if speaker."""
+        """Mark moment as completed and create SAID link if speaker."""
         self._update_status(moment_id, 'completed', tick)
         if speaker_id:
             self.write.add_said(speaker_id, moment_id)
-        logger.debug(f"[Traversal] Spoken: {moment_id} by {speaker_id}")
+        logger.debug(f"[Traversal] Completed: {moment_id} by {speaker_id}")
 
     def make_dormant(
         self,

@@ -1,0 +1,582 @@
+# Protocol: add_objectives
+# Define ranked goals for a module/space
+
+protocol: add_objectives
+version: "1.1"
+description: Define primary objective, secondary objectives, and non-objectives for a space
+
+triggers:
+  - gap: "D-NO-OBJECTIVES: Missing OBJECTIVES for module"
+  - event: "Defining new module boundaries"
+
+requires_skills:
+  - SKILL_Define_Module_Boundaries_Objectives_And_Scope.md
+
+contextual_knowledge:
+  domain: |
+    Objectives in ngram:
+    - Primary objective = THE thing this module optimizes for (singular)
+    - Secondary objectives = goals that support the primary (0-5)
+    - Non-objectives = explicit scope boundaries (what it doesn't do)
+
+    Structure:
+    - narrative.objective (primary) ← relates[supports] ← narrative.objective (secondary)
+    - narrative.objective (primary) ← relates[bounds] ← narrative.non_objective
+
+    Every module needs at least:
+    1. One primary objective
+    2. One non-objective (prevents scope creep)
+  constraints: |
+    - Primary must be singular and clear
+    - Secondary must support primary (not tangential)
+    - Non-objectives must be plausible (things someone might ask for)
+    - Avoid vague objectives ("be good", "work well")
+  quality_criteria: |
+    Good primary: "Minimize context window usage while maintaining task completion quality"
+    Bad primary: "Be efficient"
+
+    Good non-objective: "Real-time streaming (use batch processing instead)"
+    Bad non-objective: "Don't break"
+
+steps:
+  identify_space:
+    type: ask
+    auto_fetch:
+      - query: { find: space }
+        store_as: available_spaces
+    context: |
+      Objectives define what a module optimizes for.
+      First, identify which space/module needs objectives.
+
+      ID Convention: {node-type}_{SUBTYPE}_{instance}
+      Example space_id: space_MODULE_engine-physics
+    questions:
+      - name: space_id
+        ask: "Which space/module needs objectives?"
+        expects:
+          type: id
+          node_type: space
+    moment:
+      agent_provides: [description]
+    # Auto-derive module_name from space_id
+    computed:
+      module_name: "{space_id | strip_prefix('space_MODULE_') | strip_prefix('space_AREA_')}"
+      # Examples:
+      #   space_MODULE_engine-physics → engine-physics
+      #   space_AREA_physics → physics
+    next: check_existing
+
+  check_existing:
+    type: query
+    auto_fetch:
+      - query:
+          find: narrative
+          type: objective
+          in_space: "{space_id}"
+        store_as: existing_objectives
+      - query:
+          find: narrative
+          type: non_objective
+          in_space: "{space_id}"
+        store_as: existing_non_objectives
+    purpose: "Check what objectives already exist"
+    next: route_existing
+
+  route_existing:
+    type: branch
+    condition: "len({existing_objectives}) > 0"
+    then: show_existing
+    else: ask_primary
+
+  show_existing:
+    type: ask
+    context: |
+      Existing objectives for {space_id}:
+      {existing_objectives | format_list}
+
+      Existing non-objectives:
+      {existing_non_objectives | format_list}
+    questions:
+      - name: action
+        ask: "Add more objectives, replace existing, or cancel?"
+        expects:
+          type: enum
+          options: [add_more, replace, cancel]
+    next: route_action
+
+  route_action:
+    type: branch
+    on: "{action}"
+    cases:
+      add_more: ask_secondary
+      replace: ask_primary
+      cancel: cancelled
+
+  cancelled:
+    type: complete
+    status: cancelled
+    message: "Objectives unchanged"
+
+  ask_primary:
+    type: ask
+    context: |
+      {contextual_knowledge.domain}
+
+      Space: {space_id}
+
+      The primary objective is THE thing this module optimizes for.
+      It should be singular, specific, and measurable.
+    questions:
+      - name: primary_objective
+        ask: "What is the ONE thing this module optimizes for?"
+        why_it_matters: "All design decisions trace back to this"
+        good_answer: "Ensure complete traceability from doctor detections through skills to protocols to graph mutations"
+        bad_answer: "Make it work well"
+        expects:
+          type: string
+          min_length: 20
+      - name: primary_rationale
+        ask: "Why is this the primary objective? (context)"
+        expects:
+          type: string
+          min_length: 10
+    moment:
+      agent_provides: [description, reasoning]
+    next: ask_secondary
+
+  ask_secondary:
+    type: ask
+    context: |
+      Primary objective: {primary_objective}
+
+      Secondary objectives SUPPORT the primary. They are not independent goals.
+      Ask: "Does achieving this help achieve the primary?"
+    questions:
+      - name: has_secondary
+        ask: "Are there secondary objectives? (0-5)"
+        expects:
+          type: enum
+          options: [yes, no]
+    next: route_secondary
+
+  route_secondary:
+    type: branch
+    on: "{has_secondary}"
+    cases:
+      yes: collect_secondary
+      no: ask_non_objectives
+
+  collect_secondary:
+    type: ask
+    context: |
+      Primary: {primary_objective}
+
+      Each secondary objective should clearly support the primary.
+    questions:
+      - name: secondary_count
+        ask: "How many secondary objectives? (1-5)"
+        expects:
+          type: number
+          min: 1
+          max: 5
+    next: secondary_loop
+
+  secondary_loop:
+    type: loop
+    count: "{secondary_count}"
+    step:
+      type: ask
+      questions:
+        - name: secondary_objective
+          ask: "Secondary objective #{loop_index}?"
+          expects:
+            type: string
+            min_length: 10
+        - name: how_supports
+          ask: "How does this support the primary objective?"
+          expects:
+            type: string
+    collect_as: secondary_objectives
+    next: ask_non_objectives
+
+  ask_non_objectives:
+    type: ask
+    context: |
+      Primary: {primary_objective}
+      Secondary: {secondary_objectives | format_list}
+
+      Non-objectives define scope boundaries.
+      These are things someone MIGHT reasonably ask for, but this module won't do.
+
+      At least one non-objective is required to prevent scope creep.
+    questions:
+      - name: non_objective_count
+        ask: "How many non-objectives? (1-5)"
+        expects:
+          type: number
+          min: 1
+          max: 5
+    next: non_objective_loop
+
+  non_objective_loop:
+    type: loop
+    count: "{non_objective_count}"
+    step:
+      type: ask
+      questions:
+        - name: non_objective
+          ask: "Non-objective #{loop_index}? (what this module explicitly won't do)"
+          good_answer: "Runtime coverage - this validates spec completeness, not runtime behavior"
+          bad_answer: "Don't crash"
+          expects:
+            type: string
+            min_length: 10
+        - name: why_excluded
+          ask: "Why is this out of scope?"
+          expects:
+            type: string
+    collect_as: non_objectives
+    next: confirm
+
+  confirm:
+    type: ask
+    context: |
+      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      OBJECTIVES PREVIEW for {space_id}
+      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+      PRIMARY:
+        {primary_objective}
+        Rationale: {primary_rationale}
+
+      SECONDARY:
+        {secondary_objectives | format_numbered}
+
+      NON-OBJECTIVES:
+        {non_objectives | format_numbered}
+
+      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    questions:
+      - name: confirmed
+        ask: "Create these objectives?"
+        expects:
+          type: enum
+          options: [create, revise, cancel]
+    next: route_confirm
+
+  route_confirm:
+    type: branch
+    on: "{confirmed}"
+    cases:
+      create: gather_thoughts
+      revise: ask_primary
+      cancel: cancelled
+
+  gather_thoughts:
+    type: ask
+    context: |
+      ## Protocol Reflection
+
+      Before creating the objectives, share any thoughts on this protocol.
+      Your feedback helps improve future executions.
+
+    questions:
+      - name: protocol_thoughts
+        ask: "Any thoughts or suggestions on how to improve this add_objectives protocol?"
+        why_it_matters: "Continuous improvement through reflection"
+        good_answer: "Could suggest secondary objectives based on primary objective keywords or domain patterns"
+        expects:
+          type: string
+          required: false
+
+      - name: context_observations
+        ask: "Anything about the context or process that could be better?"
+        expects:
+          type: string
+          required: false
+
+    next: create_objectives
+
+  create_objectives:
+    type: create
+    nodes:
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # NODE: Primary Objective
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - id: "narrative_OBJECTIVE_{module_name}-primary"
+        # ID Convention: {node-type}_{SUBTYPE}_{instance}
+        # Example: narrative_OBJECTIVE_engine-physics-primary
+        node_type: narrative
+        type: objective
+        subtype: primary
+        name: "Primary Objective"
+        content: "{primary_objective}"
+        rationale: "{primary_rationale}"
+        weight: 1.0
+        # ━━━ ATTRIBUTE EXPLANATIONS ━━━
+        #
+        # id: "narrative_OBJECTIVE_{module_name}-primary"
+        #   WHAT: Unique identifier for primary objective
+        #   WHY: Used in queries and links from secondary objectives
+        #   FORMAT: narrative_OBJECTIVE_{module}-primary
+        #
+        # node_type: narrative
+        #   WHAT: Persistent truth about the module
+        #   WHY: Objectives persist across implementations
+        #   ALTERNATIVES: moment (events), thing (entities), space (containers)
+        #
+        # type: objective
+        #   WHAT: Categorization within narratives
+        #   WHY: Enables queries like "show all objectives"
+        #   OTHER_TYPES: pattern, anti_pattern, sync, behaviors
+        #
+        # subtype: primary
+        #   WHAT: Distinguishes primary from secondary objectives
+        #   WHY: Only one primary per module
+        #   OPTIONS: primary, secondary
+        #
+        # content: "{primary_objective}"
+        #   WHAT: The actual objective text
+        #   WHY: The optimization goal for this module
+        #   FORMAT: Specific, measurable, singular
+        #
+        # rationale: "{primary_rationale}"
+        #   WHAT: Why this is the primary objective
+        #   WHY: Context for design decisions
+        #   LENGTH: 1-3 sentences
+        #
+        # weight: 1.0
+        #   WHAT: Importance score (0.0-1.0)
+        #   WHY: Primary objectives are max weight
+        #   RANGE: 1.0 for primary, 0.7 for secondary
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # NODE: Secondary Objectives
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - for_each: secondary_objectives
+        id: "narrative_OBJECTIVE_{module_name}-secondary_{loop_index | pad2}"
+        # ID Convention: narrative_OBJECTIVE_{module}-secondary_{index}
+        # Example: narrative_OBJECTIVE_engine-physics-secondary_01
+        node_type: narrative
+        type: objective
+        subtype: secondary
+        name: "Secondary Objective {loop_index}"
+        content: "{item.secondary_objective}"
+        supports_rationale: "{item.how_supports}"
+        weight: 0.7
+        # ━━━ ATTRIBUTE EXPLANATIONS ━━━
+        #
+        # subtype: secondary
+        #   WHAT: Supporting objectives
+        #   WHY: These help achieve the primary
+        #   CONSTRAINT: Must support primary, not independent
+        #
+        # supports_rationale: "{item.how_supports}"
+        #   WHAT: Explanation of how this supports primary
+        #   WHY: Validates this is truly secondary, not tangential
+        #   FORMAT: Direct connection to primary objective
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # NODE: Non-Objectives
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - for_each: non_objectives
+        id: "narrative_NON-OBJECTIVE_{module_name}_{loop_index | pad2}"
+        # ID Convention: narrative_NON-OBJECTIVE_{module}_{index}
+        # Example: narrative_NON-OBJECTIVE_engine-physics_01
+        node_type: narrative
+        type: non_objective
+        name: "Non-Objective {loop_index}"
+        content: "{item.non_objective}"
+        exclusion_rationale: "{item.why_excluded}"
+        weight: 0.5
+        # ━━━ ATTRIBUTE EXPLANATIONS ━━━
+        #
+        # type: non_objective
+        #   WHAT: Explicit scope boundaries
+        #   WHY: Prevents scope creep
+        #   CONSTRAINT: Must be plausible (things someone might ask for)
+        #
+        # exclusion_rationale: "{item.why_excluded}"
+        #   WHAT: Why this is out of scope
+        #   WHY: Makes boundaries explicit
+        #   FORMAT: Clear reason, not just "not doing it"
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # NODE: Moment (Creation Event)
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - id: "moment_DEFINE-OBJECTIVES_{module_name}_{timestamp_short}"
+        # ID Convention: moment_{SUBTYPE}_{context}_{hash}
+        # Example: moment_DEFINE-OBJECTIVES_engine-physics_a7
+        node_type: moment
+        type: protocol_create
+        text: |
+          Defined objectives for {space_id}:
+          - Primary: {primary_objective}
+          - Secondary: {secondary_objectives | count}
+          - Non-objectives: {non_objectives | count}
+        status: spoken
+        # ━━━ ATTRIBUTE EXPLANATIONS ━━━
+        #
+        # node_type: moment
+        #   WHAT: Point-in-time event record
+        #   WHY: Creates history that can be queried
+        #   CONTRAST: narratives are persistent, moments are events
+        #
+        # type: protocol_create
+        #   WHAT: Categorizes this moment type
+        #   WHY: Enables queries like "show all creation events"
+        #   OTHER_TYPES: sync_update, decision, escalation_raised
+        #
+        # status: spoken
+        #   WHAT: Moment state
+        #   WHY: "spoken" = articulated/public, "internal" = private thought
+        #   OPTIONS: spoken, internal, pending
+
+    links:
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Space Contains Primary Objective
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - type: contains
+        from: "{space_id}"
+        to: "narrative_OBJECTIVE_{module_name}-primary"
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: contains
+        #   WHAT: Parent-child relationship
+        #   WHY: Space owns this objective
+        #   QUERY: "What objectives are in space X?" follows contains
+        #   DIRECTION: from=space, to=objective
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Space Contains Secondary Objectives
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - for_each: secondary_objectives
+        type: contains
+        from: "{space_id}"
+        to: "narrative_OBJECTIVE_{module_name}-secondary_{loop_index | pad2}"
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: contains
+        #   WHAT: Space owns secondary objectives
+        #   WHY: All objectives belong to the space
+        #   DIRECTION: from=space, to=secondary_objective
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Space Contains Non-Objectives
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - for_each: non_objectives
+        type: contains
+        from: "{space_id}"
+        to: "narrative_NON-OBJECTIVE_{module_name}_{loop_index | pad2}"
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: contains
+        #   WHAT: Space owns non-objectives (boundaries)
+        #   WHY: Scope boundaries belong to the space
+        #   DIRECTION: from=space, to=non_objective
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Secondary Supports Primary
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - for_each: secondary_objectives
+        type: relates
+        from: "narrative_OBJECTIVE_{module_name}-secondary_{loop_index | pad2}"
+        to: "narrative_OBJECTIVE_{module_name}-primary"
+        properties:
+          direction: supports
+          strength: 0.8
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: relates
+        #   WHAT: Semantic relationship between objectives
+        #   WHY: Shows how secondary helps achieve primary
+        #   QUERY: "What supports this objective?" follows relates[supports]
+        #   DIRECTION: from=secondary, to=primary
+        #
+        # properties.direction: supports
+        #   WHAT: Specific relationship type
+        #   WHY: Distinguishes from other relates types (bounds, achieves)
+        #   ALTERNATIVES: bounds, achieves, protects
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Non-Objectives Bound Primary
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - for_each: non_objectives
+        type: relates
+        from: "narrative_NON-OBJECTIVE_{module_name}_{loop_index | pad2}"
+        to: "narrative_OBJECTIVE_{module_name}-primary"
+        properties:
+          direction: bounds
+          strength: 0.6
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: relates
+        #   WHAT: Semantic relationship showing boundaries
+        #   WHY: Non-objectives define what's out of scope
+        #   QUERY: "What bounds this objective?" follows relates[bounds]
+        #   DIRECTION: from=non_objective, to=primary
+        #
+        # properties.direction: bounds
+        #   WHAT: Defines scope boundaries
+        #   WHY: Prevents scope creep by making exclusions explicit
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Actor Expresses Moment
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - type: expresses
+        from: "{actor_id}"
+        to: "moment_DEFINE-OBJECTIVES_{module_name}_{timestamp_short}"
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: expresses
+        #   WHAT: Attribution link
+        #   WHY: Records who/what created this moment
+        #   QUERY: "What did agent X do?" follows expresses
+        #   DIRECTION: from=actor, to=moment
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Moment About Space
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - type: about
+        from: "moment_DEFINE-OBJECTIVES_{module_name}_{timestamp_short}"
+        to: "{space_id}"
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: about
+        #   WHAT: Topic/subject relationship
+        #   WHY: Records what the moment relates to
+        #   QUERY: "What happened to space X?" follows about
+        #   DIRECTION: from=moment, to=subject
+
+    next: call_handoff
+
+  call_handoff:
+    type: call_protocol
+    protocol: completion_handoff
+    inputs:
+      space_id: "{space_id}"
+      task_id: "add_objectives_{space_id}"
+    next: $complete
+
+output:
+  cluster:
+    nodes:
+      - narrative_OBJECTIVE (primary)
+      - narrative_OBJECTIVE (secondary, 0-5)
+      - narrative_NON-OBJECTIVE (1-5)
+      - moment_DEFINE-OBJECTIVES
+    links:
+      - contains (space → objectives)
+      - relates[supports] (secondary → primary)
+      - relates[bounds] (non-objective → primary)
+      - expresses (actor → moment)
+      - about (moment → space)
+  summary: "Created objectives for {space_id}: 1 primary, {secondary_objectives | count} secondary, {non_objectives | count} non-objectives"
+  returns:
+    primary_id: "narrative_OBJECTIVE_{module_name}-primary"
+    secondary_ids: "{secondary_objectives | map(id)}"
+    non_objective_ids: "{non_objectives | map(id)}"
+
+# ID Convention Reference:
+# See docs/schema/PATTERNS_Schema.md section 3 for full ID format specification.
+# Format: {node-type}_{SUBTYPE}_{instance-context}_{disambiguator}

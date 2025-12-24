@@ -172,9 +172,9 @@ def _ensure_ngram_config(docs_dir: Path, dry_run: bool) -> int:
     return 1 if _maybe_write_file(path, _NGRAM_CONFIG, dry_run) else 0
 
 
-def _ensure_repair_report(docs_dir: Path, dry_run: bool) -> int:
-    path = docs_dir.parent / ".ngram" / "state" / "REPAIR_REPORT.md"
-    return 1 if _maybe_write_file(path, _REPAIR_REPORT, dry_run) else 0
+def _ensure_work_report(docs_dir: Path, dry_run: bool) -> int:
+    path = docs_dir.parent / ".ngram" / "state" / "WORK_REPORT.md"
+    return 1 if _maybe_write_file(path, _WORK_REPORT, dry_run) else 0
 
 
 def _ensure_cli_module_docs(docs_dir: Path, dry_run: bool) -> int:
@@ -233,7 +233,7 @@ def docs_fix_command(target_dir: Path, dry_run: bool = False) -> int:
     created += _ensure_scene_memory_health(docs_dir, dry_run)
     created += _ensure_prompt_state_sync(docs_dir, dry_run)
     created += _ensure_ngram_config(docs_dir, dry_run)
-    created += _ensure_repair_report(docs_dir, dry_run)
+    created += _ensure_work_report(docs_dir, dry_run)
 
     link_results = _maybe_fix_chain_links(target_dir, dry_run)
     rewrite_results = _rewrite_impl_references(docs_dir, dry_run)
@@ -275,13 +275,13 @@ SYNC:            ./SYNC_CLI_Module_Current_State.md
 ## PURPOSE
 
 The CLI is the operational entrypoint for the protocol. It owns argument parsing,
-command routing, and consistent output for health and repair workflows.
+command routing, and consistent output for health and work workflows.
 
 ## SCOPE
 
 In scope:
 - Argument parsing and command routing for `ngram` commands.
-- Coordination of protocol health, repair, and prompt generation flows.
+- Coordination of protocol health, work, and prompt generation flows.
 - Dispatch to command modules with traceable exits.
 
 Out of scope:
@@ -652,7 +652,7 @@ _NGRAM_CONFIG = """doctor:
 """
 
 
-_REPAIR_REPORT = """# Repair Report
+_WORK_REPORT = """# Work Report
 
 ```
 LAST_UPDATED: 2025-12-20

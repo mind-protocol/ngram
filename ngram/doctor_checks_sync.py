@@ -84,7 +84,8 @@ def doctor_check_conflicts(target_dir: Path, config: DoctorConfig) -> List[Docto
                             "conflicts": [item["title"] for item in escalation_items],
                             "items": escalation_items[:5],
                         },
-                        suggestion=f"Decide: {escalation_items[0]['title']}" if escalation_items else ""
+                        suggestion=f"Decide: {escalation_items[0]['title']}" if escalation_items else "",
+                        protocol="resolve_blocker"
                     ))
 
             except Exception:
@@ -148,7 +149,8 @@ def doctor_check_doc_gaps(target_dir: Path, config: DoctorConfig) -> List[Doctor
                         path=rel_path,
                         message=f"{len(uncompleted)} incomplete task(s) from previous session",
                         details={"gaps": uncompleted[:10], "total": len(uncompleted)},
-                        suggestion=f"Complete: {uncompleted[0][:50]}..." if uncompleted else ""
+                        suggestion=f"Complete: {uncompleted[0][:50]}..." if uncompleted else "",
+                        protocol="record_work"
                     ))
 
             except Exception:

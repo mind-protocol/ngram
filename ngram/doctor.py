@@ -57,6 +57,7 @@ from .doctor_checks import (
     doctor_check_code_doc_delta_coupling,
     doctor_check_magic_values,
     doctor_check_hardcoded_secrets,
+    doctor_check_docs_not_ingested,
 )
 from .doctor_checks_naming import (
     doctor_check_naming_conventions,
@@ -79,6 +80,18 @@ from .doctor_checks_invariants import (
     doctor_check_test_validates_markers,
     doctor_check_completion_gate,
 )
+from .doctor_graph import (
+    DoctorGraphStore,
+    upsert_all_file_things,
+    sync_file_things_to_graph,
+    upsert_issue,
+    IssueNarrative,
+    ObjectiveNarrative,
+    TaskNarrative,
+    ensure_module_objectives,
+    create_tasks_from_issues,
+    generate_issue_id,
+)
 
 
 def calculate_health_score(issues: Dict[str, List[DoctorIssue]]) -> int:
@@ -92,9 +105,50 @@ def calculate_health_score(issues: Dict[str, List[DoctorIssue]]) -> int:
     return max(0, score)
 
 
-def run_doctor(target_dir: Path, config: DoctorConfig) -> Dict[str, Any]:
-    """Run all doctor checks and return results."""
+def run_doctor(target_dir: Path, config: DoctorConfig, sync_graph: bool = True) -> Dict[str, Any]:
+    """Run all doctor checks and return results.
+
+    Args:
+        target_dir: Project root directory
+        config: Doctor configuration
+        sync_graph: Whether to scan files and sync Thing nodes to graph (default: True)
+
+    Returns:
+        Dict with issues, score, summary, and optional graph_stats
+    """
     all_issues = []
+    graph_stats = None
+    store = None
+    graph_ops = None
+
+    # Scan files and create Thing nodes in graph
+    if sync_graph:
+        try:
+            store = DoctorGraphStore()
+            graph_stats = upsert_all_file_things(
+                target_dir=target_dir,
+                store=store,
+                ignore_patterns=config.ignore,
+            )
+
+            # Try to sync to external graph database
+            try:
+                from engine.physics.graph import GraphOps
+                graph_ops = GraphOps(graph_name="ngram")
+                sync_stats = sync_file_things_to_graph(
+                    target_dir=target_dir,
+                    store=store,
+                    ignore_patterns=config.ignore,
+                    graph_ops=graph_ops,
+                )
+                graph_stats.update(sync_stats)
+            except Exception:
+                # No external graph available, that's fine
+                graph_ops = None
+        except Exception as e:
+            # File scan failed, continue with checks
+            graph_stats = {"error": str(e)}
+            store = None
 
     # Run checks
     all_issues.extend(doctor_check_monolith(target_dir, config))
@@ -139,6 +193,8 @@ def run_doctor(target_dir: Path, config: DoctorConfig) -> Dict[str, Any]:
     all_issues.extend(doctor_check_invariant_coverage(target_dir, config))
     all_issues.extend(doctor_check_test_validates_markers(target_dir, config))
     all_issues.extend(doctor_check_completion_gate(target_dir, config))
+    # Graph ingestion checks
+    all_issues.extend(doctor_check_docs_not_ingested(target_dir, config))
 
     # Filter out suppressed issues from doctor-ignore.yaml
     ignores = load_doctor_ignore(target_dir)
@@ -153,6 +209,222 @@ def run_doctor(target_dir: Path, config: DoctorConfig) -> Dict[str, Any]:
         config,
     )
 
+    # Generate graph node IDs for all issues
+    for issue in all_issues:
+        if not issue.id:
+            # Derive module from path (first directory segment or project name)
+            rel_path = Path(issue.path)
+            if rel_path.parts:
+                module = rel_path.parts[0]
+            else:
+                module = target_dir.name
+            issue.generate_id(module)
+
+    # Upsert issue narratives to graph store
+    if sync_graph and store is not None:
+        from .doctor_graph import generate_issue_id
+        issues_created = 0
+        issues_updated = 0
+
+        for issue in all_issues:
+            rel_path = Path(issue.path)
+            module = rel_path.parts[0] if rel_path.parts else target_dir.name
+
+            # Check if exists
+            issue_id = generate_issue_id(issue.issue_type, module, issue.path)
+            existing = store.get_node(issue_id)
+
+            # Upsert to local store
+            upsert_issue(
+                issue_type=issue.issue_type,
+                severity=issue.severity,
+                path=issue.path,
+                message=issue.message,
+                module=module,
+                store=store,
+            )
+
+            if existing:
+                issues_updated += 1
+            else:
+                issues_created += 1
+
+        if graph_stats:
+            graph_stats["issues_created"] = issues_created
+            graph_stats["issues_updated"] = issues_updated
+
+        # Sync issue narratives to external graph if available
+        if graph_ops is not None:
+            try:
+                from .doctor_graph import IssueNarrative as IssueNarrativeNode
+                synced = 0
+                for node_id, node in store.nodes.items():
+                    if isinstance(node, IssueNarrativeNode):
+                        cypher = """
+                        MERGE (n:Narrative {id: $id})
+                        SET n.node_type = $node_type,
+                            n.type = $type,
+                            n.name = $name,
+                            n.issue_type = $issue_type,
+                            n.severity = $severity,
+                            n.path = $path,
+                            n.message = $message,
+                            n.module = $module,
+                            n.status = $status,
+                            n.energy = $energy,
+                            n.created_at_s = $created_at_s,
+                            n.updated_at_s = $updated_at_s
+                        """
+                        graph_ops._query(cypher, {
+                            "id": node.id,
+                            "node_type": node.node_type,
+                            "type": node.type,
+                            "name": node.name,
+                            "issue_type": node.issue_type,
+                            "severity": node.severity,
+                            "path": node.path,
+                            "message": node.message[:500],
+                            "module": node.module,
+                            "status": node.status,
+                            "energy": node.energy,
+                            "created_at_s": node.created_at_s,
+                            "updated_at_s": node.updated_at_s,
+                        })
+                        synced += 1
+                if graph_stats:
+                    graph_stats["issues_synced"] = synced
+            except Exception as e:
+                if graph_stats:
+                    graph_stats["issues_sync_error"] = str(e)[:100]
+
+        # Create objectives for modules with issues
+        modules_with_issues = set()
+        for issue in all_issues:
+            rel_path = Path(issue.path)
+            module = rel_path.parts[0] if rel_path.parts else target_dir.name
+            modules_with_issues.add(module)
+
+        objectives_created = 0
+        for module in modules_with_issues:
+            objs = ensure_module_objectives(module, store)
+            objectives_created += len([o for o in objs if o.created_at_s == o.updated_at_s])
+
+        if graph_stats:
+            graph_stats["objectives_created"] = objectives_created
+            graph_stats["modules_with_issues"] = len(modules_with_issues)
+
+        # Create tasks grouping issues by objective
+        issue_narratives = [
+            node for node in store.nodes.values()
+            if isinstance(node, IssueNarrative) and node.status == "open"
+        ]
+
+        tasks = create_tasks_from_issues(
+            issues=issue_narratives,
+            store=store,
+            modules={},
+        )
+
+        if graph_stats:
+            graph_stats["tasks_created"] = len(tasks)
+            graph_stats["task_types"] = {
+                "serve": len([t for t in tasks if t.task_type == "serve"]),
+                "reconstruct": len([t for t in tasks if t.task_type == "reconstruct"]),
+                "triage": len([t for t in tasks if t.task_type == "triage"]),
+            }
+
+        # Sync objectives and tasks to external graph
+        if graph_ops is not None:
+            try:
+                obj_synced = 0
+                task_synced = 0
+
+                for node in store.nodes.values():
+                    if isinstance(node, ObjectiveNarrative):
+                        cypher = """
+                        MERGE (n:Narrative {id: $id})
+                        SET n.node_type = $node_type,
+                            n.type = $type,
+                            n.name = $name,
+                            n.objective_type = $objective_type,
+                            n.module = $module,
+                            n.status = $status,
+                            n.energy = $energy,
+                            n.created_at_s = $created_at_s,
+                            n.updated_at_s = $updated_at_s
+                        """
+                        graph_ops._query(cypher, {
+                            "id": node.id,
+                            "node_type": node.node_type,
+                            "type": node.type,
+                            "name": node.name,
+                            "objective_type": node.objective_type,
+                            "module": node.module,
+                            "status": node.status,
+                            "energy": node.energy,
+                            "created_at_s": node.created_at_s,
+                            "updated_at_s": node.updated_at_s,
+                        })
+                        obj_synced += 1
+
+                for node in store.nodes.values():
+                    if isinstance(node, TaskNarrative):
+                        cypher = """
+                        MERGE (n:Narrative {id: $id})
+                        SET n.node_type = $node_type,
+                            n.type = $type,
+                            n.name = $name,
+                            n.task_type = $task_type,
+                            n.module = $module,
+                            n.skill = $skill,
+                            n.status = $status,
+                            n.energy = $energy,
+                            n.created_at_s = $created_at_s,
+                            n.updated_at_s = $updated_at_s
+                        """
+                        graph_ops._query(cypher, {
+                            "id": node.id,
+                            "node_type": node.node_type,
+                            "type": node.type,
+                            "name": node.name,
+                            "task_type": node.task_type,
+                            "module": node.module,
+                            "skill": node.skill,
+                            "status": node.status,
+                            "energy": node.energy,
+                            "created_at_s": node.created_at_s,
+                            "updated_at_s": node.updated_at_s,
+                        })
+                        task_synced += 1
+
+                # Sync relates links (task->objective, issue->objective)
+                links_synced = 0
+                for link in store.links:
+                    if link.type == "relates" and link.direction:
+                        cypher = """
+                        MATCH (a {id: $from_id})
+                        MATCH (b {id: $to_id})
+                        MERGE (a)-[r:relates {direction: $direction}]->(b)
+                        SET r.name = $name, r.created_at_s = $created_at_s
+                        """
+                        graph_ops._query(cypher, {
+                            "from_id": link.node_a,
+                            "to_id": link.node_b,
+                            "direction": link.direction,
+                            "name": link.name,
+                            "created_at_s": link.created_at_s,
+                        })
+                        links_synced += 1
+
+                if graph_stats:
+                    graph_stats["objectives_synced"] = obj_synced
+                    graph_stats["tasks_synced"] = task_synced
+                    graph_stats["task_links_synced"] = links_synced
+
+            except Exception as e:
+                if graph_stats:
+                    graph_stats["task_sync_error"] = str(e)[:100]
+
     # Group by severity
     grouped = {
         "critical": [i for i in all_issues if i.severity == "critical"],
@@ -162,7 +434,7 @@ def run_doctor(target_dir: Path, config: DoctorConfig) -> Dict[str, Any]:
 
     score = calculate_health_score(grouped)
 
-    return {
+    result = {
         "project": str(target_dir),
         "score": score,
         "issues": grouped,
@@ -174,6 +446,12 @@ def run_doctor(target_dir: Path, config: DoctorConfig) -> Dict[str, Any]:
         "ignored_count": ignored_count,
         "false_positive_count": false_positive_count,
     }
+
+    # Include graph stats if available
+    if graph_stats:
+        result["graph_stats"] = graph_stats
+
+    return result
 
 
 def doctor_command(
@@ -210,6 +488,17 @@ def doctor_command(
 
     # Check SYNC status and recommend if needed (text format only)
     if output_format == "text":
+        # Show graph stats if available
+        graph_stats = results.get("graph_stats")
+        if graph_stats and not graph_stats.get("error"):
+            print()
+            print("Graph Sync:")
+            print(f"  Files scanned: {graph_stats.get('files_scanned', 0)}")
+            print(f"  Thing nodes: {graph_stats.get('things_created', 0)} created, {graph_stats.get('things_updated', 0)} updated")
+            print(f"  Modules: {graph_stats.get('modules_count', 0)}")
+            if graph_stats.get("nodes_synced"):
+                print(f"  Synced to graph: {graph_stats.get('nodes_synced', 0)} nodes, {graph_stats.get('links_synced', 0)} links")
+
         # Show archived files if any
         if archived:
             print()
@@ -237,7 +526,7 @@ def doctor_command(
             github_issues = create_issues_for_findings(all_issues, target_dir, max_issues=github_max)
             if github_issues:
                 print(f"  Created {len(github_issues)} issue(s)")
-                # Store mapping for repair command
+                # Store mapping for work command
                 results["github_issues"] = {
                     issue.path: {"number": issue.number, "url": issue.url}
                     for issue in github_issues
@@ -245,7 +534,7 @@ def doctor_command(
         except Exception as e:
             print(f"  Failed to create issues: {e}")
 
-    # Save GitHub issue mapping for repair command
+    # Save GitHub issue mapping for work command
     if github_issues:
         mapping_path = target_dir / ".ngram" / "state" / "github_issues.json"
         if mapping_path.parent.exists():

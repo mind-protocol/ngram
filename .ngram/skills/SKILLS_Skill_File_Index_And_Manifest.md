@@ -21,3 +21,4 @@ In this package:
 - `SKILL_Review_Evaluate_Changes_And_Produce_Auditable_Report.md`
 - `SKILL_Update_Module_Sync_State_And_Record_Markers.md`
 - `SKILL_Test_Integrate_And_Gate_Completion.md`
+- `SKILL_Triage_Unmapped_Code_And_Decide_Fate.md`

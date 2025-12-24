@@ -2,6 +2,11 @@
 Connectome Step Processors
 
 Processes each step type: ask, query, create, update, branch.
+
+Key validations on create:
+1. Schema validation - all fields must match schema
+2. Connectivity constraint - new clusters must connect to existing graph
+3. Errors returned with guidance
 """
 
 import logging
@@ -12,6 +17,8 @@ from .session import SessionState, LoopState
 from .loader import StepDefinition
 from .validation import validate_input, coerce_value, ValidationError
 from .templates import expand_template, expand_dict
+from .schema import validate_cluster, SchemaError
+from .persistence import GraphPersistence, PersistenceResult
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +60,7 @@ class StepProcessor:
         """
         self.graph_ops = graph_ops
         self.graph_queries = graph_queries
+        self.persistence = GraphPersistence(graph_ops, graph_queries)
 
     def process_step(
         self,
@@ -77,6 +85,7 @@ class StepProcessor:
             "create": self._process_create,
             "update": self._process_update,
             "branch": self._process_branch,
+            "call_protocol": self._process_call_protocol,
         }
 
         handler = handlers.get(step.type)
@@ -261,48 +270,111 @@ class StepProcessor:
         session: SessionState,
         answer: Any = None
     ) -> StepResult:
-        """Process a create step."""
+        """
+        Process a create step with schema validation.
+
+        Validates:
+        1. All node fields match schema
+        2. All link fields match schema
+        3. New clusters connect to existing graph
+
+        Returns error with guidance if validation fails.
+        """
         config = step.config
         nodes_config = config.get("nodes", [])
         links_config = config.get("links", [])
 
-        created_nodes = []
-        created_links = []
+        # Step 1: Expand all nodes and links
+        expanded_nodes = []
+        expanded_links = []
 
-        # Create nodes
         for node_config in nodes_config:
-            # Check for for_each
             for_each = node_config.get("for_each")
             if for_each:
                 items = session.get_answer(for_each) or session.get_context(for_each) or []
                 for item in items:
                     extra = {"item": item}
-                    node = self._create_node(node_config, session, extra)
-                    if node:
-                        created_nodes.append(node)
-                        session.add_created_node(node)
+                    node = self._expand_node(node_config, session, extra)
+                    if node and node.get("id"):
+                        expanded_nodes.append(node)
             else:
-                node = self._create_node(node_config, session)
-                if node:
-                    created_nodes.append(node)
-                    session.add_created_node(node)
+                node = self._expand_node(node_config, session)
+                if node and node.get("id"):
+                    expanded_nodes.append(node)
 
-        # Create links
         for link_config in links_config:
+            # Check condition
+            condition = link_config.get("condition")
+            if condition:
+                expanded_cond = expand_template(condition, session.collected, session.context)
+                if not self._evaluate_condition(expanded_cond, session):
+                    continue
+
             for_each = link_config.get("for_each")
             if for_each:
                 items = session.get_answer(for_each) or session.get_context(for_each) or []
                 for item in items:
                     extra = {"item": item}
-                    link = self._create_link(link_config, session, extra)
-                    if link:
-                        created_links.append(link)
-                        session.add_created_link(link)
+                    link = self._expand_link(link_config, session, extra)
+                    if link and link.get("from") and link.get("to"):
+                        expanded_links.append(link)
             else:
-                link = self._create_link(link_config, session)
-                if link:
-                    created_links.append(link)
-                    session.add_created_link(link)
+                link = self._expand_link(link_config, session)
+                if link and link.get("from") and link.get("to"):
+                    expanded_links.append(link)
+
+        # Step 2: Validate the cluster
+        validation_errors = self.persistence.validate_only(expanded_nodes, expanded_links)
+
+        if validation_errors:
+            # Format errors with guidance
+            error_messages = []
+            for err in validation_errors:
+                error_messages.append(err.format())
+
+            return StepResult(
+                success=False,
+                error="\n\n".join(error_messages),
+                response={
+                    "step_id": step.id,
+                    "type": "create",
+                    "validation_failed": True,
+                    "error_count": len(validation_errors),
+                    "errors": [
+                        {
+                            "message": e.message,
+                            "field": e.field,
+                            "guidance": e.guidance,
+                        }
+                        for e in validation_errors
+                    ],
+                }
+            )
+
+        # Step 3: Persist (validation already done)
+        result = self.persistence.persist_cluster(
+            expanded_nodes,
+            expanded_links,
+            skip_validation=True  # Already validated above
+        )
+
+        if not result.success:
+            return StepResult(
+                success=False,
+                error=result.format(),
+                response={
+                    "step_id": step.id,
+                    "type": "create",
+                    "persistence_failed": True,
+                    "errors": [e.format() for e in result.errors],
+                }
+            )
+
+        # Step 4: Update session with created items
+        for node in expanded_nodes:
+            session.add_created_node(node)
+        for link in expanded_links:
+            session.add_created_link(link)
 
         # Move to next
         next_step = step.next
@@ -315,10 +387,40 @@ class StepProcessor:
             response={
                 "step_id": step.id,
                 "type": "create",
-                "created_nodes": created_nodes,
-                "created_links": created_links,
+                "created_nodes": expanded_nodes,
+                "created_links": expanded_links,
+                "persisted": True,
             }
         )
+
+    def _expand_node(
+        self,
+        node_config: Dict[str, Any],
+        session: SessionState,
+        extra: Optional[Dict[str, Any]] = None
+    ) -> Optional[Dict[str, Any]]:
+        """Expand node config with session values (without persisting)."""
+        extra = extra or {}
+        return expand_dict(node_config, session.collected, session.context, extra)
+
+    def _expand_link(
+        self,
+        link_config: Dict[str, Any],
+        session: SessionState,
+        extra: Optional[Dict[str, Any]] = None
+    ) -> Optional[Dict[str, Any]]:
+        """Expand link config with session values (without persisting)."""
+        extra = extra or {}
+        expanded = expand_dict(link_config, session.collected, session.context, extra)
+
+        # Handle item being just an ID string
+        if isinstance(extra.get("item"), str):
+            if expanded.get("to") == "{item}":
+                expanded["to"] = extra["item"]
+            if expanded.get("from") == "{item}":
+                expanded["from"] = extra["item"]
+
+        return expanded
 
     def _process_update(
         self,
@@ -408,6 +510,66 @@ class StepProcessor:
                 "type": "branch",
                 "condition_result": result,
                 "next": next_step,
+            }
+        )
+
+    def _process_call_protocol(
+        self,
+        step: StepDefinition,
+        session: SessionState,
+        answer: Any = None
+    ) -> StepResult:
+        """
+        Process a call_protocol step.
+
+        This pushes a call frame and signals the runner to load the sub-protocol.
+        """
+        config = step.config
+        protocol_name = config.get("protocol")
+        on_complete = config.get("on_complete")
+        context_additions = config.get("context", {})
+        max_depth = config.get("max_depth", 5)
+
+        if not protocol_name:
+            return StepResult(
+                success=False,
+                error="call_protocol requires 'protocol' field"
+            )
+
+        if not on_complete:
+            return StepResult(
+                success=False,
+                error="call_protocol requires 'on_complete' field"
+            )
+
+        # Check depth limit
+        if session.call_depth >= max_depth:
+            return StepResult(
+                success=False,
+                error=f"Protocol call depth exceeded ({max_depth})"
+            )
+
+        # Expand context additions
+        expanded_context = expand_dict(context_additions, session.collected, session.context)
+
+        # Add expanded context to session
+        for key, value in expanded_context.items():
+            session.set_context(key, value)
+
+        # Push call frame (saves current protocol and return point)
+        session.push_call(protocol_name, on_complete)
+
+        # Signal runner to load new protocol
+        # The runner will see this special response and load the sub-protocol
+        return StepResult(
+            success=True,
+            next_step="$call_protocol",  # Special marker for runner
+            response={
+                "step_id": step.id,
+                "type": "call_protocol",
+                "protocol": protocol_name,
+                "on_complete": on_complete,
+                "call_depth": session.call_depth,
             }
         )
 

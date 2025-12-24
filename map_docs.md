@@ -96,7 +96,7 @@ graph TD
 │   ├── core/ (72.0K)
 │   │   ├── ALGORITHM_CLI_Command_Execution_Logic/ (13.3K)
 │   │   │   ├── ALGORITHM_Overview.md (docs-fix section) (934)
-│   │   │   ├── ALGORITHM_Overview.md (doctor & repair section) (4.0K)
+│   │   │   ├── ALGORITHM_Overview.md (doctor & work section) (4.0K)
 │   │   │   ├── ALGORITHM_Overview.md (init & validate section) (1.5K)
 │   │   │   ├── ALGORITHM_Overview.md (marker scans section) (1.6K)
 │   │   │   ├── ALGORITHM_Overview.md (1.7K)
@@ -856,7 +856,7 @@ graph TD
 - ## GAPS / IDEAS / QUESTIONS
 
 **Code refs:**
-- `ngram/repair_core.py`
+- `ngram/work_core.py`
 
 **Doc refs:**
 - `docs/cli/archive/SYNC_CLI_State_Archive_2025-12.md`
@@ -986,12 +986,12 @@ graph TD
 - `ngram/project_map.py`
 - `ngram/project_map_html.py`
 - `ngram/prompt.py`
-- `ngram/repair.py`
-- `ngram/repair_core.py`
-- `ngram/repair_escalation_interactive.py`
-- `ngram/repair_instructions.py`
-- `ngram/repair_instructions_docs.py`
-- `ngram/repair_report.py`
+- `ngram/work.py`
+- `ngram/work_core.py`
+- `ngram/work_escalation_interactive.py`
+- `ngram/work_instructions.py`
+- `ngram/work_instructions_docs.py`
+- `ngram/work_report.py`
 - `ngram/repo_overview.py`
 - `ngram/repo_overview_formatters.py`
 - `ngram/solve_escalations.py`
@@ -1033,12 +1033,12 @@ graph TD
 - `ngram/doctor_checks_sync.py`
 - `ngram/doctor_files.py`
 - `ngram/refactor.py`
-- `ngram/repair.py`
-- `ngram/repair_core.py`
-- `ngram/repair_escalation_interactive.py`
-- `ngram/repair_instructions.py`
-- `ngram/repair_instructions_docs.py`
-- `ngram/repair_report.py`
+- `ngram/work.py`
+- `ngram/work_core.py`
+- `ngram/work_escalation_interactive.py`
+- `ngram/work_instructions.py`
+- `ngram/work_instructions_docs.py`
+- `ngram/work_report.py`
 - `ngram/repo_overview.py`
 - `ngram/repo_overview_formatters.py`
 - `ngram/solve_escalations.py`
@@ -1079,8 +1079,8 @@ graph TD
 - `ngram/doctor.py`
 - `ngram/doctor_report.py`
 - `ngram/init_cmd.py`
-- `ngram/repair.py`
-- `ngram/repair_report.py`
+- `ngram/work.py`
+- `ngram/work_report.py`
 
 **Doc refs:**
 - `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/structure/IMPLEMENTATION_Code_Structure.md`
@@ -1109,8 +1109,8 @@ graph TD
 - `ngram/cli.py`
 - `ngram/doctor.py`
 - `ngram/doctor_report.py`
-- `ngram/repair.py`
-- `ngram/repair_report.py`
+- `ngram/work.py`
+- `ngram/work_report.py`
 - `ngram/validate.py`
 
 **Doc refs:**
@@ -1176,11 +1176,11 @@ graph TD
 - `agent_cli.py`
 - `ngram/core_utils.py`
 - `ngram/doctor_files.py`
-- `ngram/repair_core.py`
-- `ngram/repair_escalation_interactive.py`
-- `ngram/repair_instructions.py`
-- `ngram/repair_instructions_docs.py`
-- `ngram/repair_report.py`
+- `ngram/work_core.py`
+- `ngram/work_escalation_interactive.py`
+- `ngram/work_instructions.py`
+- `ngram/work_instructions_docs.py`
+- `ngram/work_report.py`
 - `ngram/repo_overview.py`
 - `ngram/solve_escalations.py`
 
@@ -1206,7 +1206,7 @@ graph TD
 - `ngram/init_cmd.py`
 - `ngram/prompt.py`
 - `ngram/refactor.py`
-- `ngram/repair_core.py`
+- `ngram/work_core.py`
 - `ngram/repo_overview.py`
 - `ngram/solve_escalations.py`
 
@@ -1408,7 +1408,7 @@ graph TD
 - `doctor.py`
 - `ngram/cli.py`
 - `ngram/doctor.py`
-- `ngram/repair.py`
+- `ngram/work.py`
 
 **Sections:**
 - # ngram Framework CLI — Algorithm: Command Execution Logic
@@ -1443,8 +1443,8 @@ graph TD
 - `ngram/doctor_files.py`
 - `ngram/init_cmd.py`
 - `ngram/prompt.py`
-- `ngram/repair.py`
-- `ngram/repair_core.py`
+- `ngram/work.py`
+- `ngram/work_core.py`
 
 **Doc refs:**
 - `docs/cli/core/IMPLEMENTATION_CLI_Code_Architecture/structure/IMPLEMENTATION_Code_Structure.md`
@@ -4316,7 +4316,7 @@ graph TD
 **Code refs:**
 - `ngram/cli.py`
 - `ngram/doctor.py`
-- `ngram/repair_core.py`
+- `ngram/work_core.py`
 - `ngram/tui/__init__.py`
 - `ngram/tui/app.py`
 - `ngram/tui/app_core.py`
@@ -4353,7 +4353,7 @@ graph TD
 
 **Code refs:**
 - `ngram/cli.py`
-- `ngram/repair_core.py`
+- `ngram/work_core.py`
 - `ngram/tui/app.py`
 - `ngram/tui/commands.py`
 - `ngram/tui/state.py`
@@ -4371,8 +4371,8 @@ graph TD
 **Code refs:**
 - `app.py`
 - `commands.py`
-- `repair.py`
-- `repair_core.py`
+- `work.py`
+- `work_core.py`
 - `state.py`
 
 **Sections:**
@@ -4384,7 +4384,7 @@ graph TD
 
 **Code refs:**
 - `doctor.py`
-- `repair_core.py`
+- `work_core.py`
 
 **Sections:**
 - # ngram TUI — Algorithm: Application Flow and Event Handling
@@ -4431,15 +4431,15 @@ graph TD
 - ## INDICATOR: Input Responsiveness
 - ## HOW TO RUN
 - # Manual verification of slash commands
-- # Type /help, /doctor, /repair in the TUI input bar.
+- # Type /help, /doctor, /work in the TUI input bar.
 - # Manual verification of agent panels
-- # Run /repair and verify that agent panels appear and stream output.
+- # Run /work and verify that agent panels appear and stream output.
 - ## KNOWN GAPS
 - ## GAPS / IDEAS / QUESTIONS
 
 **Code refs:**
 - `ngram/cli.py`
-- `ngram/repair_core.py`
+- `ngram/work_core.py`
 - `ngram/tui/__init__.py`
 - `ngram/tui/app.py`
 - `ngram/tui/app_core.py`
@@ -4475,7 +4475,7 @@ graph TD
 - `ngram/tui/app.py`
 - `ngram/tui/app_core.py`
 - `ngram/tui/manager.py`
-- `repair_core.py`
+- `work_core.py`
 
 **Sections:**
 - # ngram TUI — Patterns: Agent CLI-Style Interface
@@ -4490,7 +4490,7 @@ graph TD
 - ## GAPS / IDEAS / QUESTIONS
 
 **Code refs:**
-- `ngram/repair_core.py`
+- `ngram/work_core.py`
 - `ngram/tui/app.py`
 - `ngram/tui/app_core.py`
 - `ngram/tui/app_manager.py`
@@ -4589,12 +4589,12 @@ graph TD
 - `ngram/project_map.py`
 - `ngram/project_map_html.py`
 - `ngram/prompt.py`
-- `ngram/repair.py`
-- `ngram/repair_core.py`
-- `ngram/repair_escalation_interactive.py`
-- `ngram/repair_instructions.py`
-- `ngram/repair_instructions_docs.py`
-- `ngram/repair_report.py`
+- `ngram/work.py`
+- `ngram/work_core.py`
+- `ngram/work_escalation_interactive.py`
+- `ngram/work_instructions.py`
+- `ngram/work_instructions_docs.py`
+- `ngram/work_report.py`
 - `ngram/repo_overview.py`
 - `ngram/repo_overview_formatters.py`
 - `ngram/solve_escalations.py`
@@ -4618,8 +4618,8 @@ graph TD
 - `project_map.py`
 - `project_map_html.py`
 - `prompt.py`
-- `repair.py`
-- `repair_core.py`
+- `work.py`
+- `work_core.py`
 - `repo_overview.py`
 - `scripts/check_chain_links.py`
 - `scripts/check_doc_completeness.py`
@@ -4796,12 +4796,12 @@ graph TD
 - `ngram/project_map_html.py`
 - `ngram/prompt.py`
 - `ngram/refactor.py`
-- `ngram/repair.py`
-- `ngram/repair_core.py`
-- `ngram/repair_escalation_interactive.py`
-- `ngram/repair_instructions.py`
-- `ngram/repair_instructions_docs.py`
-- `ngram/repair_report.py`
+- `ngram/work.py`
+- `ngram/work_core.py`
+- `ngram/work_escalation_interactive.py`
+- `ngram/work_instructions.py`
+- `ngram/work_instructions_docs.py`
+- `ngram/work_report.py`
 - `ngram/repo_overview.py`
 - `ngram/repo_overview_formatters.py`
 - `ngram/solve_escalations.py`
@@ -4832,8 +4832,8 @@ graph TD
 - `project_map.py`
 - `project_map_html.py`
 - `prompt.py`
-- `repair.py`
-- `repair_core.py`
+- `work.py`
+- `work_core.py`
 - `repo_overview.py`
 - `scripts/check_chain_links.py`
 - `scripts/check_doc_completeness.py`
@@ -4868,7 +4868,7 @@ graph TD
 - `archive/SYNC_CLI_State_Archive_2025-12.md`
 - `archive/SYNC_TUI_State_Archive_2025-12.md`
 - `archive/SYNC_archive_2024-12.md`
-- `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md (doctor & repair section)`
+- `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md (doctor & work section)`
 - `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md (init & validate section)`
 - `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md (marker scans section)`
 - `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md`

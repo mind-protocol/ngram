@@ -228,16 +228,75 @@ class ConnectomeRunner:
         if result.next_step:
             session.current_step = result.next_step
             # Recursively process next step (for query/create that don't need input)
+            # Handle call_protocol - load sub-protocol
+            if result.next_step == "$call_protocol":
+                sub_protocol_name = session.connectome_name  # Already updated by push_call
+                return self._start_sub_protocol(session, sub_protocol_name)
+
             next_step = connectome.get_step(result.next_step)
-            if next_step and next_step.type in ("query", "create", "update", "branch"):
+            if next_step and next_step.type in ("query", "create", "update", "branch", "call_protocol"):
                 return self._process_current_step(session, connectome)
             else:
                 # Next step needs input (ask) or we need to return
                 return self._process_current_step(session, connectome)
         else:
-            # Complete
-            session.complete()
-            return self._build_response(session, step_response=result.response)
+            # Protocol complete - check if we need to return to caller
+            if session.call_stack:
+                return self._return_from_call(session)
+            else:
+                # Top-level complete
+                session.complete()
+                return self._build_response(session, step_response=result.response)
+
+    def _start_sub_protocol(
+        self,
+        session: SessionState,
+        protocol_name: str
+    ) -> Dict[str, Any]:
+        """Start executing a sub-protocol after call_protocol step."""
+        # Load sub-protocol
+        if protocol_name in self._connectomes:
+            connectome = self._connectomes[protocol_name]
+        else:
+            try:
+                connectome = self.loader.load(protocol_name)
+                self._connectomes[protocol_name] = connectome
+            except FileNotFoundError:
+                session.set_error(f"Sub-protocol not found: {protocol_name}")
+                return self._build_response(session)
+
+        # Get start step
+        start_step = connectome.get_start_step()
+        if not start_step:
+            session.set_error(f"Sub-protocol has no steps: {protocol_name}")
+            return self._build_response(session)
+
+        # Update session to point to sub-protocol's first step
+        session.current_step = start_step.id
+
+        # Process first step of sub-protocol
+        return self._process_current_step(session, connectome)
+
+    def _return_from_call(self, session: SessionState) -> Dict[str, Any]:
+        """Return from a sub-protocol to the caller."""
+        # Pop call frame (restores previous protocol name and return step)
+        frame = session.pop_call()
+        if not frame:
+            session.set_error("Unexpected empty call stack")
+            return self._build_response(session)
+
+        # Load the caller protocol
+        caller_protocol = self._connectomes.get(session.connectome_name)
+        if not caller_protocol:
+            try:
+                caller_protocol = self.loader.load(session.connectome_name)
+                self._connectomes[session.connectome_name] = caller_protocol
+            except FileNotFoundError:
+                session.set_error(f"Caller protocol not found: {session.connectome_name}")
+                return self._build_response(session)
+
+        # Continue from return step
+        return self._process_current_step(session, caller_protocol)
 
     def _build_response(
         self,
@@ -274,6 +333,14 @@ class ConnectomeRunner:
 
         # Include context summary
         response["context_keys"] = list(session.context.keys())
+
+        # Include call stack info
+        if session.call_stack:
+            response["call_depth"] = session.call_depth
+            response["call_stack"] = [
+                {"protocol": f.protocol_name, "return_step": f.return_step}
+                for f in session.call_stack
+            ]
 
         return response
 

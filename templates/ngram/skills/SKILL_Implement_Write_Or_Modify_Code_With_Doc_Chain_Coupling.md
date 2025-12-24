@@ -4,37 +4,113 @@
 ## Maps to VIEW
 `.ngram/views/VIEW_Implement_Write_Or_Modify_Code.md`
 
+---
+
+## Context
+
+Code-doc coupling in ngram:
+- Every meaningful code change requires doc chain update
+- Docs reference code: docking points in IMPLEMENTATION
+- Code references docs: `# DOCS: path/to/PATTERNS.md` comments
+
+Canon naming: Use terms from PATTERNS/CONCEPT. Don't invent new terminology without updating canon.
+
+Verification requirement: Don't claim "done" without evidence. Run tests, check health stream, verify behavior.
+
+Doc chain coupling flow:
+```
+Code change → Check VALIDATION (still holds?) → Update BEHAVIORS (if observable effect changed)
+           → Update IMPLEMENTATION (if structure changed) → Update HEALTH (if verification needed)
+           → Update SYNC (always, for handoff)
+```
+
+---
+
 ## Purpose
-Perform code edits while coupling implementation changes to doc chain updates and preserving canon naming/commenting and monitoring expectations.
+Perform code edits while coupling implementation changes to doc chain updates and preserving canon naming and verification expectations.
 
-## Inputs (YAML)
+---
+
+## Inputs
 ```yaml
-module: "<area/module>"
-task: "<what to change>"
+module: "<area/module>"    # string
+task: "<what to change>"   # string
 ```
 
-## Outputs (YAML)
+## Outputs
 ```yaml
-code_changes: ["<files modified>"]
-doc_updates: ["<docs updated>"]
-markers:
-  escalations: ["<@ngram:escalation>"]
-  propositions: ["<@ngram:proposition>"]
+code_changes:
+  - "<files modified>"
+doc_updates:
+  - "<docs updated>"
+verification:
+  - type: "test|health|manual"
+    result: "pass|fail"
+    evidence: "<output or reference>"
 ```
 
-## Gates (non-negotiable)
-- Update doc chain for every meaningful code change.
-- No new terms/names without canon support (PATTERNS/CONCEPT).
-- Verify via health/runtime where applicable; do not claim done without evidence.
+---
 
-## Evidence & referencing
-- Docs: `@ngram:id + file + header path`
+## Gates
+
+- Update doc chain for every meaningful code change — no orphan changes
+- No new terms without canon support — use PATTERNS/CONCEPT terminology
+- Verify before claiming done — evidence required
+
+---
+
+## Process
+
+### 1. Load context before coding
+```yaml
+batch_questions:
+  - patterns: "What design decisions govern this module?"
+  - implementation: "Where does code live, what's the structure?"
+  - validation: "What invariants must hold?"
+  - current_sync: "What's the current state, any handoffs?"
+```
+
+### 2. Make code changes
+Follow canon naming. Use existing patterns from IMPLEMENTATION.
+
+### 3. Update doc chain
+| Change type | Update |
+|-------------|--------|
+| New function/class | IMPLEMENTATION docking points |
+| Behavior change | BEHAVIORS |
+| New constraint | VALIDATION |
+| Structure change | ALGORITHM |
+| Any change | SYNC |
+
+### 4. Add code→doc reference
+```python
+# DOCS: docs/<area>/<module>/PATTERNS_*.md
+```
+
+### 5. Verify
+- Run tests if unit-testable
+- Check health stream if runtime-observable
+- Document evidence of pass/fail
+
+---
+
+## Protocols Referenced
+
+| Protocol | When | Creates |
+|----------|------|---------|
+| `protocol:explore_space` | Before coding | Understanding of current state |
+| `protocol:record_work` | After completing | progress moment + handoff |
+
+---
+
+## Evidence
+- Docs: `@ngram:id + file + header`
 - Code: `file + symbol`
 
 ## Markers
-- `@ngram:TODO <plan description>`
-- `@ngram:escalation <blocker/problem>`
-- `@ngram:proposition <suggestion/improvement>`
+- `@ngram:TODO`
+- `@ngram:escalation`
+- `@ngram:proposition`
 
-## Never-stop rule
-If blocked, log `@ngram:escalation` + `@ngram:proposition`, then switch to the next unblocked task.
+## Never-stop
+If blocked → `@ngram:escalation` + `@ngram:proposition` → proceed with proposition.

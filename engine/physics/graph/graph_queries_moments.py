@@ -337,7 +337,7 @@ class MomentQueryMixin:
         # Get location
         location = self.get_place(location_id)
 
-        # Get active/spoken moments at this location
+        # Get active/completed moments at this location
         active_moments = self.get_live_moments(
             location_id,
             present_character_ids,

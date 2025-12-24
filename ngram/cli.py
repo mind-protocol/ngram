@@ -41,12 +41,17 @@ from .doctor_files import add_doctor_ignore, load_doctor_ignore
 from .project_map import print_project_map
 from .sync import sync_command
 from .solve_escalations import solve_special_markers_command
-from .repair import repair_command
+from .work import work_command
 from .work import work_command
 from .refactor import refactor_command
 from .status_cmd import status_command
 from .repo_overview import generate_and_save as generate_overview
 from .docs_fix import docs_fix_command
+from .symbol_extractor import extract_symbols_command
+from .protocol_runner import run_protocol_command, ProtocolResult
+from .graph_query import query_command as graph_query_command
+from .protocol_validator import validate_cluster_command
+from .cluster_metrics import ClusterMetrics, ClusterValidator
 
 
 from .agent_cli import build_agent_command
@@ -101,7 +106,7 @@ def main():
         "--model",
         choices=AGENT_CHOICES,
         default="all",
-        help="Agent model for repair and TUI (default: all, randomly picks a provider per task)",
+        help="Agent model for work and TUI (default: all, randomly picks a provider per task)",
     )
     parser.add_argument(
         "--agents",
@@ -128,6 +133,11 @@ def main():
         type=Path,
         default=Path.cwd(),
         help="Directory to initialize (default: current directory)"
+    )
+    init_parser.add_argument(
+        "--clear",
+        action="store_true",
+        help="Clear existing graph data before injecting seeds"
     )
 
     # ... (the rest of the original subparsers)
@@ -222,6 +232,17 @@ def main():
         type=int,
         default=10,
         help="Max GitHub issues to create (default: 10)"
+    )
+    doctor_parser.add_argument(
+        "--symbols",
+        action="store_true",
+        help="Run symbol extraction to graph before health checks"
+    )
+    doctor_parser.add_argument(
+        "--graph", "-g",
+        type=str,
+        default=None,
+        help="Graph name for symbol extraction (defaults to project name)"
     )
 
     # solve-markers command
@@ -331,24 +352,24 @@ def main():
         help="Show detailed information including doc chain files"
     )
 
-    # repair command
-    repair_parser = subparsers.add_parser(
-        "repair",
-        help="Automatically fix project health issues using repair agents"
+    # work command
+    work_parser = subparsers.add_parser(
+        "work",
+        help="Automatically fix project health issues using work agents"
     )
-    repair_parser.add_argument(
+    work_parser.add_argument(
         "--dir", "-d",
         type=Path,
         default=Path.cwd(),
         help="Project directory (default: current directory)"
     )
-    repair_parser.add_argument(
+    work_parser.add_argument(
         "--max", "-m",
         type=int,
         default=None,
         help="Maximum issues to fix (default: all)"
     )
-    repair_parser.add_argument(
+    work_parser.add_argument(
         "--type", "-t",
         action="append",
         dest="types",
@@ -360,38 +381,38 @@ def main():
         ],
         help="Only fix specific issue types (can be repeated)"
     )
-    repair_parser.add_argument(
+    work_parser.add_argument(
         "--depth",
         choices=["links", "docs", "full"],
         default="docs",
-        help="Repair depth: links (refs only), docs (+ content), full (+ code changes). Default: docs"
+        help="Work depth: links (refs only), docs (+ content), full (+ code changes). Default: docs"
     )
-    repair_parser.add_argument(
+    work_parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Show what would be done without spawning agents"
     )
-    repair_parser.add_argument(
+    work_parser.add_argument(
         "--parallel", "-p",
         type=int,
         default=5,
         help="Number of parallel agents (default: 5, or 6 if model is 'all')",
     )
-    repair_parser.add_argument(
+    work_parser.add_argument(
         "--model",
         choices=AGENT_CHOICES,
-        dest="repair_model",
+        dest="work_model",
         default=None,
-        help="Agent model for repair runs (overrides global --model, default: all)",
+        help="Agent model for work runs (overrides global --model, default: all)",
     )
-    repair_parser.add_argument(
+    work_parser.add_argument(
         "--agents",
         choices=AGENT_CHOICES,
-        dest="repair_model",
+        dest="work_model",
         help=argparse.SUPPRESS,
     )
 
-    # work command (replaces repair with simpler interface)
+    # work command (replaces work with simpler interface)
     work_parser = subparsers.add_parser(
         "work",
         help="Run AI-assisted work on a path (auto-runs doctor first)"
@@ -570,7 +591,7 @@ def main():
     # docs-fix command
     docs_fix_parser = subparsers.add_parser(
         "docs-fix",
-        help="Repair doc chains and create minimal missing docs"
+        help="Work doc chains and create minimal missing docs"
     )
     docs_fix_parser.add_argument(
         "--dir", "-d",
@@ -584,6 +605,166 @@ def main():
         help="Show what would change without writing files"
     )
 
+    # symbols command
+    symbols_parser = subparsers.add_parser(
+        "symbols",
+        help="Extract code symbols (functions, classes, methods) to graph"
+    )
+    symbols_parser.add_argument(
+        "--dir", "-d",
+        type=Path,
+        default=Path.cwd(),
+        help="Project directory (default: current directory)"
+    )
+    symbols_parser.add_argument(
+        "--folder", "-f",
+        type=str,
+        default=None,
+        help="Specific folder to scan (e.g., engine/physics)"
+    )
+    symbols_parser.add_argument(
+        "--graph", "-g",
+        type=str,
+        default=None,
+        help="Graph name (defaults to project directory name)"
+    )
+    symbols_parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Extract without upserting to graph"
+    )
+    symbols_parser.add_argument(
+        "--verbose", "-v",
+        action="store_true",
+        help="Show detailed extraction info"
+    )
+
+    # protocol command
+    protocol_parser = subparsers.add_parser(
+        "protocol",
+        help="Execute or list protocols for dense graph creation"
+    )
+    protocol_subparsers = protocol_parser.add_subparsers(dest="protocol_action")
+
+    protocol_run_parser = protocol_subparsers.add_parser(
+        "run",
+        help="Run a protocol to create nodes and links"
+    )
+    protocol_run_parser.add_argument(
+        "name",
+        type=str,
+        help="Protocol name (e.g., add_health_coverage)"
+    )
+    protocol_run_parser.add_argument(
+        "--graph", "-g",
+        type=str,
+        default=None,
+        help="Graph name to connect to"
+    )
+    protocol_run_parser.add_argument(
+        "--actor", "-a",
+        type=str,
+        default="actor_SYSTEM_cli",
+        help="Actor ID running this protocol"
+    )
+    protocol_run_parser.add_argument(
+        "--context", "-c",
+        type=str,
+        action="append",
+        default=[],
+        help="Initial context values (key=value, can be repeated)"
+    )
+    protocol_run_parser.add_argument(
+        "--verbose", "-v",
+        action="store_true",
+        help="Show detailed execution info"
+    )
+
+    protocol_list_parser = protocol_subparsers.add_parser(
+        "list",
+        help="List available protocols"
+    )
+    protocol_list_parser.add_argument(
+        "--dir", "-d",
+        type=Path,
+        default=Path.cwd(),
+        help="Project directory (default: current directory)"
+    )
+
+    protocol_validate_parser = protocol_subparsers.add_parser(
+        "validate",
+        help="Validate a cluster created by protocol"
+    )
+    protocol_validate_parser.add_argument(
+        "cluster_type",
+        type=str,
+        help="Cluster type (e.g., health_coverage, validation, behavior)"
+    )
+    protocol_validate_parser.add_argument(
+        "root_node",
+        type=str,
+        help="Root node ID of the cluster"
+    )
+    protocol_validate_parser.add_argument(
+        "--graph", "-g",
+        type=str,
+        default=None,
+        help="Graph name to connect to"
+    )
+
+    # query command
+    query_parser = subparsers.add_parser(
+        "query",
+        help="Query the knowledge graph"
+    )
+    query_parser.add_argument(
+        "query_type",
+        choices=["find", "context", "uncovered", "orphans", "stubs"],
+        help="Query type"
+    )
+    query_parser.add_argument(
+        "--type", "-t",
+        type=str,
+        default=None,
+        help="Node type (e.g., narrative.health, thing.dock)"
+    )
+    query_parser.add_argument(
+        "--node", "-n",
+        type=str,
+        default=None,
+        help="Node ID for context query"
+    )
+    query_parser.add_argument(
+        "--space", "-s",
+        type=str,
+        default=None,
+        help="Space ID to limit search"
+    )
+    query_parser.add_argument(
+        "--by",
+        type=str,
+        default=None,
+        help="For uncovered: type that should link (e.g., narrative.health)"
+    )
+    query_parser.add_argument(
+        "--via",
+        type=str,
+        default=None,
+        help="For uncovered: relationship direction (e.g., verifies)"
+    )
+    query_parser.add_argument(
+        "--depth",
+        type=int,
+        default=2,
+        help="Context depth (default: 2)"
+    )
+    query_parser.add_argument(
+        "--graph", "-g",
+        type=str,
+        default=None,
+        help="Graph name to connect to"
+    )
+
     # version
     parser.add_argument(
         "--version",
@@ -594,7 +775,7 @@ def main():
     args = parser.parse_args()
 
     if args.command == "init":
-        success = init_protocol(args.dir, not args.no_force)
+        success = init_protocol(args.dir, not args.no_force, clear_graph=args.clear)
         sys.exit(0 if success else 1)
     elif args.command == "validate":
         success = validate_protocol(args.dir, args.verbose)
@@ -606,6 +787,24 @@ def main():
         success = print_module_context(args.dir, args.file)
         sys.exit(0 if success else 1)
     elif args.command == "doctor":
+        # Run symbol extraction first if requested
+        if args.symbols:
+            import os
+            original_cwd = os.getcwd()
+            os.chdir(args.dir)
+            try:
+                result = extract_symbols_command(
+                    directory=None,
+                    graph_name=args.graph,
+                    dry_run=False
+                )
+                print(f"Symbol extraction: {result.files} files, {result.symbols} symbols, {result.links} links")
+                if result.errors:
+                    print(f"  ({len(result.errors)} errors)")
+                print()
+            finally:
+                os.chdir(original_cwd)
+
         exit_code = doctor_command(
             args.dir, args.format, args.level, args.no_save,
             github=args.github and not args.no_github, github_max=args.github_max
@@ -635,9 +834,9 @@ def main():
     elif args.command == "status":
         exit_code = status_command(args.dir, args.module, args.verbose)
         sys.exit(exit_code)
-    elif args.command == "repair":
-        agent_provider = args.repair_model or args.model
-        exit_code = repair_command(
+    elif args.command == "work":
+        agent_provider = args.work_model or args.model
+        exit_code = work_command(
             args.dir,
             max_issues=args.max,
             issue_types=args.types,
@@ -675,6 +874,43 @@ def main():
     elif args.command == "docs-fix":
         exit_code = docs_fix_command(args.dir, args.dry_run)
         sys.exit(exit_code)
+    elif args.command == "symbols":
+        import os
+        import logging
+        if args.verbose:
+            logging.basicConfig(level=logging.DEBUG)
+        else:
+            logging.basicConfig(level=logging.INFO)
+
+        # Change to project directory for extraction
+        original_cwd = os.getcwd()
+        os.chdir(args.dir)
+
+        try:
+            result = extract_symbols_command(
+                directory=args.folder,
+                graph_name=args.graph,
+                dry_run=args.dry_run
+            )
+
+            print(f"\nSymbol Extraction Complete:")
+            print(f"  Files scanned: {result.files}")
+            print(f"  Symbols extracted: {result.symbols}")
+            print(f"  Links created: {result.links}")
+
+            if result.errors:
+                print(f"\nErrors ({len(result.errors)}):")
+                for error in result.errors[:10]:
+                    print(f"  - {error}")
+                if len(result.errors) > 10:
+                    print(f"  ... and {len(result.errors) - 10} more")
+
+            if args.dry_run:
+                print("\n(dry-run mode - no changes made to graph)")
+
+            sys.exit(0 if not result.errors else 1)
+        finally:
+            os.chdir(original_cwd)
     elif args.command == "ignore":
         if args.list:
             # List current ignores
@@ -717,6 +953,137 @@ def main():
             print("  ngram ignore --type MONOLITH --path src/legacy.py --reason 'Legacy code, too risky to split'")
             print("  ngram ignore --type MAGIC_VALUES --path tests/** --reason 'Test fixtures'")
             sys.exit(1)
+    elif args.command == "protocol":
+        import logging
+        import yaml
+
+        if not args.protocol_action:
+            protocol_parser.print_help()
+            sys.exit(1)
+
+        if args.protocol_action == "run":
+            if hasattr(args, 'verbose') and args.verbose:
+                logging.basicConfig(level=logging.DEBUG)
+            else:
+                logging.basicConfig(level=logging.INFO)
+
+            # Parse initial context from key=value pairs
+            initial_context = {}
+            for ctx in args.context:
+                if '=' in ctx:
+                    key, value = ctx.split('=', 1)
+                    initial_context[key] = value
+
+            try:
+                result = run_protocol_command(
+                    args.name,
+                    actor_id=args.actor,
+                    graph_name=args.graph,
+                    answers=None  # Interactive mode
+                )
+
+                print(f"\nProtocol: {args.name}")
+                print(f"Result: {'SUCCESS' if result.success else 'FAILED'}")
+                print(f"Nodes created: {len(result.nodes_created)}")
+                print(f"Links created: {result.links_created}")
+
+                if result.nodes_created:
+                    print("\nCreated nodes:")
+                    for node_id in result.nodes_created[:10]:
+                        print(f"  - {node_id}")
+                    if len(result.nodes_created) > 10:
+                        print(f"  ... and {len(result.nodes_created) - 10} more")
+
+                if result.errors:
+                    print(f"\nErrors:")
+                    for err in result.errors:
+                        print(f"  - {err}")
+
+                sys.exit(0 if result.success else 1)
+
+            except FileNotFoundError as e:
+                print(f"Error: {e}")
+                sys.exit(1)
+
+        elif args.protocol_action == "list":
+            protocols_dir = args.dir / "protocols"
+            if not protocols_dir.exists():
+                print("No protocols/ directory found.")
+                sys.exit(1)
+
+            protocol_files = sorted(protocols_dir.glob("*.yaml"))
+            if not protocol_files:
+                print("No protocols found in protocols/")
+                sys.exit(0)
+
+            print(f"Available Protocols ({len(protocol_files)}):")
+            print("-" * 50)
+            for pf in protocol_files:
+                try:
+                    with open(pf) as f:
+                        protocol = yaml.safe_load(f)
+                    name = protocol.get('protocol', pf.stem)
+                    desc = protocol.get('description', '')
+                    print(f"  {name}")
+                    if desc:
+                        print(f"    {desc}")
+                except:
+                    print(f"  {pf.stem} (could not parse)")
+            sys.exit(0)
+
+        elif args.protocol_action == "validate":
+            result = validate_cluster_command(
+                args.cluster_type,
+                args.root_node,
+                args.graph
+            )
+
+            print(f"\nCluster: {result.cluster_type}")
+            print(f"Root: {result.root_node}")
+            print(f"Valid: {result.valid}")
+
+            if result.checks_passed:
+                print(f"\nPassed ({len(result.checks_passed)}):")
+                for check in result.checks_passed:
+                    print(f"  + {check}")
+
+            if result.checks_failed:
+                print(f"\nFailed ({len(result.checks_failed)}):")
+                for check in result.checks_failed:
+                    print(f"  - {check}")
+
+            sys.exit(0 if result.valid else 1)
+
+    elif args.command == "query":
+        query_args = {
+            'type': args.type,
+            'node_id': args.node,
+            'in_space': args.space,
+            'target': args.type,
+            'by': getattr(args, 'by', None),
+            'via': getattr(args, 'via', None),
+            'depth': args.depth,
+        }
+
+        result = graph_query_command(args.query_type, query_args, args.graph)
+
+        if isinstance(result, str):
+            print(result)
+        elif isinstance(result, list):
+            if not result:
+                print("No results found.")
+            else:
+                print(f"Found {len(result)} results:")
+                for item in result:
+                    if hasattr(item, 'id'):
+                        print(f"  {item.id}: {item.name}")
+                    else:
+                        print(f"  {item}")
+        else:
+            print(result)
+
+        sys.exit(0)
+
     elif args.command is None:
         # Launch TUI when no subcommand is given (similar to agent CLIs)
         try:

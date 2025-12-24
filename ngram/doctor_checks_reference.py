@@ -43,7 +43,8 @@ def doctor_check_no_docs_ref(target_dir: Path, config: DoctorConfig) -> List[Doc
                 severity="info",
                 path=rel_path,
                 message="No DOCS: reference in file header",
-                suggestion="Document the module itself by pointing to the matching PATTERNS doc."
+                suggestion="Document the module itself by pointing to the matching PATTERNS doc.",
+                protocol="add_implementation"
             ))
 
     return issues

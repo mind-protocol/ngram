@@ -1,5 +1,5 @@
 # DOCS: docs/tui/IMPLEMENTATION_TUI_Code_Architecture.md
-"""Status bar widget showing health score and repair progress."""
+"""Status bar widget showing health score and work progress."""
 
 from pathlib import Path
 from textual.widgets import Static
@@ -7,11 +7,11 @@ from textual.widgets import Static
 
 class StatusBar(Static):
     """
-    Top status bar displaying project health and repair progress.
+    Top status bar displaying project health and work progress.
 
     Shows:
     - Folder name (left)
-    - Progress bar with issues (center) - when repairs running
+    - Progress bar with issues (center) - when works running
     - Health score (right)
     """
 
@@ -28,7 +28,7 @@ class StatusBar(Static):
     def __init__(self, folder_name: str = "", **kwargs) -> None:
         self._folder = folder_name or Path.cwd().name
         self._health = 0
-        # Repair progress tracking
+        # Work progress tracking
         self._total_issues = 0
         self._completed_issues = 0
         self._running_issues = 0
@@ -48,10 +48,10 @@ class StatusBar(Static):
         self._health = max(0, min(100, score))
         self._refresh_display()
 
-    def set_repair_progress(
+    def set_work_progress(
         self, total: int, completed: int, running: int
     ) -> None:
-        """Update repair progress.
+        """Update work progress.
 
         Args:
             total: Total number of issues to fix
@@ -69,8 +69,8 @@ class StatusBar(Static):
         elif running == 0 and self._anim_timer is not None:
             self._stop_animation()
 
-    def clear_repair_progress(self) -> None:
-        """Clear repair progress (repairs done)."""
+    def clear_work_progress(self) -> None:
+        """Clear work progress (works done)."""
         self._total_issues = 0
         self._completed_issues = 0
         self._running_issues = 0
@@ -145,7 +145,7 @@ class StatusBar(Static):
         except Exception:
             width = 80
 
-        # Build center section (progress bar if repairing)
+        # Build center section (progress bar if working)
         bar_width = 40
         center = self._format_progress_bar(bar_width)
 

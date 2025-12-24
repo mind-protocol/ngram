@@ -4,38 +4,113 @@
 ## Maps to VIEW
 `.ngram/views/VIEW_Review_Evaluate_Changes.md`
 
+---
+
+## Context
+
+Review in ngram = producing auditable report with stable references.
+
+Stable references:
+- Docs: `@ngram:id + file + header path`
+- Code: `file:symbol`
+
+Auditable = every claim can be traced to evidence. No assertions without references.
+
+Report structure:
+- Evidence: What docs/code support the claims
+- Summary: What changed
+- Verification: What was tested/checked
+- Remaining gaps: Open TODOs, escalations, propositions
+
+Review is not approval. Review produces the report; human/manager approves.
+
+---
+
 ## Purpose
 Produce a review-ready report with stable references and explicit remaining gaps.
 
-## Inputs (YAML)
+---
+
+## Inputs
 ```yaml
-module: "<area/module>"
-changes: ["<files changed>"]
+module: "<area/module>"        # string
+changes: ["<files changed>"]   # list
 ```
 
-## Outputs (YAML)
+## Outputs
 ```yaml
 report:
   evidence:
-    docs: ["<@ngram:id + file + header path>"]
-    code: ["<file + symbol>"]
-  summary: ["<what changed>"]
-  verification: ["<what was verified>"]
-  remaining_gaps: ["<open TODOs/escalations>"]
+    docs: ["<@ngram:id + file + header>"]
+    code: ["<file:symbol>"]
+  summary:
+    - "<what changed>"
+  verification:
+    - type: "test|health|manual"
+      result: "pass|fail"
+      evidence: "<reference>"
+  remaining_gaps:
+    todos: ["<open TODOs>"]
+    escalations: ["<open escalations>"]
+    propositions: ["<open propositions>"]
 ```
 
-## Gates (non-negotiable)
-- Must include stable references for non-trivial claims.
-- Must list remaining TODOs and escalations/propositions explicitly.
+---
 
-## Evidence & referencing
-- Docs: `@ngram:id + file + header path`
+## Gates
+
+- Must include stable references for non-trivial claims — auditable
+- Must list remaining TODOs/escalations/propositions explicitly — no hidden work
+
+---
+
+## Process
+
+### 1. Gather change scope
+```yaml
+batch_questions:
+  - files: "What files were changed?"
+  - docs: "What docs were updated?"
+  - purpose: "What was the goal of these changes?"
+```
+
+### 2. Collect evidence
+For each change:
+- Code reference: `file:symbol`
+- Doc reference: `@ngram:id + file + header`
+
+### 3. Document verification
+What was tested? What passed/failed?
+Include evidence (test output, health stream, manual check notes).
+
+### 4. List remaining gaps
+Scan for:
+- `@ngram:TODO` in changed files/docs
+- `@ngram:escalation` in SYNC
+- `@ngram:proposition` in SYNC
+
+### 5. Produce report
+Structured output with all sections filled.
+
+---
+
+## Protocols Referenced
+
+| Protocol | When | Creates |
+|----------|------|---------|
+| `protocol:explore_space` | To gather context | exploration moment |
+| `protocol:record_work` | To document review | progress moment |
+
+---
+
+## Evidence
+- Docs: `@ngram:id + file + header`
 - Code: `file + symbol`
 
 ## Markers
-- `@ngram:TODO <plan description>`
-- `@ngram:escalation <blocker/problem>`
-- `@ngram:proposition <suggestion/improvement>`
+- `@ngram:TODO`
+- `@ngram:escalation`
+- `@ngram:proposition`
 
-## Never-stop rule
-If blocked, log `@ngram:escalation` + `@ngram:proposition`, then switch to the next unblocked task.
+## Never-stop
+If blocked → `@ngram:escalation` + `@ngram:proposition` → proceed with proposition.

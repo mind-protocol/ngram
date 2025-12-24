@@ -579,19 +579,20 @@ Error: {e}"""
         hint, or player action. Every piece of text shown to the player
         becomes a Moment for traceability and semantic search.
 
-        Moments follow a lifecycle:
+        Moments follow a lifecycle (v1.2):
         - possible: Could surface but hasn't yet (weight determines priority)
-        - active: Currently being shown/spoken
-        - spoken: Has been shown, part of history
-        - dormant: Old, but can reactivate (e.g., return to location)
-        - decayed: Archived, no longer in active graph
+        - active: Currently being shown, draws from actors
+        - completed: Has been shown, liquidated to connected nodes
+        - rejected: Canon holder refused, energy returns to player
+        - interrupted: Superseded by another event
+        - overridden: Contradicted by new moment
 
         Args:
             id: Unique identifier (e.g., "crossing_d5_dusk_dialogue_143521")
             text: The actual text content
             type: narration, dialogue, hint, player_click, player_freeform, player_choice
             tick_created: World tick when this was created
-            status: possible, active, spoken, dormant, decayed
+            status: possible, active, completed, rejected, interrupted, overridden
             weight: 0-1, determines surfacing priority for possible moments
             tone: curious, defiant, vulnerable, warm, cold, bitter, etc.
             tick_resolved: World tick when moment was resolved (completed/rejected/interrupted/overridden)

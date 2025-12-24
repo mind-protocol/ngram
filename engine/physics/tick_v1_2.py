@@ -28,6 +28,7 @@ from typing import List, Dict, Any, Tuple, Optional, Set
 from dataclasses import dataclass, field
 
 from engine.physics.graph import GraphQueries, GraphOps
+from engine.physics.graph.graph_query_utils import dijkstra_with_resistance, calculate_link_resistance
 
 logger = logging.getLogger(__name__)
 
@@ -356,10 +357,69 @@ class GraphTickV1_2:
         """
         Calculate minimum path resistance using link properties.
 
-        Edge resistance = 1 / (conductivity × weight × emotion_factor)
+        Uses full Dijkstra with v1.2 resistance formula:
+            edge_resistance = 1 / (conductivity × weight × emotion_factor)
+
+        Args:
+            from_id: Starting node ID
+            to_id: Target node ID
+            max_hops: Maximum path length (default 5)
+
+        Returns:
+            Total path resistance (sum of edge resistances), or 100.0 if no path
         """
-        # Simplified: use shortest path hop count as fallback
-        # Full Dijkstra implementation would be in graph_query_utils.py
+        try:
+            # Fetch edges within hop range of both nodes
+            # Use BFS-style query to get relevant subgraph
+            edges_result = self.read.query(f"""
+            MATCH (a)-[r]-(b)
+            WHERE (a.id = '{from_id}' OR b.id = '{from_id}' OR a.id = '{to_id}' OR b.id = '{to_id}')
+            OR EXISTS {{
+                MATCH path = shortestPath((start {{id: '{from_id}'}})-[*..{max_hops}]-(end {{id: '{to_id}'}}))
+                WHERE a IN nodes(path) OR b IN nodes(path)
+            }}
+            RETURN DISTINCT a.id AS node_a, b.id AS node_b,
+                   coalesce(r.conductivity, 1.0) AS conductivity,
+                   coalesce(r.weight, 1.0) AS weight,
+                   r.emotions AS emotions
+            """)
+
+            if not edges_result:
+                # Fallback to simple hop count if subgraph query fails
+                return self._path_resistance_fallback(from_id, to_id, max_hops)
+
+            # Build edges list with emotion factors
+            edges = []
+            for edge in edges_result:
+                emotions = edge.get('emotions', []) or []
+                # Use baseline emotion factor (0.5) if no emotions
+                emotion_factor = avg_emotion_intensity(emotions) if emotions else 0.5
+
+                edges.append({
+                    'node_a': edge.get('node_a'),
+                    'node_b': edge.get('node_b'),
+                    'conductivity': edge.get('conductivity', 1.0) or 1.0,
+                    'weight': edge.get('weight', 1.0) or 1.0,
+                    'emotion_factor': max(0.1, emotion_factor)  # Floor to prevent division issues
+                })
+
+            # Run Dijkstra
+            result = dijkstra_with_resistance(edges, from_id, to_id, max_hops)
+
+            if result:
+                return result.get('total_resistance', 100.0)
+            return 100.0  # No path found
+
+        except Exception as e:
+            logger.debug(f"[Path Resistance] Dijkstra failed ({e}), using fallback")
+            return self._path_resistance_fallback(from_id, to_id, max_hops)
+
+    def _path_resistance_fallback(self, from_id: str, to_id: str, max_hops: int = 5) -> float:
+        """
+        Fallback path resistance using simple hop count.
+
+        Used when full Dijkstra query fails or times out.
+        """
         try:
             result = self.read.query(f"""
             MATCH p = shortestPath((a {{id: '{from_id}'}})-[*..{max_hops}]-(b {{id: '{to_id}'}}))
@@ -368,7 +428,7 @@ class GraphTickV1_2:
             if result:
                 hops = result[0].get('hops', max_hops)
                 return float(hops)  # Simplified: resistance = hops
-            return 100.0  # No path found
+            return 100.0
         except:
             return 100.0
 

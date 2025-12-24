@@ -50,7 +50,7 @@ def broadcast_moment_event(playthrough_id: str, event_type: str, data: Dict[str,
 
     Event types:
     - moment_activated: New moment became active
-    - moment_spoken: Moment was spoken (recorded to canon)
+    - moment_spoken: Moment was completed (recorded to canon)
     - moment_decayed: Moment weight fell below threshold
     - weight_updated: Moment weight changed
     - click_traversed: Click led to new moment

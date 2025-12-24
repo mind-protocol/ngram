@@ -1,0 +1,275 @@
+# Protocol: add_behaviors
+# Document observable behaviors for a module
+
+protocol: add_behaviors
+version: "1.1"
+description: Document observable behaviors for a module
+
+triggers:
+  - gap: "Module has objectives but no documented behaviors"
+  - event: "New functionality added that should be documented"
+
+requires_skills:
+  - SKILL_Define_Module_Boundaries_Objectives_And_Scope.md
+
+contextual_knowledge:
+  domain: |
+    Behaviors = observable effects (WHAT the module does, not HOW).
+    Behaviors link to objectives they satisfy.
+    Format: Given/When/Then or "On X, Y happens".
+    Behaviors are testable claims about system behavior.
+
+  constraints: |
+    - Behaviors must be observable from outside
+    - Each behavior links to an objective
+    - Avoid implementation details
+
+  dependencies: |
+    Requires: objectives exist (behaviors serve objectives)
+    Enables: validation design, test writing
+
+  quality_criteria: |
+    Good: "On decay tick, all connection weights above 0.1 reduce by 5%. Serves: performance_objective."
+    Bad: "Uses exponential decay algorithm"
+
+steps:
+  load_context:
+    type: query
+    auto_fetch:
+      - query: { find: narrative, type: objective, in_space: "{space}" }
+        store_as: objectives
+      - query: { find: narrative, type: behaviors, in_space: "{space}" }
+        store_as: existing_behaviors
+    # Auto-derive module_name from space for ID generation
+    computed:
+      module_name: "{space | strip_prefix('space_MODULE_') | strip_prefix('space_AREA_') | strip_prefix('space_CONCEPT_') | strip_prefix('space_PROJECT_')}"
+    next: check_objectives
+
+  check_objectives:
+    type: branch
+    checks:
+      - condition: "{objectives | count} == 0"
+        action:
+          type: call_protocol
+          protocol: add_objectives
+          context:
+            space: "{space}"
+            actor_id: "{actor_id}"
+          on_complete: gather_behaviors
+      - condition: "ready"
+        action: { goto: gather_behaviors }
+
+  gather_behaviors:
+    type: ask
+    context: |
+      {contextual_knowledge.domain}
+
+      Space: {space}
+      Objectives: {objectives | list}
+      Existing behaviors: {existing_behaviors | content_summary}
+
+    questions:
+      - name: behavior_description
+        ask: "Describe the behavior (Given/When/Then or 'On X, Y happens')?"
+        expects: { type: string }
+
+      - name: serves_objective
+        ask: "Which objective does this behavior serve?"
+        expects:
+          type: reference
+          from: objectives
+
+      - name: observable_at
+        ask: "Where is this observable? (API endpoint, UI, log, metric)"
+        expects: { type: string }
+
+      - name: additional_behaviors
+        ask: "Any more behaviors to document? (list, or empty)"
+        expects: { type: string_list, min: 0 }
+
+    next: gather_thoughts
+
+  gather_thoughts:
+    type: ask
+    context: |
+      ## Protocol Reflection
+
+      Before creating the behaviors, share any thoughts on this protocol.
+      Your feedback helps improve future executions.
+
+    questions:
+      - name: protocol_thoughts
+        ask: "Any thoughts or suggestions on how to improve this add_behaviors protocol?"
+        why_it_matters: "Continuous improvement through reflection"
+        good_answer: "Could suggest Given/When/Then format more explicitly with examples from the space's domain"
+        expects:
+          type: string
+          required: false
+
+      - name: context_observations
+        ask: "Anything about the context or process that could be better?"
+        expects:
+          type: string
+          required: false
+
+    next: create_behaviors
+
+  create_behaviors:
+    type: create
+    nodes:
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # NODE: Behaviors Documentation
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - id: "narrative_BEHAVIOR_{module_name}"
+        node_type: narrative
+        type: behaviors
+        name: "BEHAVIORS for {space}"
+        behaviors:
+          - description: "{behavior_description}"
+            serves: "{serves_objective}"
+            observable_at: "{observable_at}"
+        weight: 0.7
+        # ━━━ ATTRIBUTE EXPLANATIONS ━━━
+        #
+        # id: "narrative_BEHAVIOR_{module_name}"
+        #   WHAT: Unique identifier for behaviors doc
+        #   WHY: Used in queries and links
+        #   FORMAT: narrative_BEHAVIOR_<module>
+        #   Example: narrative_BEHAVIOR_engine-physics
+        #
+        # node_type: narrative
+        #   WHAT: Persistent documentation
+        #   WHY: Behaviors persist across implementations
+        #   CONTRAST: moment (events), thing (entities)
+        #
+        # type: behaviors
+        #   WHAT: Categorization within narratives
+        #   WHY: Distinguishes from objectives, patterns
+        #   PURPOSE: Documents observable effects (WHAT, not HOW)
+        #
+        # behaviors: [...]
+        #   WHAT: List of behavior specifications
+        #   WHY: Structured format for testable claims
+        #   FORMAT: Given/When/Then or "On X, Y happens"
+        #
+        # weight: 0.7
+        #   WHAT: Importance score (0.0-1.0)
+        #   WHY: Behaviors are moderately high priority
+        #   RANGE: 0.7 for behaviors, 0.8 for patterns
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # NODE: Moment (Documentation Event)
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - id: "moment_ADD-BEHAVIORS_{module_name}_{timestamp_short}"
+        node_type: moment
+        type: documentation
+        prose: "Documented behaviors for {space}"
+        status: spoken
+        # ━━━ ATTRIBUTE EXPLANATIONS ━━━
+        #
+        # id: "moment_ADD-BEHAVIORS_{module_name}_{timestamp_short}"
+        #   WHAT: Unique ID with SUBTYPE in ALLCAPS
+        #   FORMAT: moment_ADD-BEHAVIORS_<module>_<hash>
+        #   Example: moment_ADD-BEHAVIORS_engine-physics_a7
+        #
+        # node_type: moment
+        #   WHAT: Point-in-time event record
+        #   WHY: Creates history that can be queried
+        #   CONTRAST: narratives are persistent, moments are events
+        #
+        # type: documentation
+        #   WHAT: Categorizes this moment type
+        #   WHY: Enables queries like "show all documentation events"
+        #   OTHER_TYPES: protocol_create, sync_update, decision
+        #
+        # status: spoken
+        #   WHAT: Moment state
+        #   WHY: "spoken" = articulated/public
+        #   OPTIONS: spoken, internal, pending
+
+    links:
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Space Contains Behaviors
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - type: contains
+        from: "{space}"
+        to: "narrative_BEHAVIOR_{module_name}"
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: contains
+        #   WHAT: Parent-child relationship
+        #   WHY: Space owns this behaviors documentation
+        #   QUERY: "What behaviors are in space X?" follows contains
+        #   DIRECTION: from=space, to=behaviors
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Behaviors Serve Objective
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - type: serves
+        from: "narrative_BEHAVIOR_{module_name}"
+        to: "{serves_objective}"
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: serves
+        #   WHAT: Relationship to objectives
+        #   WHY: Behaviors satisfy objectives
+        #   QUERY: "What behaviors serve this objective?" follows serves
+        #   DIRECTION: from=behaviors, to=objective
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Actor Expresses Moment
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - type: expresses
+        from: "{actor_id}"
+        to: "moment_ADD-BEHAVIORS_{module_name}_{timestamp_short}"
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: expresses
+        #   WHAT: Attribution link
+        #   WHY: Records who created this documentation
+        #   QUERY: "What did agent X do?" follows expresses
+        #   DIRECTION: from=actor, to=moment
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Moment About Behaviors
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - type: about
+        from: "moment_ADD-BEHAVIORS_{module_name}_{timestamp_short}"
+        to: "narrative_BEHAVIOR_{module_name}"
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: about
+        #   WHAT: Topic/subject relationship
+        #   WHY: Records what the moment relates to
+        #   QUERY: "What happened to behaviors doc?" follows about
+        #   DIRECTION: from=moment, to=behaviors
+
+    next: call_handoff
+
+  call_handoff:
+    type: call_protocol
+    protocol: completion_handoff
+    inputs:
+      space_id: "{space}"
+      task_id: "add_behaviors_{module_name}"
+    next: $complete
+
+output:
+  cluster:
+    nodes:
+      - narrative_BEHAVIOR
+      - moment_ADD-BEHAVIORS
+    links:
+      - contains (space → behaviors)
+      - serves (behaviors → objective)
+      - expresses (actor → moment)
+      - about (moment → behaviors)
+  summary: "Documented behaviors for {space}"
+  returns:
+    behaviors_doc: "narrative_BEHAVIOR_{module_name}"
+    linked_objective: "{serves_objective}"
+    moment: "moment_ADD-BEHAVIORS_{module_name}_{timestamp_short}"
+
+# ID Convention Reference:
+# See docs/schema/PATTERNS_Schema.md section 3 for full ID format specification.
+# Format: {node-type}_{SUBTYPE}_{instance-context}_{disambiguator}

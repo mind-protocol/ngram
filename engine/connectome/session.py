@@ -47,6 +47,14 @@ class LoopState:
 
 
 @dataclass
+class CallFrame:
+    """Stack frame for protocol calls."""
+    protocol_name: str
+    return_step: str
+    saved_context: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
 class SessionState:
     """
     Complete state for a connectome dialogue session.
@@ -72,6 +80,7 @@ class SessionState:
     collected: Dict[str, Any] = field(default_factory=dict)
     context: Dict[str, Any] = field(default_factory=dict)
     loop_state: Optional[LoopState] = None
+    call_stack: List[CallFrame] = field(default_factory=list)
     created_nodes: List[Dict[str, Any]] = field(default_factory=list)
     created_links: List[Dict[str, Any]] = field(default_factory=list)
     error: Optional[str] = None
@@ -123,6 +132,34 @@ class SessionState:
         self.status = SessionStatus.ERROR
         self.error = message
 
+    def push_call(self, protocol_name: str, return_step: str) -> None:
+        """Push a call frame onto the stack."""
+        frame = CallFrame(
+            protocol_name=self.connectome_name,
+            return_step=return_step,
+            saved_context=dict(self.context)
+        )
+        self.call_stack.append(frame)
+        self.connectome_name = protocol_name
+
+    def pop_call(self) -> Optional[CallFrame]:
+        """Pop a call frame and restore state."""
+        if not self.call_stack:
+            return None
+        frame = self.call_stack.pop()
+        self.connectome_name = frame.protocol_name
+        self.current_step = frame.return_step
+        # Merge saved context (don't overwrite new values)
+        for key, value in frame.saved_context.items():
+            if key not in self.context:
+                self.context[key] = value
+        return frame
+
+    @property
+    def call_depth(self) -> int:
+        """Current call stack depth."""
+        return len(self.call_stack)
+
     def to_dict(self) -> Dict[str, Any]:
         """Serialize session state."""
         return {
@@ -139,6 +176,14 @@ class SessionState:
                 "index": self.loop_state.index,
                 "results": self.loop_state.results,
             } if self.loop_state else None,
+            "call_stack": [
+                {
+                    "protocol": frame.protocol_name,
+                    "return_step": frame.return_step,
+                }
+                for frame in self.call_stack
+            ],
+            "call_depth": self.call_depth,
             "created_nodes": self.created_nodes,
             "created_links": self.created_links,
             "error": self.error,

@@ -125,7 +125,7 @@ class TestMomentCreation:
         assert props.get("tone") == "defiant"
 
     def test_add_moment_with_tick_resolved(self, mock_graph_ops):
-        """Test moment with tick_resolved (for spoken moments)."""
+        """Test moment with tick_resolved (for completed moments)."""
         mock_graph_ops.add_moment(
             id="test_moment",
             text="Past dialogue.",
@@ -765,8 +765,8 @@ class TestInvariants:
         assert 0 <= weight <= 1
 
     def test_status_consistency_invariant(self, mock_graph_ops):
-        """Spoken moments should have tick_resolved set."""
-        # When creating a spoken moment, tick_resolved should be provided
+        """Completed moments should have tick_resolved set."""
+        # When creating a completed moment, tick_resolved should be provided
         mock_graph_ops.add_moment(
             id="spoken_moment",
             text="Past dialogue",

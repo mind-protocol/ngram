@@ -5,19 +5,55 @@ Contains shared types used by both doctor.py and doctor_report.py.
 Extracted to avoid circular imports.
 """
 
+import hashlib
 from dataclasses import dataclass, field
 from typing import List, Dict, Any
 
 
 @dataclass
 class DoctorIssue:
-    """A health issue found by the doctor command."""
+    """A health issue found by the doctor command.
+
+    Fields:
+        issue_type: Category (MONOLITH, UNDOCUMENTED, STALE_SYNC, etc.)
+        severity: critical, warning, info
+        path: Affected file/directory
+        message: Human description
+        details: Additional context
+        suggestion: Human-readable fix
+        protocol: Remediation protocol (e.g., "define_space", "add_invariant")
+                  If set, membrane can auto-trigger this protocol to fix the issue.
+        id: Graph node ID (auto-generated if not provided)
+    """
     issue_type: str      # MONOLITH, UNDOCUMENTED, STALE_SYNC, etc.
     severity: str        # critical, warning, info
     path: str            # Affected file/directory
     message: str         # Human description
     details: Dict[str, Any] = field(default_factory=dict)
     suggestion: str = ""
+    protocol: str = ""   # Protocol to auto-fix (e.g., "define_space", "add_invariant")
+    id: str = ""         # Graph node ID (narrative_ISSUE_*)
+
+    def generate_id(self, module: str) -> str:
+        """Generate graph node ID for this issue.
+
+        Format: narrative_ISSUE_{module}-{issue_type}_{hash}
+        Example: narrative_ISSUE_engine-physics-MONOLITH_a7c2
+        """
+        if self.id:
+            return self.id
+
+        # Clean module name
+        clean_module = module.lower().replace("_", "-").replace(" ", "-")
+
+        # Create short hash from path for uniqueness (4 chars = 65536 values)
+        path_hash = hashlib.sha256(self.path.encode()).hexdigest()[:4]
+
+        # Clean issue type
+        clean_type = self.issue_type.upper().replace("_", "-")
+
+        self.id = f"narrative_ISSUE_{clean_module}-{clean_type}_{path_hash}"
+        return self.id
 
 
 @dataclass

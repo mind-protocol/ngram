@@ -106,7 +106,8 @@
   display: grid;
   grid-template-columns: 1fr 380px;
   gap: 24px;
-  min-height: 0;
+  min-height: 500px;
+  height: calc(100vh - 200px);
 }
 
 .connectome-log-panel {
@@ -354,6 +355,107 @@
 .health-meta {
   color: var(--ink-2);
   font-size: 11px;
+}
+
+/* Physics Health Indicators */
+.connectome-health-physics {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line-0);
+  background: rgba(42, 43, 42, 0.7);
+}
+
+.physics-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.physics-title {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-2);
+  font-size: 11px;
+}
+
+.health-badge-sm {
+  padding: 2px 6px;
+  font-size: 10px;
+}
+
+.physics-indicators {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.physics-indicator {
+  display: grid;
+  grid-template-columns: 20px 80px 1fr;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.physics-indicator-icon {
+  font-size: 14px;
+  text-align: center;
+}
+
+.physics-indicator-label {
+  font-weight: 600;
+  color: var(--ink-1);
+}
+
+.physics-indicator-message {
+  color: var(--ink-2);
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.physics-indicator-ok {
+  border-left: 3px solid #22c55e;
+}
+
+.physics-indicator-ok .physics-indicator-icon {
+  color: #22c55e;
+}
+
+.physics-indicator-warn {
+  border-left: 3px solid #eab308;
+}
+
+.physics-indicator-warn .physics-indicator-icon {
+  color: #eab308;
+}
+
+.physics-indicator-error {
+  border-left: 3px solid #ef4444;
+}
+
+.physics-indicator-error .physics-indicator-icon {
+  color: #ef4444;
+}
+
+.physics-indicator-unknown {
+  border-left: 3px solid #6b7280;
+}
+
+.physics-indicator-unknown .physics-indicator-icon {
+  color: #6b7280;
+}
+
+.physics-meta {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--ink-2);
 }
 
 .log-now {
@@ -811,6 +913,211 @@
 
 .react-flow__edge-text {
   pointer-events: none;
+}
+
+/* WebGL Graph Canvas */
+.connectome-canvas {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 500px;
+  background: #0f0f12;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line-0);
+  overflow: hidden;
+}
+
+.connectome-webgl-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+}
+
+.connectome-webgl-canvas:active {
+  cursor: grabbing;
+}
+
+.connectome-label-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.node-count {
+  font-size: 12px;
+  color: var(--ink-2);
+  background: rgba(42, 43, 42, 0.8);
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line-0);
+}
+
+/* Node hover tooltip */
+.node-tooltip {
+  background: rgba(25, 26, 25, 0.95);
+  border: 1px solid var(--line-1);
+  border-radius: 8px;
+  padding: 10px 12px;
+  max-width: 320px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  backdrop-filter: blur(8px);
+}
+
+.tooltip-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.tooltip-type {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.tooltip-type-actor { background: rgba(184, 134, 11, 0.3); color: #b8860b; }
+.tooltip-type-space { background: rgba(74, 144, 217, 0.3); color: #4a90d9; }
+.tooltip-type-thing { background: rgba(128, 128, 128, 0.3); color: #999; }
+.tooltip-type-narrative { background: rgba(155, 89, 182, 0.3); color: #9b59b6; }
+.tooltip-type-moment { background: rgba(230, 126, 34, 0.3); color: #e67e22; }
+
+.tooltip-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--ink-0);
+}
+
+.tooltip-text {
+  font-size: 12px;
+  color: var(--ink-1);
+  line-height: 1.4;
+  margin-bottom: 6px;
+}
+
+.tooltip-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 11px;
+  color: var(--ink-2);
+}
+
+/* Node info panel (on click) */
+.node-info-panel {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 340px;
+  max-height: calc(100% - 32px);
+  background: rgba(25, 26, 25, 0.98);
+  border: 1px solid var(--line-1);
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.info-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line-0);
+  background: rgba(42, 43, 42, 0.5);
+}
+
+.info-panel-header h3 {
+  flex: 1;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink-0);
+}
+
+.info-type {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.info-type-actor { background: rgba(184, 134, 11, 0.3); color: #b8860b; }
+.info-type-space { background: rgba(74, 144, 217, 0.3); color: #4a90d9; }
+.info-type-thing { background: rgba(128, 128, 128, 0.3); color: #999; }
+.info-type-narrative { background: rgba(155, 89, 182, 0.3); color: #9b59b6; }
+.info-type-moment { background: rgba(230, 126, 34, 0.3); color: #e67e22; }
+
+.btn-close {
+  font-size: 20px;
+  line-height: 1;
+  padding: 4px 8px;
+  opacity: 0.6;
+}
+
+.btn-close:hover {
+  opacity: 1;
+}
+
+.info-panel-body {
+  padding: 16px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.info-section {
+  margin-bottom: 16px;
+}
+
+.info-section:last-child {
+  margin-bottom: 0;
+}
+
+.info-section .info-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-2);
+  margin-bottom: 4px;
+}
+
+.info-section p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-1);
+  white-space: pre-wrap;
+}
+
+.info-meta {
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--ink-2);
+  background: rgba(42, 43, 42, 0.5);
+  padding: 10px 12px;
+  border-radius: 8px;
+}
+
+.info-meta .info-label {
+  display: inline;
+  margin-bottom: 0;
+  margin-right: 4px;
+  font-weight: 600;
+  color: var(--ink-2);
 }
 
 @media (max-width: 1100px) {

@@ -98,7 +98,7 @@ class ConversationHistory:
 
 @dataclass
 class AgentHandle:
-    """Handle to a running or completed repair agent."""
+    """Handle to a running or completed work agent."""
 
     id: str
     issue_type: str

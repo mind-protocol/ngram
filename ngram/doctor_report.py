@@ -126,6 +126,11 @@ def get_issue_guidance(issue_type: str) -> Dict[str, str]:
             "file": "The doc/SYNC pair",
             "tip": "Update the associated docs or SYNC file whenever the code changes"
         },
+        "DOCS_NOT_INGESTED": {
+            "view": "VIEW_Ingest_Process_Raw_Data_Sources.md",
+            "file": "The doc file to ingest",
+            "tip": "Ingest into graph following chain order (OBJECTIVES first), then archive to data/archive/docs/"
+        },
     }
     return guidance.get(issue_type, {"view": "VIEW_Implement_Write_Or_Modify_Code.md", "file": "", "tip": ""})
 
@@ -217,6 +222,10 @@ def get_issue_explanation(issue_type: str) -> Dict[str, str]:
             "risk": "Code changes that are not reflected in docs or SYNC leave the documentation stale and untrustworthy.",
             "action": "Update the doc or SYNC file after modifying the code so the timestamps stay coupled."
         },
+        "DOCS_NOT_INGESTED": {
+            "risk": "Documentation files not ingested into the graph cannot be queried by agents. Knowledge remains siloed in files instead of being connected in the graph for traversal and context loading.",
+            "action": "Ingest docs into graph module-by-module, following chain order (OBJECTIVES first, then BEHAVIORS, PATTERNS, etc.). After ingestion, archive original files to data/archive/docs/."
+        },
     }
     return explanations.get(issue_type, {"risk": "This issue may cause problems.", "action": "Review and fix."})
 
@@ -307,11 +316,12 @@ def generate_health_markdown(results: Dict[str, Any], github_issues: List = None
             for issue in issues[:10]:  # Limit to 10 per type
                 gh = gh_issue_map.get(issue.path)
                 gh_link = f" [#{gh.number}]({gh.url})" if gh else ""
+                id_ref = f" `{issue.id}`" if issue.id else ""
                 if issue.suggestion and issue.suggestion != "Consider splitting into smaller modules":
-                    lines.append(f"- `{issue.path}`{gh_link} - {issue.message}")
+                    lines.append(f"- `{issue.path}`{gh_link}{id_ref} - {issue.message}")
                     lines.append(f"  - {issue.suggestion}")
                 else:
-                    lines.append(f"- `{issue.path}`{gh_link} - {issue.message}")
+                    lines.append(f"- `{issue.path}`{gh_link}{id_ref} - {issue.message}")
 
             if len(issues) > 10:
                 lines.append(f"- ... and {len(issues) - 10} more")
@@ -343,7 +353,8 @@ def generate_health_markdown(results: Dict[str, Any], github_issues: List = None
             for issue in issues[:10]:
                 gh = gh_issue_map.get(issue.path)
                 gh_link = f" [#{gh.number}]({gh.url})" if gh else ""
-                lines.append(f"- `{issue.path}`{gh_link} - {issue.message}")
+                id_ref = f" `{issue.id}`" if issue.id else ""
+                lines.append(f"- `{issue.path}`{gh_link}{id_ref} - {issue.message}")
 
             if len(issues) > 10:
                 lines.append(f"- ... and {len(issues) - 10} more")
@@ -404,11 +415,13 @@ def print_doctor_report(results: Dict[str, Any], output_format: str = "text"):
             "issues": {
                 severity: [
                     {
+                        "id": issue.id,
                         "type": issue.issue_type,
                         "path": issue.path,
                         "message": issue.message,
                         "details": issue.details,
                         "suggestion": issue.suggestion,
+                        "protocol": issue.protocol,
                     }
                     for issue in issues
                 ]
@@ -431,7 +444,8 @@ def print_doctor_report(results: Dict[str, Any], output_format: str = "text"):
         print()
         for issue in critical:
             guidance = get_issue_guidance(issue.issue_type)
-            print(f"  X {issue.issue_type}: {issue.path}")
+            id_suffix = f" [{issue.id}]" if issue.id else ""
+            print(f"  X {issue.issue_type}: {issue.path}{id_suffix}")
             print(f"    {issue.message}")
             if issue.suggestion:
                 print(f"    -> {issue.suggestion}")
@@ -445,7 +459,8 @@ def print_doctor_report(results: Dict[str, Any], output_format: str = "text"):
         print()
         for issue in warnings:
             guidance = get_issue_guidance(issue.issue_type)
-            print(f"  ! {issue.issue_type}: {issue.path}")
+            id_suffix = f" [{issue.id}]" if issue.id else ""
+            print(f"  ! {issue.issue_type}: {issue.path}{id_suffix}")
             print(f"    {issue.message}")
             if issue.suggestion:
                 print(f"    -> {issue.suggestion}")
@@ -458,7 +473,8 @@ def print_doctor_report(results: Dict[str, Any], output_format: str = "text"):
         print(f"## Info ({len(info)} issues)")
         print()
         for issue in info[:5]:  # Limit info display
-            print(f"  i {issue.issue_type}: {issue.path}")
+            id_suffix = f" [{issue.id}]" if issue.id else ""
+            print(f"  i {issue.issue_type}: {issue.path}{id_suffix}")
             print(f"    {issue.message}")
         if len(info) > 5:
             print(f"  ... and {len(info) - 5} more")

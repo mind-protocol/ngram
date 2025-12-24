@@ -8,7 +8,7 @@ from textual.message import Message
 COMMANDS = {
     "/help": "Show available commands",
     "/doctor": "Run project health check",
-    "/repair": "Auto-fix project issues",
+    "/work": "Auto-fix project issues",
     "/issues": "Show current project issues",
     "/clear": "Clear chat history",
     "/logs": "Show agent logs",
@@ -118,7 +118,7 @@ class InputBar(TextArea):
         if not value:
             return
 
-        # Expand partial slash commands (e.g., /re -> /repair)
+        # Expand partial slash commands (e.g., /re -> /work)
         if value.startswith("/") and " " not in value:
             # Find matching commands
             matches = [cmd for cmd in COMMANDS.keys() if cmd.startswith(value)]

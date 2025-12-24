@@ -18,6 +18,7 @@ from .doctor_checks_core import (
 )
 from .doctor_checks_docs import (
     doctor_check_doc_template_drift,
+    doctor_check_docs_not_ingested,
     doctor_check_incomplete_chain,
     doctor_check_large_doc_module,
     doctor_check_nonstandard_doc_type,
@@ -56,6 +57,10 @@ from .doctor_checks_sync import (
     doctor_check_doc_gaps,
     doctor_check_suggestions,
 )
+from .doctor_checks_membrane import (
+    doctor_check_membrane_health,
+    doctor_check_membrane_protocols,
+)
 
 __all__ = [
     "doctor_check_monolith",
@@ -92,4 +97,6 @@ __all__ = [
     "doctor_check_new_undoc_code",
     "doctor_check_recent_log_errors",
     "doctor_check_special_markers",
+    "doctor_check_membrane_health",
+    "doctor_check_membrane_protocols",
 ]

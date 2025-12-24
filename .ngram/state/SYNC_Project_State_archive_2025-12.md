@@ -221,3 +221,132 @@ Reference: `schema_v1.1_complete.md` (provided in session)
 
 ---
 
+
+
+---
+
+# Archived: SYNC_Project_State.md
+
+Archived on: 2025-12-24
+Original file: SYNC_Project_State.md
+
+---
+
+## RECENT CHANGES
+
+### 2025-12-24: Schema v1.2 Final Items — Dijkstra + Recall
+
+**Full Dijkstra Path Resistance:**
+- `tick_v1_2.py:_path_resistance()` now uses proper Dijkstra with v1.2 formula
+- `edge_resistance = 1 / (conductivity × weight × emotion_factor)`
+- Falls back to hop-count if subgraph query fails
+
+**Moment Recall/Reactivation (`canon_holder.py`):**
+- `recall_moment()` — creates new recall moment referencing original
+- `get_recallable_moments()` — finds moments by actor/narrative/location
+- `reactivate_moment()` — revives rejected/interrupted if conditions changed
+
+**Schema v1.2 Status:** COMPLETE — all items implemented
+
+---
+
+### 2025-12-24: Membrane System v1.2 Complete
+
+**All 20 protocols verified with full v1.1 pattern:**
+- 19 protocols: `gather_thoughts` → `call_handoff` → `$complete`
+- 1 protocol (`completion_handoff`): terminal protocol
+
+**Graph integration complete:**
+- Schema validation: `engine/connectome/schema.py` aligned with canonical `docs/schema/schema.yaml` v1.2
+- Persistence layer: `engine/connectome/persistence.py` validates before writing
+- FalkorDB connection: Already exists via `GraphOps`/`GraphQueries` in `tools/mcp/membrane_server.py`
+- Connectivity constraint: New clusters MUST connect to existing nodes
+
+**Verified v1.2 objectives:**
+- ✅ 100% protocol coverage (20/20)
+- ✅ All protocols have attribute explanations
+- ✅ Mandatory verification with graph queries
+- ✅ Loop protection (max 3 retries, oscillation detection)
+- ✅ Completion handoff captures feedback
+- ✅ Schema validation with guidance errors
+
+**Location:** `docs/membrane/SYNC_Membrane_System.md`
+
+---
+
+### 2025-12-24: Protocol v1.1 Pattern Verification
+
+**Finding:** All 18 protocols already have the v1.1 pattern fully applied. No updates needed.
+
+**Pattern elements present in all:**
+1. Detailed WHAT/WHY/FORMAT comments on each node/link attribute
+2. `gather_thoughts` step for protocol reflection/feedback
+3. `call_handoff` step invoking `completion_handoff`
+
+**Location:** `protocols/*.yaml` (20 files total)
+
+---
+
+### 2025-12-24: Schema v1.2 Field Migration + Coverage Validation + Doctor Cleanup
+
+**Field Migration:**
+- Migrated `status: spoken` → `status: completed` in 32 YAML protocol files
+- Updated stale docstrings in 10+ Python files referencing old "spoken" status
+- Updated lifecycle documentation in `nodes.py`, `graph_ops.py` to reflect v1.2 statuses
+- Valid statuses now: POSSIBLE, ACTIVE, COMPLETED, REJECTED, INTERRUPTED, OVERRIDDEN
+
+**Coverage Validation System:**
+- Verified SYNC was out of date (claimed 18% coverage, reality was 100%)
+- Ran `python3 tools/coverage/validate.py` — all 19 protocols pass
+- Updated `docs/concepts/coverage/SYNC_Coverage_Validation.md` to CANONICAL status
+
+**Doctor Cleanup (69 → 29 critical issues):**
+- Archived deprecated TUI docs to `docs/archive/tui_deprecated_2025-12/`
+- Updated `modules.yaml` with 17 module mappings (resolved 39 UNDOCUMENTED issues)
+- Created `docs/building/DECISIONS_Ngram_Graph_System.md` with 18 proposed resolutions for escalations
+
+**Remaining Critical Issues (29):**
+- 24 BROKEN_IMPL_LINK — docs referencing non-existent files (need manual review)
+- 4 MONOLITH — large files (acceptable for now)
+- 1 ESCALATION — covered in DECISIONS doc
+
+**Verification:**
+- All 48 v1.2 energy tests pass
+- Python syntax checks pass
+- YAML validation passes
+
+---
+
+### 2025-12-23: Membrane System v1 Documentation
+
+- **What:** Creating complete doc chain for Membrane System v1 — structured dialogues for graph interaction
+- **Location:** `docs/membrane/` (new module)
+- **Components:**
+  - **Architecture:** Doctor → Protocol → Membrane → Graph
+  - **Protocols (6):** module_design, health_coverage, feature_implementation, escalation_handling, decision_capture, progress_tracking
+  - **Membranes (7):** explore_space, add_objectives, add_invariant, add_health_coverage, record_work, investigate, resolve_blocker
+  - **Query language:** find/links/related/contents with presets
+- **Key decisions:**
+  - "Skills" renamed to "Protocols" (that's what they are)
+  - Doctor should call graph for missing specs (dependency-aware)
+  - Protocols and membrane YAML specs listed in docs but implemented separately
+- **Status:** COMPLETE — doc chain + `call_protocol` implemented
+
+---
+
+### 2025-12-23: Removed Tension entity type references from docs/engine/
+
+- **What:** Systematically removed all references to "Tension" as a graph node/entity type from 10 files in `docs/engine/` directory, replacing with appropriate pressure terminology per Schema v1.2.
+- **Why:** Schema v1.2 defines only 5 node types (Actor, Space, Thing, Narrative, Moment). Tension has been replaced with "pressure" computed from narrative contradictions.
+- **Changes:**
+  - `tension_pressure` → `dramatic_pressure`
+  - `tension_boost` → `dramatic_boost`
+  - `dominant_tension_age` → `dominant_pressure_age`
+  - "tension scaling" → "pressure scaling"
+  - "tensions" (plural entity) → "pressure dynamics" or removed
+  - Kept "tension" where used as narrative/dramatic concept (e.g., "tension shaping")
+- **Files modified:** 10 files across `docs/engine/membrane/`, `docs/engine/models/`, `docs/engine/moment-graph-engine/`
+- **Verification:** Remaining "tension" occurrences are all narrative/dramatic concepts or proper names (e.g., "Void Tension" validation doc), not entity types.
+
+---
+

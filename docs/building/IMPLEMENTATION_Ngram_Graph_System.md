@@ -545,6 +545,24 @@ Engine ticks
 
 <!-- @ngram:proposition Consider caching parsed configs to avoid reload -->
 
+<!-- @ngram:escalation [D6] Module Naming Dispatcher — how do we map file paths to module Spaces?
+  Options:
+    A) Explicit mapping.yaml with glob patterns per Space
+    B) Directory conventions (each dir = Space)
+    C) LLM inference from file content
+    D) Filename patterns (PATTERNS_*.md → patterns Space)
+  Opinion: (A) mapping.yaml with globs. Explicit is debuggable. (B) creates too many Spaces. (C) is expensive and unpredictable. (D) is too rigid. Glob patterns give control: "docs/building/**" → building Space. Fallback: files not matching any pattern go to root Space. Config over convention here.
+  Phase: 1 -->
+
+<!-- @ngram:escalation [Q7] Incremental Ingest — how to handle docs created/modified after bootstrap?
+  Options:
+    A) Manual re-ingest command (ngram ingest --incremental)
+    B) File watcher daemon
+    C) Git hook on commit
+    D) Periodic cron job
+  Opinion: (A) Manual first. File watchers are complex (debouncing, ignore patterns, daemon management). Git hooks miss non-committed changes. Cron is wasteful. Start with explicit command. Add file watcher in Phase 4 when we understand ingest patterns better. Manual ingest also forces intentionality.
+  Phase: 4 -->
+
 ---
 
 ## MARKERS

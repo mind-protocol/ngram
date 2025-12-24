@@ -1,0 +1,432 @@
+# Protocol: add_implementation
+# Create implementation narrative with docking points for code surfaces
+
+protocol: add_implementation
+version: "1.1"
+description: Create implementation narrative with docking points for code surfaces
+
+triggers:
+  - gap: "Module exists without implementation documentation"
+  - event: "New code surfaces discovered during onboarding"
+
+requires_skills:
+  - SKILL_Onboard_Understand_Existing_Module_Codebase_And_Confirm_Canon.md
+  - SKILL_Implement_Write_Or_Modify_Code_With_Doc_Chain_Coupling.md
+
+contextual_knowledge:
+  domain: |
+    Implementation narratives document code architecture:
+    - Where code lives (file paths)
+    - Key symbols (functions, classes)
+    - Data flow (how data moves through system)
+    Docking points = specific code locations for observation/modification.
+    Attached via ATTACHED_TO to implementation narrative.
+
+  constraints: |
+    - Must list actual code files (verify they exist)
+    - Docking points must have file:symbol format
+    - Should cover entry points, core logic, integration points
+
+  dependencies: |
+    Requires: space exists, code exists
+    Enables: health coverage (docks for observation), code navigation
+
+  quality_criteria: |
+    Good: "Entry: tick_runner.py:run_tick, Core: tick_runner.py:decay_phase, tick_runner.py:flow_phase"
+    Bad: "Some code files"
+
+steps:
+  load_context:
+    type: query
+    auto_fetch:
+      - query: { find: narrative, type: implementation, in_space: "{space}" }
+        store_as: existing_impl
+      - query: { find: thing, type: dock, in_space: "{space}" }
+        store_as: existing_docks
+    purpose: "Check what implementation docs exist"
+    next: gather_details
+
+  gather_details:
+    type: ask
+    context: |
+      {contextual_knowledge.domain}
+
+      Space: {space}
+      Existing implementation: {existing_impl | summarize}
+      Existing docks: {existing_docks | list locations}
+
+      {contextual_knowledge.constraints}
+
+    questions:
+      - name: impl_name
+        ask: "Implementation name? Usually matches module name."
+        expects: { type: string }
+
+      - name: code_files
+        ask: "What are the key code files? List paths."
+        why_it_matters: "Documents where code lives"
+        expects: { type: string_list, min: 1 }
+
+      - name: entry_points
+        ask: "Entry points (main functions, API handlers)? Format: file:symbol"
+        why_it_matters: "Where execution starts"
+        expects: { type: string_list, min: 1 }
+
+      - name: core_logic
+        ask: "Core logic locations? Format: file:symbol"
+        why_it_matters: "Where main algorithms live"
+        expects: { type: string_list, min: 1 }
+
+      - name: integration_points
+        ask: "Integration points (calls to other modules)? Format: file:symbol"
+        why_it_matters: "Where module connects to others"
+        expects: { type: string_list, min: 0 }
+
+      - name: data_flow
+        ask: "How does data flow through? Describe the path."
+        why_it_matters: "Understanding for modifications"
+        expects: { type: string }
+
+    moment:
+      agent_provides: [data_flow]
+    next: gather_thoughts
+
+  gather_thoughts:
+    type: ask
+    context: |
+      ## Protocol Reflection
+
+      Before creating the implementation narrative, share any thoughts on this protocol.
+      Your feedback helps improve future executions.
+
+    questions:
+      - name: protocol_thoughts
+        ask: "Any thoughts or suggestions on how to improve this add_implementation protocol?"
+        why_it_matters: "Continuous improvement through reflection"
+        good_answer: "Could auto-discover docking points by parsing code files. Could validate that file paths exist before creating docks."
+        expects:
+          type: string
+          required: false
+
+      - name: context_observations
+        ask: "Anything about the context or process that could be better?"
+        expects:
+          type: string
+          required: false
+
+    next: create_implementation_cluster
+
+  create_implementation_cluster:
+    type: create
+    nodes:
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # NODE: Implementation Narrative
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - id: "impl_{impl_name | slugify}"
+        node_type: narrative
+        type: implementation
+        name: "{impl_name}"
+        code_files: "{code_files}"
+        data_flow: "{data_flow}"
+        weight: 0.7
+        # ━━━ ATTRIBUTE EXPLANATIONS ━━━
+        #
+        # id: "impl_{impl_name | slugify}"
+        #   WHAT: Unique identifier for implementation narrative
+        #   WHY: Enables graph queries and linking from docks
+        #   FORMAT: impl_<slugified_name>
+        #
+        # node_type: narrative
+        #   WHAT: Persistent story/knowledge type
+        #   WHY: Implementations are enduring code architecture docs
+        #   ALTERNATIVES: space, thing, moment, todo
+        #
+        # type: implementation
+        #   WHAT: Categorization within narratives
+        #   WHY: Distinguishes from behaviors, patterns, validations
+        #   QUERY: "find all implementations" uses this
+        #
+        # name: "{impl_name}"
+        #   WHAT: Display name, usually matches module name
+        #   WHY: Human-readable identifier for navigation
+        #   EXAMPLE: "physics_tick_runner"
+        #
+        # code_files: "{code_files}"
+        #   WHAT: List of key code file paths
+        #   WHY: Documents where code lives for navigation
+        #   EXAMPLE: ["engine/physics/tick_runner.py", "engine/physics/phases.py"]
+        #
+        # data_flow: "{data_flow}"
+        #   WHAT: Description of how data moves through system
+        #   WHY: Understanding for modifications and debugging
+        #   EXAMPLE: "Input: tick event → decay phase → flow phase → output: updated state"
+        #
+        # weight: 0.7
+        #   WHAT: Importance score (0.0-1.0)
+        #   WHY: Implementations are medium-weight (0.7)
+        #   RANGE: Lower than health (0.75), higher than docks (0.5)
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # NODES: Entry Point Docks (Things)
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - for_each: entry_points
+        id: "dock_entry_{item | slugify}"
+        node_type: thing
+        type: dock
+        name: "entry_point"
+        location: "{item}"
+        role: entry
+        # ━━━ ATTRIBUTE EXPLANATIONS ━━━
+        #
+        # id: "dock_entry_{item | slugify}"
+        #   WHAT: Unique identifier for entry point dock
+        #   WHY: Enables linking to implementation
+        #   FORMAT: dock_entry_<slugified_location>
+        #
+        # node_type: thing
+        #   WHAT: Physical/concrete entity type
+        #   WHY: Docks are attachment points in code
+        #   ALTERNATIVES: space, narrative, moment, todo
+        #
+        # type: dock
+        #   WHAT: Categorization within things
+        #   WHY: Distinguishes from other concrete entities
+        #   QUERY: "find all docks" uses this
+        #
+        # name: "entry_point"
+        #   WHAT: Role identifier
+        #   WHY: Clarifies this is where execution starts
+        #   CONTRAST: core_logic, integration
+        #
+        # location: "{item}"
+        #   WHAT: Code location in file:symbol format
+        #   WHY: Specifies exact entry point
+        #   EXAMPLE: "tick_runner.py:run_tick"
+        #
+        # role: entry
+        #   WHAT: Functional role in architecture
+        #   WHY: Distinguishes entry from core or integration
+        #   OPTIONS: entry, core, integration
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # NODES: Core Logic Docks (Things)
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - for_each: core_logic
+        id: "dock_core_{item | slugify}"
+        node_type: thing
+        type: dock
+        name: "core_logic"
+        location: "{item}"
+        role: core
+        # ━━━ ATTRIBUTE EXPLANATIONS ━━━
+        #
+        # id: "dock_core_{item | slugify}"
+        #   WHAT: Unique identifier for core logic dock
+        #   WHY: Enables linking to implementation
+        #   FORMAT: dock_core_<slugified_location>
+        #
+        # node_type: thing
+        #   WHAT: Physical/concrete entity type
+        #   WHY: Docks are attachment points in code
+        #   ALTERNATIVES: space, narrative, moment, todo
+        #
+        # type: dock
+        #   WHAT: Categorization within things
+        #   WHY: Distinguishes from other concrete entities
+        #   QUERY: "find all docks" uses this
+        #
+        # name: "core_logic"
+        #   WHAT: Role identifier
+        #   WHY: Clarifies this is where main algorithms live
+        #   CONTRAST: entry_point, integration
+        #
+        # location: "{item}"
+        #   WHAT: Code location in file:symbol format
+        #   WHY: Specifies exact core logic location
+        #   EXAMPLE: "tick_runner.py:decay_phase"
+        #
+        # role: core
+        #   WHAT: Functional role in architecture
+        #   WHY: Distinguishes core from entry or integration
+        #   OPTIONS: entry, core, integration
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # NODES: Integration Point Docks (Things)
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - for_each: integration_points
+        id: "dock_integration_{item | slugify}"
+        node_type: thing
+        type: dock
+        name: "integration"
+        location: "{item}"
+        role: integration
+        # ━━━ ATTRIBUTE EXPLANATIONS ━━━
+        #
+        # id: "dock_integration_{item | slugify}"
+        #   WHAT: Unique identifier for integration dock
+        #   WHY: Enables linking to implementation
+        #   FORMAT: dock_integration_<slugified_location>
+        #
+        # node_type: thing
+        #   WHAT: Physical/concrete entity type
+        #   WHY: Docks are attachment points in code
+        #   ALTERNATIVES: space, narrative, moment, todo
+        #
+        # type: dock
+        #   WHAT: Categorization within things
+        #   WHY: Distinguishes from other concrete entities
+        #   QUERY: "find all docks" uses this
+        #
+        # name: "integration"
+        #   WHAT: Role identifier
+        #   WHY: Clarifies this is where module connects to others
+        #   CONTRAST: entry_point, core_logic
+        #
+        # location: "{item}"
+        #   WHAT: Code location in file:symbol format
+        #   WHY: Specifies exact integration point
+        #   EXAMPLE: "tick_runner.py:call_session_manager"
+        #
+        # role: integration
+        #   WHAT: Functional role in architecture
+        #   WHY: Distinguishes integration from entry or core
+        #   OPTIONS: entry, core, integration
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # NODE: Moment (Creation Event)
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - id: "moment_create_impl_{timestamp}"
+        node_type: moment
+        type: protocol_create
+        prose: "Created implementation {impl_name} with {entry_points | count} entry points, {core_logic | count} core locations"
+        status: completed
+        # ━━━ ATTRIBUTE EXPLANATIONS ━━━
+        #
+        # id: "moment_create_impl_{timestamp}"
+        #   WHAT: Unique ID with timestamp for ordering
+        #   WHY: Moments are ordered by creation time
+        #   FORMAT: moment_<action>_<timestamp>
+        #
+        # node_type: moment
+        #   WHAT: Point-in-time event record
+        #   WHY: Creates history that can be queried
+        #   CONTRAST: narratives are persistent, moments are events
+        #
+        # type: protocol_create
+        #   WHAT: Categorizes this moment type
+        #   WHY: Enables queries like "show all creation events"
+        #   OTHER_TYPES: sync_update, decision, escalation_raised
+        #
+        # prose: "Created implementation..."
+        #   WHAT: Human-readable description
+        #   WHY: Displayed in activity feeds and history
+        #   FORMAT: Past tense, specific about what happened
+        #
+        # status: completed
+        #   WHAT: Moment state
+        #   WHY: "completed" = action finished, "spoken" = articulated
+        #   OPTIONS: completed, spoken, internal, pending
+
+    links:
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Space Contains Implementation
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - type: contains
+        from: "{space}"
+        to: "impl_{impl_name | slugify}"
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: contains
+        #   WHAT: Parent-child relationship
+        #   WHY: Groups implementation within its module/space
+        #   QUERY: "What implementations are in space X?" follows contains
+        #   DIRECTION: from=space, to=implementation
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINKS: Entry Point Docks Attached To Implementation
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - for_each: entry_points
+        type: attached_to
+        from: "dock_entry_{item | slugify}"
+        to: "impl_{impl_name | slugify}"
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: attached_to
+        #   WHAT: Physical attachment relationship
+        #   WHY: Docks are connected to implementation they document
+        #   QUERY: "What docks are attached to this impl?" follows attached_to
+        #   DIRECTION: from=dock, to=implementation
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINKS: Core Logic Docks Attached To Implementation
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - for_each: core_logic
+        type: attached_to
+        from: "dock_core_{item | slugify}"
+        to: "impl_{impl_name | slugify}"
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: attached_to
+        #   WHAT: Physical attachment relationship
+        #   WHY: Docks are connected to implementation they document
+        #   QUERY: "What docks are attached to this impl?" follows attached_to
+        #   DIRECTION: from=dock, to=implementation
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINKS: Integration Docks Attached To Implementation
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - for_each: integration_points
+        type: attached_to
+        from: "dock_integration_{item | slugify}"
+        to: "impl_{impl_name | slugify}"
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: attached_to
+        #   WHAT: Physical attachment relationship
+        #   WHY: Docks are connected to implementation they document
+        #   QUERY: "What docks are attached to this impl?" follows attached_to
+        #   DIRECTION: from=dock, to=implementation
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Actor Expresses Moment
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - type: expresses
+        from: "{actor_id}"
+        to: "moment_create_impl_{timestamp}"
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: expresses
+        #   WHAT: Attribution link
+        #   WHY: Records who/what created this moment
+        #   QUERY: "What did agent X do?" follows expresses
+        #   DIRECTION: from=actor, to=moment
+
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      # LINK: Moment About Implementation
+      # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      - type: about
+        from: "moment_create_impl_{timestamp}"
+        to: "impl_{impl_name | slugify}"
+        # ━━━ LINK EXPLANATION ━━━
+        #
+        # type: about
+        #   WHAT: Topic/subject relationship
+        #   WHY: Records what the moment relates to
+        #   QUERY: "What happened to implementation X?" follows about
+        #   DIRECTION: from=moment/narrative, to=subject
+
+    next: call_handoff
+
+  call_handoff:
+    type: call_protocol
+    protocol: completion_handoff
+    inputs:
+      space_id: "{space}"
+      task_id: "add_implementation_{impl_name}"
+    next: $complete
+
+output:
+  cluster:
+    impl_id: "impl_{impl_name | slugify}"
+    docks_created: "{entry_points | count} + {core_logic | count} + {integration_points | count}"
+  moment: "moment_create_impl_{timestamp}"

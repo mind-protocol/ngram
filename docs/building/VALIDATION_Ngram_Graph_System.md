@@ -511,9 +511,26 @@ failure_mode: |
 <!-- @ngram:todo Define HOT_THRESHOLD, ACTIVATION_THRESHOLD constants -->
 <!-- @ngram:todo Define MAX_CONTEXT_NARRATIVES constant -->
 
-<!-- @ngram:escalation V-NGRAM-ENERGY-DECAYS vs goals that stay active — need to distinguish "ongoing goal" from "stuck goal". How? -->
-<!-- @ngram:escalation V-NGRAM-STRENGTH-PERSISTS may cause unbounded growth — need to define max strength or soft cap? -->
-<!-- @ngram:escalation V-NGRAM-AGENT-TRIGGERS-ON-HOT doesn't specify priority — if 3 Moments are hot, which one? Highest energy? Random? -->
+<!-- @ngram:escalation [Q3] Ongoing vs Stuck Goal — how to distinguish goals that should stay active from goals that are stuck?
+  Options:
+    A) Time-based: goal older than X days without progress = stuck
+    B) Activity-based: goal with no linked Moments in Y ticks = stuck
+    C) Energy-based: goal that received energy but didn't complete = stuck
+    D) Explicit: human marks goal as stuck
+  Opinion: (B) Activity-based. Time alone doesn't indicate stuck — some goals are long-term. But a goal receiving energy (agents working) with no new Moments is suspicious. Health check: if goal.energy > 0.5 for 100+ ticks with no new linked Moments, flag as potentially stuck. Human reviews.
+  Phase: 6 -->
+
+<!-- @ngram:escalation [Q4] Strength Unbounded — over years, doesn't everything max out?
+  Options:
+    A) Hard cap at 1.0 (or 10.0)
+    B) Soft decay: strength decays slowly if not reinforced
+    C) Relative strength: normalize across graph
+    D) No cap, strength is unbounded
+  Opinion: (B) Soft decay. Hard cap loses information — everything at max is useless. Unbounded causes overflow/precision issues. Soft decay: strength *= 0.999 per tick if no new reinforcement. Old connections fade unless actively used. This is biological — synapses weaken without use. Preserves ranking while preventing explosion.
+  Phase: 2 -->
+
+<!-- @ngram:escalation V-NGRAM-AGENT-TRIGGERS-ON-HOT — if 3 Moments are hot, which one? Highest energy? Random? -->
+<!-- Covered by Q2 in ALGORITHM -->
 
 <!-- @ngram:proposition Add invariant V-NGRAM-NO-ORPHAN-NARRATIVES — every Narrative should be in at least one Space -->
 <!-- @ngram:proposition Add invariant V-NGRAM-HUMAN-GENERATES-MOST — human energy generation should be measurably higher than agents to ensure steering -->

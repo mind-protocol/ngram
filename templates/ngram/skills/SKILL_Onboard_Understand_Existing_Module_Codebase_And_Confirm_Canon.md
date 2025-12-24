@@ -4,36 +4,117 @@
 ## Maps to VIEW
 `.ngram/views/VIEW_Onboard_Understand_Existing_Codebase.md`
 
+---
+
+## Context
+
+Onboarding in ngram = understanding existing module before working on it.
+
+Canonical surfaces: The authoritative code locations for a module. Defined in IMPLEMENTATION docking points.
+
+Canon terms: Terminology defined in PATTERNS/CONCEPT. Use these terms, don't invent new ones.
+
+Dataflow: How data moves through the module. Key for understanding behavior.
+
+Onboarding outputs:
+- Canonical surfaces (file:symbol pairs)
+- Dataflow notes (how data moves)
+- Naming terms (from PATTERNS/CONCEPT)
+- Updated IMPLEMENTATION with discovered docking points
+
+Why onboard first: Working without understanding leads to:
+- Duplicate implementations
+- Inconsistent naming
+- Broken invariants
+- Misaligned structure
+
+---
+
 ## Purpose
 Identify canonical paths/symbols/dataflow and confirm naming/comment/monitoring expectations for the module.
 
-## Inputs (YAML)
+---
+
+## Inputs
 ```yaml
-module: "<area/module>"
-code_roots: ["<paths>"]
+module: "<area/module>"       # string
+code_roots: ["<paths>"]       # list of directories to explore
 ```
 
-## Outputs (YAML)
+## Outputs
 ```yaml
 canonical_surfaces:
   - file: "<path>"
-    symbols: ["<function/class>"]
-dataflow_notes: ["<key flows>"]
-naming_terms: ["<canon terms>"]
+    symbols: ["<function|class>"]
+    role: "<what this does>"
+dataflow_notes:
+  - "<key flow description>"
+naming_terms:
+  - term: "<canonical term>"
+    defined_in: "<PATTERNS or CONCEPT path>"
+implementation_updates:
+  - "<docking points added to IMPLEMENTATION>"
 ```
 
-## Gates (non-negotiable)
-- If canonical surface is unclear, log `@ngram:escalation` and proceed with other modules/tasks.
-- Must update IMPLEMENTATION_* with discovered surfaces/docking points.
+---
 
-## Evidence & referencing
-- Docs: `@ngram:id + file + header path`
+## Gates
+
+- If canonical surface unclear → `@ngram:escalation`, proceed with other modules — don't guess
+- Must update IMPLEMENTATION with discovered surfaces/docking points — track what's found
+
+---
+
+## Process
+
+### 1. Load existing docs
+```yaml
+batch_questions:
+  - patterns: "What PATTERNS exist for this module?"
+  - implementation: "What IMPLEMENTATION docking points exist?"
+  - concept: "Any CONCEPT docs for cross-cutting terms?"
+  - sync: "What's the current state per SYNC?"
+```
+
+### 2. Explore code
+Walk code_roots. Identify:
+- Entry points (main functions, API handlers)
+- Core logic (algorithms, business rules)
+- Data structures (models, types)
+- Integration points (calls to other modules)
+
+### 3. Map to docs
+Match discovered code to doc chain:
+- Does IMPLEMENTATION list these surfaces?
+- Are terms consistent with PATTERNS?
+- Are dataflows documented in ALGORITHM?
+
+### 4. Update IMPLEMENTATION
+Add missing docking points for discovered surfaces.
+
+### 5. Note gaps
+If canonical surface unclear, log `@ngram:escalation`.
+If terminology inconsistent, log `@ngram:proposition`.
+
+---
+
+## Protocols Referenced
+
+| Protocol | When | Creates |
+|----------|------|---------|
+| `protocol:explore_space` | To explore module | exploration moment |
+| `protocol:add_implementation` | If docking points missing | IMPLEMENTATION narrative + docks |
+
+---
+
+## Evidence
+- Docs: `@ngram:id + file + header`
 - Code: `file + symbol`
 
 ## Markers
-- `@ngram:TODO <plan description>`
-- `@ngram:escalation <blocker/problem>`
-- `@ngram:proposition <suggestion/improvement>`
+- `@ngram:TODO`
+- `@ngram:escalation`
+- `@ngram:proposition`
 
-## Never-stop rule
-If blocked, log `@ngram:escalation` + `@ngram:proposition`, then switch to the next unblocked task.
+## Never-stop
+If blocked → `@ngram:escalation` + `@ngram:proposition` → proceed with proposition.

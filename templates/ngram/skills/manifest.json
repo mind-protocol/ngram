@@ -9,9 +9,12 @@
   },
   "files": [
     "SKILLS_Skill_File_Index_And_Manifest.md",
+    "SKILL_Author_Protocols_Design_And_Structure.md",
+    "SKILL_Author_Skills_Structure_And_Quality.md",
     "SKILL_Create_Module_Documentation_Chain_From_Templates_And_Seed_Todos.md",
     "SKILL_Debug_Investigate_And_Fix_Issues_With_Evidence_First.md",
     "SKILL_Define_And_Verify_Health_Signals_Mapped_To_Validation_Invariants.md",
+    "SKILL_Define_Module_Boundaries_Objectives_And_Scope.md",
     "SKILL_Extend_Add_Features_To_Existing_Systems_With_Canon_Constraints.md",
     "SKILL_Implement_Write_Or_Modify_Code_With_Doc_Chain_Coupling.md",
     "SKILL_Ingest_Raw_Data_Sources_And_Route_To_Modules.md",

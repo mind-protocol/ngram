@@ -81,8 +81,12 @@ FOR each file in repo:
 
 ```
 FOR each directory pattern match:
+  # ID follows convention: {node-type}_{SUBTYPE}_{instance}
+  # Example: space_MODULE_engine-physics
+  space_id = generate_space_id(directory_name, "MODULE")
+
   engine.create_space(
-    id: derived from path,
+    id: space_id,
     name: directory name,
     type: module | code_area | meta,
     weight: from mapping.physics.spaces,
@@ -90,13 +94,20 @@ FOR each directory pattern match:
   )
 ```
 
+> **ID Convention:** See `docs/schema/PATTERNS_Schema.md` section 3 for format.
+
 ### Step 3: Create Narratives from Docs
 
 ```
 FOR each doc file:
   PARSE content
 
-  narrative_id = engine.create_narrative(
+  # ID follows convention: narrative_{SUBTYPE}_{module}-{doc-type}
+  # Example: narrative_PATTERN_engine-physics-patterns
+  narrative_id = generate_narrative_id(doc_pattern, module_name)
+
+  engine.create_narrative(
+    id: narrative_id,
     type: from doc pattern (OBJECTIVES_ → objectives, etc.),
     content: file content or summary,
     weight: from mapping.physics.narratives,
@@ -148,22 +159,29 @@ FOR each @ngram:escalation marker:
 
 ```
 FOR each code file:
-  thing_id = engine.create_thing(
+  # ID follows convention: thing_{SUBTYPE}_{path-context}_{hash}
+  # Example: thing_FILE_engine-physics-graph-ops_a7
+  thing_id = generate_thing_id(file_path, "FILE")
+
+  engine.create_thing(
+    id: thing_id,
     type: file,
     path: full path
   )
   engine.create_link(type: contains, from: space_id, to: thing_id)
 
 FOR each external URL in docs:
-  engine.create_thing(type: external, uri: URL)
+  thing_id = generate_thing_id(url, "EXTERNAL")
+  engine.create_thing(id: thing_id, type: external, uri: URL)
 ```
 
 ### Step 6: Create Actors
 
 ```
-# Human
+# Human — ID: actor_HUMAN_nicolas
+human_id = generate_actor_id("nicolas", "HUMAN")
 engine.create_actor(
-  id: actor_human,
+  id: human_id,
   type: human,
   weight: 1.0,
   energy: 1.0
@@ -171,7 +189,10 @@ engine.create_actor(
 
 # Agents from config
 FOR each agent in agents.yaml:
-  actor_id = engine.create_actor(
+  # ID: actor_AGENT_narrator, actor_AGENT_world-runner
+  actor_id = generate_actor_id(agent.name, "AGENT")
+  engine.create_actor(
+    id: actor_id,
     type: agent,
     name: agent.name,
     weight: 0.8,
@@ -498,3 +519,75 @@ We create content. Engine runs the world.
 <!-- @ngram:proposition Ingest could create "draft" narratives that agent reviews before they go live -->
 <!-- @ngram:proposition Type inference could use LLM classification instead of heuristics -->
 <!-- @ngram:proposition Agent response could include structured JSON alongside prose for reliable parsing -->
+
+<!-- @ngram:escalation [D1] Agent Query Mechanism — how do agents query context?
+  Options:
+    A) engine.get_context() — physics-aware, respects thresholds
+    B) Direct graph queries — raw Cypher, agent sees everything
+    C) Hybrid — get_context() for hot items, direct for specific lookups
+  Opinion: (A) engine.get_context(). Agents should see what physics surfaces, not everything. This is the core design — energy determines relevance. Direct queries would bypass the whole point. If agent needs specific lookup, that's a different API (get_narrative_by_id).
+  Phase: 2 -->
+
+<!-- @ngram:escalation [D3] Already Running Agent Injection — if agent is mid-LLM-call and new Moment arrives?
+  Options:
+    A) Inject into current context (modify prompt mid-stream)
+    B) Queue for next activation
+    C) Interrupt current call, restart with new context
+    D) Ignore until current work completes
+  Opinion: (B) Queue. LLM calls are atomic — can't inject mid-stream. Interrupting wastes tokens and creates confusion. Queue maintains causality. Agent finishes current thought, then sees new Moment. Simple, predictable.
+  Phase: 3 -->
+
+<!-- @ngram:escalation [D5] Opening Message Contents — what goes in the opening to agent?
+  Options:
+    A) Just the triggering Moment prose
+    B) Moment + list of hot Narrative titles
+    C) Moment + condensed summary of context
+    D) Full context dump (everything from get_context)
+  Opinion: (C) Moment + condensed summary. (A) is too sparse — agent has no grounding. (D) is too verbose — wastes tokens on stuff in system prompt. Summary gives agent situational awareness without duplication. Format: "You're working on: {moment}. Context: {3-5 key narratives}."
+  Phase: 3 -->
+
+<!-- @ngram:escalation [Q1] Agent Response Format — how to reliably extract Moments/Narratives from response?
+  Options:
+    A) Freeform text, parse with regex/heuristics
+    B) Structured JSON with schema
+    C) XML-like markers in prose
+    D) Separate structured + prose sections
+  Opinion: (B) Structured JSON. LLMs are good at JSON now. Regex parsing is fragile. Markers are ugly. Define schema: {moments: [...], narratives: [...], prose: "..."}. Prose field preserves natural language for logging/display. Use Claude's JSON mode.
+  Phase: 3 -->
+
+<!-- @ngram:escalation [Q2] Multi-Agent Same Moment — if multiple agents triggered by same hot Narrative?
+  Options:
+    A) All respond, energy splits proportionally
+    B) First responder wins, others skip
+    C) Highest-affinity agent only
+    D) Random selection of one
+  Opinion: (A) All respond, energy splits. This is how differentiation emerges — agents develop different responses to same stimulus. First-wins creates race conditions. Random is arbitrary. Energy split means popular topics get distributed attention. Natural load balancing.
+  Phase: 5 -->
+
+<!-- @ngram:escalation [Q5] Agent Failure Handling — what happens if LLM call fails?
+  Options:
+    A) Silent fail, log error
+    B) Retry once with same prompt
+    C) Retry with simplified prompt
+    D) Mark moment as failed, surface to human
+    E) Fallback to different model
+  Opinion: (B) then (D). Retry once — transient errors are common. If still fails, mark failed with reason. Don't retry infinitely (cost). Don't fail silently (loses visibility). Failed moments should surface in health checks. Human can investigate pattern of failures.
+  Phase: 3 -->
+
+<!-- @ngram:escalation [Q6] Type Inference Strategy — how to classify Moment/Narrative types?
+  Options:
+    A) Heuristics only (keyword matching)
+    B) LLM classification for all
+    C) Heuristics first, LLM fallback for low-confidence
+    D) Let agent self-classify in response
+  Opinion: (C) Heuristics + LLM fallback. Pure heuristics misclassify subtle cases. Pure LLM is slow/expensive for every item. Heuristics handle obvious cases (80%+), LLM handles ambiguous. Confidence threshold: 0.7. Below that, ask LLM. (D) is interesting but adds prompt complexity.
+  Phase: 3 -->
+
+<!-- @ngram:escalation [Q9] Bootstrap Sequence — how does the world start?
+  Options:
+    A) Human creates first Moment manually
+    B) Ingest creates warm Narratives, physics triggers agents
+    C) Special "bootstrap agent" seeds initial state
+    D) Empty start, human interaction creates first energy
+  Opinion: (B) Ingest creates warm Narratives. Bootstrap should be automatic after ingest. Set initial energy on ingested Narratives (e.g., 0.3 for docs, 0.5 for goals). First tick, hot Narratives surface, agents trigger. No special bootstrap agent — same physics from start. Human can then interact normally.
+  Phase: 3 -->

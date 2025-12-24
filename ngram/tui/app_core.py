@@ -58,7 +58,7 @@ class NgramApp(App if TEXTUAL_AVAILABLE else object):
     BINDINGS = [
         Binding("ctrl+c", "interrupt_or_quit", "Interrupt/Quit", show=False),
         Binding("ctrl+d", "doctor", "Doctor", show=False),
-        Binding("ctrl+r", "repair", "Repair", show=False),
+        Binding("ctrl+r", "work", "Work", show=False),
         Binding("ctrl+p", "command_palette", show=False),
         # Tab switching: Ctrl+1-5 for direct access (order: CHANGES, SYNC, DOCTOR, MAP, AGENTS)
         Binding("ctrl+1", "tab_changes", "Changes", show=False),
@@ -95,7 +95,7 @@ class NgramApp(App if TEXTUAL_AVAILABLE else object):
         self._sync_last_refresh = 0.0
         self._sync_refresh_interval = 120.0
         self._sync_refresh_inflight = False
-        self._auto_repair_started = False
+        self._auto_work_started = False
         self._map_last_refresh = 0.0
         self._map_refresh_interval = 120.0
         self._map_refresh_inflight = False
@@ -190,19 +190,19 @@ class NgramApp(App if TEXTUAL_AVAILABLE else object):
         asyncio.create_task(self._startup_sequence(manager, health_check_msg))
 
     async def _startup_sequence(self, manager: ManagerPanel, health_check_msg: ClickableStatic) -> None:
-        """Run startup tasks: doctor check then auto-repair immediately."""
+        """Run startup tasks: doctor check then auto-work immediately."""
         # Run initial health check and show issues
         await self._run_doctor_with_display(manager)
 
-        # Auto-repair runs FIRST, immediately after doctor finds issues
-        if not self._auto_repair_started:
-            self._auto_repair_started = True
+        # Auto-work runs FIRST, immediately after doctor finds issues
+        if not self._auto_work_started:
+            self._auto_work_started = True
             try:
-                from .commands import handle_repair
-                await handle_repair(self, "")
+                from .commands import handle_work
+                await handle_work(self, "")
             except Exception as e:
-                manager.add_message(f"[red]Auto /repair failed: {e}[/]")
-                self.log_error(f"Auto /repair failed: {e}")
+                manager.add_message(f"[red]Auto /work failed: {e}[/]")
+                self.log_error(f"Auto /work failed: {e}")
 
     async def _start_claude_pty(self) -> None:
         """Start the interactive Claude PTY session."""
@@ -515,9 +515,9 @@ class NgramApp(App if TEXTUAL_AVAILABLE else object):
             self.state.health_score = score
             status_bar = self.query_one("#status-bar")
             status_bar.update_health(score)
-            repair_issues = [i for i in all_issues if i.severity in ("critical", "warning")]
-            if repair_issues:
-                status_bar.set_repair_progress(len(repair_issues), 0, 0)
+            work_issues = [i for i in all_issues if i.severity in ("critical", "warning")]
+            if work_issues:
+                status_bar.set_work_progress(len(work_issues), 0, 0)
 
             agent_container = self.query_one("#agent-container", AgentContainer)
             agent_container.update_doctor_content(all_issues, score)
@@ -655,9 +655,9 @@ class NgramApp(App if TEXTUAL_AVAILABLE else object):
         """Run doctor check."""
         await self._run_doctor()
 
-    async def action_repair(self) -> None:
-        """Start repair session."""
-        await self.handle_command("/repair")
+    async def action_work(self) -> None:
+        """Start work session."""
+        await self.handle_command("/work")
 
     # Tab switching actions
     def action_tab_agents(self) -> None:

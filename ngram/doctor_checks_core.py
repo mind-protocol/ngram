@@ -121,7 +121,8 @@ def doctor_check_undocumented(target_dir: Path, config: DoctorConfig) -> List[Do
             path=rel_path,
             message=f"No documentation mapping ({file_count} files)",
             details={"file_count": file_count},
-            suggestion="Add mapping to modules.yaml"
+            suggestion="Add mapping to modules.yaml",
+            protocol="define_space"  # Then call create_doc_chain
         ))
 
     return issues
@@ -181,7 +182,8 @@ def doctor_check_stale_sync(target_dir: Path, config: DoctorConfig) -> List[Doct
             path=rel_path,
             message=f"Last updated {days_old} days ago",
             details={"days_old": days_old, "last_updated": str(last_updated.date())},
-            suggestion="Review and update SYNC with current state"
+            suggestion="Review and update SYNC with current state",
+            protocol="update_sync"
         ))
 
     return issues

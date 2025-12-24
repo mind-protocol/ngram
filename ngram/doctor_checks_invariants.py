@@ -284,6 +284,7 @@ def doctor_check_invariant_coverage(target_dir: Path, config: DoctorConfig) -> L
                         "priority": inv.priority,
                     },
                     suggestion=f"Add verified_by: test: or health: for {inv.id}",
+                    protocol="add_health_coverage"
                 ))
 
         if inv.confidence == "untested":
@@ -298,6 +299,7 @@ def doctor_check_invariant_coverage(target_dir: Path, config: DoctorConfig) -> L
                     "priority": inv.priority,
                 },
                 suggestion=f"Write tests for {inv.id} or set confidence to needs-health",
+                protocol="add_health_coverage"
             ))
 
     return issues

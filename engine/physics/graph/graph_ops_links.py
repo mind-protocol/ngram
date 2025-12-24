@@ -205,7 +205,7 @@ class LinkCreationMixin:
         """
         Add CAN_LEAD_TO link between Moments.
 
-        The core of dialogue flow. When from_moment is active/spoken,
+        The core of dialogue flow. When from_moment is active/completed,
         to_moment becomes possible based on trigger conditions.
 
         Args:
@@ -213,13 +213,13 @@ class LinkCreationMixin:
             to_moment_id: The target moment that can follow
             trigger: How the transition happens:
                 - "player": Player click/input activates (default)
-                - "auto": Automatic when from_moment spoken
+                - "auto": Automatic when from_moment completed
                 - "wait": Auto-fires after wait_ticks of silence
             weight_transfer: How much weight flows from source to target
             require_words: Words that must appear in player input to trigger
             bidirectional: If true, create link in both directions
             wait_ticks: For trigger="wait", how many ticks of silence before firing
-            consumes_origin: If true, origin status -> spoken after traversal
+            consumes_origin: If true, origin status -> completed after traversal
                              If false, origin stays active
         """
         props = {

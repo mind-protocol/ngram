@@ -1,0 +1,374 @@
+# =============================================================================
+# SYMBOL EXTRACTION SPEC v1.0
+# Level 2: Files + Symbols (Functions, Classes, Methods)
+# =============================================================================
+#
+# Extracts code structure into graph nodes with rich linking.
+# Run by doctor on scan. Enables precise issue targeting, call graphs,
+# health→symbol linking, test→symbol mapping, impact analysis.
+#
+# =============================================================================
+
+version: "1.0"
+schema_version: "1.2"
+level: 2
+
+# =============================================================================
+# OVERVIEW
+# =============================================================================
+#
+# Level 1: Files only (thing_FILE)
+# Level 2: Files + Symbols (thing_FILE, thing_FUNC, thing_CLASS, thing_METHOD, thing_CONST)
+# Level 3: Files + Symbols + Regions (adds thing_REGION) — separate spec
+#
+# Level 2 extracts:
+#   - Files (all source files)
+#   - Functions (top-level)
+#   - Classes
+#   - Methods (inside classes)
+#   - Constants (module-level, optional)
+#
+# Level 2 links:
+#   - Containment (file contains symbol, class contains method)
+#   - Calls (symbol calls symbol)
+#   - Imports (file imports file/symbol)
+#   - Tests (test symbol tests source symbol)
+#   - Docs (symbol documented by narrative)
+#
+
+# =============================================================================
+# NODE TYPES
+# =============================================================================
+
+node_types:
+
+  file:
+    id_pattern: "thing_FILE_{path_slug}"
+    node_type: thing
+    type: file
+
+    fields:
+      name: string            # Filename: "tick_v1_2.py"
+      description: string     # Auto-generated or from module docstring
+      weight: float           # Default 1.0, higher for entry points
+      energy: float           # Managed by physics
+      uri: string             # Relative path: "engine/physics/tick_v1_2.py"
+      language: string        # "python", "typescript", "yaml", etc.
+      lines: int              # Total line count
+      size_bytes: int         # File size
+      last_modified_s: int    # Unix timestamp
+      docstring: string       # Module docstring if present
+      imports_raw: list       # Raw import statements for reference
+
+  func:
+    id_pattern: "thing_FUNC_{file_slug}_{func_name}"
+    node_type: thing
+    type: func
+
+    fields:
+      name: string            # Function name: "apply_decay"
+      description: string     # From docstring first line
+      weight: float           # Default 1.0, higher for public API
+      energy: float
+      uri: string             # Full path: "engine/physics/tick_v1_2.py::apply_decay"
+      signature: string       # Full signature with types
+      docstring: string       # Full docstring
+      line_start: int
+      line_end: int
+      lines: int              # Length (line_end - line_start + 1)
+      complexity: int         # Cyclomatic complexity
+      parameters: list        # Parameter names
+      returns: string         # Return type annotation if present
+      is_public: bool         # True if not _prefixed
+      is_async: bool
+      is_generator: bool
+      decorators: list        # ["@staticmethod", "@lru_cache"]
+
+  class:
+    id_pattern: "thing_CLASS_{file_slug}_{class_name}"
+    node_type: thing
+    type: class
+
+    fields:
+      name: string            # Class name: "TickEngine"
+      description: string
+      weight: float
+      energy: float
+      uri: string             # "engine/physics/tick_v1_2.py::TickEngine"
+      docstring: string
+      line_start: int
+      line_end: int
+      lines: int
+      bases: list             # Base classes: ["BaseEngine", "Configurable"]
+      decorators: list
+      is_dataclass: bool
+      is_abstract: bool
+      method_count: int
+      public_method_count: int
+
+  method:
+    id_pattern: "thing_METHOD_{file_slug}_{class_name}_{method_name}"
+    node_type: thing
+    type: method
+
+    fields:
+      name: string            # Method name: "process_phase"
+      description: string
+      weight: float
+      energy: float
+      uri: string             # "engine/physics/tick_v1_2.py::TickEngine.process_phase"
+      signature: string
+      docstring: string
+      line_start: int
+      line_end: int
+      lines: int
+      complexity: int
+      parameters: list        # Excluding self/cls
+      returns: string
+      is_public: bool
+      is_async: bool
+      is_classmethod: bool
+      is_staticmethod: bool
+      is_property: bool
+      decorators: list
+
+  const:
+    id_pattern: "thing_CONST_{file_slug}_{const_name}"
+    node_type: thing
+    type: const
+
+    fields:
+      name: string            # "DECAY_RATE"
+      description: string     # From inline comment if present
+      weight: float
+      energy: float
+      uri: string
+      line: int               # Single line
+      value: string           # Stringified value: "0.3"
+      value_type: string      # Inferred type: "float"
+
+
+# =============================================================================
+# LINK TYPES
+# =============================================================================
+
+link_types:
+
+  contains_file_in_space:
+    type: contains
+    from: space
+    to: thing_FILE
+    description: "Space contains file. Derived from path or modules.yaml."
+    energy_carrier: false
+
+  contains_symbol_in_file:
+    type: contains
+    from: thing_FILE
+    to: thing_FUNC | thing_CLASS | thing_CONST
+    description: "File contains top-level symbol."
+    energy_carrier: false
+
+  contains_method_in_class:
+    type: contains
+    from: thing_CLASS
+    to: thing_METHOD
+    description: "Class contains method."
+    energy_carrier: false
+
+  calls:
+    type: relates
+    from: thing_FUNC | thing_METHOD
+    to: thing_FUNC | thing_METHOD
+    description: "Symbol calls another symbol. Extracted from AST."
+    energy_carrier: true
+    properties:
+      direction: "calls"
+      call_count: int
+
+  imports_file:
+    type: relates
+    from: thing_FILE
+    to: thing_FILE
+    description: "File imports from another file."
+    energy_carrier: true
+    properties:
+      direction: "imports"
+      import_type: "module" | "from"
+
+  imports_symbol:
+    type: relates
+    from: thing_FILE
+    to: thing_FUNC | thing_CLASS | thing_CONST
+    description: "File imports specific symbol."
+    energy_carrier: true
+    properties:
+      direction: "imports"
+      alias: string
+
+  tests:
+    type: relates
+    from: thing_FUNC
+    to: thing_FUNC | thing_METHOD | thing_CLASS
+    description: "Test function tests symbol."
+    energy_carrier: true
+    properties:
+      direction: "tests"
+      inference: "naming" | "explicit" | "call"
+
+  inherits:
+    type: relates
+    from: thing_CLASS
+    to: thing_CLASS
+    description: "Class inherits from another class."
+    energy_carrier: true
+    properties:
+      direction: "inherits"
+
+  uses:
+    type: relates
+    from: thing_FUNC | thing_METHOD
+    to: thing_CONST
+    description: "Symbol references constant."
+    energy_carrier: true
+    properties:
+      direction: "uses"
+
+  documented_by:
+    type: relates
+    from: thing_FILE | thing_FUNC | thing_CLASS | thing_METHOD
+    to: narrative
+    description: "Symbol documented in narrative."
+    energy_carrier: true
+    properties:
+      direction: "documented_by"
+
+
+# =============================================================================
+# EXTRACTION PHASES
+# =============================================================================
+
+extraction:
+
+  phase_1_files:
+    description: "Scan filesystem, create/update thing_FILE nodes"
+    steps:
+      - Walk source directories
+      - Filter by extension
+      - Exclude patterns
+      - Upsert file nodes
+      - Link to containing space
+
+  phase_2_symbols:
+    description: "Parse each file, extract symbols"
+    steps:
+      - Parse with language-appropriate AST
+      - Extract functions, classes, methods, constants
+      - Link containment
+
+  phase_3_relationships:
+    description: "Analyze AST for calls, imports, inheritance"
+    steps:
+      - Extract imports
+      - Extract calls
+      - Extract inheritance
+      - Extract constant usage
+
+  phase_4_tests:
+    description: "Link test symbols to source symbols"
+    strategies:
+      - naming_convention: "test_foo tests foo"
+      - file_convention: "test_tick.py tests tick.py"
+      - call_analysis: "Test calls symbol directly"
+      - explicit_marker: "# TESTS: symbol_name"
+
+  phase_5_docs:
+    description: "Link symbols to documentation"
+    strategies:
+      - docs_comment: "# DOCS: path/to/doc.md"
+      - implementation_reference: "IMPLEMENTATION.md references symbol"
+      - naming_convention: "Module name matches doc folder"
+
+
+# =============================================================================
+# UPSERT BEHAVIOR
+# =============================================================================
+
+upsert:
+  file_changed:
+    detect: "last_modified_s changed"
+    action: "Re-extract all symbols, update nodes"
+
+  file_unchanged:
+    detect: "last_modified_s same"
+    action: "Skip extraction"
+
+  file_deleted:
+    detect: "File no longer exists"
+    action: "Soft delete (set deleted_at_s)"
+
+  deletion_strategy: "soft_delete"
+
+
+# =============================================================================
+# CONFIGURATION
+# =============================================================================
+
+config:
+
+  directories:
+    include:
+      - "engine/"
+      - "ngram/"
+      - "tools/"
+    exclude:
+      - "**/node_modules/**"
+      - "**/__pycache__/**"
+      - "**/.git/**"
+
+  languages:
+    python:
+      extensions: [".py"]
+      parser: ast
+      extract_constants: true
+      constant_pattern: "^[A-Z_]+$"
+
+    typescript:
+      extensions: [".ts", ".tsx"]
+      parser: typescript
+      extract_constants: true
+
+  metrics:
+    complexity:
+      threshold_warning: 10
+      threshold_error: 20
+    lines:
+      threshold_warning: 200
+      threshold_error: 500
+
+
+# =============================================================================
+# DOCTOR INTEGRATION
+# =============================================================================
+
+doctor_integration:
+
+  run_order:
+    - phase_1_files
+    - phase_2_symbols
+    - phase_3_relationships
+    - phase_4_tests
+    - phase_5_docs
+    - existing_detection_scans
+
+  issue_linking:
+    description: "Doctor links issues to symbols, not just files"
+
+  detection_enhancements:
+    MONOLITH:
+      new: "File > 800 lines OR function > 200 lines"
+    COMPLEXITY:
+      new: "Symbol complexity > threshold"
+    DEAD_CODE:
+      new: "Public symbol with no callers"
+    MISSING_TESTS:
+      new: "Public symbol without test link"

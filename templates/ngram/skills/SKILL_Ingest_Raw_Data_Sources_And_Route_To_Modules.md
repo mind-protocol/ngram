@@ -4,43 +4,113 @@
 ## Maps to VIEW
 `.ngram/views/VIEW_Ingest_Process_Raw_Data_Sources.md`
 
-## Purpose
-Parse and route raw inputs into areas/modules/tasks; produce deterministic mapping and seed TODOs.
+---
 
-## Inputs (YAML)
+## Context
+
+Ingestion in ngram = parsing raw inputs and routing to modules before any edits.
+
+Raw inputs: chat exports, PDFs, research notes, feature requests, bug reports.
+
+Routing table: Deterministic mapping from data items to target modules and doc chain targets.
+
 ```yaml
-data_sources:
-  - "<path-or-url>"
-scope_hints:
-  areas: ["<optional>"]
-  modules: ["<optional>"]
+routing_table:
+  - data_item: "user auth feature request"
+    target_area: "backend"
+    target_module: "auth"
+    doc_chain_targets: [PATTERNS, BEHAVIORS, VALIDATION]
 ```
 
-## Outputs (YAML)
+No edits without routing: The routing table must exist before any code/doc changes. This prevents scattered, untracked changes.
+
+Ambiguous routing: If target is unclear, log `@ngram:escalation` and route clear items first. Don't guess.
+
+---
+
+## Purpose
+Parse and route raw inputs into areas/modules/tasks; produce deterministic routing table and seed TODOs.
+
+---
+
+## Inputs
+```yaml
+data_sources:
+  - "<path or url>"        # list of raw inputs
+scope_hints:               # optional filters
+  areas: ["<area>"]
+  modules: ["<module>"]
+```
+
+## Outputs
 ```yaml
 routing_table:
   - data_item: "<name>"
     target_area: "<area>"
     target_module: "<module>"
-    doc_chain_targets: ["PATTERNS", "BEHAVIORS", "ALGORITHM", "VALIDATION", "IMPLEMENTATION", "HEALTH", "SYNC"]
-    implementation_surfaces: ["<optional file:symbol>"]
+    doc_chain_targets: ["<doc types>"]
+    implementation_surfaces: ["<file:symbol>"]
 seeded_todos:
   - module: "<area/module>"
-    todo: "<@ngram:TODO text>"
+    todo: "@ngram:TODO <plan>"
 ```
 
-## Gates (non-negotiable)
-- No code/doc edits until a routing table exists.
-- If routing is ambiguous, log `@ngram:escalation` and route everything else first.
+---
 
-## Evidence & referencing
-- Docs: `@ngram:id + file + header path`
+## Gates
+
+- No code/doc edits until routing table exists — prevents scattered changes
+- If routing ambiguous → `@ngram:escalation`, route clear items first — don't guess
+
+---
+
+## Process
+
+### 1. Parse raw inputs
+```yaml
+batch_questions:
+  - format: "What format is each input (chat, PDF, markdown, etc.)?"
+  - items: "What distinct items/topics are in the input?"
+  - scope: "Are there scope hints to filter by area/module?"
+```
+
+### 2. Identify target modules
+For each item, determine:
+- Which area (backend, frontend, infra, etc.)
+- Which module within area
+- Which doc chain types need updating
+
+### 3. Handle ambiguity
+If target unclear:
+- Log `@ngram:escalation` with the ambiguous item
+- Route clear items first
+- Return to ambiguous items after escalation resolved
+
+### 4. Produce routing table
+Deterministic mapping. Each item has one target.
+
+### 5. Seed TODOs
+For each routed item, create `@ngram:TODO` in target module's SYNC.
+
+---
+
+## Protocols Referenced
+
+| Protocol | When | Creates |
+|----------|------|---------|
+| `protocol:explore_space` | Before routing | Understand existing modules |
+| `protocol:record_work` | After routing complete | progress moment |
+
+---
+
+## Evidence
+- Docs: `@ngram:id + file + header`
 - Code: `file + symbol`
 
 ## Markers
-- `@ngram:TODO <plan description>`
-- `@ngram:escalation <blocker/problem>`
-- `@ngram:proposition <suggestion/improvement>`
+- `@ngram:TODO`
+- `@ngram:escalation`
+- `@ngram:proposition`
 
-## Never-stop rule
-If blocked, log `@ngram:escalation` + `@ngram:proposition`, then switch to the next unblocked task.
+## Never-stop
+If blocked → `@ngram:escalation` + `@ngram:proposition` → proceed with proposition.

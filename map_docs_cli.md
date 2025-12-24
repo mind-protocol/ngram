@@ -26,7 +26,7 @@
 │   └── (..1 more files)
 ├── core/ (44.3K)
 │   ├── ALGORITHM_CLI_Command_Execution_Logic/ (8.5K)
-│   │   ├── ALGORITHM_Overview.md (doctor & repair section) (3.9K)
+│   │   ├── ALGORITHM_Overview.md (doctor & work section) (3.9K)
 │   │   ├── ALGORITHM_Overview.md (init & validate section) (1.5K)
 │   │   ├── ALGORITHM_Overview.md (marker scans section) (1.6K)
 │   │   └── ALGORITHM_Overview.md (1.5K)
@@ -56,7 +56,7 @@
 ### `archive/SYNC_CLI_Development_State_archive_2025-12.md`
 
 **Code refs:**
-- `ngram/repair_core.py`
+- `ngram/work_core.py`
 
 **Sections:**
 - # Archived: SYNC_CLI_Development_State.md
@@ -76,7 +76,7 @@
 - ## RELATED ARCHIVES
 - ## CHAIN
 
-### `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md (doctor & repair section)`
+### `core/ALGORITHM_CLI_Command_Execution_Logic/ALGORITHM_Overview.md (doctor & work section)`
 
 **Sections:**
 - # ngram Framework CLI — Algorithm: Doctor and Repair
@@ -137,12 +137,12 @@
 - `ngram/project_map.py`
 - `ngram/project_map_html.py`
 - `ngram/prompt.py`
-- `ngram/repair.py`
-- `ngram/repair_core.py`
-- `ngram/repair_escalation_interactive.py`
-- `ngram/repair_instructions.py`
-- `ngram/repair_instructions_docs.py`
-- `ngram/repair_report.py`
+- `ngram/work.py`
+- `ngram/work_core.py`
+- `ngram/work_escalation_interactive.py`
+- `ngram/work_instructions.py`
+- `ngram/work_instructions_docs.py`
+- `ngram/work_report.py`
 - `ngram/repo_overview.py`
 - `ngram/repo_overview_formatters.py`
 - `ngram/solve_escalations.py`
@@ -241,7 +241,7 @@
 - `init_cmd.py`
 - `project_map.py`
 - `prompt.py`
-- `repair.py`
+- `work.py`
 - `sync.py`
 - `validate.py`
 
@@ -265,7 +265,7 @@
 - `ngram/doctor_checks_content.py`
 - `ngram/doctor_files.py`
 - `ngram/prompt.py`
-- `ngram/repair_core.py`
+- `ngram/work_core.py`
 - `ngram/solve_escalations.py`
 
 **Doc refs:**

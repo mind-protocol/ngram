@@ -15,7 +15,7 @@ def _detect_commands(text: str) -> list[str]:
     commands = []
 
     # Detect ngram subcommands
-    ngram_subs = r'(?:doctor|repair|sync|init|validate|context|prompt|solve-markers)'
+    ngram_subs = r'(?:doctor|work|sync|init|validate|context|prompt|solve-markers)'
     # Other CLI tools
     other_cmds = r'(?:python|pip|npm|git|pytest|uv|make|cargo|go)'
 
@@ -389,14 +389,14 @@ def _build_review_prompt(agent, result, output_tail: str) -> str:
     if agent.retry_count > 0:
         retry_note = f"\n(This is retry #{agent.retry_count} after feedback)"
 
-    return f"""Agent {agent.symbol} completed repair task.{retry_note}
+    return f"""Agent {agent.symbol} completed work task.{retry_note}
 
 Issue: {agent.issue_type}
 Target: {agent.target_path}
 Duration: {result.duration_seconds:.1f}s
 Status: {status}
 
-Please review this repair:
+Please review this work:
 1. Identify commits made by this agent - check `git log --oneline -10` and look for recent commits related to {agent.issue_type} or {agent.target_path}
 2. For each relevant commit, run `git show <commit> --stat` to see the changes
 3. If no commits were made, check `git diff` for uncommitted changes
@@ -438,7 +438,7 @@ async def _run_manager_review(app: "NgramApp", prompt: str, agent_info: dict = N
         # Clean up rich markup for plain text
         clean_review = str(review_content).replace("[dim italic]", "").replace("[/]", "").replace("[dim]", "")
 
-        log_dir = app.target_dir / ".ngram" / "repairs"
+        log_dir = app.target_dir / ".ngram" / "works"
         log_dir.mkdir(parents=True, exist_ok=True)
 
         # Use session date for log file
@@ -547,7 +547,7 @@ Please address the feedback and complete the fix. When done, commit your changes
     async def run_continuation():
         import subprocess
         import time
-        from ..repair_core import RepairResult, _get_git_head, parse_stream_json_line
+        from ..work_core import WorkResult, _get_git_head, parse_stream_json_line
 
         start_time = time.time()
         head_before = _get_git_head(app.target_dir)
@@ -592,7 +592,7 @@ Please address the feedback and complete the fix. When done, commit your changes
             elif not success:
                 error = "No git commit detected"
 
-            result = RepairResult(
+            result = WorkResult(
                 issue_type=agent.issue_type,
                 target_path=agent.target_path,
                 success=success,
